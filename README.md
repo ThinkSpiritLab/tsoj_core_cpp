@@ -1,8 +1,31 @@
-所依赖的库：
-  - hiredia C语言的 redis 连接库
-  - seccomp 为评测代码的编译及运行提供安全机制的库
-  - boost::format 取代 sprintf 减少缓冲区越界风险
-  - kerbal 项目地址 https://git.coding.net/WentsingNee/Kerbal.git 
-	-- redis 子库 提供 C++ 风格的 redis 操作类及函数
-    -- utility.costream子库 彩色输出流
-    -- utility.memory_storage 统一内存大小计量衡
+
+#### 项目描述:
+    - TSOJ v4 分布式评测内核, 目前还只是一个初步的版本, 暂时没有查重, rejudge 以及分布式. 暑假填坑
+
+#### 一些问答:
+    - 为什么要用 C++ 重构？
+        > C语言版评测内核暴露出很严重的内存泄露及缓冲区溢出等问题. 即使现在我们能做到质量可控, 但无法保证未来会有具有足够安全素养的学弟接手
+
+        > 使用 C++ 改写以后, 不必再担心资源回收的问题, 开发更加方便, 也更易书写出质量较高的代码
+
+    - 为什么没有实现查重？
+        > 根据之前的讨论, 实现分布式以后, 查重的任务交给母机, 查重通过后才交给评测机. 因此尽管实现了查重的方法, 但是流程控制部分并没有调用这些方法
+
+    - 为什么没有实现 rejudge？
+        > 因为所 fork 的  C语言版评测内核当时还没有实现 rejudge 功能
+
+#### 语言及编译器要求:
+    - C++11 及以上标准
+    - 目前只在 g++ 8.1.0 上测试通过, 估测 8102 年主流的 g++ 5 可以顺利编译
+
+#### 编译时所依赖的库:
+    - hiredis:  C语言的 redis 连接库, 链接时需加 -lhiredis 选项
+    - seccomp:  为评测代码的编译及运行提供安全机制的库, 链接时需加 -lseccomp 选项
+    - boost::format:  取代 sprintf 减少缓冲区越界风险. sudo apt install libboost-dev 安装完成即可, 无需链接即可使用
+    - kerbal 项目地址:  https://git.coding.net/WentsingNee/Kerbal.git , 无需编译即可使用, 编译评测内核时只需提供 kerbal/include 文件夹的地址作为包含文件的搜索目录
+        - redis 子库:  提供 C++ 风格的 redis 操作类及函数
+        - utility.costream 子库:  彩色输出流
+        - utility.memory_storage 子库:  统一内存大小计量衡
+
+#### 运行时所依赖的库:
+    - sim: 提供了代码查重的功能. 分布式实现以后, 只需在母机上配置. 评测机不再需要配置 sim
