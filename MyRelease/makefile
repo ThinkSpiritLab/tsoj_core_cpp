@@ -63,7 +63,7 @@ src/%.o: ../src/%.cpp
 	@echo -e 'Building file: $<'
 	@echo -e 'Invoking: GCC C++ Compiler\c'
 	@echo -e '\033[0m'
-	g++ $(cpp_std) -I"/home/peter/git/Kerbal/Kerbal/include" -O2 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
+	g++ $(cpp_std) -I"/home/pi/git/Kerbal/Kerbal/include" -O2 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 	
@@ -76,7 +76,7 @@ src/%.o: ../src/rules/%.cpp
 	@echo -e 'Building file: $<'
 	@echo -e 'Invoking: GCC C++ Compiler\c'
 	@echo -e '\033[0m'
-	g++ $(cpp_std) -I"/home/peter/git/Kerbal/Kerbal/include" -O2 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
+	g++ $(cpp_std) -I"/home/pi/git/Kerbal/Kerbal/include" -O2 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 
@@ -86,7 +86,7 @@ distributed_judge_server: $(OBJS) $(USER_OBJS)
 	@echo -e 'Building target: $@'
 	@echo -e 'Invoking: GCC C++ Linker\c'
 	@echo -e '\033[0m'
-	g++ -L"/home/peter/git/Kerbal/Kerbal/Release" -pthread -o "distributed_judge_server" $(OBJS) $(USER_OBJS) -lseccomp -lhiredis
+	g++ -pthread -o "distributed_judge_server" $(OBJS) $(USER_OBJS) -lseccomp -lhiredis
 	@echo 'Finished building target: $@'
 
 # Other Targets
