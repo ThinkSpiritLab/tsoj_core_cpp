@@ -6,6 +6,8 @@
 
 #include <kerbal/utility/costream.hpp>
 
+#include <boost/format.hpp>
+
 namespace costream_ns = kerbal::utility::costream;
 
 extern costream_ns::costream<std::cerr> ccerr;
@@ -62,8 +64,6 @@ struct Log_level_traits<LogLevel::LEVEL_DEBUG>
 		static const costream_ns::costream<std::cout> outstream;
 };
 
-#include <boost/format.hpp>
-
 
 std::string get_ymd_hms_in_local_time_zone(time_t time) noexcept;
 
@@ -93,7 +93,7 @@ void log_write(int type, int job_id, const char source_filename[], int line, std
 
 	std::ostringstream buffer;
 
-	boost::format templ("[%s] %s job:%d:%d [%s:%d]");
+	static boost::format templ("[%s] %s job:%d:%d [%s:%d]");
 	/*           datetime logLevelStr type id srcFileName line */
 
 	multi_args_write(buffer, templ % datetime % (const char*) Log_level_traits<level>::str % type % job_id % source_filename % line, args...);

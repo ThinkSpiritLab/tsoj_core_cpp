@@ -20,8 +20,8 @@ using namespace kerbal::redis;
 
 #include <iostream>
 #include <fstream>
+#include <cctype>
 #include <chrono>
-#include <thread>
 #include <csignal>
 
 using std::cout;
@@ -77,43 +77,46 @@ namespace
 	std::unique_ptr<RedisContextPool<5> > context_pool;
 }
 
-void regist_self()
+void regist_self() noexcept
 {
 	using namespace std::chrono;
-	auto regist_self_conn = context_pool->apply(getpid());
-	LOG_INFO(0, 0, log_fp, "Regist self get context: ", regist_self_conn.get_id());
+	try {
+		static auto regist_self_conn = context_pool->apply(getpid());
+		LOG_INFO(0, 0, log_fp, "Regist_self service get context: ", regist_self_conn.get_id());
 
-	while (true) {
-		try {
-			static Operation opt;
-			if (!opt.exists(regist_self_conn, judge_server_id)) {
-				opt.hmset(regist_self_conn, judge_server_id,
-						"host_name", host_name,
-						"ip", ip,
-						"user_name", user_name,
-						"listening_pid", listening_pid);
+		while (true) {
+			try {
+				static Operation opt;
+				if (!opt.exists(regist_self_conn, judge_server_id)) {
+					opt.hmset(regist_self_conn, judge_server_id,
+							"host_name", host_name,
+							"ip", ip,
+							"user_name", user_name,
+							"listening_pid", listening_pid);
+				}
+				opt.expire(regist_self_conn, judge_server_id, seconds { 30 });
+
+				static Set<std::string> s(regist_self_conn, "online_judger");
+				s.insert(judge_server_id);
+
+				LOG_DEBUG(0, 0, log_fp, "Regist self success");
+			} catch (const RedisException & e) {
+				LOG_FATAL(0, 0, log_fp, "Regist self failed. Error information: ", e.what());
+				std::this_thread::sleep_for(seconds { 10 });
 			}
-			opt.expire(regist_self_conn, judge_server_id, std::chrono::seconds { 30 });
-
-			Set<std::string> s(regist_self_conn, "online_judger");
-			s.insert(judge_server_id);
-
-			LOG_INFO(0, 0, log_fp, "Regist self success");
-		} catch (const RedisException & e) {
-			LOG_FATAL(0, 0, log_fp, "Regist self failed. Error information: ", e.what());
-		} catch (...) {
-			LOG_FATAL(0, 0, log_fp, "Regist self failed. Error information: ", "unknown exception");
 		}
-		std::this_thread::sleep_for(std::chrono::seconds { 10 });
+	} catch (...) {
+		LOG_FATAL(0, 0, log_fp, "Regist self failed. Error information: ", "unknown exception");
+		exit(2);
 	}
 }
 
 
-void regist_SIGTERM_handler(int signum)
+void regist_SIGTERM_handler(int signum) noexcept
 {
 	if (signum == SIGTERM) {
 		loop = false;
-		LOG_INFO(0, 0, log_fp, "Judge server has received the SIGTERM signal and will exit soon after the jobs are all finished!");
+		LOG_WARNING(0, 0, log_fp, "Judge server has received the SIGTERM signal and will exit soon after the jobs are all finished!");
 	}
 }
 
@@ -121,18 +124,18 @@ std::pair<std::string, std::string> parse_buf(const std::string & buf)
 {
 	using std::string;
 
+	const static std::pair<string, string> empty_args_pair("", "");
+
 	if (buf[0] == ';') {
-		return std::make_pair("", "");
+		return empty_args_pair;
 	}
 
-	string::const_iterator it_p = std::find(buf.begin(), buf.end(), '=');
+	const string::const_iterator it_p = std::find(buf.begin(), buf.end(), '=');
 	if (it_p == buf.end()) {
-		return std::make_pair("", "");
+		return empty_args_pair;
 	}
 
-	string::const_iterator it_i = std::find_if_not(buf.begin(), buf.end(), [](char c) {
-		return std::isspace(c);
-	});
+	string::const_iterator it_i = std::find_if_not(buf.begin(), buf.end(), ::isspace);
 
 	string key, value;
 	for (; it_i != it_p; ++it_i) {
@@ -264,8 +267,8 @@ int main(int argc, const char * argv[])
 					loop = false;
 					continue;
 				}
-				static boost::format success_fetch_job_templ("Judge server %s get job %s");
-				LOG_DEBUG(0, job_id, log_fp, success_fetch_job_templ % judge_server_id % job_item);
+
+				LOG_DEBUG(0, job_id, log_fp, boost::format("Judge server %s get job %s") % judge_server_id % job_item);
 			} catch (const RedisNilException & e) {
 				LOG_FATAL(0, 0, log_fp, "Fail to fetch job. Error info: ", e.what());
 				continue;
@@ -277,8 +280,6 @@ int main(int argc, const char * argv[])
 				continue;
 			}
 
-			List<std::string> judge_failure_list(main_conn, "judge_failure_list");
-
 			JobInfo job(-1, -1);
 
 			// Step 2: Get job detail by job_type and job_id.
@@ -286,15 +287,15 @@ int main(int argc, const char * argv[])
 				job = JobInfo::fetchFromRedis(main_conn, job_type, job_id);
 			} catch (const RedisNilException & e) {
 				LOG_FATAL(job_type, job_id, log_fp, "Fail to fetch job details. Error information: ", e.what());
-				job.push_back_failed_judge_job(main_conn, judge_failure_list);
+				job.push_back_failed_judge_job(main_conn);
 				continue;
 			} catch (const std::exception & e) {
 				LOG_FATAL(job_type, job_id, log_fp, "Fail to fetch job details. Error information: ", e.what());
-				job.push_back_failed_judge_job(main_conn, judge_failure_list);
+				job.push_back_failed_judge_job(main_conn);
 				continue;
 			} catch (...) {
 				LOG_FATAL(job_type, job_id, log_fp, "Fail to fetch job details. Error information: ", "unknow exception");
-				job.push_back_failed_judge_job(main_conn, judge_failure_list);
+				job.push_back_failed_judge_job(main_conn);
 				continue;
 			}
 
@@ -314,22 +315,21 @@ int main(int argc, const char * argv[])
 			pid_t child_id = fork();
 			if (child_id == -1) { // fork failed
 				LOG_FATAL(job_type, job_id, log_fp, "Fail to judge job. Error information: ", "fork failed");
-				job.push_back_failed_judge_job(main_conn, judge_failure_list);
+				job.push_back_failed_judge_job(main_conn);
 				continue;
 			} else if (child_id == 0) { // son thread
 				Context child_conn;
 				child_conn.connectWithTimeout(redis_hostname.c_str(), redis_port, std::chrono::milliseconds { 200 });
 				LOG_DEBUG(job_type, job_id, log_fp, "Judge process fork success. child_pid: ", child_id);
 
-				List<std::string> judge_failure_list(child_conn, "judge_failure_list");
 				try {
 					job.judge_job(child_conn);
 				} catch (const std::exception & e) {
 					LOG_FATAL(job_type, job_id, log_fp, "Fail to judge job. Error information: ", e.what());
-					job.push_back_failed_judge_job(child_conn, judge_failure_list);
+					job.push_back_failed_judge_job(child_conn);
 				} catch (...) {
 					LOG_FATAL(job_type, job_id, log_fp, "Fail to judge job. Error information: ", "unknow exception");
-					job.push_back_failed_judge_job(child_conn, judge_failure_list);
+					job.push_back_failed_judge_job(child_conn);
 				}
 				exit(0);
 			} else { // father thread

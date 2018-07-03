@@ -18,9 +18,9 @@ class JobInfo;
 
 struct Config
 {
-		static constexpr int UNLIMITED = -1;
-		static constexpr kerbal::utility::Byte MEMORY_UNLIMITED { 0 };
-		static constexpr std::chrono::milliseconds TIME_UNLIMITED { 0 };
+		static const int UNLIMITED;
+		static const kerbal::utility::Byte MEMORY_UNLIMITED;
+		static const std::chrono::milliseconds TIME_UNLIMITED;
 
 
 		enum TypeFlag
@@ -49,44 +49,12 @@ struct Config
 		void construct_running_config(const JobInfo & job);
 		void construct_compile_config(const JobInfo & job);
 
-		bool unlimitCPUTime() const
-		{
-			return this->max_cpu_time == TIME_UNLIMITED;
-		}
+		bool unlimitCPUTime() const;
+		bool unlimitRealTime() const;
+		bool unlimitMemory() const;
+		bool unlimitStack() const;
 
-		bool unlimitRealTime() const
-		{
-			return this->max_real_time == TIME_UNLIMITED;
-		}
-
-		bool unlimitMemory() const
-		{
-			return this->max_memory == MEMORY_UNLIMITED;
-		}
-
-		bool unlimitStack() const
-		{
-			return this->max_stack == MEMORY_UNLIMITED;
-		}
-
-		bool check_is_valid_config() const
-		{
-			using namespace std::chrono;
-			using namespace kerbal::utility;
-
-			if ((max_cpu_time < milliseconds { 1 } && max_cpu_time != TIME_UNLIMITED) ||
-
-			(max_real_time < milliseconds { 1 } && max_real_time != TIME_UNLIMITED) ||
-
-			(max_stack < 1_MB) || (max_memory < 1_MB && max_memory != MEMORY_UNLIMITED) ||
-
-			(max_process_number < 1 && max_process_number != UNLIMITED) ||
-
-			(max_output_size < 1_MB && max_output_size != MEMORY_UNLIMITED)) {
-				return false;
-			}
-			return true;
-		}
+		bool check_is_valid_config() const;
 };
 
 

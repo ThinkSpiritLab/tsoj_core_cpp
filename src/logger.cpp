@@ -1,8 +1,6 @@
 #define _POSIX_SOURCE
 
 #include <time.h>
-#include <unistd.h>
-#include <sys/file.h>
 
 #include "logger.hpp"
 

@@ -8,8 +8,11 @@
 #ifndef SRC_PROCESS_HPP_
 #define SRC_PROCESS_HPP_
 
-#include <kerbal/system/system.hpp>
-#include <csignal>
+#include <exception>
+#include <cstdlib>
+
+#include <signal.h>
+#include <unistd.h>
 
 class Process
 {

@@ -12,18 +12,13 @@
 #include <string>
 #include <memory>
 
-#include <iostream>
-
 class ExecuteArgs
 {
 	private:
 		std::vector<std::string> args;
 
 	public:
-		ExecuteArgs()
-		{
-
-		}
+		ExecuteArgs();
 
 		template<typename ForwardInteger>
 		ExecuteArgs(ForwardInteger begin, ForwardInteger end) :
@@ -31,28 +26,11 @@ class ExecuteArgs
 		{
 		}
 
-		ExecuteArgs(std::initializer_list<std::string> list) :
-				args(list.begin(), list.end())
-		{
-		}
+		ExecuteArgs(std::initializer_list<std::string> list);
 
-		ExecuteArgs& operator=(std::initializer_list<std::string> list)
-		{
-			args.assign(list.begin(), list.end());
-			return *this;
-		}
+		ExecuteArgs& operator=(std::initializer_list<std::string> list);
 
-		std::unique_ptr<char*[]> getArgs() const
-		{
-			typedef char * pointer_to_char;
-			std::unique_ptr<pointer_to_char[]> res(new char*[args.size() + 1]);
-			size_t i = 0;
-			for (i = 0; i < args.size(); ++i) {
-				res.get()[i] = const_cast<char*>(args[i].c_str());
-			}
-			res.get()[i] = NULL;
-			return res;
-		}
+		std::unique_ptr<char*[]> getArgs() const;
 };
 
 #endif /* SRC_EXECUTEARGS_HPP_ */

@@ -11,30 +11,18 @@
 #include "logger.hpp"
 #include "global_shared_variable.hpp"
 
+const int Config::UNLIMITED = -1;
+const kerbal::utility::Byte Config::MEMORY_UNLIMITED { 0 };
+const std::chrono::milliseconds Config::TIME_UNLIMITED { 0 };
+
 Config::Config(const JobInfo & job, enum TypeFlag flag)
 {
 	switch (flag) {
 		case RUNNING:
-			try {
-				construct_running_config(job);
-			} catch (const std::exception & e) {
-				LOG_FATAL(job.jobType, job.sid, log_fp, "Fail to construct config. Error information: ", e.what());
-				throw;
-			} catch (...) {
-				LOG_FATAL(job.jobType, job.sid, log_fp, "Fail to construct config. Error information: ", "unknow exception");
-				throw;
-			}
+			construct_running_config(job);
 			break;
 		case COMPILE:
-			try {
-				construct_compile_config(job);
-			} catch (const std::exception & e) {
-				LOG_FATAL(job.jobType, job.sid, log_fp, "Fail to construct config. Error information: ", e.what());
-				throw;
-			} catch (...) {
-				LOG_FATAL(job.jobType, job.sid, log_fp, "Fail to construct config. Error information: ", "unknow exception");
-				throw;
-			}
+			construct_compile_config(job);
 			break;
 	}
 }
@@ -43,37 +31,39 @@ void Config::construct_running_config(const JobInfo & job)
 {
 	using namespace kerbal::utility;
 
+	static const char c_cpp_exe_path[] = "./Main";
+	static const char java_exe_path[] = "/usr/bin/java";
+
 	switch (job.lang) {
 		case Language::C:
 		case Language::Cpp:
 		case Language::Cpp14: {
 			this->seccomp_rule_name = "c_cpp";
-			this->exe_path = "./Main";
+			this->exe_path = c_cpp_exe_path;
 			this->max_memory = job.memoryLimit;
 			this->max_stack = job.memoryLimit;
 			this->max_cpu_time = job.timeLimit;
-			this->args = {"./Main"};
+			this->args = {c_cpp_exe_path};
 			break;
 		}
 		case Language::Java: {
 			this->seccomp_rule_name = NULL;
-			this->exe_path = "/usr/bin/java";
+			this->exe_path = java_exe_path;
 			this->max_memory = MEMORY_UNLIMITED;
 			this->max_stack = 256_MB;
 			this->max_cpu_time = job.timeLimit * 2;
 			static boost::format java_xms("-Xms%dm");
 			static boost::format java_xmx("-Xmx%dm");
 			this->args = {
-				"/usr/bin/java",(java_xms % job.memoryLimit.count()).str(),
+				java_exe_path,
+				(java_xms % job.memoryLimit.count()).str(),
 				(java_xmx % (job.memoryLimit.count() + java_memory_bonus)).str(),
 				"-Djava.security.manager",
 				"-Djava.security.policy=" + java_policy_path,
-				"Main"};
+				"Main"
+			};
 			break;
 		}
-		default:
-			LOG_FATAL(job.jobType, job.sid, log_fp, "language unknown");
-			break;
 	}
 
 	this->max_real_time = this->max_cpu_time + std::chrono::seconds { 1 };
@@ -106,16 +96,19 @@ void Config::construct_compile_config(const JobInfo & job)
 		case Language::C: {
 			this->exe_path = c_compiler;
 			this->args = {c_compiler, "-g", "-O2", "-Werror=main", "-std=gnu11", "-static", "Main.c", "-lm", "-o", "Main"};
+			this->max_memory = 1024_MB;
 			break;
 		}
 		case Language::Cpp: {
 			this->exe_path = cpp_compiler;
 			this->args = {cpp_compiler, "-g", "-O2", "-std=gnu++11", "-static", "Main.cpp", "-o", "Main"};
+			this->max_memory = 1024_MB;
 			break;
 		}
 		case Language::Cpp14: {
 			this->exe_path = cpp_compiler;
 			this->args = {cpp_compiler, "-g", "-O2", "-std=gnu++14", "-static", "Main.cpp", "-o", "Main"};
+			this->max_memory = 1024_MB;
 			break;
 		}
 		case Language::Java: {
@@ -123,23 +116,12 @@ void Config::construct_compile_config(const JobInfo & job)
 			static boost::format java_xmx("-J-Xmx%dm");
 			this->exe_path = java_compiler;
 			this->args = {java_compiler,(java_xms%64).str() , (java_xmx%512).str(), "-encoding", "UTF-8", "-sourcepath", ".", "-d", ".", "Main.java"};
+			this->max_memory = Config::MEMORY_UNLIMITED;
 			break;
-		}
-		default: {
-			LOG_FATAL(job.jobType, job.sid, log_fp, "language unknown");
-			return;
 		}
 	}
 	this->max_cpu_time = std::chrono::milliseconds { 5000 };
 	this->max_real_time = std::chrono::milliseconds { 5000 };
-
-	switch (job.lang) {
-		case Language::Java:
-			this->max_memory = Config::MEMORY_UNLIMITED;
-			break;
-		default:
-			this->max_memory = 1024_MB;
-	}
 	this->max_stack = 1024_MB;
 	this->max_process_number = Config::UNLIMITED; //TODO
 	this->max_output_size = 128_MB;
@@ -150,4 +132,44 @@ void Config::construct_compile_config(const JobInfo & job)
 	this->seccomp_rule_name = NULL;
 	this->uid = judger_uid;
 	this->gid = judger_gid;
+}
+
+
+bool Config::unlimitCPUTime() const
+{
+	return this->max_cpu_time == TIME_UNLIMITED;
+}
+
+bool Config::unlimitRealTime() const
+{
+	return this->max_real_time == TIME_UNLIMITED;
+}
+
+bool Config::unlimitMemory() const
+{
+	return this->max_memory == MEMORY_UNLIMITED;
+}
+
+bool Config::unlimitStack() const
+{
+	return this->max_stack == MEMORY_UNLIMITED;
+}
+
+bool Config::check_is_valid_config() const
+{
+	using namespace std::chrono;
+	using namespace kerbal::utility;
+
+	if ((max_cpu_time < milliseconds { 1 } && max_cpu_time != TIME_UNLIMITED) ||
+
+	(max_real_time < milliseconds { 1 } && max_real_time != TIME_UNLIMITED) ||
+
+	(max_stack < 1_MB) || (max_memory < 1_MB && max_memory != MEMORY_UNLIMITED) ||
+
+	(max_process_number < 1 && max_process_number != UNLIMITED) ||
+
+	(max_output_size < 1_MB && max_output_size != MEMORY_UNLIMITED)) {
+		return false;
+	}
+	return true;
 }
