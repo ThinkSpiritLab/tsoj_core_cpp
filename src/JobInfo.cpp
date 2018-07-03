@@ -173,6 +173,7 @@ void JobInfo::judge_job(const Context & conn)
 
 	// compile
     this->commitJudgeStatusToRedis(conn, "status", JudgeStatus::COMPILING);
+	LOG_DEBUG(jobType, sid, log_fp, "compile start");
 	Result compile_result = this->compile();
 
 	LOG_DEBUG(jobType, sid, log_fp, "compile finished");
@@ -258,7 +259,7 @@ Result JobInfo::running(const Context & conn)
 
 void JobInfo::commitJudgeStatusToRedis(const Context & conn, const std::string & key, JudgeStatus status)
 {
-	static RedisCommand cmd("hset judge_status:%d:%d %%s %%d");
+	static RedisCommand cmd("hset judge_status:%%d:%%d %%s %%d");
 	try {
 		cmd.excute(conn, jobType, sid, key, (int) status);
 	} catch (const std::exception & e) {

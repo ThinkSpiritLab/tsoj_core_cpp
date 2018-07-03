@@ -100,9 +100,9 @@ void regist_self() noexcept
 				s.insert(judge_server_id);
 
 				LOG_DEBUG(0, 0, log_fp, "Regist self success");
+				std::this_thread::sleep_for(seconds { 10 });
 			} catch (const RedisException & e) {
 				LOG_FATAL(0, 0, log_fp, "Regist self failed. Error information: ", e.what());
-				std::this_thread::sleep_for(seconds { 10 });
 			}
 		}
 	} catch (...) {
