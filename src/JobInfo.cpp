@@ -278,7 +278,8 @@ void JobInfo::commitJudgeResultToRedis(const Context & conn, const Result & resu
 				"result", (int) result.result,
 				"cpu_time", result.cpu_time.count(),
 				"real_time", result.real_time.count(),
-				"memory", (kerbal::utility::Byte(result.memory)).count());
+				"memory", (kerbal::utility::Byte(result.memory)).count(),
+				"similarity_percentage", 0);
 	} catch (const std::exception & e) {
 		LOG_FATAL(jobType, sid, log_fp, "Commit judge result failed. Error information: ", e.what(), "; judge result: ", result);
 		throw;
