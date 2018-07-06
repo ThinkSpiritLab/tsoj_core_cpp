@@ -246,7 +246,7 @@ int main(int argc, const char * argv[])
 
 		std::unique_ptr<Process> regist;
 		try {
-			regist.reset(new Process(regist_self));
+			regist.reset(new Process(true, regist_self));
 		} catch (const std::exception & e) {
 			LOG_FATAL(0, 0, log_fp, "Regist self service process fork failed");
 			exit(-3);
@@ -311,30 +311,29 @@ int main(int argc, const char * argv[])
 
 //			auto child_conn = context_pool->apply(getpid());
 //			LOG_INFO(job_type, job_id, log_fp, "child_conn: ", child_conn.get_id());
+			try {
+				Process judge_process(false, [job, job_type, job_id] () mutable {
+					Context child_conn;
+					child_conn.connectWithTimeout(redis_hostname.c_str(), redis_port, std::chrono::milliseconds { 200 });
+					LOG_DEBUG(job_type, job_id, log_fp, "Judge process fork success. child_pid: ", child_id);
 
-			pid_t child_id = fork();
-			if (child_id == -1) { // fork failed
+					try {
+						job.judge_job(child_conn);
+					} catch (const std::exception & e) {
+						LOG_FATAL(job_type, job_id, log_fp, "Fail to judge job. Error information: ", e.what());
+						job.push_back_failed_judge_job(child_conn);
+					} catch (...) {
+						LOG_FATAL(job_type, job_id, log_fp, "Fail to judge job. Error information: ", "unknow exception");
+						job.push_back_failed_judge_job(child_conn);
+					}
+				});
+
+			} catch (const std::exception & e) {
 				LOG_FATAL(job_type, job_id, log_fp, "Fail to judge job. Error information: ", "fork failed");
 				job.push_back_failed_judge_job(main_conn);
 				continue;
-			} else if (child_id == 0) { // son thread
-				Context child_conn;
-				child_conn.connectWithTimeout(redis_hostname.c_str(), redis_port, std::chrono::milliseconds { 200 });
-				LOG_DEBUG(job_type, job_id, log_fp, "Judge process fork success. child_pid: ", child_id);
-
-				try {
-					job.judge_job(child_conn);
-				} catch (const std::exception & e) {
-					LOG_FATAL(job_type, job_id, log_fp, "Fail to judge job. Error information: ", e.what());
-					job.push_back_failed_judge_job(child_conn);
-				} catch (...) {
-					LOG_FATAL(job_type, job_id, log_fp, "Fail to judge job. Error information: ", "unknow exception");
-					job.push_back_failed_judge_job(child_conn);
-				}
-				exit(0);
-			} else { // father thread
-				++cur_running;
 			}
+			++cur_running;
 		}
 
 	} catch (const std::exception & e) {

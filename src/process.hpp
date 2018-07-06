@@ -19,10 +19,11 @@ class Process
 	protected:
 		pid_t father_id;
 		pid_t child_id;
+		bool _kill;
 	public:
 		template <typename _Callable, typename ... _Args>
-		explicit Process(_Callable&& func, _Args&&... args) :
-				father_id(getpid()), child_id(-1)
+		explicit Process(bool _kill, _Callable&& func, _Args&&... args) :
+				father_id(getpid()), child_id(-1), _kill(_kill)
 		{
 			child_id = fork();
 			if (child_id == -1) {
@@ -35,7 +36,7 @@ class Process
 
 		virtual ~Process() noexcept
 		{
-			if (getpid() == father_id) {
+			if (_kill && getpid() == father_id) {
 				kill(child_id, SIGKILL);
 			}
 		}
