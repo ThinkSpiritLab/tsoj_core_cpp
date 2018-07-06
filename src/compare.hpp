@@ -8,7 +8,7 @@
 #ifndef SRC_COMPARE_HPP_
 #define SRC_COMPARE_HPP_
 
-#include <string>
+
 #include "united_resource.hpp"
 
 UnitedJudgeResult compare(const char * file1, const char * file2);
