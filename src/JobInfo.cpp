@@ -9,6 +9,7 @@
 #include "global_shared_variable.hpp"
 #include "logger.hpp"
 #include "compare.hpp"
+#include "process.hpp"
 #include "rules/seccomp_rules.hpp"
 
 #include <chrono>
@@ -18,9 +19,7 @@
 #include <cstring>
 #include <stdio.h>
 #include <sched.h>
-#include <signal.h>
 #include <pthread.h>
-#include <wait.h>
 #include <errno.h>
 #include <unistd.h>
 #include <dirent.h>
@@ -232,7 +231,7 @@ Result JobInfo::running(const Context & conn)
 		_config.input_path = input_path.c_str();
 
 		LOG_DEBUG(jobType, sid, log_fp, "running case: ", i);
-		Result current_running_result = this->excute(_config);
+		Result current_running_result = this->execute(_config);
 		LOG_DEBUG(jobType, sid, log_fp, "running case: ", i, " finished; result: ", current_running_result);
 		if (current_running_result.result == UnitedJudgeResult::ACCEPTED) {
 			// change answer path
@@ -557,7 +556,7 @@ std::chrono::milliseconds timevalToChrono(const timeval & val)
 	return duration_cast<milliseconds>(seconds(val.tv_sec) + microseconds(val.tv_usec));
 }
 
-Result JobInfo::excute(const Config & config) const noexcept
+Result JobInfo::execute(const Config & config) const noexcept
 {
 	using namespace std::chrono;
 
@@ -566,120 +565,117 @@ Result JobInfo::excute(const Config & config) const noexcept
 	// check whether current user is root
 	uid_t uid = getuid();
 	if (uid != 0) {
-		LOG_FATAL(jobType, sid, log_fp, "Error: ", "ROOT_REQUIRED");
+		LOG_FATAL(jobType, sid, log_fp, "ROOT_REQUIRED");
 		result.setErrorCode(RunnerError::ROOT_REQUIRED);
 		return result;
 	}
 
 	// check args
 	if (config.check_is_valid_config() == false) {
-		LOG_FATAL(jobType, sid, log_fp, "Error: ", "INVALID_CONFIG");
+		LOG_FATAL(jobType, sid, log_fp, "INVALID_CONFIG");
 		result.setErrorCode(RunnerError::INVALID_CONFIG);
 		return result;
 	}
 
-	// record current time
-	struct timeval start, end;
-	gettimeofday(&start, NULL);
+	std::unique_ptr<Process> child_process;
 
-	pid_t child_pid = fork();
-
-	// pid < 0 shows clone failed
-	if (child_pid < 0) {
-		LOG_FATAL(jobType, sid, log_fp, "Error: ", "FORK_FAILED");
+	try {
+		child_process.reset(new Process(true, [this, &config]() {
+			this->child_process(config);
+		}));
+	} catch (std::exception & e) {
+		LOG_FATAL(jobType, sid, log_fp, "Fork failed. Error information: ", e.what());
 		result.setErrorCode(RunnerError::FORK_FAILED);
 		return result;
-	} else if (child_pid == 0) {
-		this->child_process(config);
-	} else if (child_pid > 0) {
-		// create new thread to monitor process running time
-		if (config.max_real_time != Config::TIME_UNLIMITED) {
-			try {
-				std::thread timeout_killer_thread([](pid_t child_pid, milliseconds timeout) {
-					static constexpr seconds one_second {1};
-					std::this_thread::sleep_for (timeout + one_second);
-					if (kill(child_pid, SIGKILL) != 0) {
+	}
+
+	// record current time
+	time_point<high_resolution_clock> start(high_resolution_clock::now());
+
+	if (config.max_real_time != Config::TIME_UNLIMITED) {
+		try {
+			// new thread to monitor process running time
+			std::thread timeout_killer_thread([&child_process](milliseconds timeout) {
+				static constexpr seconds one_second {1};
+				std::this_thread::sleep_for (timeout + one_second);
+				if (child_process->kill(SIGKILL) != 0) { //TODO log
 						return;
 					}
 					return;
-				}, child_pid, config.max_real_time);
-				try {
-					timeout_killer_thread.detach();
-				} catch (const std::system_error & e) {
-					kill(pid, SIGKILL);
-					LOG_FATAL(jobType, sid, log_fp, "Error: ", "PTHREAD_FAILED, ", e.what());
-					result.setErrorCode(RunnerError::PTHREAD_FAILED);
-					return result;
-				}
+				}, config.max_real_time);
+			try {
+				timeout_killer_thread.detach();
 			} catch (const std::system_error & e) {
-				kill(child_pid, SIGKILL);
-				LOG_FATAL(jobType, sid, log_fp, "Error: ", "PTHREAD_FAILED, ", e.what());
-				result.setErrorCode(RunnerError::PTHREAD_FAILED);
-				return result;
-			} catch (...) {
-				kill(child_pid, SIGKILL);
-				LOG_FATAL(jobType, sid, log_fp, "Error: ", "PTHREAD_FAILED, ", "unknown exception");
+				child_process->kill(SIGKILL);
+				LOG_FATAL(jobType, sid, log_fp, "Thread detach failed. Error information: ", e.what(), " , error code: ", e.code().value());
 				result.setErrorCode(RunnerError::PTHREAD_FAILED);
 				return result;
 			}
-			LOG_DEBUG(jobType, sid, log_fp, "timeout thread success");
-		}
-
-		int status;
-		struct rusage resource_usage;
-
-		// wait for child process to terminate
-		// on success, returns the process ID of the child whose state has changed;
-		// On error, -1 is returned.
-		if (wait4(child_pid, &status, WSTOPPED, &resource_usage) == -1) {
-			kill(child_pid, SIGKILL);
-			LOG_FATAL(jobType, sid, log_fp, "Error: ", "WAIT_FAILED");
-			result.setErrorCode(RunnerError::WAIT_FAILED);
+			LOG_DEBUG(jobType, sid, log_fp, "Timeout thread work success");
+		} catch (const std::system_error & e) {
+			child_process->kill(SIGKILL);
+			LOG_FATAL(jobType, sid, log_fp, "Thread construct failed. Error information: ", e.what(), " , error code: ", e.code().value());
+			result.setErrorCode(RunnerError::PTHREAD_FAILED);
+			return result;
+		} catch (...) {
+			child_process->kill(SIGKILL);
+			LOG_FATAL(jobType, sid, log_fp, "Thread construct failed. Error information: ", "unknown exception");
+			result.setErrorCode(RunnerError::PTHREAD_FAILED);
 			return result;
 		}
+	}
 
-		result.exit_code = WEXITSTATUS(status);
-		result.cpu_time = timevalToChrono(resource_usage.ru_utime) + timevalToChrono(resource_usage.ru_stime);
-		result.memory = kerbal::utility::KB(resource_usage.ru_maxrss);
+	int status;
+	struct rusage resource_usage;
 
-		// get end time
-		gettimeofday(&end, NULL);
-		result.real_time = timevalToChrono(end) - timevalToChrono(start);
+	// wait for child process to terminate
+	// on success, returns the process ID of the child whose state has changed;
+	// On error, -1 is returned.
+	if (child_process->wait4(&status, WSTOPPED, &resource_usage) == -1) {
+		child_process->kill(SIGKILL);
+		LOG_FATAL(jobType, sid, log_fp, "WAIT_FAILED");
+		result.setErrorCode(RunnerError::WAIT_FAILED);
+		return result;
+	}
 
-		if (result.exit_code != 0) {
-			result.result = UnitedJudgeResult::RUNTIME_ERROR;
-			LOG_FATAL(jobType, sid, log_fp, "exit code != 0");
-			return result;
-		}
-		// if signaled
-		if (WIFSIGNALED(status) != 0) {
-			result.signal = WTERMSIG(status);
-			LOG_DEBUG(jobType, sid, log_fp, "signal: ", result.signal);
-			switch (result.signal) {
-				case SIGSEGV:
-					if (config.max_memory != Config::MEMORY_UNLIMITED && result.memory > config.max_memory) {
-						result.result = UnitedJudgeResult::MEMORY_LIMIT_EXCEEDED;
-					} else {
-						result.result = UnitedJudgeResult::RUNTIME_ERROR;
-					}
-					break;
-				case SIGUSR1:
-					result.result = UnitedJudgeResult::SYSTEM_ERROR;
-					break;
-				default:
+	result.real_time = duration_cast<milliseconds>(high_resolution_clock::now() - start);
+	result.cpu_time = timevalToChrono(resource_usage.ru_utime) + timevalToChrono(resource_usage.ru_stime);
+	result.memory = kerbal::utility::KB(resource_usage.ru_maxrss);
+	result.exit_code = WEXITSTATUS(status);
+
+	if (result.exit_code != 0) {
+		LOG_FATAL(jobType, sid, log_fp, "exit code != 0");
+		result.result = UnitedJudgeResult::RUNTIME_ERROR;
+		return result;
+	}
+	// if signaled
+	if (WIFSIGNALED(status) != 0) {
+		result.signal = WTERMSIG(status);
+		LOG_DEBUG(jobType, sid, log_fp, "signal: ", result.signal);
+		switch (result.signal) {
+			case SIGSEGV:
+				if (config.max_memory != Config::MEMORY_UNLIMITED && result.memory > config.max_memory) {
+					result.result = UnitedJudgeResult::MEMORY_LIMIT_EXCEEDED;
+				} else {
 					result.result = UnitedJudgeResult::RUNTIME_ERROR;
-			}
-		} else {
-			if (config.max_memory != Config::MEMORY_UNLIMITED && result.memory > config.max_memory) {
-				result.result = UnitedJudgeResult::MEMORY_LIMIT_EXCEEDED;
-			}
+				}
+				break;
+			case SIGUSR1:
+				result.result = UnitedJudgeResult::SYSTEM_ERROR;
+				break;
+			default:
+				result.result = UnitedJudgeResult::RUNTIME_ERROR;
 		}
-		if (config.max_real_time != Config::TIME_UNLIMITED && result.real_time > config.max_real_time) {
-			result.result = UnitedJudgeResult::REAL_TIME_LIMIT_EXCEEDED;
+	} else {
+		if (config.max_memory != Config::MEMORY_UNLIMITED && result.memory > config.max_memory) {
+			result.result = UnitedJudgeResult::MEMORY_LIMIT_EXCEEDED;
 		}
-		if (config.max_cpu_time != Config::TIME_UNLIMITED && result.cpu_time > config.max_cpu_time) {
-			result.result = UnitedJudgeResult::CPU_TIME_LIMIT_EXCEEDED;
-		}
+	}
+	if (config.max_real_time != Config::TIME_UNLIMITED && result.real_time > config.max_real_time) {
+		result.result = UnitedJudgeResult::REAL_TIME_LIMIT_EXCEEDED;
+	}
+	if (config.max_cpu_time != Config::TIME_UNLIMITED && result.cpu_time > config.max_cpu_time) {
+		result.result = UnitedJudgeResult::CPU_TIME_LIMIT_EXCEEDED;
 	}
 	return result;
 }
@@ -694,20 +690,22 @@ void JobInfo::store_source_code(const Context & conn) const
 		LOG_FATAL(jobType, sid, log_fp, "Get source code failed. Error information: ", e.what());
 		throw JobHandleException("Get source code failed");
 	}
-	std::string file_name;
+
+	static const std::string stored_file_name[] = { "Main.c", "Main.cpp", "Main.java" };
+	const std::string * file_name = nullptr;
 	switch (lang) {
 		case Language::C:
-			file_name = "Main.c";
+			file_name = stored_file_name;
 			break;
 		case Language::Cpp:
 		case Language::Cpp14:
-			file_name = "Main.cpp";
+			file_name = stored_file_name + 1;
 			break;
 		case Language::Java:
-			file_name = "Main.java";
+			file_name = stored_file_name + 2;
 			break;
 	}
-	std::ofstream fout(file_name, std::ios::out);
+	std::ofstream fout(*file_name, std::ios::out);
 	if (!fout) {
 		LOG_FATAL(jobType, sid, log_fp, "store source code failed");
 		throw JobHandleException("store source code failed");
@@ -717,7 +715,7 @@ void JobInfo::store_source_code(const Context & conn) const
 
 Result JobInfo::compile() const noexcept
 {
-	Result result = this->excute(Config(*this, Config::COMPILE));
+	Result result = this->execute(Config(*this, Config::COMPILE));
 
 	switch (result.result) {
 		case UnitedJudgeResult::ACCEPTED:
@@ -731,37 +729,22 @@ Result JobInfo::compile() const noexcept
 			result.result = UnitedJudgeResult::COMPILE_ERROR;
 			return result;
 		case UnitedJudgeResult::SYSTEM_ERROR:
-			LOG_FATAL(jobType, sid, log_fp, "system error occured while compiling: ", result);
+			LOG_FATAL(jobType, sid, log_fp, "System error occurred while compiling. Execute result: ", result);
 			return result;
 		default:
-			LOG_FATAL(jobType, sid, log_fp, "unexpected compile result: ", result);
+			LOG_FATAL(jobType, sid, log_fp, "Unexpected compile result: ", result);
 			result.result = UnitedJudgeResult::COMPILE_ERROR;
 			return result;
 	}
 }
 
 
-
-void close_file(FILE *fp, ...) {
-    va_list args;
-    va_start(args, fp);
-
-    if (fp != NULL) {
-        fclose(fp);
-    }
-
-    va_end(args);
-}
-
 int JobInfo::child_process(const Config & _config) const
 {
-	FILE *input_file = NULL, *output_file = NULL, *error_file = NULL;
-
 	struct rlimit max_stack;
 	max_stack.rlim_cur = max_stack.rlim_max = (rlim_t) (_config.max_stack.count());
 	if (setrlimit(RLIMIT_STACK, &max_stack) != 0) {
 		LOG_FATAL(jobType, sid, log_fp, "Error: ", RunnerError::SETRLIMIT_FAILED);
-		close_file(input_file, output_file, error_file);
 		raise(SIGUSR1);
 		return -1;
 	}
@@ -772,7 +755,6 @@ int JobInfo::child_process(const Config & _config) const
 		max_memory.rlim_cur = max_memory.rlim_max = (rlim_t) (_config.max_memory.count()) * 2;
 		if (setrlimit(RLIMIT_AS, &max_memory) != 0) {
 			LOG_FATAL(jobType, sid, log_fp, "Error: ", RunnerError::SETRLIMIT_FAILED);
-			close_file(input_file, output_file, error_file);
 			raise(SIGUSR1);
 			return -1;
 		}
@@ -784,7 +766,6 @@ int JobInfo::child_process(const Config & _config) const
 		max_cpu_time.rlim_cur = max_cpu_time.rlim_max = (rlim_t) ((_config.max_cpu_time.count() + 1000) / 1000);
 		if (setrlimit(RLIMIT_CPU, &max_cpu_time) != 0) {
 			LOG_FATAL(jobType, sid, log_fp, "Error: ", RunnerError::SETRLIMIT_FAILED);
-			close_file(input_file, output_file, error_file);
 			raise(SIGUSR1);
 			return -1;
 		}
@@ -796,7 +777,6 @@ int JobInfo::child_process(const Config & _config) const
 		max_process_number.rlim_cur = max_process_number.rlim_max = (rlim_t) _config.max_process_number;
 		if (setrlimit(RLIMIT_NPROC, &max_process_number) != 0) {
 			LOG_FATAL(jobType, sid, log_fp, "Error: ", RunnerError::SETRLIMIT_FAILED);
-			close_file(input_file, output_file, error_file);
 			raise(SIGUSR1);
 			return -1;
 		}
@@ -808,46 +788,57 @@ int JobInfo::child_process(const Config & _config) const
 		max_output_size.rlim_cur = max_output_size.rlim_max = (rlim_t) _config.max_output_size.count();
 		if (setrlimit(RLIMIT_FSIZE, &max_output_size) != 0) {
 			LOG_FATAL(jobType, sid, log_fp, "Error: ", RunnerError::SETRLIMIT_FAILED);
-			close_file(input_file, output_file, error_file);
 			raise(SIGUSR1);
 			return -1;
 		}
 	}
 
+	/*
+	 * 警告一波！！！！！！！！！！！！！！！！！
+	 * 不要使用 shared_ptr 的 reset 方法去重置指针，否则出作用域前不再 p.reset() 一下的话就会资源泄漏
+	 * 还有！！！！ shared_ptr 和 unique_ptr 的工作机制不一样！！！！！！！！！！改代码之前一定要查文档 + 做实验！
+	 * 学长在这里被坑了很长时间了！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
+	 */
+	std::shared_ptr<FILE> input_file = nullptr;
+	std::shared_ptr<FILE> output_file = nullptr;
+	std::shared_ptr<FILE> error_file = nullptr;
+
+
+	static auto open_file = [](const char * file_name, const char * modes)->std::shared_ptr<FILE> {
+		FILE * fp = fopen(file_name, modes);
+		return fp == nullptr? nullptr: std::shared_ptr<FILE>(fp, fclose);
+	};
+
 	if (_config.input_path != NULL) {
-		input_file = fopen(_config.input_path, "r");
-		if (input_file == NULL) {
+		input_file = open_file(_config.input_path, "r");
+		if (!input_file) {
 			LOG_FATAL(jobType, sid, log_fp, "can not open [", _config.input_path, "]");
 			LOG_FATAL(jobType, sid, log_fp, "Error: ", RunnerError::DUP2_FAILED);
-			close_file(input_file, output_file, error_file);
 			raise(SIGUSR1);
 			return -1;
 		}
 		// redirect file -> stdin
 		// On success, these system calls return the new descriptor.
 		// On error, -1 is returned, and errno is set appropriately.
-		if (dup2(fileno(input_file), fileno(stdin)) == -1) {
+		if (dup2(fileno(input_file.get()), fileno(stdin)) == -1) {
 			// todo log
 			LOG_FATAL(jobType, sid, log_fp, "Error: ", RunnerError::DUP2_FAILED);
-			close_file(input_file, output_file, error_file);
 			raise(SIGUSR1);
 			return -1;
 		}
 	}
 
 	if (_config.output_path != NULL) {
-		output_file = fopen(_config.output_path, "w");
-		if (output_file == NULL) {
+		output_file = open_file(_config.output_path, "w");
+		if (!output_file) {
 			LOG_FATAL(jobType, sid, log_fp, "can not open [", _config.output_path, "]");
 			LOG_FATAL(jobType, sid, log_fp, "Error: ", RunnerError::DUP2_FAILED);
-			close_file(input_file, output_file, error_file);
 			raise(SIGUSR1);
 			return -1;
 		}
 		// redirect stdout -> file
-		if (dup2(fileno(output_file), fileno(stdout)) == -1) {
+		if (dup2(fileno(output_file.get()), fileno(stdout)) == -1) {
 			LOG_FATAL(jobType, sid, log_fp, "Error: ", RunnerError::DUP2_FAILED);
-			close_file(input_file, output_file, error_file);
 			raise(SIGUSR1);
 			return -1;
 		}
@@ -858,21 +849,19 @@ int JobInfo::child_process(const Config & _config) const
 		if (_config.output_path != NULL && strcmp(_config.output_path, _config.error_path) == 0) {
 			error_file = output_file;
 		} else {
-			error_file = fopen(_config.error_path, "w");
-			if (error_file == NULL) {
+			error_file = open_file(_config.error_path, "w");
+			if (!error_file) {
 				// todo log
 				LOG_FATAL(jobType, sid, log_fp, "can not open [", _config.error_path, "]");
 				LOG_FATAL(jobType, sid, log_fp, "Error: ", RunnerError::DUP2_FAILED);
-				close_file(input_file, output_file, error_file);
 				raise(SIGUSR1);
 				return -1;
 			}
 		}
 		// redirect stderr -> file
-		if (dup2(fileno(error_file), fileno(stderr)) == -1) {
+		if (dup2(fileno(error_file.get()), fileno(stderr)) == -1) {
 			// todo log
 			LOG_FATAL(jobType, sid, log_fp, "Error: ", RunnerError::DUP2_FAILED);
-			close_file(input_file, output_file, error_file);
 			raise(SIGUSR1);
 			return -1;
 		}
@@ -882,7 +871,6 @@ int JobInfo::child_process(const Config & _config) const
 	gid_t group_list[] = { _config.gid };
 	if (setgid(_config.gid) == -1 || setgroups(sizeof(group_list) / sizeof(gid_t), group_list) == -1) {
 		LOG_FATAL(jobType, sid, log_fp, "Error: ", RunnerError::SETUID_FAILED);
-		close_file(input_file, output_file, error_file);
 		raise(SIGUSR1);
 		return -1;
 	}
@@ -890,7 +878,6 @@ int JobInfo::child_process(const Config & _config) const
 	// set uid
 	if (setuid(_config.uid) == -1) {
 		LOG_FATAL(jobType, sid, log_fp, "Error: ", RunnerError::SETUID_FAILED);
-		close_file(input_file, output_file, error_file);
 		raise(SIGUSR1);
 		return -1;
 	}
@@ -900,21 +887,18 @@ int JobInfo::child_process(const Config & _config) const
 		if (strcmp("c_cpp", _config.seccomp_rule_name) == 0) {
 			if (c_cpp_seccomp_rules(_config) != RunnerError::SUCCESS) {
 				LOG_FATAL(jobType, sid, log_fp, "Error: ", RunnerError::LOAD_SECCOMP_FAILED);
-				close_file(input_file, output_file, error_file);
 				raise(SIGUSR1);
 				return -1;
 			}
 		} else if (strcmp("general", _config.seccomp_rule_name) == 0) {
 			if (general_seccomp_rules(_config) != RunnerError::SUCCESS) {
 				LOG_FATAL(jobType, sid, log_fp, "Error: ", RunnerError::LOAD_SECCOMP_FAILED);
-				close_file(input_file, output_file, error_file);
 				raise(SIGUSR1);
 				return -1;
 			}
 		} else {		// other rules
 			// rule does not exist
 			LOG_FATAL(jobType, sid, log_fp, "Error: ", RunnerError::LOAD_SECCOMP_FAILED);
-			close_file(input_file, output_file, error_file);
 			raise(SIGUSR1);
 			return -1;
 		}
@@ -922,14 +906,16 @@ int JobInfo::child_process(const Config & _config) const
 
 	auto args = _config.args.getArgs();
 	auto env = _config.env.getArgs();
-
 	execve(_config.exe_path, args.get(), env.get());
+	/*
+	 * 以上三行不可以并作
+	 * execve(_config.exe_path, _config.args.getArgs().get(), _config.env.getArgs().get());
+	 * 会导致资源泄漏
+	 */
 
 	LOG_FATAL(jobType, sid, log_fp, "Error: ", RunnerError::EXECVE_FAILED);
-	close_file(input_file, output_file, error_file);
 	raise(SIGUSR1);
 	return -1;
-	return 0;
 }
 
 JobHandleException::JobHandleException(const std::string & reason) :

@@ -13,6 +13,7 @@
 
 #include <signal.h>
 #include <unistd.h>
+#include <wait.h>
 
 class Process
 {
@@ -34,11 +35,28 @@ class Process
 			}
 		}
 
+		Process(const Process&) = delete;
+
 		virtual ~Process() noexcept
 		{
 			if (_kill && getpid() == father_id) {
-				kill(child_id, SIGKILL);
+				::kill(child_id, SIGKILL);
 			}
+		}
+		
+		pid_t get_child_id() const
+		{
+			return child_id;
+		}
+		
+		int kill(int __sig)
+		{
+			return ::kill(child_id, __sig);
+		}
+
+		pid_t wait4(__WAIT_STATUS __stat_loc, int __options, struct rusage *__usage) noexcept
+		{
+			return ::wait4(child_id, __stat_loc, __options, __usage);
 		}
 };
 
