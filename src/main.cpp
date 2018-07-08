@@ -7,7 +7,6 @@
 
 #include "process.hpp"
 #include "logger.hpp"
-#include "AutoClosedFile.hpp"
 #include "JobInfo.hpp"
 
 #include <kerbal/redis/redis_context_pool.hpp>
@@ -27,8 +26,6 @@ using namespace kerbal::redis;
 using std::cout;
 using std::cerr;
 using std::endl;
-
-#include <wait.h>
 
 
 std::string host_name;
@@ -77,7 +74,7 @@ namespace
 	std::unique_ptr<RedisContextPool> context_pool;
 }
 
-void regist_self() noexcept
+void register_self() noexcept
 {
 	using namespace std::chrono;
 	try {
@@ -99,14 +96,14 @@ void regist_self() noexcept
 				static Set<std::string> s(regist_self_conn, "online_judger");
 				s.insert(judge_server_id);
 
-				LOG_DEBUG(0, 0, log_fp, "Regist self success");
+				LOG_DEBUG(0, 0, log_fp, "Register self success");
 				std::this_thread::sleep_for(seconds { 10 });
 			} catch (const RedisException & e) {
-				LOG_FATAL(0, 0, log_fp, "Regist self failed. Error information: ", e.what());
+				LOG_FATAL(0, 0, log_fp, "Register self failed. Error information: ", e.what());
 			}
 		}
 	} catch (...) {
-		LOG_FATAL(0, 0, log_fp, "Regist self failed. Error information: ", "unknown exception");
+		LOG_FATAL(0, 0, log_fp, "Register self failed. Error information: ", "unknown exception");
 		exit(2);
 	}
 }
@@ -124,7 +121,7 @@ std::pair<std::string, std::string> parse_buf(const std::string & buf)
 {
 	using std::string;
 
-	const static std::pair<string, string> empty_args_pair("", "");
+	const static std::pair<string, string> empty_args_pair;
 
 	if (buf[0] == ';') {
 		return empty_args_pair;
@@ -135,27 +132,22 @@ std::pair<std::string, std::string> parse_buf(const std::string & buf)
 		return empty_args_pair;
 	}
 
-	string::const_iterator it_i = std::find_if_not(buf.begin(), buf.end(), ::isspace);
+	string::const_iterator it_i = std::find_if_not(buf.begin(), buf.end(), isspace);
 
 	string key, value;
-	for (; it_i != it_p; ++it_i) {
-		if (!isspace(*it_i)) {
-			key.push_back(*it_i);
-		} else {
-			break;
-		}
+	for (; it_i != it_p && !isspace(*it_i); ++it_i) {
+		key.push_back(*it_i);
 	}
 
 	it_i = std::find_if_not(std::next(it_p), buf.end(), [](char c) {
-		return std::isspace(c) || c == '\"';
+		return isspace(c) || c == '\"';
 	});
 
 	for (; it_i != buf.end(); ++it_i) {
-		if (!isspace(*it_i) && *it_i != '\"') {
-			value.push_back(*it_i);
-		} else {
+		if (isspace(*it_i) || *it_i == '\"') {
 			break;
 		}
+		value.push_back(*it_i);
 	}
 
 	return std::make_pair(key, value);
@@ -169,8 +161,10 @@ void load_config()
 	std::ifstream fp("/etc/ts_judger/judge_server.conf", std::ios::in); //BUG "re"
 	if (!fp) {
 		LOG_FATAL(0, 0, log_fp, "can't not open judge_server.conf");
+		fp.close();
 		exit(0);
 	}
+	fp.close();
 
 	string buf;
 	while (getline(fp, buf)) {
@@ -247,9 +241,9 @@ int main(int argc, const char * argv[])
 
 		std::unique_ptr<Process> regist;
 		try {
-			regist.reset(new Process(true, regist_self));
+			regist.reset(new Process(true, register_self));
 		} catch (const std::exception & e) {
-			LOG_FATAL(0, 0, log_fp, "Regist self service process fork failed");
+			LOG_FATAL(0, 0, log_fp, "Register self service process fork failed.");
 			exit(-3);
 		}
 
@@ -262,13 +256,13 @@ int main(int argc, const char * argv[])
 			int job_type = -1;
 			int job_id = -1;
 			try {
-				job_item = job_list.blpop(std::chrono::seconds { 0 });
+				static constexpr std::chrono::seconds zero_seconds { 0 };
+				job_item = job_list.blpop(zero_seconds);
 				std::tie(job_type, job_id) = JobInfo::parser_job_item(job_item);
-				if (job_type == -2 && job_id == 0) {
+				if (job_type == 0 && job_id == -1) {
 					loop = false;
 					continue;
 				}
-
 				LOG_DEBUG(0, job_id, log_fp, boost::format("Judge server %s get job %s") % judge_server_id % job_item);
 			} catch (const RedisNilException & e) {
 				LOG_FATAL(0, 0, log_fp, "Fail to fetch job. Error info: ", e.what());
@@ -311,8 +305,13 @@ int main(int argc, const char * argv[])
 			}
 
 			try {
-				Process judge_process(false, [&job, job_type, job_id] (ContextPoolReference child_conn) {
-					LOG_INFO(job_type, job_id, log_fp, "child_conn: ", child_conn.get_id());
+				Process judge_process(false, [&job, job_type, job_id] () {
+					Context child_conn;
+					child_conn.connectWithTimeout(redis_hostname.c_str(), redis_port, std::chrono::milliseconds { 1500 });
+					if(!child_conn) {
+						LOG_FATAL(job_type, job_id, log_fp, "Child context connect failed.");
+						return;
+					}
 					try {
 						job.judge_job(child_conn);
 					} catch (const std::exception & e) {
@@ -322,23 +321,22 @@ int main(int argc, const char * argv[])
 						LOG_FATAL(job_type, job_id, log_fp, "Fail to judge job. Error information: ", "unknow exception");
 						job.push_back_failed_judge_job(child_conn);
 					}
-				}, std::move(context_pool->apply(getpid())));
-				LOG_DEBUG(job_type, job_id, log_fp, "Judge process fork success. child_pid: ", judge_process.get_child_id());
-
+				});
+				LOG_DEBUG(job_type, job_id, log_fp, "Judge process fork success. Child_pid: ", judge_process.get_child_id());
+				++cur_running;
 			} catch (const std::exception & e) {
-				LOG_FATAL(job_type, job_id, log_fp, "Fail to judge job. Error information: ", "fork failed");
+				LOG_FATAL(job_type, job_id, log_fp, "Judge process fork failed. Error information: ", e.what());
 				job.push_back_failed_judge_job(main_conn);
 				continue;
 			}
-			++cur_running;
-		}
+		} // loop
 
 	} catch (const std::exception & e) {
-		LOG_FATAL(0, 0, log_fp, "An uncatched exception catched by main. Reason: ", e.what());
+		LOG_FATAL(0, 0, log_fp, "An uncatched exception catched by main. Error information: ", e.what());
 	} catch (...) {
-		LOG_FATAL(0, 0, log_fp, "An uncatched exception catched by main. Reason: ", "unknown exception");
+		LOG_FATAL(0, 0, log_fp, "An uncatched exception catched by main. Error information: ", "unknown exception");
 	}
 
-	LOG_INFO(0, 0, log_fp, "Judge server exit");
+	LOG_INFO(0, 0, log_fp, "Judge server exit.");
 }
 

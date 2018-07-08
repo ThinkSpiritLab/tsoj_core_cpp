@@ -26,17 +26,17 @@ class JobInfo
 	protected:
 		std::string dir;
 	public:
-		int pid;
-		int uid;
-		Language lang;
-		int cases;
+		int pid; ///@brief problem id
+		int uid; ///@brief user id
+		Language lang; ///@brief language
+		int cases; ///@brief how many test cases the problem have
 		int cid;
-		std::chrono::milliseconds timeLimit;
-		kerbal::utility::MB memoryLimit;
-		std::string postTime;
-		bool haveAccepted;
+		std::chrono::milliseconds timeLimit; ///@brief time limit of this problem
+		kerbal::utility::MB memoryLimit; ///@brief memory limit of this problem
+		std::string postTime; ///@brief post time
+		bool haveAccepted; ///@brief whether the user has pass the problem before
 		bool no_store_ac_code;
-		bool is_rejudge;
+		bool is_rejudge; ///@brief is rejudge
 
 		static std::pair<int, int> parser_job_item(const std::string & job_item);
 		static JobInfo fetchFromRedis(const Context & conn, int jobType, int sid);
@@ -47,8 +47,10 @@ class JobInfo
 		void clean_job_dir() const noexcept;
 		void store_source_code(const Context & conn) const;
 		Result execute(const Config & config) const noexcept;
+
+
 		Result compile() const noexcept;
-		void set_compile_info(const Context & conn);
+		bool set_compile_info(const Context & conn) noexcept;
 		Result running(const Context & conn);
 		int child_process(const Config & config) const;
 
@@ -57,13 +59,12 @@ class JobInfo
 		 * @brief Calculate this job's similarity
 		 * @return similarity of this job
 		 * @throw JobHandleException if any ERROR happened
-		 * @author Chen Xi, Peter Nee
 		 */
 		int calculate_similarity() const;
 		void store_code_to_accepted_solutions_dir() const;
 
 		void push_back_failed_judge_job(const Context & conn) const noexcept;
-		void commitJudgeStatusToRedis(const Context & conn, const std::string & key, JudgeStatus value);
+		void commitJudgeStatusToRedis(const Context & conn, JudgeStatus value);
 		void commitJudgeResultToRedis(const Context & conn, const Result & result) const;
 
 };
@@ -74,9 +75,15 @@ class JobHandleException: public std::exception
 		std::string reason;
 
 	public:
-		JobHandleException(const std::string & reason);
-		virtual const char * what() const noexcept;
-};
+		JobHandleException(const std::string & reason) :
+				reason(reason)
+		{
+		}
 
+		virtual const char * what() const noexcept
+		{
+			return reason.c_str();
+		}
+};
 
 #endif /* SRC_JOBINFO_HPP_ */

@@ -18,20 +18,12 @@
 
 #include <cstring>
 #include <stdio.h>
-#include <sched.h>
-#include <pthread.h>
-#include <errno.h>
-#include <unistd.h>
 #include <dirent.h>
 #include <grp.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <sys/time.h>
 #include <sys/resource.h>
-
-#include <kerbal/math/randnum.hpp>
-using namespace kerbal::math::randnum;
 
 #include <kerbal/redis/operation.hpp>
 #include <kerbal/redis/redis_data_struct/list.hpp>
@@ -82,7 +74,7 @@ JobInfo JobInfo::fetchFromRedis(const Context & conn, int jobType, int sid)
 	} catch (const RedisNilException & e) {
 		LOG_FATAL(0, sid, log_fp, "job doesn't exist. Exception infomation: ", e.what());
 		throw;
-	} catch (const RedisUnexceptedCaseException & e) {
+	} catch (const RedisUnexpectedCaseException & e) {
 		LOG_FATAL(0, sid, log_fp, "redis returns an unexpected type. Exception infomation: ", e.what());
 		throw;
 	} catch (const RedisException & e) {
@@ -100,17 +92,17 @@ JobInfo JobInfo::fetchFromRedis(const Context & conn, int jobType, int sid)
 	res.dir = (dir_templ % jobType % sid).str();
 
 	try {
-		res.pid = stoi(query_res["pid"]);
-		res.uid = stoi(query_res["uid"]);
-		res.lang = (Language) stoi(query_res["lang"]);
-		res.cases = stoi(query_res["cases"]);
-		res.cid = stoi(query_res["cid"]);
-		res.timeLimit = std::chrono::milliseconds(stoi(query_res["time_limit"]));
-		res.memoryLimit = kerbal::utility::MB { stoull(query_res["memory_limit"]) };
-		res.postTime = query_res["post_time"];
-		res.haveAccepted = stoi(query_res["have_accepted"]);
-		res.no_store_ac_code = (bool) stoi(query_res["no_store_ac_code"]);
-		res.is_rejudge = (bool) stoi(query_res["is_rejudge"]);
+		res.pid = stoi(query_res.at("pid"));
+		res.uid = stoi(query_res.at("uid"));
+		res.lang = (Language) stoi(query_res.at("lang"));
+		res.cases = stoi(query_res.at("cases"));
+		res.cid = stoi(query_res.at("cid"));
+		res.timeLimit = std::chrono::milliseconds(stoi(query_res.at("time_limit")));
+		res.memoryLimit = kerbal::utility::MB(stoull(query_res.at("memory_limit")));
+		res.postTime = query_res.at("post_time");
+		res.haveAccepted = stoi(query_res.at("have_accepted"));
+		res.no_store_ac_code = (bool) stoi(query_res.at("no_store_ac_code"));
+		res.is_rejudge = (bool) stoi(query_res.at("is_rejudge"));
 	} catch (const RedisNilException & e) {
 		LOG_FATAL(0, sid, log_fp, "job details lost or type cast failed. Exception infomation: ", e.what());
 		throw;
@@ -125,41 +117,6 @@ JobInfo JobInfo::fetchFromRedis(const Context & conn, int jobType, int sid)
 	return res;
 }
 
-//void JobInfo::judge_job(const Context & conn)
-//{
-//	JobInfo & jobinfo = *this;
-//
-//	int pid = getpid();
-//	int job_id = jobinfo.pid;
-//
-//	List<std::string> judger(conn, "judger");
-//
-//	try {
-//		int ms = rand_type_between<int>(100, 300);
-//		std::chrono::milliseconds judge_consume(ms);
-//		std::this_thread::sleep_for(judge_consume);
-//
-//		static boost::format fmt("job_id:%d   judge_server:%d   judge_pid:%d   judge_consume:%d ms");
-//		LOG_INFO(0, job_id, log_fp, fmt % job_id % judge_server_id % pid % judge_consume.count());
-//		try {
-//			judger.push_back((fmt % job_id % judge_server_id % pid % judge_consume.count()).str());
-//		} catch (const std::exception & e) {
-//			LOG_FATAL(0, job_id, log_fp, "fail to log judger. Error information: ", e.what());
-//			throw;
-//		} catch (...) {
-//			LOG_FATAL(0, job_id, log_fp, "fail to log judger. Error information: ", "unknow exception");
-//			throw;
-//		}
-//
-//	} catch (const std::exception & e) {
-//		LOG_FATAL(0, job_id, log_fp, "fail to judge job. Error information: ", e.what());
-//		throw;::fdsafds
-//	} catch (...) {
-//		LOG_FATAL(0, job_id, log_fp, "fail to judge job. Error information: ", "unknow exception");
-//		throw;
-//	}
-//}
-
 
 void JobInfo::judge_job(const Context & conn)
 {
@@ -171,7 +128,7 @@ void JobInfo::judge_job(const Context & conn)
     LOG_DEBUG(jobType, sid, log_fp, "store source code finished");
 
 	// compile
-    this->commitJudgeStatusToRedis(conn, "status", JudgeStatus::COMPILING);
+    this->commitJudgeStatusToRedis(conn, JudgeStatus::COMPILING);
 	LOG_DEBUG(jobType, sid, log_fp, "compile start");
 	Result compile_result = this->compile();
 
@@ -199,17 +156,15 @@ void JobInfo::judge_job(const Context & conn)
 			LOG_DEBUG(jobType, sid, log_fp, "compile failed");
 			this->commitJudgeResultToRedis(conn, compile_result);
 
-			try {
-				this->set_compile_info(conn);
-			} catch (const std::exception & e) { //此异常不要再向上扔
-				LOG_WARNING(jobType, sid, log_fp, "An error occurred while getting compile info. Error information: ", e.what());
+			if (this->set_compile_info(conn) == false) {
+				LOG_WARNING(jobType, sid, log_fp, "An error occurred while getting compile info.");
 			}
 			break;
 	}
 
 	//update update_queue
 	static RedisCommand update_queue("rpush update_queue %%d,%%d");
-	update_queue.excute(conn, jobType, sid);
+	update_queue.execute(conn, jobType, sid);
 
 #ifndef DEBUG
     // clear the dir
@@ -224,7 +179,7 @@ Result JobInfo::running(const Context & conn)
 //	this->commitJudgeStatusToRedis(conn, "cases_finished", 0);
 
 	Result result;
-	this->commitJudgeStatusToRedis(conn, "status", JudgeStatus::RUNNING);
+	this->commitJudgeStatusToRedis(conn, JudgeStatus::RUNNING);
 	for (int i = 1; i <= cases; ++i) {
 		// change input path
 		std::string input_path = (boost::format("%s/%d/in.%d") % input_dir % pid % i).str();
@@ -236,7 +191,7 @@ Result JobInfo::running(const Context & conn)
 		if (current_running_result.result == UnitedJudgeResult::ACCEPTED) {
 			// change answer path
 			std::string answer = (boost::format("%s/%d/out.%d") % input_dir % pid % i).str();
-			this->commitJudgeStatusToRedis(conn, "status", JudgeStatus::JUDGING);
+			this->commitJudgeStatusToRedis(conn, JudgeStatus::JUDGING);
 			// compare
 			LOG_DEBUG(jobType, sid, log_fp, "comparing case: ", i);
 			UnitedJudgeResult compare_result = compare(answer.c_str(), _config.output_path);
@@ -256,11 +211,11 @@ Result JobInfo::running(const Context & conn)
 	return result;
 }
 
-void JobInfo::commitJudgeStatusToRedis(const Context & conn, const std::string & key, JudgeStatus status)
+void JobInfo::commitJudgeStatusToRedis(const Context & conn, JudgeStatus status)
 {
-	static RedisCommand cmd("hset judge_status:%%d:%%d %%s %%d");
+	static RedisCommand cmd("hset judge_status:%%d:%%d status %%d");
 	try {
-		cmd.excute(conn, jobType, sid, key, (int) status);
+		cmd.execute(conn, jobType, sid, (int) status);
 	} catch (const std::exception & e) {
 		LOG_FATAL(jobType, sid, log_fp, "Commit judge status failed. Error information: ", e.what(), "; judge status: ", (int)status);
 		throw;
@@ -278,58 +233,52 @@ void JobInfo::commitJudgeResultToRedis(const Context & conn, const Result & resu
 				"cpu_time", result.cpu_time.count(),
 				"real_time", result.real_time.count(),
 				"memory", (kerbal::utility::Byte(result.memory)).count(),
-				"similarity_percentage", 0);
+				"similarity_percentage", 0,
+				"judge_server_id", judge_server_id);
 	} catch (const std::exception & e) {
 		LOG_FATAL(jobType, sid, log_fp, "Commit judge result failed. Error information: ", e.what(), "; judge result: ", result);
 		throw;
 	}
 }
 
-void JobInfo::set_compile_info(const Context & conn)
+bool JobInfo::set_compile_info(const Context & conn) noexcept
 {
-// 获取编译错误信息
-
-	FILE *fp = fopen("compiler.out", "rb");
-	if (!fp) {
+	std::ifstream fin("compiler.out", std::ios::in);
+	if (!fin) {
 		LOG_FATAL(jobType, sid, log_fp, "Cannot open compiler.out");
-		throw JobHandleException("Cannot open compiler.out");
-	}
-	fseek(fp, 0, SEEK_END);
-	long f_size = ftell(fp);
-	rewind(fp);
-	if (f_size > MYSQL_TEXT_MAX_SIZE) {
-		LOG_FATAL(jobType, sid, log_fp, "Compile info too long");
-		fclose(fp);
-		throw JobHandleException("Cannot info too long");
+		return false;
 	}
 
+	// get length of file:
+	fin.seekg(0, fin.end);
+	int length = fin.tellg();
+	fin.seekg(0, fin.beg);
 
-	std::unique_ptr<char[]> buffer = nullptr;
-	try {
-		buffer.reset(new char[f_size]);
-	} catch (const std::bad_alloc& e) {
-		LOG_FATAL(jobType, sid, log_fp, "Memory allocate error");
-		fclose(fp);
-		throw;
+	char buffer[MYSQL_TEXT_MAX_SIZE + 10];
+	fin.read(buffer, MYSQL_TEXT_MAX_SIZE);
+
+	if (!fin) {
+		LOG_FATAL(jobType, sid, log_fp, "Read compile info error, only ", fin.gcount(), " could be read");
+		return false;
 	}
 
-	long fread_result = fread(buffer.get(), 1, f_size, fp);
-	if (fread_result != f_size) {
-		LOG_FATAL(jobType, sid, log_fp, "read compile info error");
-		fclose(fp);
-		throw JobHandleException("read compile info error");
+	 if (MYSQL_TEXT_MAX_SIZE >= 3 && length > MYSQL_TEXT_MAX_SIZE) {
+		char * end = buffer + MYSQL_TEXT_MAX_SIZE - 3;
+		for (int i = 0; i < 3; ++i) {
+			*end = '.';
+			++end;
+		}
 	}
 
 	try {
 		static RedisCommand cmd("set compile_info:%%d:%%d %%s");
-		cmd.excute(conn, jobType, sid, buffer.get());
+		cmd.execute(conn, jobType, sid, buffer);
 	} catch (const std::exception & e) {
 		LOG_FATAL(jobType, sid, log_fp, "Set compile info failed. Error information: ", e.what());
-		fclose(fp);
-		throw;
+		return false;
 	}
 
-	fclose(fp);
+	return true;
 }
 
 
@@ -351,7 +300,7 @@ int JobInfo::calculate_similarity() const
 
 	int sim_cmd_return_value = system(sim_cmd.c_str());
 	if (-1 == sim_cmd_return_value) {
-		throw JobHandleException("sim excute failed");
+		throw JobHandleException("sim execute failed");
 	}
 	if (!WIFEXITED(sim_cmd_return_value) || WEXITSTATUS(sim_cmd_return_value)) {
 		throw JobHandleException("sim command exits incorrectly, exit status: " + std::to_string(WEXITSTATUS(sim_cmd_return_value)));
@@ -535,8 +484,8 @@ void JobInfo::clean_job_dir() const noexcept
 
 void JobInfo::push_back_failed_judge_job(const Context & conn) const noexcept
 {
-	LOG_WARNING(jobType, sid, log_fp, "push back to judge failed list");
 	try {
+		LOG_WARNING(jobType, sid, log_fp, "push back to judge failed list");
 		Result result;
 		result.result = UnitedJudgeResult::SYSTEM_ERROR;
 		this->commitJudgeResultToRedis(conn, result);
@@ -550,10 +499,13 @@ void JobInfo::push_back_failed_judge_job(const Context & conn) const noexcept
 	}
 }
 
-std::chrono::milliseconds timevalToChrono(const timeval & val)
+namespace
 {
-	using namespace std::chrono;
-	return duration_cast<milliseconds>(seconds(val.tv_sec) + microseconds(val.tv_usec));
+	std::chrono::milliseconds timevalToChrono(const timeval & val)
+	{
+		using namespace std::chrono;
+		return duration_cast<milliseconds>(seconds(val.tv_sec) + microseconds(val.tv_usec));
+	}
 }
 
 Result JobInfo::execute(const Config & config) const noexcept
@@ -611,7 +563,6 @@ Result JobInfo::execute(const Config & config) const noexcept
 				result.setErrorCode(RunnerError::PTHREAD_FAILED);
 				return result;
 			}
-			LOG_DEBUG(jobType, sid, log_fp, "Timeout thread work success");
 		} catch (const std::system_error & e) {
 			child_process->kill(SIGKILL);
 			LOG_FATAL(jobType, sid, log_fp, "Thread construct failed. Error information: ", e.what(), " , error code: ", e.code().value());
@@ -623,6 +574,7 @@ Result JobInfo::execute(const Config & config) const noexcept
 			result.setErrorCode(RunnerError::PTHREAD_FAILED);
 			return result;
 		}
+		LOG_DEBUG(jobType, sid, log_fp, "Timeout thread work success");
 	}
 
 	int status;
@@ -685,7 +637,7 @@ void JobInfo::store_source_code(const Context & conn) const
 	static RedisCommand cmd("hget source_code:%%d:%%d source");
 	AutoFreeReply reply;
 	try {
-		reply = cmd.excute(conn, jobType, sid);
+		reply = cmd.execute(conn, jobType, sid);
 	} catch (const std::exception & e) {
 		LOG_FATAL(jobType, sid, log_fp, "Get source code failed. Error information: ", e.what());
 		throw JobHandleException("Get source code failed");
@@ -738,13 +690,21 @@ Result JobInfo::compile() const noexcept
 	}
 }
 
+namespace
+{
+	std::shared_ptr<FILE> open_file(const char * file_name, const char * modes)
+	{
+		FILE * fp = fopen(file_name, modes);
+		return ((fp == nullptr) ? nullptr : std::shared_ptr<FILE>(fp, fclose));
+	};
+}
 
 int JobInfo::child_process(const Config & _config) const
 {
 	struct rlimit max_stack;
 	max_stack.rlim_cur = max_stack.rlim_max = (rlim_t) (_config.max_stack.count());
 	if (setrlimit(RLIMIT_STACK, &max_stack) != 0) {
-		LOG_FATAL(jobType, sid, log_fp, "Error: ", RunnerError::SETRLIMIT_FAILED);
+		LOG_FATAL(jobType, sid, log_fp, RunnerError::SETRLIMIT_FAILED);
 		raise(SIGUSR1);
 		return -1;
 	}
@@ -754,7 +714,7 @@ int JobInfo::child_process(const Config & _config) const
 		struct rlimit max_memory;
 		max_memory.rlim_cur = max_memory.rlim_max = (rlim_t) (_config.max_memory.count()) * 2;
 		if (setrlimit(RLIMIT_AS, &max_memory) != 0) {
-			LOG_FATAL(jobType, sid, log_fp, "Error: ", RunnerError::SETRLIMIT_FAILED);
+			LOG_FATAL(jobType, sid, log_fp, RunnerError::SETRLIMIT_FAILED);
 			raise(SIGUSR1);
 			return -1;
 		}
@@ -765,7 +725,7 @@ int JobInfo::child_process(const Config & _config) const
 		struct rlimit max_cpu_time;
 		max_cpu_time.rlim_cur = max_cpu_time.rlim_max = (rlim_t) ((_config.max_cpu_time.count() + 1000) / 1000);
 		if (setrlimit(RLIMIT_CPU, &max_cpu_time) != 0) {
-			LOG_FATAL(jobType, sid, log_fp, "Error: ", RunnerError::SETRLIMIT_FAILED);
+			LOG_FATAL(jobType, sid, log_fp, RunnerError::SETRLIMIT_FAILED);
 			raise(SIGUSR1);
 			return -1;
 		}
@@ -776,7 +736,7 @@ int JobInfo::child_process(const Config & _config) const
 		struct rlimit max_process_number;
 		max_process_number.rlim_cur = max_process_number.rlim_max = (rlim_t) _config.max_process_number;
 		if (setrlimit(RLIMIT_NPROC, &max_process_number) != 0) {
-			LOG_FATAL(jobType, sid, log_fp, "Error: ", RunnerError::SETRLIMIT_FAILED);
+			LOG_FATAL(jobType, sid, log_fp, RunnerError::SETRLIMIT_FAILED);
 			raise(SIGUSR1);
 			return -1;
 		}
@@ -787,7 +747,7 @@ int JobInfo::child_process(const Config & _config) const
 		struct rlimit max_output_size;
 		max_output_size.rlim_cur = max_output_size.rlim_max = (rlim_t) _config.max_output_size.count();
 		if (setrlimit(RLIMIT_FSIZE, &max_output_size) != 0) {
-			LOG_FATAL(jobType, sid, log_fp, "Error: ", RunnerError::SETRLIMIT_FAILED);
+			LOG_FATAL(jobType, sid, log_fp, RunnerError::SETRLIMIT_FAILED);
 			raise(SIGUSR1);
 			return -1;
 		}
@@ -803,17 +763,11 @@ int JobInfo::child_process(const Config & _config) const
 	std::shared_ptr<FILE> output_file = nullptr;
 	std::shared_ptr<FILE> error_file = nullptr;
 
-
-	static auto open_file = [](const char * file_name, const char * modes)->std::shared_ptr<FILE> {
-		FILE * fp = fopen(file_name, modes);
-		return fp == nullptr? nullptr: std::shared_ptr<FILE>(fp, fclose);
-	};
-
 	if (_config.input_path != NULL) {
 		input_file = open_file(_config.input_path, "r");
 		if (!input_file) {
 			LOG_FATAL(jobType, sid, log_fp, "can not open [", _config.input_path, "]");
-			LOG_FATAL(jobType, sid, log_fp, "Error: ", RunnerError::DUP2_FAILED);
+			LOG_FATAL(jobType, sid, log_fp, RunnerError::DUP2_FAILED);
 			raise(SIGUSR1);
 			return -1;
 		}
@@ -822,7 +776,7 @@ int JobInfo::child_process(const Config & _config) const
 		// On error, -1 is returned, and errno is set appropriately.
 		if (dup2(fileno(input_file.get()), fileno(stdin)) == -1) {
 			// todo log
-			LOG_FATAL(jobType, sid, log_fp, "Error: ", RunnerError::DUP2_FAILED);
+			LOG_FATAL(jobType, sid, log_fp, RunnerError::DUP2_FAILED);
 			raise(SIGUSR1);
 			return -1;
 		}
@@ -832,13 +786,13 @@ int JobInfo::child_process(const Config & _config) const
 		output_file = open_file(_config.output_path, "w");
 		if (!output_file) {
 			LOG_FATAL(jobType, sid, log_fp, "can not open [", _config.output_path, "]");
-			LOG_FATAL(jobType, sid, log_fp, "Error: ", RunnerError::DUP2_FAILED);
+			LOG_FATAL(jobType, sid, log_fp, RunnerError::DUP2_FAILED);
 			raise(SIGUSR1);
 			return -1;
 		}
 		// redirect stdout -> file
 		if (dup2(fileno(output_file.get()), fileno(stdout)) == -1) {
-			LOG_FATAL(jobType, sid, log_fp, "Error: ", RunnerError::DUP2_FAILED);
+			LOG_FATAL(jobType, sid, log_fp, RunnerError::DUP2_FAILED);
 			raise(SIGUSR1);
 			return -1;
 		}
@@ -853,7 +807,7 @@ int JobInfo::child_process(const Config & _config) const
 			if (!error_file) {
 				// todo log
 				LOG_FATAL(jobType, sid, log_fp, "can not open [", _config.error_path, "]");
-				LOG_FATAL(jobType, sid, log_fp, "Error: ", RunnerError::DUP2_FAILED);
+				LOG_FATAL(jobType, sid, log_fp,  RunnerError::DUP2_FAILED);
 				raise(SIGUSR1);
 				return -1;
 			}
@@ -861,7 +815,7 @@ int JobInfo::child_process(const Config & _config) const
 		// redirect stderr -> file
 		if (dup2(fileno(error_file.get()), fileno(stderr)) == -1) {
 			// todo log
-			LOG_FATAL(jobType, sid, log_fp, "Error: ", RunnerError::DUP2_FAILED);
+			LOG_FATAL(jobType, sid, log_fp, RunnerError::DUP2_FAILED);
 			raise(SIGUSR1);
 			return -1;
 		}
@@ -870,14 +824,14 @@ int JobInfo::child_process(const Config & _config) const
 	// set gid
 	gid_t group_list[] = { _config.gid };
 	if (setgid(_config.gid) == -1 || setgroups(sizeof(group_list) / sizeof(gid_t), group_list) == -1) {
-		LOG_FATAL(jobType, sid, log_fp, "Error: ", RunnerError::SETUID_FAILED);
+		LOG_FATAL(jobType, sid, log_fp, RunnerError::SETUID_FAILED);
 		raise(SIGUSR1);
 		return -1;
 	}
 
 	// set uid
 	if (setuid(_config.uid) == -1) {
-		LOG_FATAL(jobType, sid, log_fp, "Error: ", RunnerError::SETUID_FAILED);
+		LOG_FATAL(jobType, sid, log_fp, RunnerError::SETUID_FAILED);
 		raise(SIGUSR1);
 		return -1;
 	}
@@ -886,19 +840,19 @@ int JobInfo::child_process(const Config & _config) const
 	if (_config.seccomp_rule_name != NULL) {
 		if (strcmp("c_cpp", _config.seccomp_rule_name) == 0) {
 			if (c_cpp_seccomp_rules(_config) != RunnerError::SUCCESS) {
-				LOG_FATAL(jobType, sid, log_fp, "Error: ", RunnerError::LOAD_SECCOMP_FAILED);
+				LOG_FATAL(jobType, sid, log_fp, RunnerError::LOAD_SECCOMP_FAILED);
 				raise(SIGUSR1);
 				return -1;
 			}
 		} else if (strcmp("general", _config.seccomp_rule_name) == 0) {
 			if (general_seccomp_rules(_config) != RunnerError::SUCCESS) {
-				LOG_FATAL(jobType, sid, log_fp, "Error: ", RunnerError::LOAD_SECCOMP_FAILED);
+				LOG_FATAL(jobType, sid, log_fp, RunnerError::LOAD_SECCOMP_FAILED);
 				raise(SIGUSR1);
 				return -1;
 			}
 		} else {		// other rules
 			// rule does not exist
-			LOG_FATAL(jobType, sid, log_fp, "Error: ", RunnerError::LOAD_SECCOMP_FAILED);
+			LOG_FATAL(jobType, sid, log_fp, RunnerError::LOAD_SECCOMP_FAILED);
 			raise(SIGUSR1);
 			return -1;
 		}
@@ -910,20 +864,11 @@ int JobInfo::child_process(const Config & _config) const
 	/*
 	 * 以上三行不可以并作
 	 * execve(_config.exe_path, _config.args.getArgs().get(), _config.env.getArgs().get());
-	 * 会导致资源泄漏
+	 * 会取到野指针
 	 */
 
-	LOG_FATAL(jobType, sid, log_fp, "Error: ", RunnerError::EXECVE_FAILED);
+	LOG_FATAL(jobType, sid, log_fp, RunnerError::EXECVE_FAILED);
 	raise(SIGUSR1);
 	return -1;
 }
 
-JobHandleException::JobHandleException(const std::string & reason) :
-		reason(reason)
-{
-}
-
-const char * JobHandleException::what() const noexcept
-{
-	return reason.c_str();
-}

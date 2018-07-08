@@ -30,7 +30,9 @@ class Process
 			if (child_id == -1) {
 				throw std::exception();
 			} else if (child_id == 0) {
-				func(args...);
+				{
+					func(std::forward<_Args>(args)...);
+				}
 				exit(0);
 			}
 		}
