@@ -7,7 +7,6 @@
 
 #include "process.hpp"
 #include "logger.hpp"
-#include "AutoClosedFile.hpp"
 #include "JobInfo.hpp"
 
 #include <kerbal/redis/redis_context_pool.hpp>
@@ -74,7 +73,7 @@ namespace
 	bool loop = true;
 	int cur_running = 0;
 	int max_running;
-	std::unique_ptr<RedisContextPool<5> > context_pool;
+	std::unique_ptr<RedisContextPool> context_pool;
 }
 
 void regist_self() noexcept
@@ -235,7 +234,8 @@ int main(int argc, const char * argv[])
 		load_config();
 
 		try {
-			context_pool.reset(new RedisContextPool<5>(redis_hostname.c_str(), redis_port, std::chrono::milliseconds { 1500 }));
+			// +2 : 除了四个评测进程需要 redis 连接以外, 监听队列, 发送心跳进程也各需要一个
+			context_pool.reset(new RedisContextPool(max_running + 2, redis_hostname.c_str(), redis_port, std::chrono::milliseconds { 1500 }));
 		} catch (const std::exception & e) {
 			LOG_FATAL(0, 0, log_fp, "Redis connect failed! Error string: ", e.what());
 			exit(-2);
@@ -309,14 +309,9 @@ int main(int argc, const char * argv[])
 				cur_running--;
 			}
 
-//			auto child_conn = context_pool->apply(getpid());
-//			LOG_INFO(job_type, job_id, log_fp, "child_conn: ", child_conn.get_id());
 			try {
-				Process judge_process(false, [job, job_type, job_id] () mutable {
-					Context child_conn;
-					child_conn.connectWithTimeout(redis_hostname.c_str(), redis_port, std::chrono::milliseconds { 200 });
-					LOG_DEBUG(job_type, job_id, log_fp, "Judge process fork success. child_pid: ", child_id);
-
+				Process judge_process(false, [&job, job_type, job_id] (ContextPoolReference child_conn) {
+					LOG_INFO(job_type, job_id, log_fp, "child_conn: ", child_conn.get_id());
 					try {
 						job.judge_job(child_conn);
 					} catch (const std::exception & e) {
@@ -326,7 +321,8 @@ int main(int argc, const char * argv[])
 						LOG_FATAL(job_type, job_id, log_fp, "Fail to judge job. Error information: ", "unknow exception");
 						job.push_back_failed_judge_job(child_conn);
 					}
-				});
+				}, std::move(context_pool->apply(getpid())));
+				LOG_DEBUG(job_type, job_id, log_fp, "Judge process fork success. child_pid: ", judge_process.get_child_id());
 
 			} catch (const std::exception & e) {
 				LOG_FATAL(job_type, job_id, log_fp, "Fail to judge job. Error information: ", "fork failed");

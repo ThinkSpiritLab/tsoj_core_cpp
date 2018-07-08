@@ -46,7 +46,7 @@ class JobInfo
 		void change_job_dir() const;
 		void clean_job_dir() const noexcept;
 		void store_source_code(const Context & conn) const;
-		Result excute(const Config & config) const noexcept;
+		Result execute(const Config & config) const noexcept;
 		Result compile() const noexcept;
 		void set_compile_info(const Context & conn);
 		Result running(const Context & conn);
