@@ -8,15 +8,19 @@
 #ifndef SRC_JOBINFO_HPP_
 #define SRC_JOBINFO_HPP_
 
-#include <kerbal/redis/redis_context.hpp>
 #include <kerbal/utility/memory_storage.hpp>
-
 #include <string>
-
-#include "Config.hpp"
 #include "Result.hpp"
 
-using kerbal::redis::Context;
+class Config;
+
+namespace kerbal
+{
+	namespace redis
+	{
+		class Context;
+	}
+}
 
 class JobInfo
 {
@@ -39,19 +43,19 @@ class JobInfo
 		bool is_rejudge; ///@brief is rejudge
 
 		static std::pair<int, int> parser_job_item(const std::string & job_item);
-		static JobInfo fetchFromRedis(const Context & conn, int jobType, int sid);
+		static JobInfo fetchFromRedis(const kerbal::redis::Context & conn, int jobType, int sid);
 
 		JobInfo(int jobType, int sid);
-		void judge_job(const Context & conn);
+		void judge_job(const kerbal::redis::Context & conn);
 		void change_job_dir() const;
 		void clean_job_dir() const noexcept;
-		void store_source_code(const Context & conn) const;
+		void store_source_code(const kerbal::redis::Context & conn) const;
 		Result execute(const Config & config) const noexcept;
 
 
 		Result compile() const noexcept;
-		bool set_compile_info(const Context & conn) noexcept;
-		Result running(const Context & conn);
+		bool set_compile_info(const kerbal::redis::Context & conn) noexcept;
+		Result running(const kerbal::redis::Context & conn);
 		int child_process(const Config & config) const;
 
 
@@ -63,9 +67,9 @@ class JobInfo
 		int calculate_similarity() const;
 		void store_code_to_accepted_solutions_dir() const;
 
-		void push_back_failed_judge_job(const Context & conn) const noexcept;
-		void commitJudgeStatusToRedis(const Context & conn, JudgeStatus value);
-		void commitJudgeResultToRedis(const Context & conn, const Result & result) const;
+		void push_back_failed_judge_job(const kerbal::redis::Context & conn) const noexcept;
+		void commitJudgeStatusToRedis(const kerbal::redis::Context & conn, JudgeStatus value);
+		void commitJudgeResultToRedis(const kerbal::redis::Context & conn, const Result & result) const;
 
 };
 

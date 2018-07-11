@@ -6,12 +6,14 @@
  */
 
 #include "JobInfo.hpp"
+#include "Config.hpp"
 #include "global_shared_variable.hpp"
 #include "logger.hpp"
 #include "compare.hpp"
 #include "process.hpp"
 #include "rules/seccomp_rules.hpp"
 
+#include <string>
 #include <chrono>
 #include <thread>
 #include <algorithm>
@@ -32,6 +34,7 @@
 #include <boost/format.hpp>
 
 using namespace kerbal::redis;
+using kerbal::redis::Context;
 
 std::pair<int, int> JobInfo::parser_job_item(const std::string & args)
 {

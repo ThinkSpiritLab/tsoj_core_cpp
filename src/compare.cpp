@@ -7,9 +7,7 @@
 
 #include "compare.hpp"
 
-#include <iostream>
-#include <fstream>
-
+#include <cstdio>
 
 void find_next_nonspace(int *c1, int *c2, FILE *f1, FILE *f2, UnitedJudgeResult *ret) {
     // Find the next non-space character or \n.

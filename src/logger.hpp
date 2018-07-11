@@ -20,47 +20,37 @@ enum class LogLevel
 template <LogLevel level>
 struct Log_level_traits;
 
+#	if __cplusplus < 201703L
+		typedef const char * constexpr_str_type;
+#	else
+		typedef char constexpr_str_type [];
+#	endif
+
 template <>
 struct Log_level_traits<LogLevel::LEVEL_FATAL>
 {
-#	if __cplusplus < 201703L
-		static constexpr const char * str = "FATAL";
-#	else
-		static constexpr char str[] = "FATAL";
-#	endif
+		static constexpr constexpr_str_type str = "FATAL";
 		static const costream_ns::costream<std::cout> outstream;
 };
 
 template <>
 struct Log_level_traits<LogLevel::LEVEL_INFO>
 {
-#	if __cplusplus < 201703L
-		static constexpr const char * str = "INFO";
-#	else
-		static constexpr char str[] = "INFO";
-#	endif
+		static constexpr constexpr_str_type str = "INFO";
 		static const costream_ns::costream<std::cout> outstream;
 };
 
 template <>
 struct Log_level_traits<LogLevel::LEVEL_WARNING>
 {
-#	if __cplusplus < 201703L
-		static constexpr const char * str = "WARNING";
-#	else
-		static constexpr char str[] = "WARNING";
-#	endif
+		static constexpr constexpr_str_type str = "WARNING";
 		static const costream_ns::costream<std::cout> outstream;
 };
 
 template <>
 struct Log_level_traits<LogLevel::LEVEL_DEBUG>
 {
-#	if __cplusplus < 201703L
-		static constexpr const char * str = "DEBUG";
-#	else
-		static constexpr char str[] = "DEBUG";
-#	endif
+		static constexpr constexpr_str_type str = "DEBUG";
 		static const costream_ns::costream<std::cout> outstream;
 };
 
