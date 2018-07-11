@@ -57,7 +57,7 @@ class Process
 			return ::kill(child_id, __sig);
 		}
 
-		pid_t wait4(__WAIT_STATUS __stat_loc, int __options, struct rusage *__usage) noexcept
+		pid_t wait4(int* __stat_loc, int __options, struct rusage *__usage) noexcept
 		{
 			return ::wait4(child_id, __stat_loc, __options, __usage);
 		}
