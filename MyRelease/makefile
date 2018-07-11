@@ -80,17 +80,11 @@ endif
 
 
 RUNNING_PATHS += \
-
-# 默认配置文件放置在 /etc/ts_judger/ts_judger.conf \
 /etc/ts_judger/ \
 /dev/shm/ \
 /dev/shm/judge_space/ \
-# judge_server运行时的临时文件目录 \
 /dev/shm/judge_space/run/ \
-# updater的运行文件目录 \
 /dev/shm/judge_space/update/ \
-
-# 日志文件夹 \
 /var/log/ \
 /var/log/ts_judger/
 

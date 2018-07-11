@@ -164,7 +164,6 @@ void load_config()
 		fp.close();
 		exit(0);
 	}
-	fp.close();
 
 	string buf;
 	while (getline(fp, buf)) {
@@ -205,7 +204,16 @@ void load_config()
 		}
 	}
 	max_redis_conn = max_running;
+	if(log_file_name.empty()) {
+		cerr << "empty log file name!" << endl;
+		exit(0);
+	}
+	
 	log_fp.open(log_file_name, std::ios::app);
+	if(!log_fp) {
+		cerr << "log file open failed" << endl;
+		exit(0);
+	}
 
 	host_name = get_host_name();
 	ip = get_addr_list(host_name).front();
