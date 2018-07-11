@@ -1,24 +1,13 @@
-
+toolchain := g++
 obj_folder := ./src/
 cpp_std := -std=c++11
-	
-all: 
-	@echo -e '\033[1m\033[36m\c'
-	@echo -e 'Make Start time: \c'
-	@date +"%H:%M:%S"
-	@echo -e '\033[0m'
-	
-ifeq ($(obj_folder), $(wildcard $(obj_folder)))
-	@echo '$(obj_folder) exists'
-else
-	@mkdir $(obj_folder)
-endif
-	
-	@make distributed_judge_server -j3
-	@echo -e '\033[1m\033[36m\c'
-	@echo -e 'End time: \c'
-	@date +"%H:%M:%S"
-	@echo ' '
+judge_server_bin_name := "judge_server"
+
+all: judge_server
+
+OBJ_PATHS += \
+./src/ \
+./src/rules/
 
 CPP_SRCS += \
 ./src/JobInfo.cpp \
@@ -40,7 +29,7 @@ OBJS += \
 ./src/compare.o \
 ./src/Result.o \
 ./src/logger.o \
-./src/seccomp_rules.o 
+./src/rules/seccomp_rules.o 
 
 CPP_DEPS += \
 ./src/JobInfo.d \
@@ -51,45 +40,86 @@ CPP_DEPS += \
 ./src/compare.d \
 ./src/Result.d \
 ./src/logger.d \
-./src/seccomp_rules.d 
+./src/rules/seccomp_rules.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
 src/%.o: ../src/%.cpp
-	@echo -e '\033[1m\033[36m\c'
-	@echo -e 'Compile start time: \c'
-	@date +"%H:%M:%S"
-	@echo -e '\033[1m\033[33m\c'
-	@echo -e 'Building file: $<'
-	@echo -e 'Invoking: GCC C++ Compiler\c'
-	@echo -e '\033[0m'
-	g++ $(cpp_std) -I"/home/pi/git/Kerbal/Kerbal/include" -O2 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
-	@echo 'Finished building: $<'
-	@echo ' '
-	
-# Each subdirectory must supply rules for building sources it contributes
-src/%.o: ../src/rules/%.cpp
-	@echo -e '\033[1m\033[36m\c'
-	@echo -e 'Compile start time: \c'
-	@date +"%H:%M:%S"
-	@echo -e '\033[1m\033[33m\c'
-	@echo -e 'Building file: $<'
-	@echo -e 'Invoking: GCC C++ Compiler\c'
-	@echo -e '\033[0m'
-	g++ $(cpp_std) -I"/home/pi/git/Kerbal/Kerbal/include" -O2 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
+	@echo '\033[1m\033[36mCompile start time: \c' && date +"%H:%M:%S" && echo '\033[1m\033[33mBuilding file: $<\nInvoking: GCC C++ Compiler\033[0m'
+	$(toolchain) $(cpp_std) -O2 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 
+
 # Tool invocations
-distributed_judge_server: $(OBJS) $(USER_OBJS)
+judge_server: make_start $(OBJ_PATHS) $(OBJS)
 	@echo -e '\033[1m\033[33m\c'
 	@echo -e 'Building target: $@'
 	@echo -e 'Invoking: GCC C++ Linker\c'
 	@echo -e '\033[0m'
-	g++ -pthread -o "distributed_judge_server" $(OBJS) $(USER_OBJS) -lseccomp -lhiredis
+	$(toolchain) -pthread -o $(judge_server_bin_name) $(OBJS) -lseccomp -lhiredis
 	@echo 'Finished building target: $@'
+
+	@echo -e '\033[1m\033[36m\c'
+	@echo -e 'End time: \c'
+	@date +"%H:%M:%S"
+	@echo ' '
+
+make_start:
+	@echo '\033[1m\033[36mMake Start time: ' && date +"%H:%M:%S" && echo '\033[0m'
+
+%/:
+ifeq ('$@', $(wildcard $@))
+	@echo '$@ directory exists'
+else
+	@echo 'create directory $@'
+	@mkdir $@
+endif
+
+
+
+
+RUNNING_PATHS += \
+
+# 默认配置文件放置在 /etc/ts_judger/ts_judger.conf \
+/etc/ts_judger/ \
+/dev/shm/ \
+/dev/shm/judge_space/ \
+# judge_server运行时的临时文件目录 \
+/dev/shm/judge_space/run/ \
+# updater的运行文件目录 \
+/dev/shm/judge_space/update/ \
+
+# 日志文件夹 \
+/var/log/ \
+/var/log/ts_judger/
+
+
+
+install: $(RUNNING_PATHS)
+
+	@echo "copying judge_server.conf and updater.conf to /etc/ts_judger/ ..."
+
+	@-cp ../judge_server.conf /etc/ts_judger/judge_server.conf
+	@-cp ../updater.conf /etc/ts_judger/updater.conf
+
+# 新建一个用户ts_judger，专门用来评测
+# 1666是一个任意的合法uid，需保证和ts_judger.conf中的配置一致
+	@echo "adding a new user ts_judger ..."
+	@-useradd -u 1666  -d /home/ts_judger  -m ts_judger
+
+# java权限文件
+	@-cp ../java.policy /dev/shm/judge_space
+	@-chmod 755 /dev/shm/judge_space/java.policy
+	@-chown ts_judger:ts_judger /dev/shm/judge_space/java.policy
+
+	
+	@echo -e '\033[1m\033[36m\c'
+	@echo -e 'Install success \c'
+	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) $(CC_DEPS)$(C++_DEPS)$(EXECUTABLES)$(C_UPPER_DEPS)$(CXX_DEPS)$(OBJS)$(CPP_DEPS)$(C_DEPS) distributed_judge_server
+	-$(RM) $(OBJS) $(CPP_DEPS) $(judge_server_bin_name)
+	-$(RM) $(OBJ_PATHS) -rf
 	-@echo ' '
