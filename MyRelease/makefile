@@ -1,7 +1,7 @@
 toolchain := g++
 obj_folder := ./src/
 cpp_std := -std=c++11
-judge_server_bin_name := "judge_server"
+judge_server_bin_name := "judge_server-v2"
 
 all: judge_server
 
