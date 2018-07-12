@@ -260,8 +260,9 @@ bool JobInfo::set_compile_info(const Context & conn) noexcept
 	char buffer[MYSQL_TEXT_MAX_SIZE + 10];
 	fin.read(buffer, MYSQL_TEXT_MAX_SIZE);
 
-	if (!fin) {
+	if (fin.bad()) {
 		LOG_FATAL(jobType, sid, log_fp, "Read compile info error, only ", fin.gcount(), " could be read");
+		LOG_FATAL(jobType, sid, log_fp, "The read buffer: ", buffer);
 		return false;
 	}
 
