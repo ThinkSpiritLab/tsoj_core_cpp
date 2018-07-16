@@ -84,14 +84,16 @@ void register_self() noexcept
 		while (true) {
 			try {
 				static Operation opt;
-				if (!opt.exists(regist_self_conn, judge_server_id)) {
-					opt.hmset(regist_self_conn, judge_server_id,
-							"host_name", host_name,
-							"ip", ip,
-							"user_name", user_name,
-							"listening_pid", listening_pid);
-				}
-				opt.expire(regist_self_conn, judge_server_id, seconds { 30 });
+				const time_t now = time(NULL);
+				const std::string confirm_time = get_ymd_hms_in_local_time_zone(now);
+				opt.hmset(regist_self_conn, "judge_server:" + judge_server_id,
+						"host_name", host_name,
+						"ip", ip,
+						"user_name", user_name,
+						"listening_pid", listening_pid,
+						"last_confirm", confirm_time);
+				opt.set(regist_self_conn, "judge_server_confirm:" + judge_server_id, confirm_time);
+				opt.expire(regist_self_conn, "judge_server_confirm:" + judge_server_id, seconds { 30 });
 
 				static Set<std::string> s(regist_self_conn, "online_judger");
 				s.insert(judge_server_id);
