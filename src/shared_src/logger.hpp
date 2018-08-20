@@ -1,6 +1,7 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
+#include "cptr.hpp"
 #include <iostream>
 #include <sstream>
 
@@ -70,6 +71,12 @@ void multi_args_write(std::ostream & log_fp, Tp && arg0, Up&& ...args)
 	multi_args_write(log_fp, args...);
 }
 
+namespace log
+{
+	static boost::format templ("[%s] %s job:%d:%d [%s:%d]");
+	/*           datetime logLevelStr type id srcFileName line */
+}
+
 template <LogLevel level, typename ...T>
 void log_write(int type, int job_id, const char source_filename[], int line, std::ostream & log_file, T&& ... args)
 {
@@ -83,10 +90,8 @@ void log_write(int type, int job_id, const char source_filename[], int line, std
 
 	std::ostringstream buffer;
 
-	static boost::format templ("[%s] %s job:%d:%d [%s:%d]");
-	/*           datetime logLevelStr type id srcFileName line */
 
-	multi_args_write(buffer, templ % datetime % (const char*) Log_level_traits<level>::str % type % job_id % source_filename % line, args...);
+	multi_args_write(buffer, log::templ % datetime % (const char*) Log_level_traits<level>::str % type % job_id % source_filename % line, args...);
 
 	Log_level_traits<level>::outstream << buffer.str() << std::endl;
 	log_file << buffer.str() << std::endl;
@@ -96,6 +101,8 @@ void log_write(int type, int job_id, const char source_filename[], int line, std
 		return;
 	}
 }
+
+#define UNKNOWN_EXCEPTION_WHAT "unknown exception"_cptr
 
 #ifdef LOG_DEBUG
 #	undef LOG_DEBUG
