@@ -49,7 +49,9 @@ class JudgeJob: public JobBase
 		void commitJudgeResultToRedis(const Result & result);
 
 	public:
-		void push_back_failed_judge_job() noexcept;
+		bool push_back_failed_judge_job() noexcept;
+
+		static bool insert_into_failed(const kerbal::redis::RedisContext & conn, int jobType, int sid) noexcept;
 };
 
 

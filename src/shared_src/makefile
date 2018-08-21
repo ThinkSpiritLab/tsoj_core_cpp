@@ -1,6 +1,6 @@
 compiler := g++
 compiler_name := GCC C++ Compiler
-configuration = release
+
 ifeq ($(configuration), release)
 	obj_folder := ../../release/obj
 	compile_options := -std=c++11 -O2 -Wall -c -fmessage-length=0 -MMD -MP

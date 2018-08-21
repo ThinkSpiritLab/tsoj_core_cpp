@@ -1,11 +1,21 @@
 compiler := g++
 compiler_name := GCC C++ Compiler
-compile_options := -std=c++11 -O2 -Wall -c -fmessage-length=0 -MMD -MP
-obj_folder := ../../release/obj
+
+ifeq ($(configuration), release)
+	obj_folder := ../../release/obj
+	compile_options := -std=c++11 -O2 -Wall -c -fmessage-length=0 -MMD -MP
+	slave_bin_name := ../../release/slave
+else ifeq ($(configuration), debug)
+	obj_folder := ../../debug/obj
+	compile_options := -std=c++11 -DTRACK_RESOURCE_FREE=false -DDEBUG -O2 -g3 -Wall -c -fmessage-length=0 -MMD -MP
+	slave_bin_name := ../../debug/slave
+else
+$(error undefined configuration)
+endif
+
 linker := g++
 linker_name := GCC C++ Linker
 link_options := -lseccomp -lhiredis -pthread
-slave_bin_name := ../../release/slave
 
 
 SRCS += \

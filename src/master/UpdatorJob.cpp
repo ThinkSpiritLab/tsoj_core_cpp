@@ -47,7 +47,7 @@ void UpdatorJob::fetchDetailsFromRedis()
 		LOG_FATAL(0, sid, log_fp, "job doesn't exist. Exception infomation: ", e.what());
 		throw;
 	} catch (...) {
-		LOG_FATAL(0, sid, log_fp, "job doesn't exist. Exception infomation: ", "unknown exception");
+		LOG_FATAL(0, sid, log_fp, "job doesn't exist. Exception infomation: ", UNKNOWN_EXCEPTION_WHAT);
 		throw;
 	}
 
@@ -62,7 +62,7 @@ void UpdatorJob::fetchDetailsFromRedis()
 		LOG_FATAL(0, sid, log_fp, "job details lost or type cast failed. Exception infomation: ", e.what());
 		throw;
 	} catch (...) {
-		LOG_FATAL(0, sid, log_fp, "job details lost or type cast failed. Exception infomation: ", "unknown exception");
+		LOG_FATAL(0, sid, log_fp, "job details lost or type cast failed. Exception infomation: ", UNKNOWN_EXCEPTION_WHAT);
 		throw;
 	}
 }
@@ -170,7 +170,7 @@ void UpdatorJob::store_code_to_accepted_solutions_dir() const
 		throw JobHandleException("Cannot open directory for checking the number of accepted code");
 	}
 
-	for (struct dirent *ptr = nullptr; ptr = readdir(dir.get()), ptr != NULL;) {
+	for (const dirent *ptr = nullptr; ptr = readdir(dir.get()), ptr != nullptr;) {
 		if (strcmp(".", ptr->d_name) != 0 && strcmp("..", ptr->d_name) != 0) {
 			try {
 				arr.push_back(std::stoi(ptr->d_name));
@@ -190,14 +190,14 @@ void UpdatorJob::store_code_to_accepted_solutions_dir() const
 				case Language::C:
 				case Language::Cpp:
 				case Language::Cpp14: {
-					std::string file_path = code_path + "/%d.c"_fmt(*it).str();
+					std::string file_path = "%s/%d.c"_fmt(code_path, *it).str();
 					unlink(file_path.c_str());
-					file_path = code_path + "/%d.cpp"_fmt(*it).str();
+					file_path = "%s/%d.cpp"_fmt(code_path, *it).str();
 					unlink(file_path.c_str());
 					break;
 				}
 				case Language::Java: {
-					std::string file_path = code_path + "/%d.java"_fmt(*it).str();
+					std::string file_path = "%s/%d.java"_fmt(code_path, *it).str();
 					unlink(file_path.c_str());
 					break;
 				}
@@ -209,14 +209,14 @@ void UpdatorJob::store_code_to_accepted_solutions_dir() const
 	std::string copy_cmd;
 	switch (lang) {
 		case Language::C:
-			copy_cmd = "cp Main.c " + code_path + "/%d.c"_fmt(sid).str();
+			copy_cmd = "cp Main.c %s/%d.c"_fmt(code_path, sid).str();
 			break;
 		case Language::Cpp:
 		case Language::Cpp14:
-			copy_cmd = "cp Main.cpp " + code_path + "/%d.cpp"_fmt(sid).str();
+			copy_cmd = "cp Main.cpp %s/%d.cpp"_fmt(code_path, sid).str();
 			break;
 		case Language::Java:
-			copy_cmd = "cp Main.java " + code_path + "/%d.java"_fmt(sid).str();
+			copy_cmd = "cp Main.java %s/%d.java"_fmt(code_path, sid).str();
 			break;
 	}
 

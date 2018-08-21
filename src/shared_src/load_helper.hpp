@@ -8,14 +8,12 @@
 #ifndef SRC_SHARED_SRC_LOAD_HELPER_HPP_
 #define SRC_SHARED_SRC_LOAD_HELPER_HPP_
 
-#include <string>
-
-std::pair<std::string, std::string> parse_buf(const std::string & buf);
-
 #include <exception>
 #include <unordered_map>
 #include <functional>
 #include <string>
+
+std::pair<std::string, std::string> parse_buf(const std::string & buf);
 
 template <typename Type, typename ... Args>
 class LoadConfig;
@@ -46,11 +44,11 @@ class LoadConfig<Type>
 			m[key] = std::make_pair((void*) (&arg), std::make_exception_ptr(Package<Type>(type_caster)));
 		}
 
-		bool parser(const std::string & key, const std::string & value)
+		bool parse(const std::string & key, const std::string & value)
 		{
 			map_t::const_iterator it = m.find(key);
 			if (it != m.cend()) {
-				parser(it, value);
+				parse(it, value);
 				return true;
 			} else {
 				return false;
@@ -58,7 +56,7 @@ class LoadConfig<Type>
 		}
 
 	protected:
-		void parser(map_t::const_iterator it, const std::string & value)
+		void parse(map_t::const_iterator it, const std::string & value)
 		{
 			const auto & value_ptr = it->second.first;
 			const auto & type_caster = it->second.second;
@@ -87,11 +85,11 @@ class LoadConfig: public LoadConfig<Args...>
 			m[key] = std::make_pair((void*) (&arg), std::make_exception_ptr(Package<Type>(type_caster)));
 		}
 
-		bool parser(const std::string & key, const std::string & value)
+		bool parse(const std::string & key, const std::string & value)
 		{
 			typename supper_t::map_t::const_iterator it = m.find(key);
 			if (it != m.cend()) {
-				parser(it, value);
+				parse(it, value);
 				return true;
 			} else {
 				return false;
@@ -99,7 +97,7 @@ class LoadConfig: public LoadConfig<Args...>
 		}
 
 	protected:
-		void parser(typename supper_t::map_t::const_iterator it, const std::string & value)
+		void parse(typename supper_t::map_t::const_iterator it, const std::string & value)
 		{
 			const auto & value_ptr = it->second.first;
 			const auto & type_caster = it->second.second;
@@ -108,7 +106,7 @@ class LoadConfig: public LoadConfig<Args...>
 			} catch (const Package<Type> & e) {
 				*(Type*) value_ptr = e.type_caster(value);
 			} catch (...) {
-				supper_t::parser(it, value);
+				supper_t::parse(it, value);
 			}
 		}
 };
