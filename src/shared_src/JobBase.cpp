@@ -21,7 +21,7 @@ using namespace kerbal::redis;
 
 extern std::ostream log_fp;
 
-std::pair<int, int> JobBase::parserJobItem(const std::string & args)
+std::pair<int, int> JobBase::parseJobItem(const std::string & args)
 {
 	std::string job_item = args;
 	std::string::size_type cut_point = job_item.find(',');
@@ -49,9 +49,9 @@ void JobBase::fetchDetailsFromRedis()
 	static boost::format key_name_tmpl("job_info:%d:%d");
 
 	std::vector<std::string> query_res;
+	Operation opt(redisConn);
 
 	try {
-		Operation opt(redisConn);
 		query_res = opt.hmget((key_name_tmpl % jobType % sid).str(), "pid"_cptr, "lang"_cptr, "cases"_cptr, "time_limit"_cptr, "memory_limit"_cptr);
 	} catch (const RedisUnexpectedCaseException & e) {
 		LOG_FATAL(0, sid, log_fp, "redis returns an unexpected type. Exception infomation: "_cptr, e.what());
@@ -82,7 +82,7 @@ void JobBase::fetchDetailsFromRedis()
 	}
 }
 
-JobBase::JobBase(int jobType, int sid, const kerbal::redis::RedisContext & redisConn) :
+JobBase::JobBase(int jobType, int sid, const kerbal::redis::RedisContext & redisConn) noexcept :
 		jobType(jobType), sid(sid), redisConn(redisConn)
 {
 }
@@ -128,13 +128,11 @@ void JobBase::storeSourceCode() const
 	}
 }
 
-void JobBase::commitJudgeStatusToRedis(JudgeStatus status)
+void JobBase::commitJudgeStatusToRedis(JudgeStatus status) try
 {
 	static RedisCommand cmd("hset judge_status:%d:%d status %d");
-	try {
-		cmd.execute(redisConn, jobType, sid, (int) status);
-	} catch (const std::exception & e) {
-		LOG_FATAL(jobType, sid, log_fp, "Commit judge status failed. Error information: "_cptr, e.what(), "; judge status: "_cptr, (int)status);
-		throw;
-	}
+	cmd.execute(redisConn, jobType, sid, (int) status);
+} catch (const std::exception & e) {
+	LOG_FATAL(jobType, sid, log_fp, "Commit judge status failed. Error information: "_cptr, e.what(), "; judge status: "_cptr, (int)status);
+	throw;
 }

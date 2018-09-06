@@ -33,8 +33,8 @@ class JudgeJob: public JobBase
 		}
 
 		JudgeJob(int jobType, int sid, const kerbal::redis::RedisContext & conn);
-		void judge_job();
-		void fetchDetailsFromRedis();
+		virtual void handle() override;
+		virtual void fetchDetailsFromRedis() override;
 
 	protected:
 		void change_job_dir() const;

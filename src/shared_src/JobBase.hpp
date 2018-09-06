@@ -31,9 +31,16 @@ class JobBase
 		std::chrono::milliseconds timeLimit; ///@brief time limit of this problem
 		kerbal::utility::MB memoryLimit; ///@brief memory limit of this problem
 
-		static std::pair<int, int> parserJobItem(const std::string & jobItem);
-		JobBase(int jobType, int sid, const kerbal::redis::RedisContext & redisConn);
+		/**
+		 * @brief Parse the job item to
+		 * @param jobItem
+		 * @return
+		 * @exception std::invalid_argument
+		 */
+		static std::pair<int, int> parseJobItem(const std::string & jobItem);
+		JobBase(int jobType, int sid, const kerbal::redis::RedisContext & redisConn) noexcept;
 		virtual ~JobBase() = default;
+		virtual void handle() = 0;
 		virtual void fetchDetailsFromRedis() = 0;
 		void storeSourceCode() const;
 		void commitJudgeStatusToRedis(JudgeStatus value);

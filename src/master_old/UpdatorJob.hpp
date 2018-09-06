@@ -58,34 +58,26 @@ class UpdatorJob : public JobBase
 
         Result get_job_result();
 
-        void set_cheat_status(std::chrono::seconds expire_time) const;
+		void set_cheat_status(std::chrono::seconds expire_time) const;
 
-        int update_solution(const Result & result);
+		void update_solution(const Result & result);
+		void update_exercise_solution(const Result & result);
+		void update_course_solution(const Result & result);
+		void update_contest_solution(const Result & result);
 
-        int update_source_code(const char * source_code);
+		void update_source_code(const char * source_code);
+		void update_compile_info();
+		int update_user_and_problem(const Result & result);
+		int update_course_user(const Result & result);
+		int update_user_problem(int stat);
+		int update_contest_user_problem(int is_ac);
+		int core_update_failed_table(const Result & result);
 
-        int update_compile_info();
-
-        int update_user_and_problem(const Result & result);
-
-        int update_course_user(const Result & result);
-
-        int update_user_problem(int stat);
-
-        int update_contest_user_problem(int is_ac);
-
-        int core_update_failed_table(const Result & result);
-
-        int rejudge(const Result & result);
-
-        int rejudge_solution(const Result & result);
-
-        int rejudge_user_and_problem(const Result & result, UnitedJudgeResult orig_result);
-
-        int rejudge_course_user(const Result & result, UnitedJudgeResult orig_result);
-
+		void rejudge(const Result & result);
+		void rejudge_solution(const Result & result);
+        void rejudge_user_and_problem(const Result & result, UnitedJudgeResult orig_result);
+        void rejudge_course_user(const Result & result, UnitedJudgeResult orig_result);
         int rejudge_user_problem();
-
         int rejudge_contest_user_problem();
 };
 

@@ -1,5 +1,3 @@
-#define _POSIX_SOURCE
-
 #include <time.h>
 
 #include "logger.hpp"

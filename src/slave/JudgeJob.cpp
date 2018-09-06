@@ -34,13 +34,24 @@ using kerbal::redis::RedisContext;
 
 
 JudgeJob::JudgeJob(int jobType, int sid, const kerbal::redis::RedisContext & conn) :
-        supper_t(jobType, sid, conn)
+        supper_t(jobType, sid, conn), dir((boost::format(init_dir + "/job-%d-%d") % jobType % sid).str())
 {
-    static boost::format dir_templ(init_dir + "/job-%d-%d");
-    this->dir = (dir_templ % jobType % sid).str();
+    try {
+        this->fetchDetailsFromRedis();
+    } catch (const std::exception & e) {
+        LOG_FATAL(jobType, sid, log_fp, "Fail to fetch job details. Error information: "_cptr,
+                  e.what());
+        this->push_back_failed_judge_job();
+        throw;
+    } catch (...) {
+        LOG_FATAL(jobType, sid, log_fp, "Fail to fetch job details. Error information: "_cptr,
+                  UNKNOWN_EXCEPTION_WHAT);
+        this->push_back_failed_judge_job();
+        throw;
+    }
 }
 
-void JudgeJob::judge_job()
+void JudgeJob::handle()
 {
     LOG_DEBUG(jobType, sid, log_fp, "judge start");
 
@@ -143,11 +154,10 @@ Result JudgeJob::running()
 namespace
 {
     void
-    staticCommitJudgeResultToRedis(int jobType, int sid, const kerbal::redis::RedisContext redisConn, const Result & result)
+    staticCommitJudgeResultToRedis(int jobType, int sid, const kerbal::redis::RedisContext redisConn, const Result & result) try
     {
         static boost::format judge_status_name_tmpl("judge_status:%d:%d");
         Operation opt(redisConn);
-        try {
             opt.hmset((judge_status_name_tmpl % jobType % sid).str(),
                       "status"_cptr, (int) JudgeStatus::FINISHED,
                       "result"_cptr, (int) result.judge_result,
@@ -156,12 +166,11 @@ namespace
                       "memory"_cptr, (kerbal::utility::Byte(result.memory)).count(),
                       "similarity_percentage"_cptr, 0,
                       "judge_server_id"_cptr, judge_server_id);
-        } catch (const std::exception & e) {
-            LOG_FATAL(jobType, sid, log_fp, "Commit judge result failed. Error information: "_cptr, e.what(),
-                      "; judge result: "_cptr, result);
-            throw;
-        }
-    }
+	} catch (const std::exception & e) {
+		LOG_FATAL(jobType, sid, log_fp, "Commit judge result failed. Error information: "_cptr, e.what(),
+				  "; judge result: "_cptr, result);
+		throw;
+	}
 }
 
 void JudgeJob::commitJudgeResultToRedis(const Result & result)
@@ -224,7 +233,7 @@ void JudgeJob::change_job_dir() const
     }
 }
 
-void JudgeJob::clean_job_dir() const noexcept
+void JudgeJob::clean_job_dir() const noexcept try
 {
     LOG_DEBUG(jobType, sid, log_fp, "clean dir"_cptr);
     std::unique_ptr<DIR, int (*)(DIR *)> dp(opendir("."), closedir);
@@ -233,16 +242,19 @@ void JudgeJob::clean_job_dir() const noexcept
         return;
     }
 
-    for (struct dirent * entry = nullptr; entry = readdir(dp.get()), entry != nullptr;) {
-        if (strcmp(".", entry->d_name) != 0 && strcmp("..", entry->d_name) != 0) {
+    for (const dirent * entry = nullptr; (entry = readdir(dp.get())) != nullptr;) {
+        if (std::strcmp(".", entry->d_name) != 0 && std::strcmp("..", entry->d_name) != 0) {
             unlink(entry->d_name);
         }
     }
-    if (chdir("..")) {
+    if (chdir("..") != 0) {
         LOG_FATAL(jobType, sid, log_fp, "can not go back to ../"_cptr);
         return;
     }
     rmdir(dir.c_str());
+    return;
+} catch (...) {
+	return;
 }
 
 namespace
