@@ -23,27 +23,28 @@ ContestUpdateJob::ContestUpdateJob(int jobType, int sid, const RedisContext & re
 	LOG_DEBUG(jobType, sid, log_fp, "ContestUpdateJob::ContestUpdateJob");
 }
 
-void ContestUpdateJob::update_solution(const Result & result)
+void ContestUpdateJob::update_solution()
 {
 	LOG_DEBUG(jobType, sid, log_fp, "ContestUpdateJob::update_solution");
     mysqlpp::Query insert = mysqlConn->query(
-            "insert into %0 "
+            "insert into contest_solution%0 "
             "(s_id, u_id, p_id, s_lang, s_result, s_time, s_mem, s_posttime, s_similarity_percentage)"
             "values (%1, %2, %3, %4, %5, %6, %7, %8q, %9)"
     );
     insert.parse();
-    std::string solution_table = "contest_solution%d"_fmt(jobType).str();
-    mysqlpp::SimpleResult res = insert.execute(solution_table, sid, uid, pid, (int) lang, (int) result.judge_result,
+    mysqlpp::SimpleResult res = insert.execute(jobType, sid, uid, pid, (int) lang, (int) result.judge_result,
                                               result.cpu_time.count(), result.memory.count(), postTime,
                                               result.similarity_percentage);
     if (!res) {
+    	LOG_FATAL(jobType, sid, log_fp, "Update solution failed! Error information: ", insert.error());
         throw MysqlEmptyResException(insert.errnum(), insert.error());
     }
 }
 
-bool ContestUpdateJob::is_first_ac_solution()
+bool ContestUpdateJob::this_problem_has_not_accepted()
 {
-	LOG_DEBUG(jobType, sid, log_fp, "ContestUpdateJob::is_first_ac_user");
+	LOG_DEBUG(jobType, sid, log_fp, "ContestUpdateJob::this_problem_has_not_accepted");
+
     mysqlpp::Query query = mysqlConn->query(
             "select first_ac_user from contest_problem where ct_id = %0 and p_id = %1"
     );
@@ -51,112 +52,130 @@ bool ContestUpdateJob::is_first_ac_solution()
     mysqlpp::StoreQueryResult res = query.store(jobType, pid);
 
     if (res.empty()) {
-        LOG_FATAL(jobType, sid, log_fp, "Query first_ac_user failed! Error information: ", query.error());
-        LOG_WARNING(jobType, sid, log_fp, "Check whether you have deleted the problem ", pid, " of the contest No.",
-                    jobType, " ?");
-        throw MysqlEmptyResException(query.errnum(), query.error());
+    	if(query.errnum() != 0) {
+    		LOG_FATAL(jobType, sid, log_fp, "Query problem's first_ac_user failed! Error information: ", query.error());
+    	} else {
+    		LOG_FATAL(jobType, sid, log_fp, "Check whether you have deleted the problem ", pid, " of the contest No.", jobType, " ?");
+    	}
+		throw MysqlEmptyResException(query.errnum(), query.error());
     }
 	return res[0][0] == "NULL" ? true : false; //该字段在竞赛开始时为 NULL, 即尚未有人通过此题
 }
 
-void ContestUpdateJob::update_user_problem(int stat)
+int ContestUpdateJob::get_error_count()
 {
-    bool is_first_ac = this->is_first_ac_solution();
+	mysqlpp::Query query = mysqlConn->query(
+			"select error_count from contest_user_problem%0 "
+			"where u_id = %1 and p_id = %2"
+	);
+	query.parse();
 
-    // is already AC
-    memset(sql, 0, sizeof(sql));
-    sprintf(sql, "select is_ac from contest_user_problem%d where u_id = %d and p_id = %d", jobType, uid, pid);
+	mysqlpp::StoreQueryResult res = query.store(jobType, uid, pid);
 
-    ret = mysql_real_query(conn, sql, strlen(sql));
-    if (ret) {
-        LOG_WARNING(jobType, sid, log_fp,
-                    "select is_ac from contest_user_problem%d failed!, errno:%d, error:%s\nsql:%s", jobType,
-                    mysql_errno(conn), mysql_error(conn), sql);
-        return ret;
-    }
-    res = mysql_store_result(conn);
-    if (res == NULL) {
-        LOG_FATAL(jobType, sid, log_fp, "store result failed! res is NULL, errno:%d, error:%s\nsql:%s",
-                  mysql_errno(conn), mysql_error(conn), sql);
-        return mysql_errno(conn);
-    }
-    row = mysql_fetch_row(res);
+	if (res.empty()) {
+		if(query.errnum() != 0) {
+			LOG_FATAL(jobType, sid, log_fp, "Query user's error_count failed! Error information: ", query.error());
+			throw MysqlEmptyResException(query.errnum(), query.error());
+		}
 
-    if (row == NULL) {
-        memset(sql, 0, sizeof(sql));
-        int error_count;
-        if (is_ac) {
-            error_count = 0;
-        } else {
-            error_count = 1;
-            is_first_ac = 0;
-        }
-        sprintf(sql, "insert into contest_user_problem%d (u_id, p_id, is_ac, ac_time, error_count, is_first_ac) "
-                     "values ('%d', '%d', '%d', '%s', '%d', '%d')", jobType, uid, pid, is_ac, postTime.c_str(),
-                error_count, is_first_ac);
+		/*
+		 * 如果查到的长度为 0, 而且查询过程也没错误, 那么就是 contest_user_problem 里没有这个数据,
+		 * 亦即该用户从没提交过此题, error count 为 0
+		 */
+		return 0;
+	} else {
+		return (int) res[0][0];
+	}
+}
 
-    } else if (atoi(row[0]) == 0) {
-        // get error_count
-        MYSQL_RES * tmp_res;
-        MYSQL_ROW tmp_row;
-        memset(sql, 0, sizeof(sql));
-        sprintf(sql, "select error_count from contest_user_problem%d "
-                     "where u_id = %d and p_id = %d", jobType, uid, pid);
-        int tmp_ret = mysql_real_query(conn, sql, strlen(sql));
-        if (tmp_ret) {
-            LOG_WARNING(jobType, sid, log_fp, "select status from user_problem failed!, errno:%d, error:%s\nsql:%s",
-                        mysql_errno(conn), mysql_error(conn), sql);
-            return tmp_ret;
-        }
-        tmp_res = mysql_store_result(conn);
-        if (tmp_res == NULL) {
-            LOG_FATAL(jobType, sid, log_fp, "store result failed!, errno:%d, error:%s\nsql:%s", mysql_errno(conn),
-                      mysql_error(conn), sql);
-            return mysql_errno(conn);
-        }
-        tmp_row = mysql_fetch_row(tmp_res);
-        if (tmp_row == NULL) {
-            LOG_FATAL(jobType, sid, log_fp, "impossible! get error_count failed!, errno:%d, error:%s\nsql:%s",
-                      mysql_errno(conn), mysql_error(conn), sql);
-            return -1;
-        }
-        int error_count = atoi(tmp_row[0]);
-        mysql_free_result(tmp_res);
+user_problem_status ContestUpdateJob::get_user_problem_status()
+{
+	mysqlpp::Query query = mysqlConn->query(
+			"select is_ac from contest_user_problem%0 where u_id = %1 and p_id = %2"
+	);
+	query.parse();
 
-        if (!is_ac) {
-            error_count++;
-            is_first_ac = 0;
-        }
+	mysqlpp::StoreQueryResult res = query.store(jobType, uid, pid);
 
-        memset(sql, 0, sizeof(sql));
-        sprintf(sql, "update contest_user_problem%d set is_ac = %d, ac_time = '%s', error_count = %d, is_first_ac = %d "
-                     "where u_id = %d and p_id = %d", jobType, is_ac, postTime.c_str(), error_count, is_first_ac, uid,
-                pid);
-    } else {
-        mysql_free_result(res);
-        return 0;
-    }
+	if (res.empty()) {
+		if (query.errnum() != 0) {
+			LOG_FATAL(jobType, sid, log_fp, "Query user's problem status failed! Error information: ", query.error());
+			throw MysqlEmptyResException(query.errnum(), query.error());
+		}
+		return user_problem_status::TODO;
+	}
+	switch((int) res[0][0]) {
+		case 0:
+			return user_problem_status::ATTEMPTED;
+		case 1:
+			return user_problem_status::ACCEPTED;
+		default:
+			LOG_FATAL(jobType, sid, log_fp, c);
+			throw std::logic_error("Undefined user's problem status!");
+	}
+}
 
-    mysql_free_result(res);
-    ret = mysql_real_query(conn, sql, strlen(sql));
-    if (ret) {
-        LOG_WARNING(jobType, sid, log_fp, "update contest_user_problem%d failed!, errno:%d, error:%s\nsql:%s", jobType,
-                    mysql_errno(conn), mysql_error(conn), sql);
-        return ret;
-    }
+void ContestUpdateJob::update_user_problem()
+{
+	bool is_ac = this->result.judge_result == UnitedJudgeResult::ACCEPTED ? true : false;
+	user_problem_status user_problem_status = this->get_user_problem_status();
+    bool is_first_ac = false;
+
+	switch (user_problem_status) {
+		case user_problem_status::TODO: {
+			int error_count;
+			if (is_ac == true) {
+				error_count = 0;
+				is_first_ac = this->this_problem_has_not_accepted() == true ? true : false;
+			} else {
+				error_count = 1;
+				is_first_ac = false;
+			}
+			mysqlpp::Query insert = mysqlConn->query(
+					"insert into contest_user_problem%0 (u_id, p_id, is_ac, ac_time, error_count, is_first_ac) "
+					"values (%1, %2, %3, %4q, %5, %6)"
+			);
+			insert.parse();
+
+			mysqlpp::SimpleResult res = insert.execute(jobType, uid, pid, is_ac, postTime, error_count, is_first_ac);
+			break;
+		}
+		case user_problem_status::ATTEMPTED: {
+			int error_count = this->get_error_count();
+
+			if (is_ac == false) {
+				error_count++;
+				is_first_ac = false;
+			} else {
+				is_first_ac = this->this_problem_has_not_accepted();
+			}
+
+			mysqlpp::Query update = mysqlConn->query(
+					"update contest_user_problem%0 set is_ac = %1, ac_time = %2q, error_count = %3, is_first_ac = %4 "
+					"where u_id = %5 and p_id = %6"
+			);
+			update.parse();
+
+			mysqlpp::SimpleResult res = update.execute(jobType, is_ac, postTime, error_count, is_first_ac, uid, pid);
+			break;
+		}
+		case user_problem_status::ACCEPTED: {
+			return;
+		}
+	}
 
     // update first_ac_user
-    if (is_ac && is_first_ac) {
-        memset(sql, 0, sizeof(sql));
-        sprintf(sql, "update contest_problem set first_ac_user = %d where ct_id = %d and p_id = %d", uid, jobType, pid);
+	if (is_ac == true && is_first_ac == true) {
+		mysqlpp::Query update = mysqlConn->query(
+				"update contest_problem set first_ac_user = %0 where ct_id = %1 and p_id = %2"
+		);
 
-        ret = mysql_real_query(conn, sql, strlen(sql));
-        if (ret) {
-            LOG_WARNING(jobType, sid, log_fp, "update first_ac_user failed!, errno:%d, error:%s\nsql:%s",
-                        mysql_errno(conn), mysql_error(conn), sql);
-            return ret;
-        }
-    }
+		mysqlpp::SimpleResult res = update.execute(uid, jobType, pid);
 
-    return 0;
+		if (!res) {
+			LOG_FATAL(jobType, sid, log_fp, "update first_ac_user failed! Error information: ", update.error());
+			throw MysqlEmptyResException(update.errnum(), update.error());
+		}
+	}
+	return;
 }

@@ -72,7 +72,35 @@ UpdateJobBase::UpdateJobBase(int jobType, int sid, const RedisContext & redisCon
 
 void UpdateJobBase::handle()
 {
+	Result result;
+	//判断进入rejudge还是正常update
+	if (this->is_rejudge) {
+		if (job.rejudge(result)) {
+			LOG_FATAL(type, update_id, log_fp, "REJUDGE: failed!");
+			return;
+		}
 
+	} else {
+
+		this->update_solution();
+
+		{ // update source code
+			RedisReply reply = this->get_source_code();
+			this->update_source_code(reply->str);
+		}
+		this->update_user_and_problem();
+		this->update_user_problem();
+	}
+
+	//保存编译信息
+	if (result.judge_result == UnitedJudgeResult::COMPILE_ERROR) {
+		RedisReply reply = this->get_compile_info();
+		this->update_compile_info(reply->str);
+	}
+
+	this->commitJudgeStatusToRedis(JudgeStatus::UPDATED);
+
+	// del solution - 600
 }
 
 void UpdateJobBase::update_source_code(const char * source_code)

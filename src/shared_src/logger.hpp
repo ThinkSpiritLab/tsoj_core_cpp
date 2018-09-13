@@ -121,7 +121,7 @@ void log_write(int type, int job_id, const char source_filename[], int line, std
 #ifdef LOG_WARNING
 #	undef LOG_WARNING
 #endif
-#define LOG_WARNING(type, job_id, log_fp, x...)	try{log_write<LogLevel::LEVEL_WARNING>(type, job_id, __FILE__, __LINE__, log_fp, ##x);}catch(...){}
+#define LOG_WARNING(type, job_id, log_fp, x...)		try{log_write<LogLevel::LEVEL_WARNING>(type, job_id, __FILE__, __LINE__, log_fp, ##x);}catch(...){}
 
 
 #ifdef LOG_FATAL

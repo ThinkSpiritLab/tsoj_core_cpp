@@ -23,15 +23,30 @@ class ContestUpdateJob: public UpdateJobBase
 	protected:
 		ContestUpdateJob(int jobType, int sid, const kerbal::redis::RedisContext & redisConn,
 						 std::unique_ptr <mysqlpp::Connection> && mysqlConn);
-		virtual void update_solution(const Result & result) override final;
-		bool is_first_ac_solution();
+
+		/**
+		 * @brief 该方法实现了祖先类 UpdateJobBase 中规定的 update solution 表的接口, 将本次提交记录更新至每个竞赛对应的 solution 表
+		 * @warning 该方法已被标记为 final, 禁止子类覆盖本方法
+		 */
+		virtual void update_solution() override final;
+
+		/**
+		 *
+		 */
+		bool this_problem_has_not_accepted();
 
 		/**
 		 * @brief 查询该 job 对应的 user 在 pid 问题下错误的次数
 		 */
 		int get_error_count();
 
-		virtual void update_user_problem(int stat) override final;
+		/**
+		 * @brief 取得此用户此题在此次提交以前 AC, TO_DO 或 ATTEMPT 的状态
+		 * @warning 该方法已被标记为 final, 禁止子类覆盖本方法
+		 */
+		virtual user_problem_status get_user_problem_status() override final;
+
+		virtual void update_user_problem() override final;
 		virtual ~ContestUpdateJob() = default;
 };
 

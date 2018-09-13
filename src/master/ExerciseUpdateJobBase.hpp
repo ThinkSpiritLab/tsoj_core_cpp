@@ -48,17 +48,17 @@ class ExerciseUpdateJobBase : public UpdateJobBase
 		 */
 		void update_user_accept(int delta);
 
+
 		/**
-		 * @brief 查询本 job 对应的 user 的 pid 题之前是否 AC 过
-		 * @return AC 过返回 true, 否则返回 false
-		 * @warning 本函数为纯虚函数, 具体实现依赖于子类
+		 * @brief 取得此用户此题在此次提交以前 AC, TO_DO 或 ATTEMPT 的状态
+		 * @warning 虽给了默认的实现, 但仍是纯虚函数, 需由子类实现具体操作
 		 */
-		virtual bool already_AC_before() = 0;
+		virtual user_problem_status get_user_problem_status() override = 0;
 
 		/**
 		 * @brief 更新题目的提交数, 通过数, 用户的提交数, 通过数
 		 */
-		virtual void update_user_and_problem(const Result & result);
+		virtual void update_user_and_problem();
 
 		virtual ~ExerciseUpdateJobBase() = default;
 };

@@ -8,7 +8,7 @@
 #include "ExerciseUpdateJobBase.hpp"
 #include "logger.hpp"
 
-extern std::ofstream log_fp;
+extern std::ostream log_fp;
 
 namespace
 {
@@ -81,7 +81,36 @@ void ExerciseUpdateJobBase::update_user_accept(int delta)
 	}
 }
 
-void ExerciseUpdateJobBase::update_user_and_problem(const Result & result)
+user_problem_status ExerciseUpdateJobBase::get_user_problem_status()
+{
+	mysqlpp::Query query = mysqlConn->query(
+		"select status from user_problem "
+		"where u_id = %0 and p_id = %1 and c_id is NULL"
+	);
+	query.parse();
+
+	mysqlpp::StoreQueryResult res = query.store(uid, pid);
+
+	if (res.empty()) {
+		if (query.errnum() != 0) {
+			LOG_FATAL(jobType, sid, log_fp, "Query user problem status failed! Error information: ", query.error());
+			throw MysqlEmptyResException(query.errnum(), query.error());
+		}
+		return user_problem_status::TODO;
+	}
+
+	switch ((int) res[0][0]) {
+		case 0:
+			return user_problem_status::ACCEPTED;
+		case 1:
+			return user_problem_status::ATTEMPTED;
+		default:
+			LOG_FATAL(jobType, sid, log_fp, "Undefined user's problem status!");
+			throw std::logic_error("Undefined user's problem status!");
+	}
+}
+
+void ExerciseUpdateJobBase::update_user_and_problem()
 {
     bool already_AC = false;
     try {

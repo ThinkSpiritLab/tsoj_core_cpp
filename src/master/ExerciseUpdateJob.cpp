@@ -24,7 +24,7 @@ ExerciseUpdateJob::ExerciseUpdateJob(int jobType, int sid, const kerbal::redis::
 {
 }
 
-void ExerciseUpdateJob::update_solution(const Result & result)
+void ExerciseUpdateJob::update_solution()
 {
 	LOG_DEBUG(jobType, sid, log_fp, "ExerciseUpdateJob::update_solution");
     std::string solution_table = "solution";
@@ -78,25 +78,4 @@ void ExerciseUpdateJob::update_user_problem(int stat)
         LOG_FATAL(jobType, sid, log_fp, "Update user_problem failed! Error information: ", insert_or_update.error());
         throw MysqlEmptyResException(insert_or_update.errnum(), insert_or_update.error());
     }
-}
-
-bool ExerciseUpdateJob::already_AC_before()
-{
-    mysqlpp::Query query = mysqlConn->query(
-            "select status from user_problem "
-            "where u_id = %0 and p_id = %1 and c_id is NULL and status = 0"
-    );
-    mysqlpp::StoreQueryResult res = query.store(uid, pid);
-    bool already_AC = false;
-    if (res.empty()) {
-        if (query.errnum() != 0) {
-            LOG_FATAL(jobType, sid, log_fp, "Select status from user_problem failed! ",
-                      "Error code: ", query.errnum(),
-                      ", Error information: ", query.error());
-            throw MysqlEmptyResException(query.errnum(), query.error());
-        }
-    } else {
-    	already_AC = true;
-    }
-    return already_AC;
 }
