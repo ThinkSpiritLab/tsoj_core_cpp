@@ -56,7 +56,7 @@ RunningConfig::RunningConfig(const JudgeJob & job) :
 			break;
 		}
 		case Language::Java: {
-			this->seccomp_rule_name = Seccomp_rule::general;
+			this->seccomp_rule_name = Seccomp_rule::none;
 			this->exe_path = java_exe_path;
 			this->max_memory = MEMORY_UNLIMITED;
 			this->max_stack = 256_MB;
@@ -136,7 +136,7 @@ CompileConfig::CompileConfig(const JudgeJob & job) :
 	this->input_path = "/dev/null";
 	this->output_path = "./compiler.out";
 	this->error_path = "./compiler.out";
-	this->seccomp_rule_name = Seccomp_rule::general;
+	this->seccomp_rule_name = Seccomp_rule::none;
 }
 
 /**
