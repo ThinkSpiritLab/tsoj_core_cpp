@@ -22,6 +22,10 @@ const int Config::UNLIMITED = -1;
 const kerbal::utility::Byte Config::MEMORY_UNLIMITED { 0 };
 const std::chrono::milliseconds Config::TIME_UNLIMITED { 0 };
 
+/**
+ * @brief 构造函数，设置程序的环境表内容，user id 与 group id
+ * @return 无返回
+ */
 Config::Config()
 {
 	this->env = {std::string("PATH=") + getenv("PATH")};
@@ -134,6 +138,10 @@ CompileConfig::CompileConfig(const JudgeJob & job) :
 	this->seccomp_rule_name = Seccomp_rule::none;
 }
 
+/**
+ * @brief 检查限制值是否合理有效
+ * @return 若限制值合理有效，返回 true，否则返回 false
+ */
 bool Config::check_is_valid_config() const
 {
 	using namespace kerbal::utility;
@@ -154,6 +162,10 @@ bool Config::check_is_valid_config() const
 	return true;
 }
 
+/**
+ * @brief 生产 c/c++ 对应的系统调用权限限制
+ * @return 返回类型为枚举类 RunnerError。若限制成功返回 SUCCESS，否则返回 LOAD_SECCOMP_FAILED
+ */
 RunnerError Config::c_cpp_seccomp_rules() const
 {
 	// load seccomp rules
@@ -161,6 +173,7 @@ RunnerError Config::c_cpp_seccomp_rules() const
 	if (!ctx) {
 		return RunnerError::LOAD_SECCOMP_FAILED;
 	}
+	// 
 	int syscalls_whitelist[] = {
 		SCMP_SYS(read), SCMP_SYS(fstat), SCMP_SYS(mmap), SCMP_SYS(mprotect), SCMP_SYS(munmap), SCMP_SYS(uname), SCMP_SYS(arch_prctl), SCMP_SYS(brk), SCMP_SYS(access), SCMP_SYS(exit_group), SCMP_SYS(
 				close), SCMP_SYS(readlink), SCMP_SYS(sysinfo), SCMP_SYS(write), SCMP_SYS(writev), SCMP_SYS(lseek) };

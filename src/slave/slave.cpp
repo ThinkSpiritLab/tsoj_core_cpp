@@ -29,43 +29,73 @@ using std::cout;
 using std::cerr;
 using std::endl;
 
+/** 本机主机名 */
 std::string host_name;
+
+/** 本机 IP */
 std::string ip;
+
+/** 本机当前用户名 */
 std::string user_name;
+
+/** 本机监听进程号 */
 int listening_pid;
+
+/** 评测服务器id，定义为 host_name:ip */
 std::string judge_server_id;
 
-//运行目录，存放临时文件等
+/** 程序的运行目录，用于存放临时文件等 */
 std::string init_dir;
 
-//测试数据和答案的存放目录 这里必须根据测试文件的目录进行修改
+/** 测试数据和答案的存放目录 */
 std::string input_dir;
 
-//日志文件
+/** 日志文件名 */
 std::string log_file_name;
+
+/** 日志文件的文件流 */
 std::ofstream log_fp;
 
-//lock_file,用于保证一次只能有一个judge_server守护进程在运行
+/** lock_file,用于保证一次只能有一个 judge_server 守护进程在运行 */
 std::string lock_file;
 
-//Linux中运行评测进程的user。默认为ts_judger,uid=gid=1666
+/** Linux 中运行评测进程的 user id。 默认为 1666*/
 int judger_uid;
+
+/** Linux 中运行评测进程的 group id。 默认为 1666*/
 int judger_gid;
 
-//设置redis
+/** redis 端口号 */
 int redis_port;
+
+/** redis 主机名 */
 std::string redis_hostname;
+
+/** redis 最大连接数 */
 int max_redis_conn;
 
-//java
+/** java 策略 */
 std::string java_policy_path;
+
+/** java 额外运行时间值 */
 int java_time_bonus;
+
+/** java 额外运行空间值 */
 kerbal::utility::MB java_memory_bonus;
 
-//已经AC代码保存路径，用于查重
+/** 已经 AC 代码保存路径，用于查重 */
 std::string accepted_solutions_dir;
+
+/** 已经 AC 代码数量 */
 int stored_ac_code_max_num;
 
+/**
+ * 匿名空间避免其他文件访问。
+ * loop 主工作循环
+ * cur_running 当前子进程数量
+ * max_running 最大子进程数量
+ * context_pool redis 连接池
+ */
 namespace
 {
     bool loop = true;
@@ -74,6 +104,12 @@ namespace
     std::unique_ptr<RedisContextPool> context_pool;
 }
 
+/**
+ * @brief 发送心跳进程
+ * 每隔一段时间，将本机信息提交到数据库中表示当前在线的评测机集合中，表明自身正常工作，可以处理评测任务。
+ * @return 无返回值
+ * @throw 该函数保证不抛出任何异常
+ */
 void register_self() noexcept try
 {
     using namespace std::chrono;
@@ -110,6 +146,14 @@ void register_self() noexcept try
 	exit(2);
 }
 
+/**
+ * @brief SIGTERM 信号的处理函数
+ * 当收到 SIGTERM 信号，在代评测队列末端加上 type = 0, id = -1 的任务，用于标识结束 slave 工作的意愿。之后在 loop
+ * 循环中会据此判断是否结束 slave 进程。
+ * @param signum 信号编号
+ * @return 无返回值
+ * @throw 该函数保证不抛出任何异常
+ */
 void regist_SIGTERM_handler(int signum) noexcept
 {
     using namespace kerbal::compatibility::chrono_suffix;
@@ -121,7 +165,11 @@ void regist_SIGTERM_handler(int signum) noexcept
                     "Judge server has received the SIGTERM signal and will exit soon after the jobs are all finished!"_cptr);
     }
 }
-
+/**
+ * @brief 加载 slave 工作的配置
+ * 根据 judge_server.conf 文档，读取工作配置信息。loadConfig 的工作原理详见其文档。
+ * @return 无返回值
+ */
 void load_config()
 {
     using std::string;
@@ -196,6 +244,11 @@ void load_config()
     LOG_INFO(0, 0, log_fp, "listening pid: "_cptr, listening_pid);
 }
 
+/**
+ * @brief slave端主程序循环
+ * 加载配置信息；连接数据库；取待评测任务信息，交由子进程并评测；创建并分离发送心跳线程
+ * @throw UNKNOWN_EXCEPTION
+ */
 int main(int argc, const char * argv[]) try
 {
     using namespace kerbal::compatibility::chrono_suffix;
@@ -209,6 +262,7 @@ int main(int argc, const char * argv[]) try
 
 	try {
 		// +2 : 除了四个评测进程需要 redis 连接以外, 监听队列, 发送心跳进程也各需要一个
+		// 当前版本中连接池并未启用
 		context_pool.reset(new RedisContextPool(max_running + 2, redis_hostname.c_str(), redis_port, 1500_ms));
 	} catch (const std::exception & e) {
 		LOG_FATAL(0, 0, log_fp, "Redis connect failed! Error string: "_cptr, e.what());
@@ -219,6 +273,9 @@ int main(int argc, const char * argv[]) try
 	LOG_INFO(0, 0, log_fp, "main_conn: "_cptr, main_conn.get_id());
 
 	try {
+		/**
+		 * 创建并分离发送心跳线程
+		 */
 		std::thread regist(register_self);
 		regist.detach();
 	} catch (const std::exception & e) {
@@ -236,6 +293,11 @@ int main(int argc, const char * argv[]) try
 		std::string job_item = "0,0";
 		int job_type = 0;
 		int job_id = 0;
+		/*
+		 * 当收到 SIGTERM 信号时，会在评测队列末端加一个特殊的评测任务用于标识停止测评。此处若检测到停止
+		 * 工作的信号，则结束工作loop
+		 * 若取得的是正常的评测任务则继续工作
+		 */
 		try {
 			job_item = job_list.block_pop_front(0_s);
 			if (JudgeJob::isExitJob(job_item) == true) {
@@ -258,6 +320,14 @@ int main(int argc, const char * argv[]) try
 			continue;
 		}
 
+		/*
+		 * 当子进程数达到最大子进程数设定时，等待一个子进程结束后再运行。
+		 * 
+		 * 补充一个注释作者一开始没有想明白的地方，觉得有必要在此说明。当 loop 循环人为结束之后，有可能存在部分
+		 * 评测子进程并没有结束。因此失去了在此使用 waitpid 获取状态信息并释放的机会。但是这并不会造成僵死进程
+		 * 的堆积。当父进程结束之后，子进程的父进程会变为 init 进程，即孤儿进程被收养，而孤儿进程结束之后，会自动调用
+		 * waitpid 并释放，因此并不会存在僵死进程堆积。
+		 */
 		pid_t pid;
 		while ((pid = waitpid(-1, NULL, WNOHANG)) > 0) {
 			cur_running--;
