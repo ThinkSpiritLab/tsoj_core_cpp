@@ -28,7 +28,8 @@ const std::chrono::milliseconds Config::TIME_UNLIMITED { 0 };
  */
 Config::Config()
 {
-	this->env = {std::string("PATH=") + getenv("PATH")};
+	static const std::string PATH_EQUAL = "PATH=";
+	this->env = {PATH_EQUAL + getenv("PATH")};
 	this->uid = judger_uid;
 	this->gid = judger_gid;
 }
@@ -55,7 +56,7 @@ RunningConfig::RunningConfig(const JudgeJob & job) :
 			break;
 		}
 		case Language::Java: {
-			this->seccomp_rule_name = Seccomp_rule::none;
+			this->seccomp_rule_name = Seccomp_rule::general;
 			this->exe_path = java_exe_path;
 			this->max_memory = MEMORY_UNLIMITED;
 			this->max_stack = 256_MB;
@@ -135,7 +136,7 @@ CompileConfig::CompileConfig(const JudgeJob & job) :
 	this->input_path = "/dev/null";
 	this->output_path = "./compiler.out";
 	this->error_path = "./compiler.out";
-	this->seccomp_rule_name = Seccomp_rule::none;
+	this->seccomp_rule_name = Seccomp_rule::general;
 }
 
 /**

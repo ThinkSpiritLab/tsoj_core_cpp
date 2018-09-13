@@ -76,55 +76,31 @@ class Config
 
 		Config();
 
-		/**
-		 * @brief 检查是否有 CPU 时间限制
-		 * @return 若有 CPU 时间限制，返回 true，否则返回 false
-		 */
 		bool limitCPUTime() const
 		{
 			return this->max_cpu_time != TIME_UNLIMITED;
 		}
 
-		/**
-		 * @brief 检查是否有墙上时间限制
-		 * @return 若有墙上时间限制，返回 true，否则返回 false
-		 */
 		bool limitRealTime() const
 		{
 			return this->max_real_time != TIME_UNLIMITED;
 		}
 
-		/**
-		 * @brief 检查是否有储存空间的最大字节长度限制
-		 * @return 若有储存空间的最大字节长度限制，返回 true，否则返回 false
-		 */
 		bool limitMemory() const
 		{
 			return this->max_memory != MEMORY_UNLIMITED;
 		}
 
-		/**
-		 * @brief 检查是否有栈的最大字节长度限制
-		 * @return 若有栈的最大字节长度限制，返回 true，否则返回 false
-		 */
 		bool limitStack() const
 		{
 			return this->max_stack != MEMORY_UNLIMITED;
 		}
 
-		/**
-		 * @brief 检查是否有程序最大子进程数限制
-		 * @return 若有程序最大子进程数限制，返回 true，否则返回 false
-		 */
 		bool limitProcessNumber() const
 		{
 			return this->max_process_number != Config::UNLIMITED;
 		}
 
-		/**
-		 * @brief 检查是否有最大输出字节长度限制
-		 * @return 若有最大输出字节长度限制，返回 true，否则返回 false
-		 */
 		bool limitOutput() const
 		{
 			return this->max_output_size != MEMORY_UNLIMITED;
