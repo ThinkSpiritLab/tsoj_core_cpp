@@ -107,7 +107,6 @@ namespace
 /**
  * @brief 发送心跳进程
  * 每隔一段时间，将本机信息提交到数据库中表示当前在线的评测机集合中，表明自身正常工作，可以处理评测任务。
- * @return 无返回值
  * @throw 该函数保证不抛出任何异常
  */
 void register_self() noexcept try
@@ -151,7 +150,6 @@ void register_self() noexcept try
  * 当收到 SIGTERM 信号，在代评测队列末端加上 type = 0, id = -1 的任务，用于标识结束 slave 工作的意愿。之后在 loop
  * 循环中会据此判断是否结束 slave 进程。
  * @param signum 信号编号
- * @return 无返回值
  * @throw 该函数保证不抛出任何异常
  */
 void regist_SIGTERM_handler(int signum) noexcept
@@ -168,7 +166,6 @@ void regist_SIGTERM_handler(int signum) noexcept
 /**
  * @brief 加载 slave 工作的配置
  * 根据 judge_server.conf 文档，读取工作配置信息。loadConfig 的工作原理详见其文档。
- * @return 无返回值
  */
 void load_config()
 {

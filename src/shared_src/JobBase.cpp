@@ -49,6 +49,7 @@ void JobBase::fetchDetailsFromRedis()
 	static boost::format key_name_tmpl("job_info:%d:%d");
 
 	std::vector<std::string> query_res;
+	//kerbal 库中针对 redis 操作封装的操作对象
 	Operation opt(redisConn);
 
 	try {
@@ -131,6 +132,7 @@ void JobBase::storeSourceCode() const
 void JobBase::commitJudgeStatusToRedis(JudgeStatus status) try
 {
 	static RedisCommand cmd("hset judge_status:%d:%d status %d");
+	// status为枚举类，在 redis 存储时用其对应的序号表示
 	cmd.execute(redisConn, jobType, sid, (int) status);
 } catch (const std::exception & e) {
 	LOG_FATAL(jobType, sid, log_fp, "Commit judge status failed. Error information: "_cptr, e.what(), "; judge status: "_cptr, (int)status);

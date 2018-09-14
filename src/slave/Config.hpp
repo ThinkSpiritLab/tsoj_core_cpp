@@ -17,13 +17,13 @@
 class JudgeJob;
 
 /**
- * @brief 枚举类，用于标识程序运行时允许的系统调用类型
+ * @brief 枚举类，用于标识程序运行时允许的系统调用的类型
  */
 enum class Seccomp_rule
 {
-		none,
-		c_cpp,
-		general
+	none,
+	c_cpp,
+	general
 };
 
 /**
@@ -74,56 +74,115 @@ class Config
 		/** 进程的 group id */
 		gid_t gid;
 
+		/**
+		 * @brief 构造函数，设置程序的环境表内容，user id 与 group id
+		 */
 		Config();
 
+		/**
+		 * @brief 检查是否有 CPU 时间限制
+		 * @return 若有 CPU 时间限制，返回 true，否则返回 false
+		 */
 		bool limitCPUTime() const
 		{
 			return this->max_cpu_time != TIME_UNLIMITED;
 		}
 
+		/**
+		 * @brief 检查是否有墙上时间限制
+		 * @return 若有墙上时间限制，返回 true，否则返回 false
+		 */
 		bool limitRealTime() const
 		{
 			return this->max_real_time != TIME_UNLIMITED;
 		}
 
+		/**
+		 * @brief 检查是否有储存空间的最大字节长度限制
+		 * @return 若有储存空间的最大字节长度限制，返回 true，否则返回 false
+		 */
 		bool limitMemory() const
 		{
 			return this->max_memory != MEMORY_UNLIMITED;
 		}
 
+		/**
+		 * @brief 检查是否有栈的最大字节长度限制
+		 * @return 若有栈的最大字节长度限制，返回 true，否则返回 false
+		 */
 		bool limitStack() const
 		{
 			return this->max_stack != MEMORY_UNLIMITED;
 		}
 
+		/**
+		 * @brief 检查是否有程序最大子进程数限制
+		 * @return 若有程序最大子进程数限制，返回 true，否则返回 false
+		 */
 		bool limitProcessNumber() const
 		{
 			return this->max_process_number != Config::UNLIMITED;
 		}
 
+		/**
+		 * @brief 检查是否有最大输出字节长度限制
+		 * @return 若有最大输出字节长度限制，返回 true，否则返回 false
+		 */
 		bool limitOutput() const
 		{
 			return this->max_output_size != MEMORY_UNLIMITED;
 		}
 
+		/**
+		 * @brief 检查限制值是否合理有效
+		 * @return 若限制值合理有效，返回 true，否则返回 false
+		 */
 		bool check_is_valid_config() const;
 
+		/**
+		 * @brief 根据本 config 设定的所允许的系统调用种类的标识，加载相应的限制
+		 * @return 返回类型为枚举类 RunnerError。若限制成功返回 SUCCESS，否则返回 LOAD_SECCOMP_FAILED
+		 */
 		RunnerError load_seccomp_rules() const;
 
 	protected:
+		/**
+		 * @brief 生产 c/c++ 对应的系统调用权限限制
+		 * @return 返回类型为枚举类 RunnerError。若限制成功返回 SUCCESS，否则返回 LOAD_SECCOMP_FAILED
+		 */
 		RunnerError c_cpp_seccomp_rules() const;
+
+		/**
+		 * @brief 生产通用的系统调用权限限制
+		 * @return 返回类型为枚举类 RunnerError。若限制成功返回 SUCCESS，否则返回 LOAD_SECCOMP_FAILED
+		 */
 		RunnerError general_seccomp_rules() const;
 };
 
+/**
+ * @brief Config 的子类，将其父类参数设定为运行时需要的配置参数
+ */
 class RunningConfig : public Config
 {
 	public:
+		/**
+		 * @brief 构造函数，配置程序运行的参数 \n
+		 * 包含:执行路径、系统调用限制、时间空间限制、输入输出配置等
+		 */
 		RunningConfig(const JudgeJob & job);
 };
 
+/**
+ * @brief Config 的子类，将其父类参数设定为编译时需要的配置参数
+ */
 class CompileConfig : public Config
 {
 	public:
+		/**
+		 * @brief 构造函数，配置程序编译的参数 \n
+		 * 包含:执行路径、系统调用限制、时间空间限制、输入输出配置等
+		 * @note 编译配置参考源为 2018 ACM ICPC Programming Environment
+		 */
 		CompileConfig(const JudgeJob & job);
 };
 

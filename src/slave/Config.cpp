@@ -22,10 +22,6 @@ const int Config::UNLIMITED = -1;
 const kerbal::utility::Byte Config::MEMORY_UNLIMITED { 0 };
 const std::chrono::milliseconds Config::TIME_UNLIMITED { 0 };
 
-/**
- * @brief 构造函数，设置程序的环境表内容，user id 与 group id
- * @return 无返回
- */
 Config::Config()
 {
 	static const std::string PATH_EQUAL = "PATH=";
@@ -139,10 +135,6 @@ CompileConfig::CompileConfig(const JudgeJob & job) :
 	this->seccomp_rule_name = Seccomp_rule::none;
 }
 
-/**
- * @brief 检查限制值是否合理有效
- * @return 若限制值合理有效，返回 true，否则返回 false
- */
 bool Config::check_is_valid_config() const
 {
 	using namespace kerbal::utility;
@@ -163,18 +155,15 @@ bool Config::check_is_valid_config() const
 	return true;
 }
 
-/**
- * @brief 生产 c/c++ 对应的系统调用权限限制
- * @return 返回类型为枚举类 RunnerError。若限制成功返回 SUCCESS，否则返回 LOAD_SECCOMP_FAILED
- */
 RunnerError Config::c_cpp_seccomp_rules() const
 {
 	// load seccomp rules
+	// 若使用越权的系统调用之后，则强行终止程序
 	scmp_filter_ctx ctx = seccomp_init(SCMP_ACT_KILL);
 	if (!ctx) {
 		return RunnerError::LOAD_SECCOMP_FAILED;
 	}
-	// 
+	// 允许的系统调用列表
 	int syscalls_whitelist[] = {
 		SCMP_SYS(read), SCMP_SYS(fstat), SCMP_SYS(mmap), SCMP_SYS(mprotect), SCMP_SYS(munmap), SCMP_SYS(uname), SCMP_SYS(arch_prctl), SCMP_SYS(brk), SCMP_SYS(access), SCMP_SYS(exit_group), SCMP_SYS(
 				close), SCMP_SYS(readlink), SCMP_SYS(sysinfo), SCMP_SYS(write), SCMP_SYS(writev), SCMP_SYS(lseek) };
@@ -191,6 +180,7 @@ RunnerError Config::c_cpp_seccomp_rules() const
 	if (seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(open), 1, SCMP_CMP(1, SCMP_CMP_MASKED_EQ, O_WRONLY | O_RDWR, 0)) != 0) {
 		return RunnerError::LOAD_SECCOMP_FAILED;
 	}
+	// 限制生效
 	if (seccomp_load(ctx) != 0) {
 		return RunnerError::LOAD_SECCOMP_FAILED;
 	}
@@ -205,6 +195,7 @@ RunnerError Config::general_seccomp_rules() const
 	if (!ctx) {
 		return RunnerError::LOAD_SECCOMP_FAILED;
 	}
+	// 禁止的系统调用列表
 	int syscalls_blacklist[] = { SCMP_SYS(socket), SCMP_SYS(clone), SCMP_SYS(fork), SCMP_SYS(vfork), SCMP_SYS(kill) };
 	for (int ele : syscalls_blacklist) {
 		if (seccomp_rule_add(ctx, SCMP_ACT_KILL, ele, 0) != 0) {
@@ -222,6 +213,7 @@ RunnerError Config::general_seccomp_rules() const
 	if (seccomp_rule_add(ctx, SCMP_ACT_KILL, SCMP_SYS(open), 1, SCMP_CMP(1, SCMP_CMP_MASKED_EQ, O_RDWR, O_RDWR)) != 0) {
 		return RunnerError::LOAD_SECCOMP_FAILED;
 	}
+	// 限制生效
 	if (seccomp_load(ctx) != 0) {
 		return RunnerError::LOAD_SECCOMP_FAILED;
 	}
