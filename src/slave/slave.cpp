@@ -348,12 +348,10 @@ int main(int argc, const char * argv[]) try
 				try {
 					job.reset(new JudgeJob(job_type, job_id, child_conn));
 				} catch (const std::exception & e) {
-					LOG_FATAL(job_type, job_id, log_fp, "Fail to create job. Error information: "_cptr,
-							  e.what());
+					LOG_FATAL(job_type, job_id, log_fp, "Fail to create job. Error information: "_cptr, e.what());
 					return;
 				} catch (...) {
-					LOG_FATAL(job_type, job_id, log_fp, "Fail to create job. Error information: "_cptr,
-							  UNKNOWN_EXCEPTION_WHAT);
+					LOG_FATAL(job_type, job_id, log_fp, "Fail to create job. Error information: "_cptr, UNKNOWN_EXCEPTION_WHAT);
 					return;
 				}
 
@@ -365,22 +363,19 @@ int main(int argc, const char * argv[]) try
 					job->push_back_failed_judge_job();
 					return;
 				} catch (...) {
-					LOG_FATAL(job_type, job_id, log_fp, "Fail to judge job. Error information: "_cptr,
-							  UNKNOWN_EXCEPTION_WHAT);
+					LOG_FATAL(job_type, job_id, log_fp, "Fail to judge job. Error information: "_cptr, UNKNOWN_EXCEPTION_WHAT);
 					job->push_back_failed_judge_job();
 					return;
 				}
 			}, job_type, job_id);
-			LOG_DEBUG(job_type, job_id, log_fp, "Judge process fork success. Child_pid: "_cptr,
-					  judge_process.get_child_id());
+			LOG_DEBUG(job_type, job_id, log_fp, "Judge process fork success. Child_pid: "_cptr, judge_process.get_child_id());
 			++cur_running;
 		} catch (const std::exception & e) {
 			LOG_FATAL(job_type, job_id, log_fp, "Judge process fork failed. Error information: "_cptr, e.what());
 			JudgeJob::insert_into_failed(main_conn, job_type, job_id);
 			continue;
 		} catch (...) {
-			LOG_FATAL(job_type, job_id, log_fp, "Judge process fork failed. Error information: "_cptr,
-					  UNKNOWN_EXCEPTION_WHAT);
+			LOG_FATAL(job_type, job_id, log_fp, "Judge process fork failed. Error information: "_cptr, UNKNOWN_EXCEPTION_WHAT);
 			JudgeJob::insert_into_failed(main_conn, job_type, job_id);
 			continue;
 		}

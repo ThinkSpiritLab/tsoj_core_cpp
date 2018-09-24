@@ -37,18 +37,16 @@ JudgeJob::JudgeJob(int jobType, int sid, const kerbal::redis::RedisContext & con
         supper_t(jobType, sid, conn), dir((boost::format(init_dir + "/job-%d-%d") % jobType % sid).str())
 {
     try {
-        this->fetchDetailsFromRedis();
-    } catch (const std::exception & e) {
-        LOG_FATAL(jobType, sid, log_fp, "Fail to fetch job details. Error information: "_cptr,
-                  e.what());
-        this->push_back_failed_judge_job();
-        throw;
-    } catch (...) {
-        LOG_FATAL(jobType, sid, log_fp, "Fail to fetch job details. Error information: "_cptr,
-                  UNKNOWN_EXCEPTION_WHAT);
-        this->push_back_failed_judge_job();
-        throw;
-    }
+		this->fetchDetailsFromRedis();
+	} catch (const std::exception & e) {
+		LOG_FATAL(jobType, sid, log_fp, "Fail to fetch job details. Error information: "_cptr, e.what());
+		this->push_back_failed_judge_job();
+		throw;
+	} catch (...) {
+		LOG_FATAL(jobType, sid, log_fp, "Fail to fetch job details. Error information: "_cptr, UNKNOWN_EXCEPTION_WHAT);
+		this->push_back_failed_judge_job();
+		throw;
+	}
 }
 
 void JudgeJob::handle()
@@ -125,7 +123,6 @@ Result JudgeJob::running()
         std::string input_path = "%s/%d/in.%d"_fmt(input_dir, pid, i).str();
         config.input_path = input_path.c_str();
 
-        LOG_DEBUG(jobType, sid, log_fp, "running case: ", i);
         // 根据 config 中的配置执行一组测试并得到结果
         Result current_running_result = this->execute(config);
         LOG_DEBUG(jobType, sid, log_fp, "running case: ", i, " finished; result: ", current_running_result);
@@ -137,10 +134,11 @@ Result JudgeJob::running()
         // change answer path
         std::string answer = "%s/%d/out.%d"_fmt(input_dir, pid, i).str();
         this->commitJudgeStatusToRedis(JudgeStatus::JUDGING);
+
         // compare
-        LOG_DEBUG(jobType, sid, log_fp, "comparing case: ", i);
         UnitedJudgeResult compare_result = compare(answer.c_str(), config.output_path);
         LOG_DEBUG(jobType, sid, log_fp, "comparing case: ", i, " finished; compare result: ", compare_result);
+
         if (compare_result != UnitedJudgeResult::ACCEPTED) {
             current_running_result.judge_result = compare_result;
             return current_running_result;
@@ -175,8 +173,7 @@ namespace
                       "similarity_percentage"_cptr, 0,
                       "judge_server_id"_cptr, judge_server_id);
 	} catch (const std::exception & e) {
-		LOG_FATAL(jobType, sid, log_fp, "Commit judge result failed. Error information: "_cptr, e.what(),
-				  "; judge result: "_cptr, result);
+		LOG_FATAL(jobType, sid, log_fp, "Commit judge result failed. Error information: "_cptr, e.what(), "; judge result: "_cptr, result);
 		throw;
 	}
 }
@@ -297,7 +294,7 @@ Result JudgeJob::execute(const Config & config) const noexcept
         return result;
     }
 
-    std::unique_ptr<Process> child_process;
+    std::unique_ptr<Process> child_process = nullptr;
 
     // 此处分离了一个运行子进程，稍后该进程内自我完成工作配置，然后替换为用户编写的程序，用于实际的编译/运行
     try {
@@ -314,38 +311,34 @@ Result JudgeJob::execute(const Config & config) const noexcept
     time_point<high_resolution_clock> start(high_resolution_clock::now());
 
     if (config.limitRealTime()) {
-        try {
-            // new thread to monitor process running time
-            std::thread timeout_killer_thread([&child_process](milliseconds timeout) {
-                std::this_thread::sleep_for(timeout + 1_s);
-                if (child_process->kill(SIGKILL) != 0) {
-                    //TODO log
-                    return;
-                }
-                return;
-            }, config.max_real_time);
-            try {
-                timeout_killer_thread.detach();
-            } catch (const std::system_error & e) {
-                child_process->kill(SIGKILL);
-                LOG_FATAL(jobType, sid, log_fp, "Thread detach failed. Error information: "_cptr, e.what(),
-                          " , error code: "_cptr, e.code().value());
-                result.setErrorCode(RunnerError::PTHREAD_FAILED);
-                return result;
-            }
-        } catch (const std::system_error & e) {
-            child_process->kill(SIGKILL);
-            LOG_FATAL(jobType, sid, log_fp, "Thread construct failed. Error information: "_cptr, e.what(),
-                      " , error code: "_cptr, e.code().value());
-            result.setErrorCode(RunnerError::PTHREAD_FAILED);
-            return result;
-        } catch (...) {
-            child_process->kill(SIGKILL);
-            LOG_FATAL(jobType, sid, log_fp, "Thread construct failed. Error information: "_cptr,
-                      "unknown exception"_cptr);
-            result.setErrorCode(RunnerError::PTHREAD_FAILED);
-            return result;
-        }
+		std::unique_ptr<std::thread> timeout_killer_thread = nullptr;
+		try {
+			timeout_killer_thread.reset(new std::thread([&child_process](milliseconds timeout) {
+				std::this_thread::sleep_for(timeout + 1_s);
+				if (child_process->kill(SIGKILL) != 0) {
+					//TODO log
+				}
+			}, config.max_real_time));
+		} catch (const std::system_error & e) {
+			child_process->kill(SIGKILL);
+			LOG_FATAL(jobType, sid, log_fp, "Thread construct failed. Error information: "_cptr, e.what(), " , error code: "_cptr, e.code().value());
+			result.setErrorCode(RunnerError::PTHREAD_FAILED);
+			return result;
+		} catch (...) {
+			child_process->kill(SIGKILL);
+			LOG_FATAL(jobType, sid, log_fp, "Thread construct failed. Error information: "_cptr, "unknown exception"_cptr);
+			result.setErrorCode(RunnerError::PTHREAD_FAILED);
+			return result;
+		}
+
+		try {
+			timeout_killer_thread->detach();
+		} catch (const std::system_error & e) {
+			child_process->kill(SIGKILL);
+			LOG_FATAL(jobType, sid, log_fp, "Thread detach failed. Error information: "_cptr, e.what(), " , error code: "_cptr, e.code().value());
+			result.setErrorCode(RunnerError::PTHREAD_FAILED);
+			return result;
+		}
         LOG_DEBUG(jobType, sid, log_fp, "Timeout thread work success");
     }
 
@@ -624,10 +617,9 @@ bool JudgeJob::insert_into_failed(const kerbal::redis::RedisContext & conn, int 
         judge_failure_list.push_back("%d:%d"_fmt(jobType, sid).str());
         return true;
     } catch (const std::exception & e) {
-        LOG_FATAL(jobType, sid, log_fp, "Failed to push back failed judge job. Error information: "_cptr, e.what());
-    } catch (...) {
-        LOG_FATAL(jobType, sid, log_fp, "Failed to push back failed judge job. Error information: "_cptr,
-                  UNKNOWN_EXCEPTION_WHAT);
+		LOG_FATAL(jobType, sid, log_fp, "Failed to push back failed judge job. Error information: "_cptr, e.what());
+	} catch (...) {
+		LOG_FATAL(jobType, sid, log_fp, "Failed to push back failed judge job. Error information: "_cptr, UNKNOWN_EXCEPTION_WHAT);
     }
     return false;
 }

@@ -9,14 +9,13 @@
 
 #include "united_resource.hpp"
 #include "logger.hpp"
-#include <kerbal/compatibility/chrono_suffix.hpp>
-
-#include <seccomp.h>
-#include <fcntl.h>
-
 #include "global_shared_variable.hpp"
 #include "JudgeJob.hpp"
 
+#include <memory>
+#include <seccomp.h>
+#include <fcntl.h>
+#include <kerbal/compatibility/chrono_suffix.hpp>
 
 const int Config::UNLIMITED = -1;
 const kerbal::utility::Byte Config::MEMORY_UNLIMITED { 0 };
@@ -159,65 +158,84 @@ RunnerError Config::c_cpp_seccomp_rules() const
 {
 	// load seccomp rules
 	// 若使用越权的系统调用之后，则强行终止程序
-	scmp_filter_ctx ctx = seccomp_init(SCMP_ACT_KILL);
-	if (!ctx) {
+	using scmp_filter_ptr = std::unique_ptr<void, void (*)(scmp_filter_ctx)>;
+	scmp_filter_ptr ctx(seccomp_init(SCMP_ACT_KILL), seccomp_release);
+	if (ctx == nullptr) {
 		return RunnerError::LOAD_SECCOMP_FAILED;
 	}
 	// 允许的系统调用列表
-	int syscalls_whitelist[] = {
-		SCMP_SYS(read), SCMP_SYS(fstat), SCMP_SYS(mmap), SCMP_SYS(mprotect), SCMP_SYS(munmap), SCMP_SYS(uname), SCMP_SYS(arch_prctl), SCMP_SYS(brk), SCMP_SYS(access), SCMP_SYS(exit_group), SCMP_SYS(
-				close), SCMP_SYS(readlink), SCMP_SYS(sysinfo), SCMP_SYS(write), SCMP_SYS(writev), SCMP_SYS(lseek) };
-	for (int ele : syscalls_whitelist) {
-		if (seccomp_rule_add(ctx, SCMP_ACT_ALLOW, ele, 0) != 0) {
+	constexpr int syscalls_whitelist[] = { SCMP_SYS(read),
+											 SCMP_SYS(fstat),
+											 SCMP_SYS(mmap),
+											 SCMP_SYS(mprotect),
+											 SCMP_SYS(munmap),
+											 SCMP_SYS(uname),
+											 SCMP_SYS(arch_prctl),
+											 SCMP_SYS(brk),
+											 SCMP_SYS(access),
+											 SCMP_SYS(exit_group),
+											 SCMP_SYS(close),
+											 SCMP_SYS(readlink),
+											 SCMP_SYS(sysinfo),
+											 SCMP_SYS(write),
+											 SCMP_SYS(writev),
+											 SCMP_SYS(lseek)
+	};
+	for (int syscall : syscalls_whitelist) {
+		if (seccomp_rule_add(ctx.get(), SCMP_ACT_ALLOW, syscall, 0) != 0) {
 			return RunnerError::LOAD_SECCOMP_FAILED;
 		}
 	}
 	// add extra rule for execve
-	if (seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(execve), 1, SCMP_A0(SCMP_CMP_EQ, (scmp_datum_t )(exe_path))) != 0) {
+	if (seccomp_rule_add(ctx.get(), SCMP_ACT_ALLOW, SCMP_SYS(execve), 1, SCMP_A0(SCMP_CMP_EQ, (scmp_datum_t )(exe_path))) != 0) {
 		return RunnerError::LOAD_SECCOMP_FAILED;
 	}
 	// do not allow "w" and "rw"
-	if (seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(open), 1, SCMP_CMP(1, SCMP_CMP_MASKED_EQ, O_WRONLY | O_RDWR, 0)) != 0) {
+	if (seccomp_rule_add(ctx.get(), SCMP_ACT_ALLOW, SCMP_SYS(open), 1, SCMP_CMP(1, SCMP_CMP_MASKED_EQ, O_WRONLY | O_RDWR, 0)) != 0) {
 		return RunnerError::LOAD_SECCOMP_FAILED;
 	}
 	// 限制生效
-	if (seccomp_load(ctx) != 0) {
+	if (seccomp_load(ctx.get()) != 0) {
 		return RunnerError::LOAD_SECCOMP_FAILED;
 	}
-	seccomp_release(ctx);
 	return RunnerError::SUCCESS;
 }
 
 RunnerError Config::general_seccomp_rules() const
 {
 	// load seccomp rules
-	scmp_filter_ctx ctx = seccomp_init(SCMP_ACT_ALLOW);
-	if (!ctx) {
+	using scmp_filter_ptr = std::unique_ptr<void, void (*)(scmp_filter_ctx)>;
+	scmp_filter_ptr ctx(seccomp_init(SCMP_ACT_ALLOW), seccomp_release);
+	if (ctx == nullptr) {
 		return RunnerError::LOAD_SECCOMP_FAILED;
 	}
 	// 禁止的系统调用列表
-	int syscalls_blacklist[] = { SCMP_SYS(socket), SCMP_SYS(clone), SCMP_SYS(fork), SCMP_SYS(vfork), SCMP_SYS(kill) };
-	for (int ele : syscalls_blacklist) {
-		if (seccomp_rule_add(ctx, SCMP_ACT_KILL, ele, 0) != 0) {
+	constexpr int syscalls_blacklist[] = { SCMP_SYS(socket),
+											 SCMP_SYS(clone),
+											 SCMP_SYS(fork),
+											 SCMP_SYS(vfork),
+											 SCMP_SYS(kill)
+	};
+	for (int syscall : syscalls_blacklist) {
+		if (seccomp_rule_add(ctx.get(), SCMP_ACT_KILL, syscall, 0) != 0) {
 			return RunnerError::LOAD_SECCOMP_FAILED;
 		}
 	}
 	// add extra rule for execve
-	if (seccomp_rule_add(ctx, SCMP_ACT_KILL, SCMP_SYS(execve), 1, SCMP_A0(SCMP_CMP_NE, (scmp_datum_t )(exe_path))) != 0) {
+	if (seccomp_rule_add(ctx.get(), SCMP_ACT_KILL, SCMP_SYS(execve), 1, SCMP_A0(SCMP_CMP_NE, (scmp_datum_t )(exe_path))) != 0) {
 		return RunnerError::LOAD_SECCOMP_FAILED;
 	}
 	// do not allow "w" and "rw"
-	if (seccomp_rule_add(ctx, SCMP_ACT_KILL, SCMP_SYS(open), 1, SCMP_CMP(1, SCMP_CMP_MASKED_EQ, O_WRONLY, O_WRONLY)) != 0) {
+	if (seccomp_rule_add(ctx.get(), SCMP_ACT_KILL, SCMP_SYS(open), 1, SCMP_CMP(1, SCMP_CMP_MASKED_EQ, O_WRONLY, O_WRONLY)) != 0) {
 		return RunnerError::LOAD_SECCOMP_FAILED;
 	}
-	if (seccomp_rule_add(ctx, SCMP_ACT_KILL, SCMP_SYS(open), 1, SCMP_CMP(1, SCMP_CMP_MASKED_EQ, O_RDWR, O_RDWR)) != 0) {
+	if (seccomp_rule_add(ctx.get(), SCMP_ACT_KILL, SCMP_SYS(open), 1, SCMP_CMP(1, SCMP_CMP_MASKED_EQ, O_RDWR, O_RDWR)) != 0) {
 		return RunnerError::LOAD_SECCOMP_FAILED;
 	}
 	// 限制生效
-	if (seccomp_load(ctx) != 0) {
+	if (seccomp_load(ctx.get()) != 0) {
 		return RunnerError::LOAD_SECCOMP_FAILED;
 	}
-	seccomp_release(ctx);
 	return RunnerError::SUCCESS;
 }
 
