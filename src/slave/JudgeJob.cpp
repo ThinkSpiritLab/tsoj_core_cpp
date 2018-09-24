@@ -71,6 +71,7 @@ void JudgeJob::handle()
     switch (compile_result.judge_result) {
         case UnitedJudgeResult::ACCEPTED: {
             LOG_DEBUG(jobType, sid, log_fp, "compile success");
+            // 编译成功则 run
             Result result = this->running();
             LOG_DEBUG(jobType, sid, log_fp, "judging finished");
             this->commitJudgeResultToRedis(result);
@@ -113,8 +114,9 @@ void JudgeJob::fetchDetailsFromRedis()
 
 Result JudgeJob::running()
 {
+    // 构建运行配置（但暂未使用）
     RunningConfig config(*this);
-//	this->commitJudgeStatusToRedis(conn, "cases_finished", 0);
+    // this->commitJudgeStatusToRedis(conn, "cases_finished", 0);
 
     Result result;
     this->commitJudgeStatusToRedis(JudgeStatus::RUNNING);
@@ -124,6 +126,7 @@ Result JudgeJob::running()
         config.input_path = input_path.c_str();
 
         LOG_DEBUG(jobType, sid, log_fp, "running case: ", i);
+        // 根据 config 中的配置执行一组测试并得到结果
         Result current_running_result = this->execute(config);
         LOG_DEBUG(jobType, sid, log_fp, "running case: ", i, " finished; result: ", current_running_result);
 
@@ -151,6 +154,11 @@ Result JudgeJob::running()
     return result;
 }
 
+/*
+ * 将评测结果提交到 redis 数据库。JudgeJob::commitJudgeResultToRedis 实际上是调用了此函数。之所以将此函数分离出来，
+ * 是因为需要配合静态成员函数 insert_into_failed，在类未能成功实例化的时候使用。而此处匿名空间则保证了，只能由此 cpp 文件的
+ * 成员函数调用此方法，杜绝了其余文件内函数调用该函数的可能，保证了安全。
+ */	
 namespace
 {
     void
@@ -201,6 +209,7 @@ bool JudgeJob::set_compile_info() noexcept
         return false;
     }
 
+    // Mysql 中存储字符长度有限，此处似乎超出长度可能导致的乱码问题未解决
     if (MYSQL_TEXT_MAX_SIZE >= 3 && length > MYSQL_TEXT_MAX_SIZE) {
         char * end = buffer + MYSQL_TEXT_MAX_SIZE - 3;
         for (int i = 0; i < 3; ++i) {
@@ -290,6 +299,7 @@ Result JudgeJob::execute(const Config & config) const noexcept
 
     std::unique_ptr<Process> child_process;
 
+    // 此处分离了一个运行子进程，稍后该进程内自我完成工作配置，然后替换为用户编写的程序，用于实际的编译/运行
     try {
         child_process.reset(new Process(true, [this, &config]() {
             this->child_process(config);
@@ -396,6 +406,10 @@ Result JudgeJob::execute(const Config & config) const noexcept
 
 Result JudgeJob::compile() const noexcept
 {
+    /* 
+     * 与 running 中不同，运行测试样例可能需要多次，而编译只需执行一次，因此只需要生成一个匿名的 CompileConfig ，节约了传递成本
+     * （也好看
+     */
     Result result = this->execute(CompileConfig(*this));
 
     switch (result.judge_result) {
