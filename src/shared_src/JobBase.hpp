@@ -26,22 +26,31 @@ class JobBase
 	public:
 		/** Job 类型，如：竞赛、课程等 */
 		int jobType;
+
 		/** student id */
 		int sid;
+
 		/** redis 连接 */
 		kerbal::redis::RedisContext redisConn;
 
 	public:
 		/** problem id */
 		int pid;
+
 		/** 语言种类 */
 		Language lang;
+
 		/** 测试用例数量 */
 		int cases; 
+
 		/** 时间限制 */
 		std::chrono::milliseconds timeLimit;
+
 		/** 空间限制 */
 		kerbal::utility::MB memoryLimit;
+
+		/** 重复率限制 */
+		int similarity_threshold;
 
 		/**
 		 * @brief 将待处理 Job 信息分解，提取出 job_type 与 job_id

@@ -23,8 +23,19 @@ class CourseUpdateJob: public ExerciseUpdateJobBase
 	protected:
 		CourseUpdateJob(int jobType, int sid, const kerbal::redis::RedisContext & redisConn,
 				std::unique_ptr<mysqlpp::Connection> && mysqlConn);
+	private:
 		void update_solution() override final;
-		virtual void update_user_problem(int stat) override final;
+
+		/**
+		 * @brief 更新题目的提交数, 通过数, 用户的提交数, 通过数
+		 * @warning 仅规定 update user and problem 表的接口, 具体操作需由子类实现
+		 */
+		virtual void update_user_and_problem() override;
+
+		virtual user_problem_status get_user_problem_status() override final;
+
+		virtual void update_user_problem() override final;
+
 		virtual ~CourseUpdateJob() = default;
 };
 

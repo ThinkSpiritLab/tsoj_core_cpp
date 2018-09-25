@@ -5,7 +5,7 @@
  *      Author: peter
  */
 
-#include "../master/UpdateJobBase.hpp"
+#include "UpdateJobBase.hpp"
 
 #include "logger.hpp"
 #include "boost_format_suffix.hpp"
@@ -67,30 +67,20 @@ void UpdateJobBase::fetchDetailsFromRedis()
 UpdateJobBase::UpdateJobBase(int jobType, int sid, const RedisContext & redisConn,
 		std::unique_ptr<Connection> && mysqlConn) : supper_t(jobType, sid, redisConn), mysqlConn(std::move(mysqlConn))
 {
-	this->fetchDetailsFromRedis();
+	this->UpdateJobBase::fetchDetailsFromRedis();
 }
 
 void UpdateJobBase::handle()
 {
-	Result result;
-	//判断进入rejudge还是正常update
-	if (this->is_rejudge) {
-		if (job.rejudge(result)) {
-			LOG_FATAL(type, update_id, log_fp, "REJUDGE: failed!");
-			return;
-		}
 
-	} else {
+	this->update_solution();
 
-		this->update_solution();
-
-		{ // update source code
-			RedisReply reply = this->get_source_code();
-			this->update_source_code(reply->str);
-		}
-		this->update_user_and_problem();
-		this->update_user_problem();
+	{ // update source code
+		RedisReply reply = this->get_source_code();
+		this->update_source_code(reply->str);
 	}
+	this->update_user_and_problem();
+	this->update_user_problem();
 
 	//保存编译信息
 	if (result.judge_result == UnitedJudgeResult::COMPILE_ERROR) {
@@ -129,6 +119,11 @@ void UpdateJobBase::update_source_code(const char * source_code)
 
 void UpdateJobBase::update_compile_info(const char * compile_info)
 {
+	if (compile_info == nullptr) {
+		LOG_WARNING(jobType, sid, log_fp, "empty compile info!");
+		return;
+	}
+
 	std::string compile_info_table;
 	if (jobType == 0) {
 		compile_info_table = "compile_info";
@@ -180,7 +175,7 @@ kerbal::redis::RedisReply UpdateJobBase::get_compile_info() const
 	return reply;
 }
 
-void UpdateJobBase::core_update_failed_table(const Result & result) noexcept try
+void UpdateJobBase::core_update_failed_table() noexcept try
 {
 	mysqlpp::Query insert = mysqlConn->query(
 			"insert into core_update_failed "
@@ -198,8 +193,8 @@ void UpdateJobBase::core_update_failed_table(const Result & result) noexcept try
 
 	mysqlpp::SimpleResult res = insert.execute(
 		jobType, sid, pid, uid, (int) lang,
-		postTime, cid, cases, timeLimit.count(), memoryLimit,
-		this->similarity_threshold, (int) result.judge_result, result.cpu_time.count(),
+		postTime, cid, cases, timeLimit.count(), memoryLimit.count(),
+		similarity_threshold, (int) result.judge_result, result.cpu_time.count(),
 		result.memory.count(), result.similarity_percentage, source_code->str, compile_error_info->str
 	);
 

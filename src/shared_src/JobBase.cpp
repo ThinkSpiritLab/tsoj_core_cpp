@@ -53,7 +53,14 @@ void JobBase::fetchDetailsFromRedis()
 	Operation opt(redisConn);
 
 	try {
-		query_res = opt.hmget((key_name_tmpl % jobType % sid).str(), "pid"_cptr, "lang"_cptr, "cases"_cptr, "time_limit"_cptr, "memory_limit"_cptr);
+		query_res = opt.hmget((key_name_tmpl % jobType % sid).str(),
+				"pid"_cptr,
+				"lang"_cptr,
+				"cases"_cptr,
+				"time_limit"_cptr,
+				"memory_limit"_cptr,
+				"sim_threshold"_cptr
+		);
 	} catch (const RedisUnexpectedCaseException & e) {
 		LOG_FATAL(0, sid, log_fp, "redis returns an unexpected type. Exception infomation: "_cptr, e.what());
 		throw;
@@ -74,6 +81,7 @@ void JobBase::fetchDetailsFromRedis()
 		this->cases = stoi(query_res[2]);
 		this->timeLimit = std::chrono::milliseconds(stoi(query_res[3]));
 		this->memoryLimit = kerbal::utility::MB(stoull(query_res[4]));
+		this->similarity_threshold = stoi(query_res[5]);
 	} catch (const std::exception & e) {
 		LOG_FATAL(0, sid, log_fp, "job details lost or type cast failed. Exception infomation: "_cptr, e.what());
 		throw;

@@ -9,7 +9,6 @@
 #define SRC_MASTER_UPDATEJOBBASE_HPP_
 
 #include "JobBase.hpp"
-#include "Result.hpp"
 #include "mysql_empty_res_exception.hpp"
 
 #ifndef MYSQLPP_MYSQL_HEADERS_BURIED
@@ -54,7 +53,7 @@ class UpdateJobBase: public JobBase
         } result;
 
     private:
-        virtual void fetchDetailsFromRedis() override;
+        virtual void fetchDetailsFromRedis() override final;
 
     protected:
         friend
@@ -78,6 +77,7 @@ class UpdateJobBase: public JobBase
 		 */
 		virtual void update_solution() = 0;
 
+    private:
 		/**
 		 * @brief 将提交代码更新至 mysql
 		 * @param source_code 指向代码字符串的常量指针
@@ -108,6 +108,7 @@ class UpdateJobBase: public JobBase
 		 */
 		kerbal::redis::RedisReply get_compile_info() const;
 
+    protected:
 		/**
 		 * @brief 更新题目的提交数, 通过数, 用户的提交数, 通过数
 		 * @warning 仅规定 update user and problem 表的接口, 具体操作需由子类实现

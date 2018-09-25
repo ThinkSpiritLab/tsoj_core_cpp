@@ -1,15 +1,31 @@
 compiler := g++
 compiler_name := GCC C++ Compiler
-compile_options := -std=c++11 -O2 -Wall -c -fmessage-length=0 -MMD -MP
-obj_folder := ../../release/obj
+
+ifeq ($(configuration), release)
+	obj_folder := ../../release/obj
+	compile_options := -std=c++11 -O2 -Wall -c -fmessage-length=0 -MMD -MP
+	master_bin_name := ../../release/master
+else ifeq ($(configuration), debug)
+	obj_folder := ../../debug/obj
+	compile_options := -std=c++11 -DTRACK_RESOURCE_FREE=false -DDEBUG -O2 -g3 -Wall -c -fmessage-length=0 -MMD -MP
+	master_bin_name := ../../debug/master
+else
+$(error undefined configuration)
+endif
+
 linker := g++
 linker_name := GCC C++ Linker
-link_options := -lseccomp -lhiredis -pthread
-master_bin_name := ../../release/job_giver
+link_options := -lseccomp -lhiredis -lmysqlpp -pthread
 
 
 SRCS += \
-./master.cpp
+./ContestUpdateJob.cpp \
+./CourseUpdateJob.cpp \
+./ExerciseUpdateJob.cpp \
+./ExerciseUpdateJobBase.cpp \
+./master.cpp \
+./UpdateJobBase.cpp
+
 
 OBJS += \
 $(obj_folder)/ContestUpdateJob.o \
@@ -31,8 +47,9 @@ include_path += \
 ../shared_src
 
 SHARED_OBJS += \
-$(obj_folder)/logger.o \
 $(obj_folder)/JobBase.o \
+$(obj_folder)/load_helper.o \
+$(obj_folder)/logger.o \
 $(obj_folder)/Result.o \
 $(obj_folder)/united_resource.o
 

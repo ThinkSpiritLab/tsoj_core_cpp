@@ -40,11 +40,11 @@ make_update_job(int jobType, int sid, const kerbal::redis::RedisContext & redisC
 	try {
 		if (jobType == 0) {
 			int cid = 0;
-			static boost::format key_name_tmpl("job_info:%d:%d");
+			static boost::format key_name_tmpl("job_info:0:%d");
 			kerbal::redis::Operation opt(redisConn);
 
 			try {
-				cid = opt.hget<int>((key_name_tmpl % jobType % sid).str(), "cid");
+				cid = opt.hget<int>((key_name_tmpl % sid).str(), "cid");
 			} catch (const std::exception & e) {
 				LOG_FATAL(jobType, sid, log_fp, "Get cid failed! Error information: ", e.what());
 				throw;

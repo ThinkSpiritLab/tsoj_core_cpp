@@ -27,7 +27,7 @@ struct format_helper
 };
 
 
-format_helper operator""_fmt(const char * s, size_t size)
+inline format_helper operator""_fmt(const char * s, size_t size)
 {
 	return format_helper(s);
 }

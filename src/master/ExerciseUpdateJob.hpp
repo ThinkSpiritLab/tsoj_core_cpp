@@ -20,10 +20,15 @@ class ExerciseUpdateJob: public ExerciseUpdateJobBase
 		make_update_job(int jobType, int sid, const RedisContext & redisConn,
 						unique_ptr<mysqlpp::Connection> && mysqlConn);
 
-	protected:
+	private:
 		ExerciseUpdateJob(int jobType, int sid, const kerbal::redis::RedisContext & redisConn,
 				std::unique_ptr<mysqlpp::Connection> && mysqlConn);
 		void update_solution() override final;
+
+		virtual user_problem_status get_user_problem_status() override final;
+
+		virtual void update_user_and_problem() override final;
+
 		virtual void update_user_problem() override final;
 
 		virtual ~ExerciseUpdateJob() = default;

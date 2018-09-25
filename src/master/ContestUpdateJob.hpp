@@ -24,11 +24,18 @@ class ContestUpdateJob: public UpdateJobBase
 		ContestUpdateJob(int jobType, int sid, const kerbal::redis::RedisContext & redisConn,
 						 std::unique_ptr <mysqlpp::Connection> && mysqlConn);
 
+	private:
 		/**
 		 * @brief 该方法实现了祖先类 UpdateJobBase 中规定的 update solution 表的接口, 将本次提交记录更新至每个竞赛对应的 solution 表
 		 * @warning 该方法已被标记为 final, 禁止子类覆盖本方法
 		 */
 		virtual void update_solution() override final;
+
+		/**
+		 * @brief 更新题目的提交数, 通过数, 用户的提交数, 通过数
+		 * @warning 仅规定 update user and problem 表的接口, 具体操作需由子类实现
+		 */
+		virtual void update_user_and_problem() override final;
 
 		/**
 		 *

@@ -25,6 +25,18 @@ class ExerciseUpdateJobBase : public UpdateJobBase
 				std::unique_ptr<mysqlpp::Connection> && mysqlConn);
 
 		/**
+		 * @brief 将本次提交记录更新至 solution 表
+		 * @warning 仅规定 update solution 表的接口, 具体操作需由子类实现
+		 */
+		virtual void update_solution() = 0;
+
+		/**
+		 * @brief 更新题目的提交数, 通过数, 用户的提交数, 通过数
+		 * @warning 仅规定 update user and problem 表的接口, 具体操作需由子类实现
+		 */
+		virtual void update_user_and_problem() override = 0;
+
+		/**
 		 * @brief 将本 job 对应的 pid 的题目的提交数 + delta
 		 * @warning 本函数仅完成字段的更新操作, 不会检查操作的合法性!
 		 */
@@ -48,17 +60,13 @@ class ExerciseUpdateJobBase : public UpdateJobBase
 		 */
 		void update_user_accept(int delta);
 
-
 		/**
 		 * @brief 取得此用户此题在此次提交以前 AC, TO_DO 或 ATTEMPT 的状态
 		 * @warning 虽给了默认的实现, 但仍是纯虚函数, 需由子类实现具体操作
 		 */
 		virtual user_problem_status get_user_problem_status() override = 0;
 
-		/**
-		 * @brief 更新题目的提交数, 通过数, 用户的提交数, 通过数
-		 */
-		virtual void update_user_and_problem();
+		virtual void update_user_problem() override = 0;
 
 		virtual ~ExerciseUpdateJobBase() = default;
 };
