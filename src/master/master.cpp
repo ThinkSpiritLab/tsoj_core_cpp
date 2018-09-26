@@ -35,7 +35,6 @@ namespace
 	std::string mysql_database;
 	int redis_port;
 	std::string redis_hostname;
-	int max_redis_conn = 1;
 }
 
 void load_config()
@@ -106,7 +105,7 @@ int main() try
 	}
 	load_config();
 
-	LOG_INFO(0, 0, log_fp, "updater starting ..."_cptr);
+	LOG_INFO(0, 0, log_fp, "updater starting ...");
 
 
 //	mysqlpp::Connection mainMysqlConn(false);
@@ -119,13 +118,13 @@ int main() try
 
 	kerbal::redis::RedisContext mainRedisConn(redis_hostname.c_str(), redis_port, 100_ms);
 	if (!mainRedisConn) {
-		LOG_FATAL(0, 0, log_fp, "Main redis connection connect failed!"_cptr);
+		LOG_FATAL(0, 0, log_fp, "Main redis connection connect failed!");
 		exit(-1);
 	}
 
 	#ifdef DEBUG
 	if (chdir(updater_init_dir.c_str())) {
-		LOG_FATAL(0, 0, log_fp, "Error: "_cptr, RunnerError::CHDIR_ERROR);
+		LOG_FATAL(0, 0, log_fp, "Error: ", RunnerError::CHDIR_ERROR);
 		exit(-1);
 	}
 	#endif //DEBUG
@@ -140,12 +139,12 @@ int main() try
 		try {
 			job_item = update_queue.block_pop_front(0_s);
 			std::tie(type, update_id) = JobBase::parseJobItem(job_item);
-			LOG_DEBUG(type, update_id, log_fp, "Updator ", " get update job ", job_item);
+			LOG_DEBUG(type, update_id, log_fp, "Master get update job: ", job_item);
 		} catch (const std::exception & e) {
-			LOG_FATAL(0, 0, log_fp, "Fail to fetch job. Error info: "_cptr, e.what(), "job_item: "_cptr, job_item);
+			LOG_FATAL(0, 0, log_fp, "Fail to fetch job. Error info: ", e.what(), "job_item: ", job_item);
 			continue;
 		} catch (...) {
-			LOG_FATAL(0, 0, log_fp, "Fail to fetch job. Error info: "_cptr, "unknown exception"_cptr, "job_item: "_cptr, job_item);
+			LOG_FATAL(0, 0, log_fp, "Fail to fetch job. Error info: ", "unknown exception", "job_item: ", job_item);
 			continue;
 		}
 
@@ -153,14 +152,14 @@ int main() try
 
 		kerbal::redis::RedisContext redisConn(redis_hostname.c_str(), redis_port, 100_ms);
 		if (!redisConn) {
-			LOG_FATAL(0, 0, log_fp, "Redis connection connect failed!"_cptr);
+			LOG_FATAL(0, 0, log_fp, "Redis connection connect failed!");
 			continue;
 		}
 
 		std::unique_ptr <mysqlpp::Connection> mysqlConn(new mysqlpp::Connection(false));
 		mysqlConn->set_option(new mysqlpp::SetCharsetNameOption("utf8"));
 		if (!mysqlConn->connect(mysql_database.c_str(), mysql_hostname.c_str(), mysql_username.c_str(), mysql_passwd.c_str())) {
-			LOG_FATAL(0, 0, log_fp, "Mysql connection connect failed!"_cptr);
+			LOG_FATAL(0, 0, log_fp, "Mysql connection connect failed!");
 			continue;
 		}
 
@@ -168,30 +167,30 @@ int main() try
 		try {
 			job = make_update_job(type, update_id, redisConn, std::move(mysqlConn));
 		} catch (const std::exception & e) {
-			LOG_FATAL(0, 0, log_fp, "Job construct failed! Error information: "_cptr, e.what());
+			LOG_FATAL(0, 0, log_fp, "Job construct failed! Error information: ", e.what());
 			continue;
 		} catch (...) {
-			LOG_FATAL(0, 0, log_fp, "Job construct failed! Error information: "_cptr, UNKNOWN_EXCEPTION_WHAT);
+			LOG_FATAL(0, 0, log_fp, "Job construct failed! Error information: ", UNKNOWN_EXCEPTION_WHAT);
 			continue;
 		}
 
 		try {
 			job->handle();
 		} catch (const std::exception & e) {
-			LOG_FATAL(0, 0, log_fp, "Job handle failed! Error information: "_cptr, e.what());
+			LOG_FATAL(0, 0, log_fp, "Job handle failed! Error information: ", e.what());
 			continue;
 		} catch (...) {
-			LOG_FATAL(0, 0, log_fp, "Job handle failed! Error information: "_cptr, UNKNOWN_EXCEPTION_WHAT);
+			LOG_FATAL(0, 0, log_fp, "Job handle failed! Error information: ", UNKNOWN_EXCEPTION_WHAT);
 			continue;
 		}
 
 	}
 	return 0;
 } catch (const std::exception & e) {
-	LOG_FATAL(0, 0, log_fp, "An uncatched exception catched by main. Error information: "_cptr, e.what());
+	LOG_FATAL(0, 0, log_fp, "An uncatched exception catched by main. Error information: ", e.what());
 	throw;
 } catch (...) {
-	LOG_FATAL(0, 0, log_fp, "An uncatched exception catched by main. Error information: "_cptr, UNKNOWN_EXCEPTION_WHAT);
+	LOG_FATAL(0, 0, log_fp, "An uncatched exception catched by main. Error information: ", UNKNOWN_EXCEPTION_WHAT);
 	throw;
 }
 

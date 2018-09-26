@@ -27,7 +27,7 @@ std::pair<int, int> JobBase::parseJobItem(const std::string & args)
 	std::string::size_type cut_point = job_item.find(',');
 
 	if (cut_point == std::string::npos) {
-		LOG_FATAL(0, 0, log_fp, "Invalid job_item arguments: "_cptr, job_item);
+		LOG_FATAL(0, 0, log_fp, "Invalid job_item arguments: ", job_item);
 		throw std::invalid_argument("Invalid job_item arguments: " + job_item);
 	}
 
@@ -38,7 +38,7 @@ std::pair<int, int> JobBase::parseJobItem(const std::string & args)
 		int job_id = std::stoi(job_item.c_str() + cut_point + 1);
 		return std::make_pair(job_type, job_id);
 	} catch (const std::invalid_argument & e) {
-		LOG_FATAL(0, 0, log_fp, "Invalid job_item arguments: "_cptr, job_item);
+		LOG_FATAL(0, 0, log_fp, "Invalid job_item arguments: ", job_item);
 		throw std::invalid_argument("Invalid job_item arguments: " + job_item);
 	}
 }
@@ -62,16 +62,16 @@ void JobBase::fetchDetailsFromRedis()
 				"sim_threshold"_cptr
 		);
 	} catch (const RedisUnexpectedCaseException & e) {
-		LOG_FATAL(0, sid, log_fp, "redis returns an unexpected type. Exception infomation: "_cptr, e.what());
+		LOG_FATAL(0, sid, log_fp, "redis returns an unexpected type. Exception infomation: ", e.what());
 		throw;
 	} catch (const RedisException & e) {
-		LOG_FATAL(0, sid, log_fp, "job doesn't exist. Exception infomation: "_cptr, e.what());
+		LOG_FATAL(0, sid, log_fp, "job doesn't exist. Exception infomation: ", e.what());
 		throw;
 	} catch (const std::exception & e) {
-		LOG_FATAL(0, sid, log_fp, "job doesn't exist. Exception infomation: "_cptr, e.what());
+		LOG_FATAL(0, sid, log_fp, "job doesn't exist. Exception infomation: ", e.what());
 		throw;
 	} catch (...) {
-		LOG_FATAL(0, sid, log_fp, "job doesn't exist. Exception infomation: "_cptr, UNKNOWN_EXCEPTION_WHAT);
+		LOG_FATAL(0, sid, log_fp, "job doesn't exist. Exception infomation: ", UNKNOWN_EXCEPTION_WHAT);
 		throw;
 	}
 
@@ -83,10 +83,10 @@ void JobBase::fetchDetailsFromRedis()
 		this->memoryLimit = kerbal::utility::MB(stoull(query_res[4]));
 		this->similarity_threshold = stoi(query_res[5]);
 	} catch (const std::exception & e) {
-		LOG_FATAL(0, sid, log_fp, "job details lost or type cast failed. Exception infomation: "_cptr, e.what());
+		LOG_FATAL(0, sid, log_fp, "job details lost or type cast failed. Exception infomation: ", e.what());
 		throw;
 	} catch (...) {
-		LOG_FATAL(0, sid, log_fp, "job details lost or type cast failed. Exception infomation: "_cptr, UNKNOWN_EXCEPTION_WHAT);
+		LOG_FATAL(0, sid, log_fp, "job details lost or type cast failed. Exception infomation: ", UNKNOWN_EXCEPTION_WHAT);
 		throw;
 	}
 }
@@ -103,11 +103,11 @@ void JobBase::storeSourceCode() const
 	try {
 		reply = cmd.execute(redisConn, jobType, sid);
 	} catch (const std::exception & e) {
-		LOG_FATAL(jobType, sid, log_fp, "Get source code failed. Error information: "_cptr, e.what());
+		LOG_FATAL(jobType, sid, log_fp, "Get source code failed. Error information: ", e.what());
 		throw JobHandleException("Get source code failed");
 	}
 	if (reply.replyType() != RedisReplyType::STRING) {
-		LOG_FATAL(jobType, sid, log_fp, "Get source code failed. Error information: unexpected redis reply type"_cptr);
+		LOG_FATAL(jobType, sid, log_fp, "Get source code failed. Error information: unexpected redis reply type");
 		throw JobHandleException("Get source code failed: unexpected redis reply type");
 	}
 
@@ -127,12 +127,12 @@ void JobBase::storeSourceCode() const
 	}
 	std::ofstream fout(stored_file_name[i], std::ios::out);
 	if (!fout) {
-		LOG_FATAL(jobType, sid, log_fp, "Open source code file failed"_cptr);
+		LOG_FATAL(jobType, sid, log_fp, "Open source code file failed");
 		throw JobHandleException("Open source code file failed");
 	}
 	fout << reply->str;
 	if (fout.bad()) {
-		LOG_FATAL(jobType, sid, log_fp, "Store source code failed"_cptr);
+		LOG_FATAL(jobType, sid, log_fp, "Store source code failed");
 		throw JobHandleException("Store source code failed");
 	}
 }
@@ -143,6 +143,6 @@ void JobBase::commitJudgeStatusToRedis(JudgeStatus status) try
 	// status为枚举类，在 redis 存储时用其对应的序号表示
 	cmd.execute(redisConn, jobType, sid, (int) status);
 } catch (const std::exception & e) {
-	LOG_FATAL(jobType, sid, log_fp, "Commit judge status failed. Error information: "_cptr, e.what(), "; judge status: "_cptr, (int)status);
+	LOG_FATAL(jobType, sid, log_fp, "Commit judge status failed. Error information: ", e.what(), "; judge status: ", (int)status);
 	throw;
 }

@@ -39,19 +39,19 @@ void UpdateJobBase::fetchDetailsFromRedis()
 				"is_rejudge"_cptr
 		);
 	} catch (const RedisNilException & e) {
-		LOG_FATAL(0, sid, log_fp, "job doesn't exist. Exception infomation: "_cptr, e.what());
+		LOG_FATAL(0, sid, log_fp, "job doesn't exist. Exception infomation: ", e.what());
 		throw;
 	} catch (const RedisUnexpectedCaseException & e) {
-		LOG_FATAL(0, sid, log_fp, "redis returns an unexpected type. Exception infomation: "_cptr, e.what());
+		LOG_FATAL(0, sid, log_fp, "redis returns an unexpected type. Exception infomation: ", e.what());
 		throw;
 	} catch (const RedisException & e) {
-		LOG_FATAL(0, sid, log_fp, "job doesn't exist. Exception infomation: "_cptr, e.what());
+		LOG_FATAL(0, sid, log_fp, "job doesn't exist. Exception infomation: ", e.what());
 		throw;
 	} catch (const std::exception & e) {
-		LOG_FATAL(0, sid, log_fp, "job doesn't exist. Exception infomation: "_cptr, e.what());
+		LOG_FATAL(0, sid, log_fp, "job doesn't exist. Exception infomation: ", e.what());
 		throw;
 	} catch (...) {
-		LOG_FATAL(0, sid, log_fp, "job doesn't exist. Exception infomation: "_cptr, UNKNOWN_EXCEPTION_WHAT);
+		LOG_FATAL(0, sid, log_fp, "job doesn't exist. Exception infomation: ", UNKNOWN_EXCEPTION_WHAT);
 		throw;
 	}
 
@@ -63,10 +63,10 @@ void UpdateJobBase::fetchDetailsFromRedis()
 		this->no_store_ac_code = (bool) stoi(query_res[4]);
 		this->is_rejudge = (bool) stoi(query_res[5]);
 	} catch (const std::exception & e) {
-		LOG_FATAL(0, sid, log_fp, "job details lost or type cast failed. Exception infomation: "_cptr, e.what());
+		LOG_FATAL(0, sid, log_fp, "job details lost or type cast failed. Exception infomation: ", e.what());
 		throw;
 	} catch (...) {
-		LOG_FATAL(0, sid, log_fp, "job details lost or type cast failed. Exception infomation: "_cptr, UNKNOWN_EXCEPTION_WHAT);
+		LOG_FATAL(0, sid, log_fp, "job details lost or type cast failed. Exception infomation: ", UNKNOWN_EXCEPTION_WHAT);
 		throw;
 	}
 }
@@ -103,7 +103,7 @@ void UpdateJobBase::handle()
 void UpdateJobBase::update_source_code(const char * source_code)
 {
 	if (source_code == nullptr) {
-		LOG_WARNING(jobType, sid, log_fp, "empty source code!"_cptr);
+		LOG_WARNING(jobType, sid, log_fp, "empty source code!");
 		return;
 	}
 
@@ -127,7 +127,7 @@ void UpdateJobBase::update_source_code(const char * source_code)
 void UpdateJobBase::update_compile_info(const char * compile_info)
 {
 	if (compile_info == nullptr) {
-		LOG_WARNING(jobType, sid, log_fp, "empty compile info!"_cptr);
+		LOG_WARNING(jobType, sid, log_fp, "empty compile info!");
 		return;
 	}
 
@@ -155,11 +155,11 @@ kerbal::redis::RedisReply UpdateJobBase::get_source_code() const
 	try {
 		reply = get_src_code_templ.execute(redisConn, this->jobType, this->sid);
 	} catch (std::exception & e) {
-		LOG_FATAL(jobType, sid, log_fp, "Get source code failed! Error information: "_cptr, e.what());
+		LOG_FATAL(jobType, sid, log_fp, "Get source code failed! Error information: ", e.what());
 		throw;
 	}
 	if (reply.replyType() != RedisReplyType::STRING) {
-		LOG_FATAL(jobType, sid, log_fp, "Get source code failed! Error information: "_cptr, "unexpected redis reply type"_cptr);
+		LOG_FATAL(jobType, sid, log_fp, "Get source code failed! Error information: ", "unexpected redis reply type");
 		throw RedisUnexpectedCaseException(reply.replyType());
 	}
 	return reply;
@@ -172,11 +172,11 @@ kerbal::redis::RedisReply UpdateJobBase::get_compile_info() const
 	try {
 		reply = get_ce_info_templ.execute(redisConn, this->jobType, this->sid);
 	} catch (std::exception & e) {
-		LOG_FATAL(jobType, sid, log_fp, "Get compile info failed! Error information: "_cptr, e.what());
+		LOG_FATAL(jobType, sid, log_fp, "Get compile info failed! Error information: ", e.what());
 		throw;
 	}
 	if (reply.replyType() != RedisReplyType::STRING) {
-		LOG_FATAL(jobType, sid, log_fp, "Get compile info failed! Error information: "_cptr, "unexpected redis reply type"_cptr);
+		LOG_FATAL(jobType, sid, log_fp, "Get compile info failed! Error information: ", "unexpected redis reply type");
 		throw RedisUnexpectedCaseException(reply.replyType());
 	}
 	return reply;
@@ -209,7 +209,7 @@ void UpdateJobBase::core_update_failed_table() noexcept try
 		throw MysqlEmptyResException(insert.errnum(), insert.error());
 	}
 } catch(const std::exception & e) {
-	LOG_FATAL(jobType, sid, log_fp, "Update failed table failed! Error information: "_cptr, e.what());
+	LOG_FATAL(jobType, sid, log_fp, "Update failed table failed! Error information: ", e.what());
 } catch(...) {
-	LOG_FATAL(jobType, sid, log_fp, "Update failed table failed! Error information: "_cptr, UNKNOWN_EXCEPTION_WHAT);
+	LOG_FATAL(jobType, sid, log_fp, "Update failed table failed! Error information: ", UNKNOWN_EXCEPTION_WHAT);
 }

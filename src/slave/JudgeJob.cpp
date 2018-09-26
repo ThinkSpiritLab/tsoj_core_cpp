@@ -39,11 +39,11 @@ JudgeJob::JudgeJob(int jobType, int sid, const kerbal::redis::RedisContext & con
 	try {
 		this->fetchDetailsFromRedis();
 	} catch (const std::exception & e) {
-		LOG_FATAL(jobType, sid, log_fp, "Fail to fetch job details. Error information: "_cptr, e.what());
+		LOG_FATAL(jobType, sid, log_fp, "Fail to fetch job details. Error information: ", e.what());
 		this->push_back_failed_judge_job();
 		throw;
 	} catch (...) {
-		LOG_FATAL(jobType, sid, log_fp, "Fail to fetch job details. Error information: "_cptr, UNKNOWN_EXCEPTION_WHAT);
+		LOG_FATAL(jobType, sid, log_fp, "Fail to fetch job details. Error information: ", UNKNOWN_EXCEPTION_WHAT);
 		this->push_back_failed_judge_job();
 		throw;
 	}
@@ -76,7 +76,7 @@ void JudgeJob::handle()
 			break;
 		}
 		case UnitedJudgeResult::COMPILE_RESOURCE_LIMIT_EXCEED:
-			LOG_WARNING(jobType, sid, log_fp, "compile resource limit exceed"_cptr);
+			LOG_WARNING(jobType, sid, log_fp, "compile resource limit exceed");
 			this->commitJudgeResultToRedis(compile_result);
 			break;
 		case UnitedJudgeResult::SYSTEM_ERROR:
@@ -89,7 +89,7 @@ void JudgeJob::handle()
 			this->commitJudgeResultToRedis(compile_result);
 
 			if (this->set_compile_info() == false) {
-				LOG_WARNING(jobType, sid, log_fp, "An error occurred while getting compile info."_cptr);
+				LOG_WARNING(jobType, sid, log_fp, "An error occurred while getting compile info.");
 			}
 			break;
 	}
@@ -173,7 +173,7 @@ namespace
 					  "similarity_percentage"_cptr, 0,
 					  "judge_server_id"_cptr, judge_server_id);
 	} catch (const std::exception & e) {
-		LOG_FATAL(jobType, sid, log_fp, "Commit judge result failed. Error information: "_cptr, e.what(), "; judge result: "_cptr, result);
+		LOG_FATAL(jobType, sid, log_fp, "Commit judge result failed. Error information: ", e.what(), "; judge result: ", result);
 		throw;
 	}
 }
@@ -187,7 +187,7 @@ bool JudgeJob::set_compile_info() noexcept
 {
 	std::ifstream fin("compiler.out", std::ios::in);
 	if (!fin) {
-		LOG_FATAL(jobType, sid, log_fp, "Cannot open compiler.out"_cptr);
+		LOG_FATAL(jobType, sid, log_fp, "Cannot open compiler.out");
 		return false;
 	}
 
@@ -201,8 +201,8 @@ bool JudgeJob::set_compile_info() noexcept
 	fin.read(buffer, MYSQL_TEXT_MAX_SIZE);
 
 	if (fin.bad()) {
-		LOG_FATAL(jobType, sid, log_fp, "Read compile info error, only "_cptr, fin.gcount(), " could be read"_cptr);
-		LOG_FATAL(jobType, sid, log_fp, "The read buffer: "_cptr, buffer);
+		LOG_FATAL(jobType, sid, log_fp, "Read compile info error, only ", fin.gcount(), " could be read");
+		LOG_FATAL(jobType, sid, log_fp, "The read buffer: ", buffer);
 		return false;
 	}
 
@@ -220,7 +220,7 @@ bool JudgeJob::set_compile_info() noexcept
 		Operation opt(redisConn);
 		opt.set((compile_info % jobType % sid).str(), buffer);
 	} catch (const std::exception & e) {
-		LOG_FATAL(jobType, sid, log_fp, "Set compile info failed. Error information: "_cptr, e.what());
+		LOG_FATAL(jobType, sid, log_fp, "Set compile info failed. Error information: ", e.what());
 		return false;
 	}
 
@@ -230,21 +230,21 @@ bool JudgeJob::set_compile_info() noexcept
 void JudgeJob::change_job_dir() const
 {
 	// TODO
-	LOG_DEBUG(jobType, sid, log_fp, "make dir: "_cptr, dir);
+	LOG_DEBUG(jobType, sid, log_fp, "make dir: ", dir);
 	mkdir(dir.c_str(), S_IRWXU | S_IRWXG | S_IRWXO);
 	chmod(dir.c_str(), S_IRWXU | S_IRWXG | S_IRWXO);
 	if (chdir(dir.c_str())) {
-		LOG_FATAL(jobType, sid, log_fp, "can not change to job dir: ["_cptr, dir, "]"_cptr);
+		LOG_FATAL(jobType, sid, log_fp, "can not change to job dir: [", dir, "]");
 		throw JobHandleException("can not change to job dir");
 	}
 }
 
 void JudgeJob::clean_job_dir() const noexcept try
 {
-	LOG_DEBUG(jobType, sid, log_fp, "clean dir"_cptr);
+	LOG_DEBUG(jobType, sid, log_fp, "clean dir");
 	std::unique_ptr<DIR, int (*)(DIR *)> dp(opendir("."), closedir);
 	if (dp == nullptr) {
-		LOG_FATAL(jobType, sid, log_fp, "clean dir failed."_cptr);
+		LOG_FATAL(jobType, sid, log_fp, "clean dir failed.");
 		return;
 	}
 
@@ -254,7 +254,7 @@ void JudgeJob::clean_job_dir() const noexcept try
 		}
 	}
 	if (chdir("..") != 0) {
-		LOG_FATAL(jobType, sid, log_fp, "can not go back to ../"_cptr);
+		LOG_FATAL(jobType, sid, log_fp, "can not go back to ../");
 		return;
 	}
 	rmdir(dir.c_str());
@@ -282,14 +282,14 @@ Result JudgeJob::execute(const Config & config) const noexcept
 
 	// check whether current user is root
 	if (getuid() != 0) {
-		LOG_FATAL(jobType, sid, log_fp, "ROOT_REQUIRED"_cptr);
+		LOG_FATAL(jobType, sid, log_fp, "ROOT_REQUIRED");
 		result.setErrorCode(RunnerError::ROOT_REQUIRED);
 		return result;
 	}
 
 	// check args
 	if (config.check_is_valid_config() == false) {
-		LOG_FATAL(jobType, sid, log_fp, "INVALID_CONFIG"_cptr);
+		LOG_FATAL(jobType, sid, log_fp, "INVALID_CONFIG");
 		result.setErrorCode(RunnerError::INVALID_CONFIG);
 		return result;
 	}
@@ -302,7 +302,7 @@ Result JudgeJob::execute(const Config & config) const noexcept
 			this->child_process(config);
 		}));
 	} catch (const std::exception & e) {
-		LOG_FATAL(jobType, sid, log_fp, "Fork failed. Error information: "_cptr, e.what());
+		LOG_FATAL(jobType, sid, log_fp, "Fork failed. Error information: ", e.what());
 		result.setErrorCode(RunnerError::FORK_FAILED);
 		return result;
 	}
@@ -321,12 +321,12 @@ Result JudgeJob::execute(const Config & config) const noexcept
 			}, config.max_real_time));
 		} catch (const std::system_error & e) {
 			child_process->kill(SIGKILL);
-			LOG_FATAL(jobType, sid, log_fp, "Thread construct failed. Error information: "_cptr, e.what(), " , error code: "_cptr, e.code().value());
+			LOG_FATAL(jobType, sid, log_fp, "Thread construct failed. Error information: ", e.what(), " , error code: ", e.code().value());
 			result.setErrorCode(RunnerError::PTHREAD_FAILED);
 			return result;
 		} catch (...) {
 			child_process->kill(SIGKILL);
-			LOG_FATAL(jobType, sid, log_fp, "Thread construct failed. Error information: "_cptr, "unknown exception"_cptr);
+			LOG_FATAL(jobType, sid, log_fp, "Thread construct failed. Error information: ", "unknown exception");
 			result.setErrorCode(RunnerError::PTHREAD_FAILED);
 			return result;
 		}
@@ -335,7 +335,7 @@ Result JudgeJob::execute(const Config & config) const noexcept
 			timeout_killer_thread->detach();
 		} catch (const std::system_error & e) {
 			child_process->kill(SIGKILL);
-			LOG_FATAL(jobType, sid, log_fp, "Thread detach failed. Error information: "_cptr, e.what(), " , error code: "_cptr, e.code().value());
+			LOG_FATAL(jobType, sid, log_fp, "Thread detach failed. Error information: ", e.what(), " , error code: ", e.code().value());
 			result.setErrorCode(RunnerError::PTHREAD_FAILED);
 			return result;
 		}
@@ -350,7 +350,7 @@ Result JudgeJob::execute(const Config & config) const noexcept
 	// On error, -1 is returned.
 	if (child_process->wait4(&status, WSTOPPED, &resource_usage) == -1) {
 		child_process->kill(SIGKILL);
-		LOG_FATAL(jobType, sid, log_fp, "WAIT_FAILED"_cptr);
+		LOG_FATAL(jobType, sid, log_fp, "WAIT_FAILED");
 		result.setErrorCode(RunnerError::WAIT_FAILED);
 		return result;
 	}
@@ -361,7 +361,7 @@ Result JudgeJob::execute(const Config & config) const noexcept
 	result.exit_code = WEXITSTATUS(status);
 
 	if (result.exit_code != 0) {
-		LOG_WARNING(jobType, sid, log_fp, "exit code != 0"_cptr);
+		LOG_WARNING(jobType, sid, log_fp, "exit code != 0");
 		result.judge_result = UnitedJudgeResult::RUNTIME_ERROR;
 		return result;
 	}
@@ -417,10 +417,10 @@ Result JudgeJob::compile() const noexcept
 			result.judge_result = UnitedJudgeResult::COMPILE_ERROR;
 			return result;
 		case UnitedJudgeResult::SYSTEM_ERROR:
-			LOG_FATAL(jobType, sid, log_fp, "System error occurred while compiling. Execute result: "_cptr, result);
+			LOG_FATAL(jobType, sid, log_fp, "System error occurred while compiling. Execute result: ", result);
 			return result;
 		default:
-			LOG_FATAL(jobType, sid, log_fp, "Unexpected compile result: "_cptr, result);
+			LOG_FATAL(jobType, sid, log_fp, "Unexpected compile result: ", result);
 			result.judge_result = UnitedJudgeResult::COMPILE_ERROR;
 			return result;
 	}
@@ -483,7 +483,7 @@ bool JudgeJob::child_process(const Config & config) const
 	std::unique_ptr<FILE, int (*)(FILE *)> input_file(fopen(config.input_path, "r"), fclose);
 	if (config.input_path != nullptr) {
 		if (!input_file) {
-			LOG_FATAL(jobType, sid, log_fp, "can not open \""_cptr, config.input_path, "\""_cptr);
+			LOG_FATAL(jobType, sid, log_fp, "can not open \"", config.input_path, "\"");
 			raise(SIGUSR1);
 			return false;
 		}
@@ -491,7 +491,7 @@ bool JudgeJob::child_process(const Config & config) const
 		// On success, these system calls return the new descriptor.
 		// On error, -1 is returned, and errno is set appropriately.
 		if (dup2(fileno(input_file.get()), fileno(stdin)) == -1) {
-			LOG_FATAL(jobType, sid, log_fp, RunnerError::DUP2_FAILED, "dup2 input file failed"_cptr);
+			LOG_FATAL(jobType, sid, log_fp, RunnerError::DUP2_FAILED, "dup2 input file failed");
 			raise(SIGUSR1);
 			return false;
 		}
@@ -513,7 +513,7 @@ bool JudgeJob::child_process(const Config & config) const
 		// 标准输出与错误输出指定为同一个文件
 		auto of_ptr = fopen(config.output_path, "w"); //DO NOT fclose this ptr while exit brace
 		if (!of_ptr) {
-			LOG_FATAL(jobType, sid, log_fp, "can not open \""_cptr, config.output_path, "\""_cptr);
+			LOG_FATAL(jobType, sid, log_fp, "can not open \"", config.output_path, "\"");
 			raise(SIGUSR1);
 			return false;
 		} else {
@@ -525,7 +525,7 @@ bool JudgeJob::child_process(const Config & config) const
 		if (config.output_path != nullptr) {
 			auto of_ptr = fopen(config.output_path, "w"); //DO NOT fclose this ptr while exit brace
 			if (!of_ptr) {
-				LOG_FATAL(jobType, sid, log_fp, "can not open \""_cptr, config.output_path, "\""_cptr);
+				LOG_FATAL(jobType, sid, log_fp, "can not open \"", config.output_path, "\"");
 				raise(SIGUSR1);
 				return false;
 			} else {
@@ -536,7 +536,7 @@ bool JudgeJob::child_process(const Config & config) const
 		if (config.error_path != nullptr) {
 			auto ef_ptr = fopen(config.error_path, "w"); //DO NOT fclose this ptr while exit brace
 			if (!ef_ptr) {
-				LOG_FATAL(jobType, sid, log_fp, "can not open \""_cptr, config.error_path, "\""_cptr);
+				LOG_FATAL(jobType, sid, log_fp, "can not open \"", config.error_path, "\"");
 				raise(SIGUSR1);
 				return false;
 			} else {
@@ -548,7 +548,7 @@ bool JudgeJob::child_process(const Config & config) const
 	// redirect stdout -> file
 	if (output_file != nullptr) {
 		if (dup2(fileno(output_file.get()), fileno(stdout)) == -1) {
-			LOG_FATAL(jobType, sid, log_fp, RunnerError::DUP2_FAILED, "dup2 output file failed"_cptr);
+			LOG_FATAL(jobType, sid, log_fp, RunnerError::DUP2_FAILED, "dup2 output file failed");
 			raise(SIGUSR1);
 			return false;
 		}
@@ -556,7 +556,7 @@ bool JudgeJob::child_process(const Config & config) const
 	if (error_file != nullptr) {
 		// redirect stderr -> file
 		if (dup2(fileno(error_file.get()), fileno(stderr)) == -1) {
-			LOG_FATAL(jobType, sid, log_fp, RunnerError::DUP2_FAILED, "dup2 error file failed"_cptr);
+			LOG_FATAL(jobType, sid, log_fp, RunnerError::DUP2_FAILED, "dup2 error file failed");
 			raise(SIGUSR1);
 			return false;
 		}
@@ -608,7 +608,7 @@ bool JudgeJob::push_back_failed_judge_job() noexcept
 bool JudgeJob::insert_into_failed(const kerbal::redis::RedisContext & conn, int jobType, int sid) noexcept
 {
 	try {
-		LOG_WARNING(jobType, sid, log_fp, "push back to judge failed list"_cptr);
+		LOG_WARNING(jobType, sid, log_fp, "push back to judge failed list");
 		Result result;
 		result.judge_result = UnitedJudgeResult::SYSTEM_ERROR;
 		staticCommitJudgeResultToRedis(jobType, sid, conn, result);
@@ -617,9 +617,9 @@ bool JudgeJob::insert_into_failed(const kerbal::redis::RedisContext & conn, int 
 		judge_failure_list.push_back("%d:%d"_fmt(jobType, sid).str());
 		return true;
 	} catch (const std::exception & e) {
-		LOG_FATAL(jobType, sid, log_fp, "Failed to push back failed judge job. Error information: "_cptr, e.what());
+		LOG_FATAL(jobType, sid, log_fp, "Failed to push back failed judge job. Error information: ", e.what());
 	} catch (...) {
-		LOG_FATAL(jobType, sid, log_fp, "Failed to push back failed judge job. Error information: "_cptr, UNKNOWN_EXCEPTION_WHAT);
+		LOG_FATAL(jobType, sid, log_fp, "Failed to push back failed judge job. Error information: ", UNKNOWN_EXCEPTION_WHAT);
 	}
 	return false;
 }
