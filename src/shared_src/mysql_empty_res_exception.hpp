@@ -9,20 +9,20 @@
 
 class MysqlEmptyResException : public std::logic_error
 {
-    protected:
-        typedef std::logic_error base;
+	protected:
+		typedef std::logic_error base;
 
-        int _errnum;
+		int _errnum;
 
-    public:
-        MysqlEmptyResException(int errnum, const char * errstr) : base(errstr), _errnum(errnum)
-        {
-        }
+	public:
+		MysqlEmptyResException(int errnum, const char * errstr) : base(errstr), _errnum(errnum)
+		{
+		}
 
-        int errnum() const
-        {
-            return _errnum;
-        }
+		int errnum() const
+		{
+			return _errnum;
+		}
 };
 
 

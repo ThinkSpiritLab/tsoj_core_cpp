@@ -11,14 +11,14 @@
 
 namespace
 {
-    using namespace kerbal::redis;
-    using namespace mysqlpp;
+	using namespace kerbal::redis;
+	using namespace mysqlpp;
 }
 
 extern std::ostream log_fp;
 
 ContestUpdateJob::ContestUpdateJob(int jobType, int sid, const RedisContext & redisConn,
-           std::unique_ptr <mysqlpp::Connection> && mysqlConn) : supper_t(jobType, sid, redisConn, std::move(mysqlConn))
+		std::unique_ptr <mysqlpp::Connection> && mysqlConn) : supper_t(jobType, sid, redisConn, std::move(mysqlConn))
 {
 	LOG_DEBUG(jobType, sid, log_fp, "ContestUpdateJob::ContestUpdateJob");
 }
@@ -27,21 +27,21 @@ void ContestUpdateJob::update_solution()
 {
 	LOG_DEBUG(jobType, sid, log_fp, "ContestUpdateJob::update_solution");
 
-    mysqlpp::Query insert = mysqlConn->query(
-            "insert into contest_solution%0 "
-            "(s_id, u_id, p_id, s_lang, s_result, s_time, s_mem, s_posttime, s_similarity_percentage)"
-            "values (%1, %2, %3, %4, %5, %6, %7, %8q, %9)"
-    );
-    insert.parse();
-    mysqlpp::SimpleResult res = insert.execute(jobType, sid, uid, pid, (int) lang, (int) result.judge_result,
-                                              result.cpu_time.count(), result.memory.count(), postTime,
-                                              result.similarity_percentage);
-    if (!res) {
-    	LOG_FATAL(jobType, sid, log_fp, "Update solution failed! ",
+	mysqlpp::Query insert = mysqlConn->query(
+			"insert into contest_solution%0 "
+			"(s_id, u_id, p_id, s_lang, s_result, s_time, s_mem, s_posttime, s_similarity_percentage)"
+			"values (%1, %2, %3, %4, %5, %6, %7, %8q, %9)"
+	);
+	insert.parse();
+	mysqlpp::SimpleResult res = insert.execute(jobType, sid, uid, pid, (int) lang, (int) result.judge_result,
+												result.cpu_time.count(), result.memory.count(), postTime,
+												result.similarity_percentage);
+	if (!res) {
+		LOG_FATAL(jobType, sid, log_fp, "Update solution failed! ",
 										"Error code: ", insert.errnum(), ", ",
 										"Error information: ", insert.error());
-        throw MysqlEmptyResException(insert.errnum(), insert.error());
-    }
+		throw MysqlEmptyResException(insert.errnum(), insert.error());
+	}
 }
 
 void ContestUpdateJob::update_user_and_problem()
@@ -116,22 +116,22 @@ bool ContestUpdateJob::this_problem_has_not_accepted()
 {
 	LOG_DEBUG(jobType, sid, log_fp, "ContestUpdateJob::this_problem_has_not_accepted");
 
-    mysqlpp::Query query = mysqlConn->query(
-            "select first_ac_user from contest_problem where ct_id = %0 and p_id = %1"
-    );
-    query.parse();
-    mysqlpp::StoreQueryResult res = query.store(jobType, pid);
+	mysqlpp::Query query = mysqlConn->query(
+			"select first_ac_user from contest_problem where ct_id = %0 and p_id = %1"
+	);
+	query.parse();
+	mysqlpp::StoreQueryResult res = query.store(jobType, pid);
 
-    if (res.empty()) {
-    	if(query.errnum() != 0) {
-    		LOG_FATAL(jobType, sid, log_fp, "Query problem's first_ac_user failed! "
+	if (res.empty()) {
+		if(query.errnum() != 0) {
+			LOG_FATAL(jobType, sid, log_fp, "Query problem's first_ac_user failed! "
 											"Error code: ", query.errnum(), ", ",
 											"Error information: ", query.error());
-    	} else {
-    		LOG_FATAL(jobType, sid, log_fp, "Check whether you have deleted the problem ", pid, " of the contest No.", jobType, " ?");
-    	}
+		} else {
+			LOG_FATAL(jobType, sid, log_fp, "Check whether you have deleted the problem ", pid, " of the contest No.", jobType, " ?");
+		}
 		throw MysqlEmptyResException(query.errnum(), query.error());
-    }
+	}
 	return res[0][0] == "NULL" ? true : false; //该字段在竞赛开始时为 NULL, 即尚未有人通过此题
 }
 
@@ -149,7 +149,7 @@ void ContestUpdateJob::update_user_problem()
 		throw;
 	}
 
-    bool is_first_ac = false;
+	bool is_first_ac = false;
 	if (is_ac == true) {
 		try {
 			is_first_ac = this->this_problem_has_not_accepted() == true ? true : false;
@@ -195,7 +195,7 @@ void ContestUpdateJob::update_user_problem()
 			return;
 	}
 
-    // update first_ac_user
+	// update first_ac_user
 	if (is_ac == true && is_first_ac == true) {
 		mysqlpp::Query update = mysqlConn->query(
 				"update contest_problem set first_ac_user = %0 where ct_id = %1 and p_id = %2"

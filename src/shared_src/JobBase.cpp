@@ -98,23 +98,23 @@ JobBase::JobBase(int jobType, int sid, const kerbal::redis::RedisContext & redis
 
 void JobBase::storeSourceCode() const
 {
-    static RedisCommand cmd("hget source_code:%d:%d source");
-    RedisReply reply;
-    try {
-        reply = cmd.execute(redisConn, jobType, sid);
-    } catch (const std::exception & e) {
-        LOG_FATAL(jobType, sid, log_fp, "Get source code failed. Error information: "_cptr, e.what());
-        throw JobHandleException("Get source code failed");
-    }
-    if (reply.replyType() != RedisReplyType::STRING) {
-        LOG_FATAL(jobType, sid, log_fp, "Get source code failed. Error information: unexpected redis reply type"_cptr);
-        throw JobHandleException("Get source code failed: unexpected redis reply type");
-    }
+	static RedisCommand cmd("hget source_code:%d:%d source");
+	RedisReply reply;
+	try {
+		reply = cmd.execute(redisConn, jobType, sid);
+	} catch (const std::exception & e) {
+		LOG_FATAL(jobType, sid, log_fp, "Get source code failed. Error information: "_cptr, e.what());
+		throw JobHandleException("Get source code failed");
+	}
+	if (reply.replyType() != RedisReplyType::STRING) {
+		LOG_FATAL(jobType, sid, log_fp, "Get source code failed. Error information: unexpected redis reply type"_cptr);
+		throw JobHandleException("Get source code failed: unexpected redis reply type");
+	}
 
-    static const char * stored_file_name[] = {"Main.c", "Main.cpp", "Main.java"};
-    size_t i = 1;
-    switch (lang) {
-        case Language::Cpp:
+	static const char * stored_file_name[] = {"Main.c", "Main.cpp", "Main.java"};
+	size_t i = 1;
+	switch (lang) {
+		case Language::Cpp:
 		case Language::Cpp14:
 			i = 1;
 			break;

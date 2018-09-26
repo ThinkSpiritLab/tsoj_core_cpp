@@ -83,20 +83,20 @@ void ExerciseUpdateJobBase::update_user_accept(int delta)
 
 void ExerciseUpdateJobBase::update_user_and_problem()
 {
-    bool already_AC = false;
-    try {
-    	if(this->get_user_problem_status() == user_problem_status::ACCEPTED) {
-    		already_AC = true;
-    	} else {
-    		already_AC = false;
-    	}
-    } catch (const mysqlpp::BadParamCount & e) {
-        LOG_WARNING(jobType, sid, log_fp, "Query already ac before failed! Error information: ", e.what());
-        //DO NOT THROW
-        already_AC = false;
-    }
+	bool already_AC = false;
+	try {
+		if(this->get_user_problem_status() == user_problem_status::ACCEPTED) {
+			already_AC = true;
+		} else {
+			already_AC = false;
+		}
+	} catch (const mysqlpp::BadParamCount & e) {
+		LOG_WARNING(jobType, sid, log_fp, "Query already ac before failed! Error information: ", e.what());
+		//DO NOT THROW
+		already_AC = false;
+	}
 
-    // AC后再提交不增加submit数
+	// AC后再提交不增加submit数
 	if (already_AC == false) {
 		this->update_user_submit(1);
 		this->update_problem_submit(1);

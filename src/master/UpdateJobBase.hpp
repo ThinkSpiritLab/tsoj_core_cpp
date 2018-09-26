@@ -26,58 +26,58 @@ enum class user_problem_status
 
 class UpdateJobBase: public JobBase
 {
-    private:
-        typedef JobBase supper_t;
+	private:
+		typedef JobBase supper_t;
 
-    protected:
-        template <typename T> using unique_ptr = std::unique_ptr<T>;
+	protected:
+		template <typename T> using unique_ptr = std::unique_ptr<T>;
 
-        using RedisContext = kerbal::redis::RedisContext;
+		using RedisContext = kerbal::redis::RedisContext;
 
-        unique_ptr<mysqlpp::Connection> mysqlConn;
+		unique_ptr<mysqlpp::Connection> mysqlConn;
 
-        int uid; ///@brief user id
-        int cid; ///@brief course_id
-        std::string postTime; ///@brief post time
-        bool haveAccepted; ///@brief whether the user has pass the problem before
-        bool no_store_ac_code; ///@brief whether store the user's code if this solution is accepted
-        bool is_rejudge; ///@brief is rejudge job
+		int uid; ///@brief user id
+		int cid; ///@brief course_id
+		std::string postTime; ///@brief post time
+		bool haveAccepted; ///@brief whether the user has pass the problem before
+		bool no_store_ac_code; ///@brief whether store the user's code if this solution is accepted
+		bool is_rejudge; ///@brief is rejudge job
 
-        struct Result
-        {
-        		UnitedJudgeResult judge_result;
-        		std::chrono::milliseconds cpu_time;
-        		std::chrono::milliseconds real_time;
-        		kerbal::utility::Byte memory;
-        		int similarity_percentage;
-        } result;
+		struct Result
+		{
+				UnitedJudgeResult judge_result;
+				std::chrono::milliseconds cpu_time;
+				std::chrono::milliseconds real_time;
+				kerbal::utility::Byte memory;
+				int similarity_percentage;
+		} result;
 
-    private:
-        virtual void fetchDetailsFromRedis() override final;
+	private:
+		virtual void fetchDetailsFromRedis() override final;
 
-    protected:
-        friend
+	protected:
+		friend
 		unique_ptr<UpdateJobBase>
-        make_update_job(int jobType, int sid, const RedisContext & redisConn,
-        				unique_ptr<mysqlpp::Connection> && mysqlConn);
+		make_update_job(int jobType, int sid, const RedisContext & redisConn,
+						unique_ptr<mysqlpp::Connection> && mysqlConn);
 
 		UpdateJobBase(int jobType, int sid, const RedisContext & redisConn,
 				unique_ptr<mysqlpp::Connection> && mysqlConn);
-    public:
+	public:
 		/**
 		 * @brief 执行任务
 		 * @warning 本方法实现了基类中规定的 void handle() 接口, 且子类不可再覆盖
 		 */
 		virtual void handle() override final;
 
-    protected:
+	protected:
 		/**
 		 * @brief 将本次提交记录更新至 solution 表
 		 * @warning 仅规定 update solution 表的接口, 具体操作需由子类实现
 		 */
 		virtual void update_solution() = 0;
 
-    private:
+	private:
 		/**
 		 * @brief 将提交代码更新至 mysql
 		 * @param source_code 指向代码字符串的常量指针
@@ -108,7 +108,7 @@ class UpdateJobBase: public JobBase
 		 */
 		kerbal::redis::RedisReply get_compile_info() const;
 
-    protected:
+	protected:
 		/**
 		 * @brief 更新题目的提交数, 通过数, 用户的提交数, 通过数
 		 * @warning 仅规定 update user and problem 表的接口, 具体操作需由子类实现

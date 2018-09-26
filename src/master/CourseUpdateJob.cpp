@@ -26,20 +26,20 @@ void CourseUpdateJob::update_solution()
 {
 	LOG_DEBUG(jobType, sid, log_fp, "CourseUpdateJob::update_solution");
 
-    std::string solution_table = "solution";
+	std::string solution_table = "solution";
 
-    mysqlpp::Query templ = mysqlConn->query(
-            "insert into %0 "
-            "(s_id, u_id, p_id, s_lang, s_result, s_time, s_mem, s_posttime, c_id, s_similarity_percentage)"
-            "values (%1, %2, %3, %4, %5, %6, %7, %8q, %9, %10)"
-    );
-    templ.parse();
-    mysqlpp::SimpleResult res = templ.execute(solution_table, sid, uid, pid, (int) lang, (int) result.judge_result,
-                                              result.cpu_time.count(), result.memory.count(), postTime, cid,
-                                              result.similarity_percentage);
-    if (!res) {
-        throw MysqlEmptyResException(templ.errnum(), templ.error());
-    }
+	mysqlpp::Query templ = mysqlConn->query(
+			"insert into %0 "
+			"(s_id, u_id, p_id, s_lang, s_result, s_time, s_mem, s_posttime, c_id, s_similarity_percentage)"
+			"values (%1, %2, %3, %4, %5, %6, %7, %8q, %9, %10)"
+	);
+	templ.parse();
+	mysqlpp::SimpleResult res = templ.execute(solution_table, sid, uid, pid, (int) lang, (int) result.judge_result,
+												result.cpu_time.count(), result.memory.count(), postTime, cid,
+												result.similarity_percentage);
+	if (!res) {
+		throw MysqlEmptyResException(templ.errnum(), templ.error());
+	}
 }
 
 void CourseUpdateJob::update_user_and_problem()
@@ -51,24 +51,24 @@ user_problem_status CourseUpdateJob::get_user_problem_status()
 {
 	LOG_DEBUG(jobType, sid, log_fp, "CourseUpdateJob::get_user_problem_status");
 
-    mysqlpp::Query query = mysqlConn->query(
-            "select status from user_problem "
-            "where u_id = %0 and p_id = %1 and c_id = %2"
-    );
-    query.parse();
+	mysqlpp::Query query = mysqlConn->query(
+			"select status from user_problem "
+			"where u_id = %0 and p_id = %1 and c_id = %2"
+	);
+	query.parse();
 
-    mysqlpp::StoreQueryResult res = query.store(uid, pid, cid);
+	mysqlpp::StoreQueryResult res = query.store(uid, pid, cid);
 
-    if (res.empty()) {
-        if (query.errnum() != 0) {
-            LOG_FATAL(jobType, sid, log_fp, "Select status from user_problem failed! ",
-											  "Error code: ", query.errnum(), ", ",
-											  "Error information: ", query.error());
-            throw MysqlEmptyResException(query.errnum(), query.error());
-        }
-        return user_problem_status::TODO;
-    }
-    switch((int) res[0][0]) {
+	if (res.empty()) {
+		if (query.errnum() != 0) {
+			LOG_FATAL(jobType, sid, log_fp, "Select status from user_problem failed! ",
+											"Error code: ", query.errnum(), ", ",
+											"Error information: ", query.error());
+			throw MysqlEmptyResException(query.errnum(), query.error());
+		}
+		return user_problem_status::TODO;
+	}
+	switch((int) res[0][0]) {
 		case 0:
 			return user_problem_status::ACCEPTED;
 		case 1:
