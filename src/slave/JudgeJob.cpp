@@ -5,14 +5,10 @@
  *      Author: peter
  */
 
-#include "../slave/JudgeJob.hpp"
-
-#include "logger.hpp"
-#include "process.hpp"
+#include "JudgeJob.hpp"
 
 #include <thread>
 #include <algorithm>
-
 #include <cstring>
 
 #include <dirent.h>
@@ -20,13 +16,15 @@
 #include <sys/stat.h>
 #include <sys/resource.h>
 
-#include <kerbal/redis/redis_data_struct/list.hpp>
-#include <kerbal/redis/redis_type_cast.hpp>
-
+#include "logger.hpp"
+#include "process.hpp"
 #include "compare.hpp"
 #include "Config.hpp"
 #include "global_shared_variable.hpp"
 #include "boost_format_suffix.hpp"
+
+#include <kerbal/redis/redis_data_struct/list.hpp>
+#include <kerbal/redis/redis_type_cast.hpp>
 #include <kerbal/compatibility/chrono_suffix.hpp>
 
 using namespace kerbal::redis;
@@ -36,17 +34,6 @@ using kerbal::redis::RedisContext;
 JudgeJob::JudgeJob(int jobType, int sid, const kerbal::redis::RedisContext & conn) :
 			supper_t(jobType, sid, conn), dir((boost::format(init_dir + "/job-%d-%d") % jobType % sid).str())
 {
-	try {
-		this->fetchDetailsFromRedis();
-	} catch (const std::exception & e) {
-		LOG_FATAL(jobType, sid, log_fp, "Fail to fetch job details. Error information: ", e.what());
-		this->push_back_failed_judge_job();
-		throw;
-	} catch (...) {
-		LOG_FATAL(jobType, sid, log_fp, "Fail to fetch job details. Error information: ", UNKNOWN_EXCEPTION_WHAT);
-		this->push_back_failed_judge_job();
-		throw;
-	}
 }
 
 void JudgeJob::handle()
@@ -105,16 +92,10 @@ void JudgeJob::handle()
 
 }
 
-void JudgeJob::fetchDetailsFromRedis()
-{
-	this->supper_t::fetchDetailsFromRedis();
-}
-
 Result JudgeJob::running()
 {
 	// 构建运行配置（但暂未使用）
 	RunningConfig config(*this);
-	// this->commitJudgeStatusToRedis(conn, "cases_finished", 0);
 
 	Result result;
 	this->commitJudgeStatusToRedis(JudgeStatus::RUNNING);
@@ -338,6 +319,11 @@ Result JudgeJob::execute(const Config & config) const noexcept
 			LOG_FATAL(jobType, sid, log_fp, "Thread detach failed. Error information: ", e.what(), " , error code: ", e.code().value());
 			result.setErrorCode(RunnerError::PTHREAD_FAILED);
 			return result;
+		} catch (...) {
+			child_process->kill(SIGKILL);
+			LOG_FATAL(jobType, sid, log_fp, "Thread detach failed. Error information: ", UNKNOWN_EXCEPTION_WHAT);
+			result.setErrorCode(RunnerError::PTHREAD_FAILED);
+			return result;
 		}
 		LOG_DEBUG(jobType, sid, log_fp, "Timeout thread work success");
 	}
@@ -483,7 +469,7 @@ bool JudgeJob::child_process(const Config & config) const
 	std::unique_ptr<FILE, int (*)(FILE *)> input_file(fopen(config.input_path, "r"), fclose);
 	if (config.input_path != nullptr) {
 		if (!input_file) {
-			LOG_FATAL(jobType, sid, log_fp, "can not open \"", config.input_path, "\"");
+			LOG_FATAL(jobType, sid, log_fp, "can not open [", config.input_path, "]");
 			raise(SIGUSR1);
 			return false;
 		}
@@ -525,7 +511,7 @@ bool JudgeJob::child_process(const Config & config) const
 		if (config.output_path != nullptr) {
 			auto of_ptr = fopen(config.output_path, "w"); //DO NOT fclose this ptr while exit brace
 			if (!of_ptr) {
-				LOG_FATAL(jobType, sid, log_fp, "can not open \"", config.output_path, "\"");
+				LOG_FATAL(jobType, sid, log_fp, "can not open [", config.output_path, "]");
 				raise(SIGUSR1);
 				return false;
 			} else {
@@ -536,7 +522,7 @@ bool JudgeJob::child_process(const Config & config) const
 		if (config.error_path != nullptr) {
 			auto ef_ptr = fopen(config.error_path, "w"); //DO NOT fclose this ptr while exit brace
 			if (!ef_ptr) {
-				LOG_FATAL(jobType, sid, log_fp, "can not open \"", config.error_path, "\"");
+				LOG_FATAL(jobType, sid, log_fp, "can not open [", config.error_path, "]");
 				raise(SIGUSR1);
 				return false;
 			} else {

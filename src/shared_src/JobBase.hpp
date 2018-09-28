@@ -37,7 +37,7 @@ class JobBase
 		/** problem id */
 		int pid;
 
-		/** 语言种类 */
+		/** 语言 */
 		Language lang;
 
 		/** 测试用例数量 */
@@ -67,7 +67,7 @@ class JobBase
 		 * @param redisConn Redis连接
 		 * @exception 该构造函数保证不抛出任何异常
 		 */
-		JobBase(int jobType, int sid, const kerbal::redis::RedisContext & redisConn) noexcept;
+		JobBase(int jobType, int sid, const kerbal::redis::RedisContext & redisConn);
 
 		/**
 		 * @brief 析构函数使用默认析构函数
@@ -81,11 +81,12 @@ class JobBase
 		virtual void handle() = 0;
 
 		/**
-		 * @brief 从 redis 数据库获取本 Job 的详细信息。在基类中定义为纯虚函数。
-		 * @warning 本函数为纯虚函数，但是有实现。实际上，其子类的部分相同信息可由此函数取得。
-		 * @exception std::exception
+		 * @brief 从 redis 中取得代码
+		 * @return Redis 返回集. 注意! 返回集的类型只可能为字符串类型, 否则该方法会通过抛出异常报告错误
+		 * @throws RedisUnexpectedCaseException 如果取得的结果不为字符串类型 (包括空类型), 则抛出此异常
+		 * @throws std::exception 该方法执行过程中还会因 redis 操作失败
 		 */
-		virtual void fetchDetailsFromRedis() = 0;
+		kerbal::redis::RedisReply get_source_code() const;
 
 		/**
 		 * @brief 从 redis 数据库获取本 Job 的代码并存储到工作空间中，用于编译运行。

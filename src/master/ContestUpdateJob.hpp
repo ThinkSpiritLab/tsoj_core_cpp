@@ -16,13 +16,13 @@ class ContestUpdateJob: public UpdateJobBase
 		typedef UpdateJobBase supper_t;
 
 		friend
-		unique_ptr<UpdateJobBase>
+		std::unique_ptr<UpdateJobBase>
 		make_update_job(int jobType, int sid, const RedisContext & redisConn,
-						unique_ptr<mysqlpp::Connection> && mysqlConn);
+						std::unique_ptr<mysqlpp::Connection> && mysqlConn);
 
 	protected:
 		ContestUpdateJob(int jobType, int sid, const kerbal::redis::RedisContext & redisConn,
-						 std::unique_ptr <mysqlpp::Connection> && mysqlConn);
+						std::unique_ptr <mysqlpp::Connection> && mysqlConn);
 
 	private:
 		/**
@@ -38,7 +38,8 @@ class ContestUpdateJob: public UpdateJobBase
 		virtual void update_user_and_problem() override final;
 
 		/**
-		 *
+		 * @brief 判断此题之前是否有用户 AC 过, 换句话说, 判断这次提交是否是首 A
+		 * @return 如果之前没有用户 AC 过, 返回 true, 即本次为首 A 提交
 		 */
 		bool this_problem_has_not_accepted();
 
@@ -51,10 +52,10 @@ class ContestUpdateJob: public UpdateJobBase
 		 * @brief 取得此用户此题在此次提交以前 AC, TO_DO 或 ATTEMPT 的状态
 		 * @warning 该方法已被标记为 final, 禁止子类覆盖本方法
 		 */
-		virtual user_problem_status get_user_problem_status() override final;
+		user_problem_status get_contest_user_problem_status();
 
 		virtual void update_user_problem() override final;
-		virtual ~ContestUpdateJob() = default;
+		virtual ~ContestUpdateJob() noexcept = default;
 };
 
 #endif /* SRC_MASTER_CONTESTUPDATEJOB_HPP_ */

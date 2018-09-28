@@ -5,16 +5,11 @@
  *      Author: peter
  */
 
-#include "logger.hpp"
 #include "CourseUpdateJob.hpp"
+#include "logger.hpp"
 
 extern std::ostream log_fp;
 
-namespace
-{
-	using namespace kerbal::redis;
-	using namespace mysqlpp;
-}
 
 CourseUpdateJob::CourseUpdateJob(int jobType, int sid, const kerbal::redis::RedisContext & redisConn,
 		std::unique_ptr<mysqlpp::Connection> && mysqlConn) : supper_t(jobType, sid, redisConn, std::move(mysqlConn))
@@ -26,30 +21,100 @@ void CourseUpdateJob::update_solution()
 {
 	LOG_DEBUG(jobType, sid, log_fp, "CourseUpdateJob::update_solution");
 
-	std::string solution_table = "solution";
-
-	mysqlpp::Query templ = mysqlConn->query(
-			"insert into %0 "
+	mysqlpp::Query insert = mysqlConn->query(
+			"insert into solution "
 			"(s_id, u_id, p_id, s_lang, s_result, s_time, s_mem, s_posttime, c_id, s_similarity_percentage)"
-			"values (%1, %2, %3, %4, %5, %6, %7, %8q, %9, %10)"
+			"values (%0, %1, %2, %3, %4, %5, %6, %7q, %8, %9)"
 	);
-	templ.parse();
-	mysqlpp::SimpleResult res = templ.execute(solution_table, sid, uid, pid, (int) lang, (int) result.judge_result,
-												result.cpu_time.count(), result.memory.count(), postTime, cid,
+	insert.parse();
+	mysqlpp::SimpleResult res = insert.execute(sid, uid, pid, (int) lang, (int) result.judge_result,
+											(int)result.cpu_time.count(), (int)result.memory.count(), postTime, cid,
 												result.similarity_percentage);
 	if (!res) {
-		throw MysqlEmptyResException(templ.errnum(), templ.error());
+		MysqlEmptyResException e(insert.errnum(), insert.error());
+		EXCEPT_FATAL(jobType, sid, log_fp, "Select status from user_problem failed!", e);
+		throw e;
+	}
+}
+
+void CourseUpdateJob::update_course_problem_submit(int delta)
+{
+	//TODO 数据库未支持记录题目提交数的字段
+}
+
+void CourseUpdateJob::update_course_problem_accept(int delta)
+{
+	//TODO 数据库未支持记录题目通过数的字段
+}
+
+void CourseUpdateJob::update_course_user_submit(int delta)
+{
+	LOG_DEBUG(jobType, sid, log_fp, "CourseUpdateJob::update_course_user_submit");
+
+	mysqlpp::Query update = mysqlConn->query(
+			"update course_user set c_submit = c_submit + %0 where c_id = %1 and u_id = %2"
+	);
+	update.parse();
+
+	mysqlpp::SimpleResult res = update.execute(delta, cid, uid);
+
+	if(!res) {
+		MysqlEmptyResException e(update.errnum(), update.error());
+		EXCEPT_FATAL(jobType, sid, log_fp, "Update user submit failed!", e);
+		throw e;
+	}
+}
+
+void CourseUpdateJob::update_course_user_accept(int delta)
+{
+	LOG_DEBUG(jobType, sid, log_fp, "CourseUpdateJob::update_course_user_accept");
+
+	mysqlpp::Query update = mysqlConn->query(
+			"update course_user set c_accept = c_accept + %0 where c_id = %1 and u_id = %2"
+	);
+	update.parse();
+	mysqlpp::SimpleResult res = update.execute(delta, cid, uid);
+	if (!res) {
+		MysqlEmptyResException e(update.errnum(), update.error());
+		EXCEPT_FATAL(jobType, sid, log_fp, "Update user u_accept failed!", e);
+		throw e;
 	}
 }
 
 void CourseUpdateJob::update_user_and_problem()
 {
-	//TODO
+	LOG_DEBUG(jobType, sid, log_fp, "CourseUpdateJob::update_user_and_problem");
+
+	// 先更新练习视角用户的提交数和通过数
+	this->supper_t::update_user_and_problem();
+
+	bool already_AC = false;
+	try {
+		if(this->get_course_user_problem_status() == user_problem_status::ACCEPTED) {
+			already_AC = true;
+		} else {
+			already_AC = false;
+		}
+	} catch (const std::exception & e) {
+		EXCEPT_WARNING(jobType, sid, log_fp, "Query already ac before failed!", e);
+		//DO NOT THROW
+		already_AC = false;
+	}
+
+	// AC后再提交不增加submit数
+	if (already_AC == false) {
+		this->update_course_user_submit(1);
+		this->update_course_problem_submit(1);
+		if (result.judge_result == UnitedJudgeResult::ACCEPTED) {
+			this->update_course_user_accept(1);
+			this->update_course_problem_accept(1);
+		}
+	}
 }
 
-user_problem_status CourseUpdateJob::get_user_problem_status()
+user_problem_status CourseUpdateJob::get_course_user_problem_status()
 {
-	LOG_DEBUG(jobType, sid, log_fp, "CourseUpdateJob::get_user_problem_status");
+	LOG_DEBUG(jobType, sid, log_fp, "CourseUpdateJob::get_course_user_problem_status");
 
 	mysqlpp::Query query = mysqlConn->query(
 			"select status from user_problem "
@@ -61,10 +126,9 @@ user_problem_status CourseUpdateJob::get_user_problem_status()
 
 	if (res.empty()) {
 		if (query.errnum() != 0) {
-			LOG_FATAL(jobType, sid, log_fp, "Select status from user_problem failed! ",
-											"Error code: ", query.errnum(), ", ",
-											"Error information: ", query.error());
-			throw MysqlEmptyResException(query.errnum(), query.error());
+			MysqlEmptyResException e(query.errnum(), query.error());
+			EXCEPT_FATAL(jobType, sid, log_fp, "Select status from user_problem failed!", e);
+			throw e;
 		}
 		return user_problem_status::TODO;
 	}
@@ -83,7 +147,10 @@ void CourseUpdateJob::update_user_problem()
 {
 	LOG_DEBUG(jobType, sid, log_fp, "CourseUpdateJob::update_user_problem");
 
-	user_problem_status old_status = this->get_user_problem_status();
+	// 先更新练习视角的用户通过情况表
+	this->supper_t::update_user_problem();
+
+	user_problem_status old_status = this->get_course_user_problem_status();
 
 	bool is_ac = this->result.judge_result == UnitedJudgeResult::ACCEPTED ;
 
@@ -94,10 +161,9 @@ void CourseUpdateJob::update_user_problem()
 			insert.parse();
 			mysqlpp::SimpleResult ret = insert.execute(uid, pid, cid, is_ac ? 0 : 1);
 			if (!ret) {
-				LOG_FATAL(jobType, sid, log_fp, "Update user_problem failed! ",
-												"Error code: ", insert.errnum(), ", ",
-												"Error information: ", insert.error());
-				throw MysqlEmptyResException(insert.errnum(), insert.error());
+				MysqlEmptyResException e(insert.errnum(), insert.error());
+				EXCEPT_FATAL(jobType, sid, log_fp, "Update user_problem failed!", e);
+				throw e;
 			}
 			break;
 		}
@@ -109,10 +175,9 @@ void CourseUpdateJob::update_user_problem()
 			update.parse();
 			mysqlpp::SimpleResult ret = update.execute(is_ac ? 0 : 1, uid, pid, cid);
 			if (!ret) {
-				LOG_FATAL(jobType, sid, log_fp, "Update user_problem failed! ",
-												"Error code: ", update.errnum(), ", ",
-												"Error information: ", update.error());
-				throw MysqlEmptyResException(update.errnum(), update.error());
+				MysqlEmptyResException e(update.errnum(), update.error());
+				EXCEPT_FATAL(jobType, sid, log_fp, "Update user_problem failed!", e);
+				throw e;
 			}
 			break;
 		}

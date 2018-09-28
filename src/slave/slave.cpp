@@ -299,6 +299,7 @@ int main(int argc, const char * argv[]) try
 			job_item = job_list.block_pop_front(0_s);
 			if (JudgeJob::isExitJob(job_item) == true) {
 				loop = false;
+				LOG_INFO(0, 0, log_fp, "Get exit job.");
 				continue;
 			}
 			std::tie(job_type, job_id) = JudgeJob::parseJobItem(job_item);

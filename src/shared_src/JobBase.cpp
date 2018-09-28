@@ -43,75 +43,60 @@ std::pair<int, int> JobBase::parseJobItem(const std::string & args)
 	}
 }
 
-void JobBase::fetchDetailsFromRedis()
+JobBase::JobBase(int jobType, int sid, const kerbal::redis::RedisContext & redisConn) :
+		jobType(jobType), sid(sid), redisConn(redisConn)
 {
-	using std::stoi;
+	using std::chrono::milliseconds;
+	using kerbal::utility::MB;
 	static boost::format key_name_tmpl("job_info:%d:%d");
+	const std::string job_info_key = (key_name_tmpl % jobType % sid).str();
 
-	std::vector<std::string> query_res;
-	//kerbal 库中针对 redis 操作封装的操作对象
-	Operation opt(redisConn);
+	kerbal::redis::Operation opt(redisConn);
 
 	try {
-		query_res = opt.hmget((key_name_tmpl % jobType % sid).str(),
-				"pid"_cptr,
-				"lang"_cptr,
-				"cases"_cptr,
-				"time_limit"_cptr,
-				"memory_limit"_cptr,
-				"sim_threshold"_cptr
-		);
+		this->pid = opt.hget<int>(job_info_key, "pid");
+		this->lang = (Language) (opt.hget<int>(job_info_key, "lang"));
+		this->cases = opt.hget<int>(job_info_key, "cases");
+		this->timeLimit = milliseconds(opt.hget<int>(job_info_key, "time_limit"));
+		this->memoryLimit = MB(opt.hget<unsigned long long>(job_info_key, "memory_limit"));
+		this->similarity_threshold = opt.hget<int>(job_info_key, "sim_threshold");
+	} catch (const RedisNilException & e) {
+		LOG_FATAL(jobType, sid, log_fp, "job details lost. Error information: ", e.what());
+		throw;
 	} catch (const RedisUnexpectedCaseException & e) {
-		LOG_FATAL(0, sid, log_fp, "redis returns an unexpected type. Exception infomation: ", e.what());
+		LOG_FATAL(jobType, sid, log_fp, "redis returns an unexpected type. Error information: ", e.what());
 		throw;
 	} catch (const RedisException & e) {
-		LOG_FATAL(0, sid, log_fp, "job doesn't exist. Exception infomation: ", e.what());
+		LOG_FATAL(jobType, sid, log_fp, "Fail to fetch job details. Error information: ", e.what());
 		throw;
 	} catch (const std::exception & e) {
-		LOG_FATAL(0, sid, log_fp, "job doesn't exist. Exception infomation: ", e.what());
-		throw;
-	} catch (...) {
-		LOG_FATAL(0, sid, log_fp, "job doesn't exist. Exception infomation: ", UNKNOWN_EXCEPTION_WHAT);
-		throw;
-	}
-
-	try {
-		this->pid = stoi(query_res[0]);
-		this->lang = (Language) stoi(query_res[1]);
-		this->cases = stoi(query_res[2]);
-		this->timeLimit = std::chrono::milliseconds(stoi(query_res[3]));
-		this->memoryLimit = kerbal::utility::MB(stoull(query_res[4]));
-		this->similarity_threshold = stoi(query_res[5]);
-	} catch (const std::exception & e) {
-		LOG_FATAL(0, sid, log_fp, "job details lost or type cast failed. Exception infomation: ", e.what());
-		throw;
-	} catch (...) {
-		LOG_FATAL(0, sid, log_fp, "job details lost or type cast failed. Exception infomation: ", UNKNOWN_EXCEPTION_WHAT);
+		LOG_FATAL(jobType, sid, log_fp, "Fail to fetch job details. Error information: ", e.what());
 		throw;
 	}
 }
 
-JobBase::JobBase(int jobType, int sid, const kerbal::redis::RedisContext & redisConn) noexcept :
-		jobType(jobType), sid(sid), redisConn(redisConn)
+kerbal::redis::RedisReply JobBase::get_source_code() const
 {
+	static RedisCommand get_src_code_templ("hget source_code:%d:%d source");
+	RedisReply reply;
+	try {
+		reply = get_src_code_templ.execute(redisConn, this->jobType, this->sid);
+	} catch (const std::exception & e) {
+		LOG_FATAL(jobType, sid, log_fp, "Get source code failed! Error information: ", e.what());
+		throw;
+	}
+	if (reply.replyType() != RedisReplyType::STRING) {
+		LOG_FATAL(jobType, sid, log_fp, "Get source code failed! Error information: ", "unexpected redis reply type");
+		throw RedisUnexpectedCaseException(reply.replyType());
+	}
+	return reply;
 }
 
 void JobBase::storeSourceCode() const
 {
-	static RedisCommand cmd("hget source_code:%d:%d source");
-	RedisReply reply;
-	try {
-		reply = cmd.execute(redisConn, jobType, sid);
-	} catch (const std::exception & e) {
-		LOG_FATAL(jobType, sid, log_fp, "Get source code failed. Error information: ", e.what());
-		throw JobHandleException("Get source code failed");
-	}
-	if (reply.replyType() != RedisReplyType::STRING) {
-		LOG_FATAL(jobType, sid, log_fp, "Get source code failed. Error information: unexpected redis reply type");
-		throw JobHandleException("Get source code failed: unexpected redis reply type");
-	}
+	RedisReply reply = this->get_source_code();
 
-	static const char * stored_file_name[] = {"Main.c", "Main.cpp", "Main.java"};
+	static constexpr const char * stored_file_name[] = {"Main.c", "Main.cpp", "Main.java"};
 	size_t i = 1;
 	switch (lang) {
 		case Language::Cpp:
@@ -143,6 +128,8 @@ void JobBase::commitJudgeStatusToRedis(JudgeStatus status) try
 	// status为枚举类，在 redis 存储时用其对应的序号表示
 	cmd.execute(redisConn, jobType, sid, (int) status);
 } catch (const std::exception & e) {
-	LOG_FATAL(jobType, sid, log_fp, "Commit judge status failed. Error information: ", e.what(), "; judge status: ", (int)status);
+	LOG_FATAL(jobType, sid, log_fp, "Commit judge status failed. ",
+			"Error information: ", e.what(), ", ",
+			"judge status: ", (int)status);
 	throw;
 }

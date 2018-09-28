@@ -5,6 +5,7 @@
 #ifndef CORE_MYSQL_EMPTY_RES_EXCEPTION_HPP
 #define CORE_MYSQL_EMPTY_RES_EXCEPTION_HPP
 
+#include <string>
 #include <stdexcept>
 
 class MysqlEmptyResException : public std::logic_error
@@ -15,7 +16,9 @@ class MysqlEmptyResException : public std::logic_error
 		int _errnum;
 
 	public:
-		MysqlEmptyResException(int errnum, const char * errstr) : base(errstr), _errnum(errnum)
+		MysqlEmptyResException(int errnum, const char * errstr) :
+			base("Error code: " + std::to_string(errnum) + ", Error information: "  +  errstr),
+			_errnum(errnum)
 		{
 		}
 

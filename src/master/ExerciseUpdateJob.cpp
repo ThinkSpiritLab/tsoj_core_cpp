@@ -8,41 +8,32 @@
 #include "ExerciseUpdateJob.hpp"
 #include "logger.hpp"
 
-namespace
-{
-	using namespace kerbal::redis;
-	using namespace mysqlpp;
-}
-
 extern std::ostream log_fp;
+
 
 ExerciseUpdateJob::ExerciseUpdateJob(int jobType, int sid, const kerbal::redis::RedisContext & redisConn, std::unique_ptr<mysqlpp::Connection> && mysqlConn) :
 		supper_t(jobType, sid, redisConn, std::move(mysqlConn))
 {
+	LOG_DEBUG(jobType, sid, log_fp, "ExerciseUpdateJob::ExerciseUpdateJob");
 }
 
 void ExerciseUpdateJob::update_solution()
 {
 	LOG_DEBUG(jobType, sid, log_fp, "ExerciseUpdateJob::update_solution");
-	std::string solution_table = "solution";
-	mysqlpp::Query templ = mysqlConn->query(
-			"insert into %0 "
+	mysqlpp::Query insert = mysqlConn->query(
+			"insert into solution "
 			"(s_id, u_id, p_id, s_lang, s_result, s_time, s_mem, s_posttime, s_similarity_percentage)"
-			"values (%1, %2, %3, %4, %5, %6, %7, %8q, %9)"
+			"values (%0, %1, %2, %3, %4, %5, %6, %7q, %8)"
 	);
-	templ.parse();
-	mysqlpp::SimpleResult res = templ.execute(solution_table, sid, uid, pid, (int) lang, (int) result.judge_result,
-												result.cpu_time.count(), result.memory.count(), postTime,
+	insert.parse();
+	mysqlpp::SimpleResult res = insert.execute(sid, uid, pid, (int) lang, (int) result.judge_result,
+												(int)result.cpu_time.count(), (int)result.memory.count(), postTime,
 												result.similarity_percentage);
 	if (!res) {
-		throw MysqlEmptyResException(templ.errnum(), templ.error());
+		MysqlEmptyResException e(insert.errnum(), insert.error());
+		EXCEPT_FATAL(jobType, sid, log_fp, "Update solution failed!", e);
+		throw e;
 	}
-}
-
-user_problem_status ExerciseUpdateJob::get_user_problem_status()
-{
-	LOG_DEBUG(jobType, sid, log_fp, "ExerciseUpdateJob::get_user_problem_status");
-	return this->supper_t::get_user_problem_status();
 }
 
 void ExerciseUpdateJob::update_user_and_problem()

@@ -6,7 +6,9 @@
  */
 
 #include "UpdateJobBase.hpp"
-
+#include "ExerciseUpdateJob.hpp"
+#include "CourseUpdateJob.hpp"
+#include "ContestUpdateJob.hpp"
 #include "logger.hpp"
 #include "boost_format_suffix.hpp"
 
@@ -15,89 +17,190 @@ extern std::ostream log_fp;
 namespace
 {
 	using namespace kerbal::redis;
-	using namespace mysqlpp;
 }
 
 
-void UpdateJobBase::fetchDetailsFromRedis()
+std::unique_ptr<UpdateJobBase>
+make_update_job(int jobType, int sid, const kerbal::redis::RedisContext & redisConn,
+				std::unique_ptr<mysqlpp::Connection> && mysqlConn)
 {
-	supper_t::fetchDetailsFromRedis();
-
-	using std::stoi;
-	static boost::format key_name_tmpl("job_info:%d:%d");
-
-	std::vector<std::string> query_res;
-	Operation opt(redisConn);
+	UpdateJobBase * job = nullptr;
 
 	try {
-		query_res = opt.hmget((key_name_tmpl % jobType % sid).str(),
-				"uid"_cptr,
-				"cid"_cptr,
-				"post_time"_cptr,
-				"have_accepted"_cptr,
-				"no_store_ac_code"_cptr,
-				"is_rejudge"_cptr
-		);
-	} catch (const RedisNilException & e) {
-		LOG_FATAL(0, sid, log_fp, "job doesn't exist. Exception infomation: ", e.what());
-		throw;
-	} catch (const RedisUnexpectedCaseException & e) {
-		LOG_FATAL(0, sid, log_fp, "redis returns an unexpected type. Exception infomation: ", e.what());
-		throw;
-	} catch (const RedisException & e) {
-		LOG_FATAL(0, sid, log_fp, "job doesn't exist. Exception infomation: ", e.what());
-		throw;
-	} catch (const std::exception & e) {
-		LOG_FATAL(0, sid, log_fp, "job doesn't exist. Exception infomation: ", e.what());
-		throw;
-	} catch (...) {
-		LOG_FATAL(0, sid, log_fp, "job doesn't exist. Exception infomation: ", UNKNOWN_EXCEPTION_WHAT);
-		throw;
-	}
+		if (jobType == 0) {
+			int cid = 0;
+			static boost::format key_name_tmpl("job_info:0:%d");
+			kerbal::redis::Operation opt(redisConn);
 
-	try {
-		this->uid = stoi(query_res[0]);
-		this->cid = stoi(query_res[1]);
-		this->postTime = query_res[2];
-		this->haveAccepted = (bool) stoi(query_res[3]);
-		this->no_store_ac_code = (bool) stoi(query_res[4]);
-		this->is_rejudge = (bool) stoi(query_res[5]);
+			try {
+				cid = opt.hget<int>((key_name_tmpl % sid).str(), "cid");
+			} catch (const std::exception & e) {
+				EXCEPT_FATAL(jobType, sid, log_fp, "Get cid failed!", e);
+				throw;
+			} catch (...) {
+				LOG_FATAL(jobType, sid, log_fp, "Get cid failed! Error information: ", UNKNOWN_EXCEPTION_WHAT);
+				throw;
+			}
+			if (cid != 0) {
+				job = new CourseUpdateJob(jobType, sid, redisConn, std::move(mysqlConn));
+			} else {
+				job = new ExerciseUpdateJob(jobType, sid, redisConn, std::move(mysqlConn));
+			}
+		} else {
+			job = new ContestUpdateJob(jobType, sid, redisConn, std::move(mysqlConn));
+		}
 	} catch (const std::exception & e) {
-		LOG_FATAL(0, sid, log_fp, "job details lost or type cast failed. Exception infomation: ", e.what());
+		EXCEPT_FATAL(jobType, sid, log_fp, "Error occurred while construct update job!", e);
 		throw;
 	} catch (...) {
-		LOG_FATAL(0, sid, log_fp, "job details lost or type cast failed. Exception infomation: ", UNKNOWN_EXCEPTION_WHAT);
+		LOG_FATAL(jobType, sid, log_fp, "Error occurred while construct update job! Error information: ", UNKNOWN_EXCEPTION_WHAT);
 		throw;
 	}
+	return std::unique_ptr<UpdateJobBase>(job);
 }
 
 UpdateJobBase::UpdateJobBase(int jobType, int sid, const RedisContext & redisConn,
-		std::unique_ptr<Connection> && mysqlConn) : supper_t(jobType, sid, redisConn), mysqlConn(std::move(mysqlConn))
+								std::unique_ptr<mysqlpp::Connection> && mysqlConn) :
+			supper_t(jobType, sid, redisConn), mysqlConn(std::move(mysqlConn))
 {
-	this->UpdateJobBase::fetchDetailsFromRedis();
+	static boost::format key_name_tmpl("job_info:%d:%d");
+	const std::string key_name = (key_name_tmpl % jobType % sid).str();
+
+	kerbal::redis::Operation opt(redisConn);
+
+	// 取 job 信息
+	try {
+		this->uid = opt.hget<int>(key_name, "uid");
+		this->cid = opt.hget<int>(key_name, "cid");
+		this->postTime = opt.hget(key_name, "post_time");
+		//this->haveAccepted = (bool) opt.hget<int>(key_name, "have_accepted");
+		this->no_store_ac_code = (bool) opt.hget<int>(key_name, "no_store_ac_code");
+		this->is_rejudge = (bool) opt.hget<int>(key_name, "is_rejudge");
+	} catch (const RedisNilException & e) {
+		EXCEPT_FATAL(jobType, sid, log_fp, "job details lost.", e);
+		throw;
+	} catch (const RedisUnexpectedCaseException & e) {
+		EXCEPT_FATAL(jobType, sid, log_fp, "redis returns an unexpected type.", e);
+		throw;
+	} catch (const RedisException & e) {
+		EXCEPT_FATAL(jobType, sid, log_fp, "Fail to fetch job details.", e);
+		throw;
+	} catch (const std::exception & e) {
+		EXCEPT_FATAL(jobType, sid, log_fp, "Fail to fetch job details.", e);
+		throw;
+	}
+
+	static boost::format judge_status_name_tmpl("judge_status:%d:%d");
+	const std::string judge_status = (judge_status_name_tmpl % jobType % sid).str();
+
+	// 取评测结果
+	try {
+		this->result.judge_result = (UnitedJudgeResult) opt.hget<int>(judge_status, "result");
+		this->result.cpu_time = std::chrono::milliseconds(opt.hget<int>(judge_status, "cpu_time"));
+		this->result.real_time = std::chrono::milliseconds(opt.hget<int>(judge_status, "real_time"));
+		this->result.memory = kerbal::utility::Byte(opt.hget<int>(judge_status, "memory"));
+		this->result.similarity_percentage = opt.hget<int>(judge_status, "similarity_percentage");
+	} catch (const RedisNilException & e) {
+		EXCEPT_FATAL(jobType, sid, log_fp, "job details lost.", e);
+		throw;
+	} catch (const RedisUnexpectedCaseException & e) {
+		EXCEPT_FATAL(jobType, sid, log_fp, "redis returns an unexpected type.", e);
+		throw;
+	} catch (const RedisException & e) {
+		EXCEPT_FATAL(jobType, sid, log_fp, "Fail to fetch job details.", e);
+		throw;
+	} catch (const std::exception & e) {
+		EXCEPT_FATAL(jobType, sid, log_fp, "Fail to fetch job details.", e);
+		throw;
+	}
 }
 
 void UpdateJobBase::handle()
 {
-
-	this->update_solution();
-
-	{ // update source code
-		RedisReply reply = this->get_source_code();
-		this->update_source_code(reply->str);
+	std::exception_ptr update_solution_exception;
+	try {
+		this->update_solution();
+	} catch (const std::exception & e) {
+		update_solution_exception = std::current_exception();
+		EXCEPT_FATAL(jobType, sid, log_fp, "Update solution failed!", e);
+		//DO NOT THROW
 	}
-	this->update_user_and_problem();
-	this->update_user_problem();
 
+	std::exception_ptr update_user_and_problem_exception;
+	if(update_solution_exception == nullptr) {
+		//如果 update solution 失败, 则跳过 update user and problem
+		//注意!!! 更新用户提交数通过数, 题目提交数通过数的操作必须在更新用户题目完成状态成功之前
+		try {
+			this->update_user_and_problem();
+		} catch (const std::exception & e) {
+			update_user_and_problem_exception = std::current_exception();
+			EXCEPT_FATAL(jobType, sid, log_fp, "Update user and problem failed!", e);
+			//DO NOT THROW
+		}
+	} else {
+		LOG_WARNING(jobType, sid, log_fp, "Escape update user and problem because update solution failed!");
+	}
+
+	std::exception_ptr update_user_problem_exception;
+	if(update_solution_exception == nullptr) { //如果 update solution 失败, 则跳过 update user problem
+		try {
+			this->update_user_problem();
+		} catch (const std::exception & e) {
+			update_user_problem_exception = std::current_exception();
+			EXCEPT_FATAL(jobType, sid, log_fp, "Update user problem failed!", e);
+			//DO NOT THROW
+		}
+	} else {
+		LOG_WARNING(jobType, sid, log_fp, "Escape update user problem because update solution failed!");
+	}
+
+	std::exception_ptr update_source_code_exception;
+	if(update_solution_exception == nullptr) { //如果 update solution 失败, 则跳过 update source code
+		try
+		{ // update source code
+			RedisReply reply = this->get_source_code();
+			this->update_source_code(reply->str);
+		} catch (const std::exception & e) {
+			update_source_code_exception = std::current_exception();
+			EXCEPT_WARNING(jobType, sid, log_fp, "Update source code failed!", e);
+			//DO NOT THROW
+		}
+	} else {
+		LOG_WARNING(jobType, sid, log_fp, "Escape update source code because update solution failed!");
+	}
+
+	std::exception_ptr update_compile_info_exception;
 	//保存编译信息
 	if (result.judge_result == UnitedJudgeResult::COMPILE_ERROR) {
-		RedisReply reply = this->get_compile_info();
-		this->update_compile_info(reply->str);
+		if(update_solution_exception == nullptr) { //如果 update solution 失败, 则跳过 update compile info
+			try {
+				RedisReply reply = this->get_compile_info();
+				this->update_compile_info(reply->str);
+			} catch (const std::exception & e) {
+				update_compile_info_exception = std::current_exception();
+				EXCEPT_WARNING(jobType, sid, log_fp, "Update compile info failed!", e);
+				//DO NOT THROW
+			}
+		} else {
+			LOG_WARNING(jobType, sid, log_fp, "Escape update compile info because update solution failed!");
+		}
 	}
 
-	this->commitJudgeStatusToRedis(JudgeStatus::UPDATED);
+	Operation opt(redisConn);
 
-	// del solution - 600
+	if (update_solution_exception == nullptr
+			&& update_user_and_problem_exception == nullptr
+			&& update_user_problem_exception == nullptr
+			&& update_source_code_exception == nullptr
+			&& update_compile_info_exception == nullptr) {
+		this->commitJudgeStatusToRedis(JudgeStatus::UPDATED);
+
+		this->clear_this_jobs_info_in_redis();
+
+	} else {
+		LOG_WARNING(jobType, sid, log_fp, "Error occurred while update this job!");
+	}
+	this->clear_previous_jobs_info_in_redis();
 }
 
 void UpdateJobBase::update_source_code(const char * source_code)
@@ -120,7 +223,9 @@ void UpdateJobBase::update_source_code(const char * source_code)
 	insert.parse();
 	mysqlpp::SimpleResult res = insert.execute(source_code_table, sid, source_code);
 	if (!res) {
-		throw MysqlEmptyResException(insert.errnum(), insert.error());
+		MysqlEmptyResException e(insert.errnum(), insert.error());
+		EXCEPT_FATAL(jobType, sid, log_fp, "Update source code failed!", e);
+		throw e;
 	}
 }
 
@@ -144,46 +249,104 @@ void UpdateJobBase::update_compile_info(const char * compile_info)
 	insert.parse();
 	mysqlpp::SimpleResult res = insert.execute(compile_info_table, sid, compile_info);
 	if (!res) {
-		throw MysqlEmptyResException(insert.errnum(), insert.error());
+		MysqlEmptyResException e(insert.errnum(), insert.error());
+		EXCEPT_FATAL(jobType, sid, log_fp, "Update compile info failed!", e);
+		throw e;
 	}
-}
-
-kerbal::redis::RedisReply UpdateJobBase::get_source_code() const
-{
-	static RedisCommand get_src_code_templ("hget source_code:%d:%d source");
-	RedisReply reply;
-	try {
-		reply = get_src_code_templ.execute(redisConn, this->jobType, this->sid);
-	} catch (std::exception & e) {
-		LOG_FATAL(jobType, sid, log_fp, "Get source code failed! Error information: ", e.what());
-		throw;
-	}
-	if (reply.replyType() != RedisReplyType::STRING) {
-		LOG_FATAL(jobType, sid, log_fp, "Get source code failed! Error information: ", "unexpected redis reply type");
-		throw RedisUnexpectedCaseException(reply.replyType());
-	}
-	return reply;
 }
 
 kerbal::redis::RedisReply UpdateJobBase::get_compile_info() const
 {
-	static RedisCommand get_ce_info_templ("get compile_info:%d:%d");
+	static RedisCommand query("get compile_info:%d:%d");
 	RedisReply reply;
 	try {
-		reply = get_ce_info_templ.execute(redisConn, this->jobType, this->sid);
+		reply = query.execute(redisConn, this->jobType, this->sid);
 	} catch (std::exception & e) {
-		LOG_FATAL(jobType, sid, log_fp, "Get compile info failed! Error information: ", e.what());
+		EXCEPT_FATAL(jobType, sid, log_fp, "Get compile info failed!", e);
 		throw;
 	}
 	if (reply.replyType() != RedisReplyType::STRING) {
-		LOG_FATAL(jobType, sid, log_fp, "Get compile info failed! Error information: ", "unexpected redis reply type");
-		throw RedisUnexpectedCaseException(reply.replyType());
+		RedisUnexpectedCaseException e(reply.replyType());
+		EXCEPT_FATAL(jobType, sid, log_fp, "Get compile info failed!", e);
+		throw e;
 	}
 	return reply;
 }
 
-void UpdateJobBase::core_update_failed_table() noexcept try
+void UpdateJobBase::clear_previous_jobs_info_in_redis() noexcept try
 {
+	// del solution - 600
+
+	if (sid > 600) {
+		int prev_sid = this->sid - 600;
+
+		Operation opt(this->redisConn);
+
+		static boost::format judge_status_templ("judge_status:%d:%d");
+
+		JudgeStatus judge_status = JudgeStatus::UPDATED;
+		try {
+			judge_status = (JudgeStatus) opt.hget<int>((judge_status_templ % jobType % prev_sid).str(), "status");
+		} catch (const std::exception & e) {
+			EXCEPT_FATAL(jobType, sid, log_fp, "Get judge status failed!", e);
+			return; //DO NOT THROW
+		}
+
+		if (judge_status == JudgeStatus::UPDATED) {
+			try {
+				if (opt.del((judge_status_templ % jobType % prev_sid).str()) == false) {
+					LOG_WARNING(jobType, sid, log_fp, "Doesn't delete judge_status actually!");
+				}
+			} catch (const std::exception & e) {
+				LOG_WARNING(jobType, sid, log_fp, "Exception occurred while deleting judge_status!");
+				//DO NOT THROW
+			}
+
+			try {
+				static boost::format job_info("job_info:%d:%d");
+				if (opt.del((job_info % jobType % prev_sid).str()) == false) {
+					LOG_WARNING(jobType, sid, log_fp, "Doesn't delete job_info actually!");
+				}
+			} catch (const std::exception & e) {
+				LOG_WARNING(jobType, sid, log_fp, "Exception occurred while deleting job_info!");
+				//DO NOT THROW
+			}
+		}
+	}
+} catch(...) {
+	LOG_FATAL(jobType, sid, log_fp, "Clear previous jobs info in redis failed! Error information: ", UNKNOWN_EXCEPTION_WHAT);
+}
+
+void UpdateJobBase::clear_this_jobs_info_in_redis() noexcept try
+{
+	Operation opt(this->redisConn);
+	try {
+		static boost::format source_code("source_code:%d:%d");
+		if (opt.del((source_code % jobType % sid).str()) == false) {
+			LOG_WARNING(jobType, sid, log_fp, "Source code doesn't exist!");
+		}
+	} catch (const std::exception & e) {
+		EXCEPT_FATAL(jobType, sid, log_fp, "Exception occurred while deleting source code!", e);
+		//DO NOT THROW
+	}
+
+	try {
+		static boost::format compile_info("compile_info:%d:%d");
+		if (opt.del((compile_info % jobType % sid).str()) == false) {
+			LOG_WARNING(jobType, sid, log_fp, "Source code doesn't exist!");
+		}
+	} catch (const std::exception & e) {
+		EXCEPT_FATAL(jobType, sid, log_fp, "Exception occurred while deleting compile info!", e);
+		//DO NOT THROW
+	}
+} catch (...) {
+	LOG_FATAL(jobType, sid, log_fp, "Clear this jobs info in redis failed! Error information: ", UNKNOWN_EXCEPTION_WHAT);
+}
+
+void UpdateJobBase::core_update_failed_table(const RedisReply & source_code, const RedisReply & compile_error_info) noexcept try
+{
+	LOG_WARNING(jobType, sid, log_fp, "Enter core update failed handler");
+
 	mysqlpp::Query insert = mysqlConn->query(
 			"insert into core_update_failed "
 			"(type, job_id, pid, uid, lang, "
@@ -195,21 +358,18 @@ void UpdateJobBase::core_update_failed_table() noexcept try
 	);
 	insert.parse();
 
-	RedisReply source_code = this->get_source_code();
-	RedisReply compile_error_info = this->get_compile_info();
-
 	mysqlpp::SimpleResult res = insert.execute(
 		jobType, sid, pid, uid, (int) lang,
-		postTime, cid, cases, timeLimit.count(), memoryLimit.count(),
-		similarity_threshold, (int) result.judge_result, result.cpu_time.count(),
-		result.memory.count(), result.similarity_percentage, source_code->str, compile_error_info->str
+		postTime, cid, cases, (int)timeLimit.count(), (int)memoryLimit.count(),
+		similarity_threshold, (int) result.judge_result, (int)result.cpu_time.count(),
+		(int)result.memory.count(), result.similarity_percentage, source_code->str, compile_error_info->str
 	);
 
 	if (!res) {
 		throw MysqlEmptyResException(insert.errnum(), insert.error());
 	}
 } catch(const std::exception & e) {
-	LOG_FATAL(jobType, sid, log_fp, "Update failed table failed! Error information: ", e.what());
+	EXCEPT_FATAL(jobType, sid, log_fp, "Update failed table failed!", e);
 } catch(...) {
 	LOG_FATAL(jobType, sid, log_fp, "Update failed table failed! Error information: ", UNKNOWN_EXCEPTION_WHAT);
 }

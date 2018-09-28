@@ -128,7 +128,7 @@ void log_write(int type, int job_id, const char source_filename[], int line, std
 	log::__log_write<level>(type, job_id, source_filename, line, log_file, log::cptr_cast(args)...);
 }
 
-#define UNKNOWN_EXCEPTION_WHAT "unknown exception"_cptr
+#define UNKNOWN_EXCEPTION_WHAT (const char*)("unknown exception")
 
 #ifdef LOG_DEBUG
 #	undef LOG_DEBUG
@@ -149,11 +149,23 @@ void log_write(int type, int job_id, const char source_filename[], int line, std
 #endif
 #define LOG_WARNING(type, job_id, log_fp, x...)		log_write<LogLevel::LEVEL_WARNING>(type, job_id, __FILE__, __LINE__, log_fp, ##x)
 
-
 #ifdef LOG_FATAL
 #	undef LOG_FATAL
 #endif
 #define LOG_FATAL(type, job_id, log_fp, x...)		log_write<LogLevel::LEVEL_FATAL>(type, job_id, __FILE__, __LINE__, log_fp, ##x)
+
+
+#ifdef EXCEPT_WARNING
+#	undef EXCEPT_WARNING
+#endif
+#define EXCEPT_WARNING(type, job_id, log_fp, events, exception, x...)	LOG_WARNING(type, job_id, log_fp, events, \
+																		" Error information: ", exception.what(), " , Exception type: ", typeid(exception).name(), ##x)
+
+#ifdef EXCEPT_FATAL
+#	undef EXCEPT_FATAL
+#endif
+#define EXCEPT_FATAL(type, job_id, log_fp, events, exception, x...)	    LOG_FATAL(type, job_id, log_fp, events, \
+																		" Error information: ", exception.what(), " , Exception type: ", typeid(exception).name(), ##x)
 
 #endif //LOGGER_H
 

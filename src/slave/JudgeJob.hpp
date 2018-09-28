@@ -60,12 +60,6 @@ class JudgeJob: public JobBase
 		 */
 		virtual void handle() override;
 
-		/**
-		 * @brief 获取本 Job 详细信息的函数。
-		 * @warning 本函数为虚函数，是对父类接口的实现。
-		 */
-		virtual void fetchDetailsFromRedis() override;
-
 	protected:
 		/**
 		 * @brief 将当前路径切换到本 job 的临时工作路径

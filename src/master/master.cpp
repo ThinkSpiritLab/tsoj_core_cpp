@@ -7,13 +7,12 @@
 
 #include "logger.hpp"
 #include "load_helper.hpp"
+#include "UpdateJobBase.hpp"
+
 #include <iostream>
 #include <fstream>
-#include "logger.hpp"
 #include <kerbal/redis/redis_data_struct/list.hpp>
 #include <kerbal/compatibility/chrono_suffix.hpp>
-#include "UpdateJobBase.hpp"
-#include "make_update_job.hpp"
 
 using namespace kerbal::compatibility::chrono_suffix;
 using namespace std;
@@ -25,7 +24,7 @@ constexpr int REDIS_SOLUTION_MAX_NUM = 600;
 
 namespace
 {
-	bool loop;
+	bool loop = true;
 	std::string updater_init_dir;
 	std::string log_file_name;
 	std::string updater_lock_file;
@@ -103,24 +102,27 @@ int main() try
 		cerr << "root required!" << endl;
 		exit(-1);
 	}
+	LOG_INFO(0, 0, log_fp, "Loading finished...");
 	load_config();
+	LOG_INFO(0, 0, log_fp, "Configure load finished!");
 
-	LOG_INFO(0, 0, log_fp, "updater starting ...");
-
-
-//	mysqlpp::Connection mainMysqlConn(false);
-//	mainMysqlConn.set_option(new mysqlpp::SetCharsetNameOption("utf8"));
-//	if(!mainMysqlConn.connect(mysql_database, mysql_hostname, mysql_username, mysql_passwd))
-//	{
-//		LOG_FATAL(0, 0, log_fp, "Main mysql connection connect failed!");
-//		exit(-1);
-//	}
-
-	kerbal::redis::RedisContext mainRedisConn(redis_hostname.c_str(), redis_port, 100_ms);
-	if (!mainRedisConn) {
-		LOG_FATAL(0, 0, log_fp, "Main redis connection connect failed!");
+	LOG_INFO(0, 0, log_fp, "Connecting main MYSQL connection...");
+	mysqlpp::Connection mainMysqlConn(false);
+	mainMysqlConn.set_option(new mysqlpp::SetCharsetNameOption("utf8"));
+	if(!mainMysqlConn.connect(mysql_database.c_str(), mysql_hostname.c_str(), mysql_username.c_str(), mysql_passwd.c_str()))
+	{
+		LOG_FATAL(0, 0, log_fp, "Main MYSQL connection connect failed!");
 		exit(-1);
 	}
+	LOG_INFO(0, 0, log_fp, "Main MYSQL connection connected!");
+
+	LOG_INFO(0, 0, log_fp, "Connecting main REDIS connection...");
+	kerbal::redis::RedisContext mainRedisConn(redis_hostname.c_str(), redis_port, 100_ms);
+	if (!mainRedisConn) {
+		LOG_FATAL(0, 0, log_fp, "Main REDIS connection connect failed!");
+		exit(-1);
+	}
+	LOG_INFO(0, 0, log_fp, "Main REDIS connection connected!");
 
 	#ifdef DEBUG
 	if (chdir(updater_init_dir.c_str())) {
@@ -129,68 +131,74 @@ int main() try
 	}
 	#endif //DEBUG
 
-	kerbal::redis::List <std::string> update_queue(mainRedisConn, "update_queue");
+	LOG_INFO(0, 0, log_fp, "updater starting ...");
+
+	kerbal::redis::List<std::string> update_queue(mainRedisConn, "update_queue");
 
 	while (loop) {
 
 		std::string job_item = "-1,-1";
-		int type = -1;
-		int update_id = -1;
+		int jobType = -1;
+		int sid = -1;
 		try {
 			job_item = update_queue.block_pop_front(0_s);
-			std::tie(type, update_id) = JobBase::parseJobItem(job_item);
-			LOG_DEBUG(type, update_id, log_fp, "Master get update job: ", job_item);
+			std::tie(jobType, sid) = JobBase::parseJobItem(job_item);
+			LOG_DEBUG(jobType, sid, log_fp, "Master get update job: ", job_item);
 		} catch (const std::exception & e) {
-			LOG_FATAL(0, 0, log_fp, "Fail to fetch job. Error info: ", e.what(), "job_item: ", job_item);
+			EXCEPT_FATAL(0, 0, log_fp, "Fail to fetch job.", e, "job_item: ", job_item);
 			continue;
 		} catch (...) {
 			LOG_FATAL(0, 0, log_fp, "Fail to fetch job. Error info: ", "unknown exception", "job_item: ", job_item);
 			continue;
 		}
 
-		LOG_DEBUG(type, update_id, log_fp, "Update job start");
+		auto start(std::chrono::steady_clock::now());
+		LOG_DEBUG(jobType, sid, log_fp, "Update job start");
 
 		kerbal::redis::RedisContext redisConn(redis_hostname.c_str(), redis_port, 100_ms);
 		if (!redisConn) {
-			LOG_FATAL(0, 0, log_fp, "Redis connection connect failed!");
+			LOG_FATAL(jobType, sid, log_fp, "Redis connection connect failed!");
 			continue;
 		}
 
 		std::unique_ptr <mysqlpp::Connection> mysqlConn(new mysqlpp::Connection(false));
 		mysqlConn->set_option(new mysqlpp::SetCharsetNameOption("utf8"));
 		if (!mysqlConn->connect(mysql_database.c_str(), mysql_hostname.c_str(), mysql_username.c_str(), mysql_passwd.c_str())) {
-			LOG_FATAL(0, 0, log_fp, "Mysql connection connect failed!");
+			LOG_FATAL(jobType, sid, log_fp, "Mysql connection connect failed!");
 			continue;
 		}
 
 		std::unique_ptr <UpdateJobBase> job = nullptr;
 		try {
-			job = make_update_job(type, update_id, redisConn, std::move(mysqlConn));
+			job = make_update_job(jobType, sid, redisConn, std::move(mysqlConn));
 		} catch (const std::exception & e) {
-			LOG_FATAL(0, 0, log_fp, "Job construct failed! Error information: ", e.what());
+			EXCEPT_FATAL(jobType, sid, log_fp, "Job construct failed!", e);
 			continue;
 		} catch (...) {
-			LOG_FATAL(0, 0, log_fp, "Job construct failed! Error information: ", UNKNOWN_EXCEPTION_WHAT);
+			LOG_FATAL(jobType, sid, log_fp, "Job construct failed! Error information: ", UNKNOWN_EXCEPTION_WHAT);
 			continue;
 		}
 
 		try {
 			job->handle();
 		} catch (const std::exception & e) {
-			LOG_FATAL(0, 0, log_fp, "Job handle failed! Error information: ", e.what());
+			EXCEPT_FATAL(jobType, sid, log_fp, "Job handle failed!", e);
 			continue;
 		} catch (...) {
-			LOG_FATAL(0, 0, log_fp, "Job handle failed! Error information: ", UNKNOWN_EXCEPTION_WHAT);
+			LOG_FATAL(jobType, sid, log_fp, "Job handle failed! Error information: ", UNKNOWN_EXCEPTION_WHAT);
 			continue;
 		}
 
+		auto end(std::chrono::steady_clock::now());
+		auto time_consume = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+		LOG_DEBUG(jobType, sid, log_fp, "Update consume: ", time_consume.count());
 	}
 	return 0;
 } catch (const std::exception & e) {
-	LOG_FATAL(0, 0, log_fp, "An uncatched exception catched by main. Error information: ", e.what());
+	EXCEPT_FATAL(0, 0, log_fp, "An uncaught exception caught by main.", e);
 	throw;
 } catch (...) {
-	LOG_FATAL(0, 0, log_fp, "An uncatched exception catched by main. Error information: ", UNKNOWN_EXCEPTION_WHAT);
+	LOG_FATAL(0, 0, log_fp, "An uncaught exception caught by main. Error information: ", UNKNOWN_EXCEPTION_WHAT);
 	throw;
 }
 

@@ -9,13 +9,8 @@
 #include "boost_format_suffix.hpp"
 #include "logger.hpp"
 
-namespace
-{
-	using namespace kerbal::redis;
-	using namespace mysqlpp;
-}
-
 extern std::ostream log_fp;
+
 
 ContestUpdateJob::ContestUpdateJob(int jobType, int sid, const RedisContext & redisConn,
 		std::unique_ptr <mysqlpp::Connection> && mysqlConn) : supper_t(jobType, sid, redisConn, std::move(mysqlConn))
@@ -34,13 +29,12 @@ void ContestUpdateJob::update_solution()
 	);
 	insert.parse();
 	mysqlpp::SimpleResult res = insert.execute(jobType, sid, uid, pid, (int) lang, (int) result.judge_result,
-												result.cpu_time.count(), result.memory.count(), postTime,
+												(int)result.cpu_time.count(), (int)result.memory.count(), postTime,
 												result.similarity_percentage);
 	if (!res) {
-		LOG_FATAL(jobType, sid, log_fp, "Update solution failed! ",
-										"Error code: ", insert.errnum(), ", ",
-										"Error information: ", insert.error());
-		throw MysqlEmptyResException(insert.errnum(), insert.error());
+		MysqlEmptyResException e(insert.errnum(), insert.error());
+		EXCEPT_FATAL(jobType, sid, log_fp, "Update solution failed!", e);
+		throw e;
 	}
 }
 
@@ -62,11 +56,10 @@ int ContestUpdateJob::get_error_count()
 	mysqlpp::StoreQueryResult res = query.store(jobType, uid, pid);
 
 	if (res.empty()) {
-		if(query.errnum() != 0) {
-			LOG_FATAL(jobType, sid, log_fp, "Query user's error_count failed! "
-											"Error code: ", query.errnum(), ", ",
-											"Error information: ", query.error());
-			throw MysqlEmptyResException(query.errnum(), query.error());
+		if (query.errnum() != 0) {
+			MysqlEmptyResException e(query.errnum(), query.error());
+			EXCEPT_FATAL(jobType, sid, log_fp, "Query user's error_count failed!", e);
+			throw e;
 		}
 
 		/*
@@ -79,9 +72,9 @@ int ContestUpdateJob::get_error_count()
 	}
 }
 
-user_problem_status ContestUpdateJob::get_user_problem_status()
+user_problem_status ContestUpdateJob::get_contest_user_problem_status()
 {
-	LOG_DEBUG(jobType, sid, log_fp, "ContestUpdateJob::get_user_problem_status");
+	LOG_DEBUG(jobType, sid, log_fp, "ContestUpdateJob::get_contest_user_problem_status");
 
 	mysqlpp::Query query = mysqlConn->query(
 			"select is_ac from contest_user_problem%0 where u_id = %1 and p_id = %2"
@@ -92,11 +85,14 @@ user_problem_status ContestUpdateJob::get_user_problem_status()
 
 	if (res.empty()) {
 		if (query.errnum() != 0) {
-			LOG_FATAL(jobType, sid, log_fp, "Query user's problem status failed! "
-											"Error code: ", query.errnum(), ", ",
-											"Error information: ", query.error());
-			throw MysqlEmptyResException(query.errnum(), query.error());
+			MysqlEmptyResException e(query.errnum(), query.error());
+			EXCEPT_FATAL(jobType, sid, log_fp, "Query user's problem status failed!", e);
+			throw e;
 		}
+		/*
+		 * 如果查到的长度为 0, 而且查询过程也没错误, 那么就是 contest_user_problem 里没有这个数据,
+		 * 亦即该用户从没提交过此题, 状态为 TODO
+		 */
 		return user_problem_status::TODO;
 	}
 
@@ -124,13 +120,14 @@ bool ContestUpdateJob::this_problem_has_not_accepted()
 
 	if (res.empty()) {
 		if(query.errnum() != 0) {
-			LOG_FATAL(jobType, sid, log_fp, "Query problem's first_ac_user failed! "
-											"Error code: ", query.errnum(), ", ",
-											"Error information: ", query.error());
+			MysqlEmptyResException e(query.errnum(), query.error());
+			EXCEPT_FATAL(jobType, sid, log_fp, "Query problem's first_ac_user failed!", e);
+			throw e;
 		} else {
+			std::logic_error e("Check whether you have deleted the problem");
 			LOG_FATAL(jobType, sid, log_fp, "Check whether you have deleted the problem ", pid, " of the contest No.", jobType, " ?");
+			throw e;
 		}
-		throw MysqlEmptyResException(query.errnum(), query.error());
 	}
 	return res[0][0] == "NULL" ? true : false; //该字段在竞赛开始时为 NULL, 即尚未有人通过此题
 }
@@ -143,9 +140,9 @@ void ContestUpdateJob::update_user_problem()
 	bool is_ac = this->result.judge_result == UnitedJudgeResult::ACCEPTED ? true : false;
 	user_problem_status user_problem_status = user_problem_status::TODO;
 	try {
-		user_problem_status = this->get_user_problem_status();
+		user_problem_status = this->get_contest_user_problem_status();
 	} catch (const std::exception & e) {
-		LOG_FATAL(jobType, sid, log_fp, "Get user problem status failed!");
+		EXCEPT_FATAL(jobType, sid, log_fp, "Get user problem status failed!", e);
 		throw;
 	}
 
@@ -154,9 +151,8 @@ void ContestUpdateJob::update_user_problem()
 		try {
 			is_first_ac = this->this_problem_has_not_accepted() == true ? true : false;
 		} catch (const std::exception & e) {
-			LOG_FATAL(jobType, sid, log_fp, "Qurey is first ac failed!",
-											"Error information: ", e.what());
-			is_first_ac = false;
+			EXCEPT_FATAL(jobType, sid, log_fp, "Query is first ac failed!", e);
+			throw;
 		}
 	}
 
@@ -173,6 +169,11 @@ void ContestUpdateJob::update_user_problem()
 			insert.parse();
 
 			mysqlpp::SimpleResult res = insert.execute(jobType, uid, pid, is_ac, postTime, error_count, is_first_ac);
+			if (!res) {
+				MysqlEmptyResException e(insert.errnum(), insert.error());
+				EXCEPT_FATAL(jobType, sid, log_fp, "insert user problem status failed!", e);
+				throw e;
+			}
 			break;
 		}
 		case user_problem_status::ATTEMPTED: {
@@ -189,6 +190,11 @@ void ContestUpdateJob::update_user_problem()
 			update.parse();
 
 			mysqlpp::SimpleResult res = update.execute(jobType, is_ac, postTime, error_count, is_first_ac, uid, pid);
+			if (!res) {
+				MysqlEmptyResException e(update.errnum(), update.error());
+				EXCEPT_FATAL(jobType, sid, log_fp, "update user problem status failed!", e);
+				throw e;
+			}
 			break;
 		}
 		case user_problem_status::ACCEPTED:
@@ -204,10 +210,9 @@ void ContestUpdateJob::update_user_problem()
 		mysqlpp::SimpleResult res = update.execute(uid, jobType, pid);
 
 		if (!res) {
-			LOG_FATAL(jobType, sid, log_fp, "update first_ac_user failed! ",
-					"Error code: ", update.errnum(), ", ",
-					"Error information: ", update.error());
-			throw MysqlEmptyResException(update.errnum(), update.error());
+			MysqlEmptyResException e(update.errnum(), update.error());
+			EXCEPT_FATAL(jobType, sid, log_fp, "update first_ac_user failed!", e);
+			throw e;
 		}
 	}
 	return;
