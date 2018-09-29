@@ -26,24 +26,6 @@ class JudgeJob: public JobBase
 		std::string dir;
 
 	public:
-		/**
-		 * @brief 判断是否终止判题服务 loop
-		 * @param jobItem "job_type,job_id" 格式的字符串
-		 * @return 若是检测到停止工作标识，则返回 true ，否则返回 false
-		 */
-		static bool isExitJob(const std::string & jobItem)
-		{
-			return jobItem == "0,-1";
-		}
-
-		/**
-		 * @brief 获取规定的停止工作标识
-		 * @return 返回规定的停止工作标识，规定为："0,-1"
-		 */
-		static std::string getExitJobItem()
-		{
-			return "0,-1";
-		}
 
 		/**
 		 * @brief 初始化 job 基本信息，从数据库获得 job 详细内容

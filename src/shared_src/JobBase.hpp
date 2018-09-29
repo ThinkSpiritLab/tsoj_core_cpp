@@ -61,6 +61,25 @@ class JobBase
 		static std::pair<int, int> parseJobItem(const std::string & jobItem);
 
 		/**
+		 * @brief 判断是否终止服务 loop
+		 * @param jobItem "job_type,job_id" 格式的字符串
+		 * @return 若是检测到停止工作标识，则返回 true ，否则返回 false
+		 */
+		static bool isExitJob(const std::string & jobItem)
+		{
+			return jobItem == "0,-1";
+		}
+
+		/**
+		 * @brief 获取规定的停止工作标识
+		 * @return 返回规定的停止工作标识，规定为："0,-1"
+		 */
+		static std::string getExitJobItem()
+		{
+			return "0,-1";
+		}
+
+		/**
 		 * @brief 初始化 jobType, sid, redisConn
 		 * @param jobType Job 类型，如：竞赛、课程等
 		 * @param sid student id

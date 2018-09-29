@@ -297,7 +297,7 @@ int main(int argc, const char * argv[]) try
 		 */
 		try {
 			job_item = job_list.block_pop_front(0_s);
-			if (JudgeJob::isExitJob(job_item) == true) {
+			if (JobBase::isExitJob(job_item) == true) {
 				loop = false;
 				LOG_INFO(0, 0, log_fp, "Get exit job.");
 				continue;

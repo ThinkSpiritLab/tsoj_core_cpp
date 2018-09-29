@@ -142,6 +142,11 @@ int main() try
 		int sid = -1;
 		try {
 			job_item = update_queue.block_pop_front(0_s);
+			if (JobBase::isExitJob(job_item) == true) {
+				loop = false;
+				LOG_INFO(0, 0, log_fp, "Get exit job.");
+				continue;
+			}
 			std::tie(jobType, sid) = JobBase::parseJobItem(job_item);
 			LOG_DEBUG(jobType, sid, log_fp, "Master get update job: ", job_item);
 		} catch (const std::exception & e) {
