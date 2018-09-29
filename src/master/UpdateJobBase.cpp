@@ -332,9 +332,8 @@ void UpdateJobBase::clear_this_jobs_info_in_redis() noexcept try
 
 	try {
 		static boost::format compile_info("compile_info:%d:%d");
-		if (opt.del((compile_info % jobType % sid).str()) == false) {
-			LOG_WARNING(jobType, sid, log_fp, "Source code doesn't exist!");
-		}
+		opt.del((compile_info % jobType % sid).str());
+		// 可能 job 编译通过没有 compile_info, 所以不管有没有都 del 一次, 不过不用判断是否删除成功
 	} catch (const std::exception & e) {
 		EXCEPT_FATAL(jobType, sid, log_fp, "Exception occurred while deleting compile info!", e);
 		//DO NOT THROW
