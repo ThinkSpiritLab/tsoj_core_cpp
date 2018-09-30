@@ -115,7 +115,7 @@ void register_self() noexcept try
 	using namespace kerbal::compatibility::chrono_suffix;
 
 	static auto regist_self_conn = context_pool->apply(getpid());
-	LOG_INFO(0, 0, log_fp, "Regist_self service get context: "_cptr, regist_self_conn.get_id());
+	LOG_INFO(0, 0, log_fp, "Regist_self service get context: ", regist_self_conn.get_id());
 
 	static Operation opt(regist_self_conn);
 	while (true) {
@@ -137,11 +137,11 @@ void register_self() noexcept try
 			LOG_DEBUG(0, 0, log_fp, "Register self success");
 			std::this_thread::sleep_for(10_s);
 		} catch (const RedisException & e) {
-			LOG_FATAL(0, 0, log_fp, "Register self failed. Error information: "_cptr, e.what());
+			LOG_FATAL(0, 0, log_fp, "Register self failed. Error information: ", e.what());
 		}
 	}
 } catch (...) {
-	LOG_FATAL(0, 0, log_fp, "Register self failed. Error information: "_cptr, UNKNOWN_EXCEPTION_WHAT);
+	LOG_FATAL(0, 0, log_fp, "Register self failed. Error information: ", UNKNOWN_EXCEPTION_WHAT);
 	exit(2);
 }
 
@@ -158,9 +158,9 @@ void regist_SIGTERM_handler(int signum) noexcept
 	if (signum == SIGTERM) {
 		RedisContext main_conn(redis_hostname.c_str(), redis_port, 1500_ms);
 		List<std::string> job_list(main_conn, "judge_queue");
-		job_list.push_back(JudgeJob::getExitJobItem());
+		job_list.push_back(JobBase::getExitJobItem());
 		LOG_WARNING(0, 0, log_fp,
-					"Judge server has received the SIGTERM signal and will exit soon after the jobs are all finished!"_cptr);
+					"Judge server has received the SIGTERM signal and will exit soon after the jobs are all finished!");
 	}
 }
 /**
@@ -237,8 +237,8 @@ void load_config()
 	listening_pid = getpid();
 	judge_server_id = host_name + ":" + ip;
 
-	LOG_INFO(0, 0, log_fp, "judge_server_id: "_cptr, judge_server_id);
-	LOG_INFO(0, 0, log_fp, "listening pid: "_cptr, listening_pid);
+	LOG_INFO(0, 0, log_fp, "judge_server_id: ", judge_server_id);
+	LOG_INFO(0, 0, log_fp, "listening pid: ", listening_pid);
 }
 
 /**
@@ -262,12 +262,12 @@ int main(int argc, const char * argv[]) try
 		// 当前版本中连接池并未启用
 		context_pool.reset(new RedisContextPool(max_running + 2, redis_hostname.c_str(), redis_port, 1500_ms));
 	} catch (const std::exception & e) {
-		LOG_FATAL(0, 0, log_fp, "Redis connect failed! Error string: "_cptr, e.what());
+		EXCEPT_FATAL(0, 0, log_fp, "Redis connect failed!", e);
 		exit(-2);
 	}
 
 	auto main_conn = context_pool->apply(getpid());
-	LOG_INFO(0, 0, log_fp, "main_conn: "_cptr, main_conn.get_id());
+	LOG_INFO(0, 0, log_fp, "main_conn: ", main_conn.get_id());
 
 	try {
 		/**
@@ -276,7 +276,7 @@ int main(int argc, const char * argv[]) try
 		std::thread regist(register_self);
 		regist.detach();
 	} catch (const std::exception & e) {
-		LOG_FATAL(0, 0, log_fp, "Register self service process fork failed."_cptr);
+		LOG_FATAL(0, 0, log_fp, "Register self service process fork failed.");
 		exit(-3);
 	}
 
@@ -303,18 +303,15 @@ int main(int argc, const char * argv[]) try
 				continue;
 			}
 			std::tie(job_type, job_id) = JudgeJob::parseJobItem(job_item);
-			LOG_DEBUG(job_type, job_id, log_fp, "Judge server "_cptr, judge_server_id, " get job: "_cptr, job_item);
+			LOG_DEBUG(job_type, job_id, log_fp, "Judge server ", judge_server_id, " get job: ", job_item);
 		} catch (const RedisNilException & e) {
-			LOG_FATAL(0, 0, log_fp, "Fail to fetch job. Error info: "_cptr, e.what(), ", job_item: "_cptr,
-					  job_item);
+			EXCEPT_FATAL(0, 0, log_fp, "Fail to fetch job.", e, ", job_item: ", job_item);
 			continue;
 		} catch (const std::exception & e) {
-			LOG_FATAL(0, 0, log_fp, "Fail to fetch job. Error info: "_cptr, e.what(), ", job_item: "_cptr,
-					  job_item);
+			EXCEPT_FATAL(0, 0, log_fp, "Fail to fetch job.", e, ", job_item: ", job_item);
 			continue;
 		} catch (...) {
-			LOG_FATAL(0, 0, log_fp, "Fail to fetch job. Error info: "_cptr, UNKNOWN_EXCEPTION_WHAT,
-					  ", job_item: "_cptr, job_item);
+			LOG_FATAL(0, 0, log_fp, "Fail to fetch job. Error info: ", UNKNOWN_EXCEPTION_WHAT, ", job_item: "_cptr, job_item);
 			continue;
 		}
 
@@ -339,7 +336,7 @@ int main(int argc, const char * argv[]) try
 			Process judge_process(false, [](int job_type, int job_id) {
 				RedisContext child_conn(redis_hostname.c_str(), redis_port, 1500_ms);
 				if (!child_conn) {
-					LOG_FATAL(job_type, job_id, log_fp, "Child context connect failed."_cptr);
+					LOG_FATAL(job_type, job_id, log_fp, "Child context connect failed.");
 					//TODO 插入到 failure list 中
 					return;
 				}
@@ -349,10 +346,10 @@ int main(int argc, const char * argv[]) try
 				try {
 					job.reset(new JudgeJob(job_type, job_id, child_conn));
 				} catch (const std::exception & e) {
-					LOG_FATAL(job_type, job_id, log_fp, "Fail to create job. Error information: "_cptr, e.what());
+					EXCEPT_FATAL(job_type, job_id, log_fp, "Fail to create job.", e);
 					return;
 				} catch (...) {
-					LOG_FATAL(job_type, job_id, log_fp, "Fail to create job. Error information: "_cptr, UNKNOWN_EXCEPTION_WHAT);
+					LOG_FATAL(job_type, job_id, log_fp, "Fail to create job. Error information: ", UNKNOWN_EXCEPTION_WHAT);
 					return;
 				}
 
@@ -360,23 +357,23 @@ int main(int argc, const char * argv[]) try
 				try {
 					job->handle();
 				} catch (const std::exception & e) {
-					LOG_FATAL(job_type, job_id, log_fp, "Fail to judge job. Error information: "_cptr, e.what());
+					EXCEPT_FATAL(job_type, job_id, log_fp, "Fail to judge job.", e);
 					job->push_back_failed_judge_job();
 					return;
 				} catch (...) {
-					LOG_FATAL(job_type, job_id, log_fp, "Fail to judge job. Error information: "_cptr, UNKNOWN_EXCEPTION_WHAT);
+					LOG_FATAL(job_type, job_id, log_fp, "Fail to judge job. Error information: ", UNKNOWN_EXCEPTION_WHAT);
 					job->push_back_failed_judge_job();
 					return;
 				}
 			}, job_type, job_id);
-			LOG_DEBUG(job_type, job_id, log_fp, "Judge process fork success. Child_pid: "_cptr, judge_process.get_child_id());
+			LOG_DEBUG(job_type, job_id, log_fp, "Judge process fork success. Child_pid: ", judge_process.get_child_id());
 			++cur_running;
 		} catch (const std::exception & e) {
-			LOG_FATAL(job_type, job_id, log_fp, "Judge process fork failed. Error information: "_cptr, e.what());
+			EXCEPT_FATAL(job_type, job_id, log_fp, "Judge process fork failed.", e);
 			JudgeJob::insert_into_failed(main_conn, job_type, job_id);
 			continue;
 		} catch (...) {
-			LOG_FATAL(job_type, job_id, log_fp, "Judge process fork failed. Error information: "_cptr, UNKNOWN_EXCEPTION_WHAT);
+			LOG_FATAL(job_type, job_id, log_fp, "Judge process fork failed. Error information: ", UNKNOWN_EXCEPTION_WHAT);
 			JudgeJob::insert_into_failed(main_conn, job_type, job_id);
 			continue;
 		}
@@ -385,10 +382,10 @@ int main(int argc, const char * argv[]) try
 	return 0;
 
 } catch (const std::exception & e) {
-	LOG_FATAL(0, 0, log_fp, "An uncatched exception catched by main. Error information: "_cptr, e.what());
+	EXCEPT_FATAL(0, 0, log_fp, "An uncatched exception catched by main.", e);
 	throw;
 } catch (...) {
-	LOG_FATAL(0, 0, log_fp, "An uncatched exception catched by main. Error information: "_cptr, UNKNOWN_EXCEPTION_WHAT);
+	LOG_FATAL(0, 0, log_fp, "An uncatched exception catched by main. Error information: ", UNKNOWN_EXCEPTION_WHAT);
 	throw;
 }
 

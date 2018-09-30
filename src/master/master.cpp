@@ -11,7 +11,11 @@
 
 #include <iostream>
 #include <fstream>
+#include <csignal>
+#include <thread>
 #include <kerbal/redis/redis_data_struct/list.hpp>
+#include <kerbal/redis/redis_data_struct/set.hpp>
+#include <kerbal/system/system.hpp>
 #include <kerbal/compatibility/chrono_suffix.hpp>
 
 using namespace kerbal::compatibility::chrono_suffix;
@@ -24,6 +28,21 @@ constexpr int REDIS_SOLUTION_MAX_NUM = 600;
 
 namespace
 {
+	/** 本机主机名 */
+	std::string host_name;
+
+	/** 本机 IP */
+	std::string ip;
+
+	/** 本机当前用户名 */
+	std::string user_name;
+
+	/** 本机监听进程号 */
+	int listening_pid;
+
+	/** 评测服务器id，定义为 host_name:ip */
+	std::string judge_server_id;
+
 	bool loop = true;
 	std::string updater_init_dir;
 	std::string log_file_name;
@@ -34,6 +53,71 @@ namespace
 	std::string mysql_database;
 	int redis_port;
 	std::string redis_hostname;
+}
+
+
+/**
+ * @brief 发送心跳进程
+ * 每隔一段时间，将本机信息提交到数据库中表示当前在线的评测机集合中，表明自身正常工作，可以处理评测任务。
+ * @throw 该函数保证不抛出任何异常
+ */
+void register_self() noexcept try
+{
+	using namespace std::chrono;
+	using namespace kerbal::compatibility::chrono_suffix;
+
+	kerbal::redis::RedisContext regist_self_conn(redis_hostname.c_str(), redis_port, 1500_ms);
+	if (!regist_self_conn) {
+		LOG_FATAL(0, 0, log_fp, "Regist_self context connect failed.");
+		return;
+	}
+	LOG_INFO(0, 0, log_fp, "Regist_self service get context.");
+
+	static kerbal::redis::Operation opt(regist_self_conn);
+	while (true) {
+		try {
+			const time_t now = time(NULL);
+			const std::string confirm_time = get_ymd_hms_in_local_time_zone(now);
+			opt.hmset("judge_server:" + judge_server_id,
+					  "host_name"_cptr, host_name,
+					  "ip"_cptr, ip,
+					  "user_name"_cptr, user_name,
+					  "listening_pid"_cptr, listening_pid,
+					  "last_confirm"_cptr, confirm_time);
+			opt.set("judge_server_confirm:" + judge_server_id, confirm_time);
+			opt.expire("judge_server_confirm:" + judge_server_id, 30_s);
+
+			static kerbal::redis::Set<std::string> s(regist_self_conn, "online_judger");
+			s.insert(judge_server_id);
+
+			LOG_DEBUG(0, 0, log_fp, "Register self success");
+			std::this_thread::sleep_for(10_s);
+		} catch (const kerbal::redis::RedisException & e) {
+			EXCEPT_FATAL(0, 0, log_fp, "Register self failed.", e);
+		}
+	}
+} catch (...) {
+	LOG_FATAL(0, 0, log_fp, "Register self failed. Error information: ", UNKNOWN_EXCEPTION_WHAT);
+	exit(2);
+}
+
+/**
+ * @brief SIGTERM 信号的处理函数
+ * 当收到 SIGTERM 信号，在代评测队列末端加上 type = 0, id = -1 的任务，用于标识结束 slave 工作的意愿。之后在 loop
+ * 循环中会据此判断是否结束 slave 进程。
+ * @param signum 信号编号
+ * @throw 该函数保证不抛出任何异常
+ */
+void regist_SIGTERM_handler(int signum) noexcept
+{
+	using namespace kerbal::compatibility::chrono_suffix;
+	if (signum == SIGTERM) {
+		kerbal::redis::RedisContext main_conn(redis_hostname.c_str(), redis_port, 1500_ms);
+		kerbal::redis::List<std::string> job_list(main_conn, "judge_queue");
+		job_list.push_back(JobBase::getExitJobItem());
+		LOG_WARNING(0, 0, log_fp,
+					"Master has received the SIGTERM signal and will exit soon after the jobs are all finished!");
+	}
 }
 
 void load_config()
@@ -92,6 +176,15 @@ void load_config()
 		ccerr << "log file open failed" << endl;
 		exit(0);
 	}
+
+	host_name = get_host_name();
+	ip = get_addr_list(host_name).front();
+	user_name = get_user_name();
+	listening_pid = getpid();
+	judge_server_id = host_name + ":" + ip;
+
+	LOG_INFO(0, 0, log_fp, "judge_server_id: ", judge_server_id);
+	LOG_INFO(0, 0, log_fp, "listening pid: ", listening_pid);
 }
 
 
@@ -130,6 +223,17 @@ int main() try
 		exit(-1);
 	}
 	#endif //DEBUG
+
+	try {
+		/**
+		 * 创建并分离发送心跳线程
+		 */
+		std::thread regist(register_self);
+		regist.detach();
+	} catch (const std::exception & e) {
+		EXCEPT_FATAL(0, 0, log_fp, "Register self service process fork failed.", e);
+		exit(-3);
+	}
 
 	LOG_INFO(0, 0, log_fp, "updater starting ...");
 
