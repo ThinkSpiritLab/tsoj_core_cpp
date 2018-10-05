@@ -43,15 +43,34 @@ namespace
 	/** 评测服务器id，定义为 host_name:ip */
 	std::string judge_server_id;
 
+	/** 主工作循环 */
 	bool loop = true;
+
+	/** updater 的临时工作路径 */
 	std::string updater_init_dir;
+
+	/** 日志文件名 */
 	std::string log_file_name;
+
+	/** lock_file,用于保证一次只能有一个 updater 守护进程在运行 */
 	std::string updater_lock_file;
+
+	/** mysql 主机名 */
 	std::string mysql_hostname;
+
+	/** mysql 用户名 */
 	std::string mysql_username;
+
+	/** mysql 密码 */
 	std::string mysql_passwd;
+
+	/** mysql 端口号 */
 	std::string mysql_database;
+
+	/** redis 端口号 */
 	int redis_port;
+
+	/** redis 主机名 */
 	std::string redis_hostname;
 }
 
@@ -103,8 +122,8 @@ void register_self() noexcept try
 
 /**
  * @brief SIGTERM 信号的处理函数
- * 当收到 SIGTERM 信号，在代评测队列末端加上 type = 0, id = -1 的任务，用于标识结束 slave 工作的意愿。之后在 loop
- * 循环中会据此判断是否结束 slave 进程。
+ * 当收到 SIGTERM 信号，在代评测队列末端加上 type = 0, id = -1 的任务，用于标识结束 master 工作的意愿。之后在 loop
+ * 循环中会据此判断是否结束 master 进程。
  * @param signum 信号编号
  * @throw 该函数保证不抛出任何异常
  */
@@ -120,6 +139,10 @@ void regist_SIGTERM_handler(int signum) noexcept
 	}
 }
 
+/**
+ * @brief 加载 master 工作的配置
+ * 根据 updater.conf 文档，读取工作配置信息。loadConfig 的工作原理详见其文档。
+ */
 void load_config()
 {
 	using namespace kerbal::utility::costream;
@@ -187,9 +210,14 @@ void load_config()
 	LOG_INFO(0, 0, log_fp, "listening pid: ", listening_pid);
 }
 
-
+/**
+ * @brief master 端主程序循环
+ * 加载配置信息；连接数据库；取待评测任务信息，交由子进程并评测；创建并分离发送心跳线程 // to be done
+ * @throw UNKNOWN_EXCEPTION
+ */
 int main() try
 {
+	// master 端运行必须具有 root 权限
 	uid_t uid = getuid();
 	if (uid != 0) {
 		cerr << "root required!" << endl;
@@ -199,6 +227,7 @@ int main() try
 	load_config();
 	LOG_INFO(0, 0, log_fp, "Configure load finished!");
 
+	// 连接 mysql
 	LOG_INFO(0, 0, log_fp, "Connecting main MYSQL connection...");
 	mysqlpp::Connection mainMysqlConn(false);
 	mainMysqlConn.set_option(new mysqlpp::SetCharsetNameOption("utf8"));
@@ -209,6 +238,7 @@ int main() try
 	}
 	LOG_INFO(0, 0, log_fp, "Main MYSQL connection connected!");
 
+	// 连接 redis
 	LOG_INFO(0, 0, log_fp, "Connecting main REDIS connection...");
 	kerbal::redis::RedisContext mainRedisConn(redis_hostname.c_str(), redis_port, 100_ms);
 	if (!mainRedisConn) {
@@ -225,9 +255,7 @@ int main() try
 	#endif //DEBUG
 
 	try {
-		/**
-		 * 创建并分离发送心跳线程
-		 */
+		// 创建并分离发送心跳线程
 		std::thread regist(register_self);
 		regist.detach();
 	} catch (const std::exception & e) {
@@ -237,6 +265,9 @@ int main() try
 
 	LOG_INFO(0, 0, log_fp, "updater starting ...");
 
+	signal(SIGTERM, regist_SIGTERM_handler);
+
+	// 连接 redis 的 update_queue 队列，master 据此进行更新操作
 	kerbal::redis::List<std::string> update_queue(mainRedisConn, "update_queue");
 
 	while (loop) {
@@ -244,6 +275,12 @@ int main() try
 		std::string job_item = "-1,-1";
 		int jobType = -1;
 		int sid = -1;
+
+		/*
+		 * 当收到 SIGTERM 信号时，会在评测队列末端加一个特殊的评测任务用于标识停止测评。此处若检测到停止
+		 * 工作的信号，则结束工作loop
+		 * 若取得的是正常的评测任务则继续工作
+		 */
 		try {
 			job_item = update_queue.block_pop_front(0_s);
 			if (JobBase::isExitJob(job_item) == true) {
@@ -261,15 +298,18 @@ int main() try
 			continue;
 		}
 
+		// 本次更新开始时间
 		auto start(std::chrono::steady_clock::now());
 		LOG_DEBUG(jobType, sid, log_fp, "Update job start");
 
+		// 本次更新任务的 redis 连接
 		kerbal::redis::RedisContext redisConn(redis_hostname.c_str(), redis_port, 100_ms);
 		if (!redisConn) {
 			LOG_FATAL(jobType, sid, log_fp, "Redis connection connect failed!");
 			continue;
 		}
 
+		// 本次更新任务的 mysql 连接
 		std::unique_ptr <mysqlpp::Connection> mysqlConn(new mysqlpp::Connection(false));
 		mysqlConn->set_option(new mysqlpp::SetCharsetNameOption("utf8"));
 		if (!mysqlConn->connect(mysql_database.c_str(), mysql_hostname.c_str(), mysql_username.c_str(), mysql_passwd.c_str())) {
@@ -279,6 +319,7 @@ int main() try
 
 		std::unique_ptr <UpdateJobBase> job = nullptr;
 		try {
+			// 根据 jobType 与 sid 获取 UpdateJobBase 通用类型的 update job 信息
 			job = make_update_job(jobType, sid, redisConn, std::move(mysqlConn));
 		} catch (const std::exception & e) {
 			EXCEPT_FATAL(jobType, sid, log_fp, "Job construct failed!", e);
@@ -289,6 +330,7 @@ int main() try
 		}
 
 		try {
+			// 执行本次 update job
 			job->handle();
 		} catch (const std::exception & e) {
 			EXCEPT_FATAL(jobType, sid, log_fp, "Job handle failed!", e);
@@ -298,7 +340,9 @@ int main() try
 			continue;
 		}
 
+		// 本次更新结束时间
 		auto end(std::chrono::steady_clock::now());
+		// 本次更新耗时
 		auto time_consume = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 		LOG_DEBUG(jobType, sid, log_fp, "Update consume: ", time_consume.count());
 	}

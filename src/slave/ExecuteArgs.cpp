@@ -30,6 +30,9 @@ std::unique_ptr<char*[]> ExecuteArgs::getArgs() const
 	for (i = 0; i < args.size(); ++i) {
 		res.get()[i] = const_cast<char*>(args[i].c_str());
 	}
+	/*
+	 * Unix 的 exec 族函数的规范要求，其命令行参数最后需要以空指针结束。
+	 */
 	res.get()[i] = NULL;
 	return res;
 }

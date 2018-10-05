@@ -27,7 +27,7 @@ class JobBase
 		/** Job 类型，如：竞赛、课程等 */
 		int jobType;
 
-		/** student id */
+		/** solution id */
 		int sid;
 
 		/** redis 连接 */

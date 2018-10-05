@@ -72,7 +72,7 @@ class JudgeJob: public JobBase
 		Result compile() const noexcept;
 
 		/**
-		 * @brief 当编译出错时，将编译错误信息写入到数据库。
+		 * @brief 当编译出错时，将编译错误信息写入到 mysql 数据库。
 		 * @return 若编译错误信息写入数据库成功，返回 true ，否则返回 false
 		 * @exception 该函数保证不抛出任何异常
 		 */	
