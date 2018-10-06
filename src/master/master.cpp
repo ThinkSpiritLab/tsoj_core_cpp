@@ -320,6 +320,11 @@ int main() try
 		std::unique_ptr <UpdateJobBase> job = nullptr;
 		try {
 			// 根据 jobType 与 sid 获取 UpdateJobBase 通用类型的 update job 信息
+			// 信息从 redis 数据库读入，并且将一个 mysql 数据库的连接控制权转移至实例化的 job 当中
+			// 在实例化之前就建立好 mysql 连接再转移给它，避免了进入更新操作内部之后才发现无法连接 mysql 数据库
+			// 避免了无效操作的消耗与可能导致的其他逻辑混乱
+			// 此外，unique_ptr 的特性决定了其不应该使用值传递的方式。
+			// 而使用 std::move 将其强制转换为右值引用，是为了使用移动构造函数来优化性能（吗？这个不确定）
 			job = make_update_job(jobType, sid, redisConn, std::move(mysqlConn));
 		} catch (const std::exception & e) {
 			EXCEPT_FATAL(jobType, sid, log_fp, "Job construct failed!", e);

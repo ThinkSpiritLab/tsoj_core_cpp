@@ -149,6 +149,7 @@ void ExerciseUpdateJobBase::update_user_problem()
 	user_problem_status old_status = this->ExerciseUpdateJobBase::get_exercise_user_problem_status();
 	switch (old_status) {
 		case user_problem_status::TODO: {
+			// 未做过此题时，user_problem 表中无记录，使用 insert
 			mysqlpp::Query insert = mysqlConn->query(
 					"insert into user_problem (u_id, p_id, status)"
 					"values (%0, %1, %2)"
@@ -163,6 +164,7 @@ void ExerciseUpdateJobBase::update_user_problem()
 			break;
 		}
 		case user_problem_status::ATTEMPTED: {
+			// 尝试做过此题时，user_problem 表中有记录，使用 update
 			mysqlpp::Query update = mysqlConn->query(
 					"update user_problem set status = %0 "
 					"where u_id = %1 and p_id = %2 and c_id is NULL"

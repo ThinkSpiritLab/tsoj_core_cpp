@@ -27,7 +27,15 @@ make_update_job(int jobType, int sid, const kerbal::redis::RedisContext & redisC
 	UpdateJobBase * job = nullptr;
 
 	try {
+		/*
+		*  jobType  |   cid    |   type
+		*  ------------------------------
+		*  0        |     0    |  Exercise
+		*  0        |    !0    |  Course
+		*  !0       |  0 or !0 |  Contest
+		*/
 		if (jobType == 0) {
+			/** course_id */
 			int cid = 0;
 			static boost::format key_name_tmpl("job_info:0:%d");
 			kerbal::redis::Operation opt(redisConn);
@@ -56,6 +64,8 @@ make_update_job(int jobType, int sid, const kerbal::redis::RedisContext & redisC
 		LOG_FATAL(jobType, sid, log_fp, "Error occurred while construct update job! Error information: ", UNKNOWN_EXCEPTION_WHAT);
 		throw;
 	}
+
+	// 此处返回的是指向派生类的基类指针，需小心使用
 	return std::unique_ptr<UpdateJobBase>(job);
 }
 
@@ -117,6 +127,7 @@ UpdateJobBase::UpdateJobBase(int jobType, int sid, const RedisContext & redisCon
 
 void UpdateJobBase::handle()
 {
+	// Step 1: 在 solution 表中插入本 solution 记录
 	std::exception_ptr update_solution_exception;
 	try {
 		this->update_solution();
@@ -126,6 +137,7 @@ void UpdateJobBase::handle()
 		//DO NOT THROW
 	}
 
+	// Step 2: 更新 problem 表与 user 表中的提交数与通过数
 	std::exception_ptr update_user_and_problem_exception;
 	if(update_solution_exception == nullptr) {
 		//如果 update solution 失败, 则跳过 update user and problem
@@ -141,6 +153,7 @@ void UpdateJobBase::handle()
 		LOG_WARNING(jobType, sid, log_fp, "Escape update user and problem because update solution failed!");
 	}
 
+	// Step 3: 更新/插入 user_problem 表中该用户对应该题目的解题状态
 	std::exception_ptr update_user_problem_exception;
 	if(update_solution_exception == nullptr) { //如果 update solution 失败, 则跳过 update user problem
 		try {
@@ -154,10 +167,12 @@ void UpdateJobBase::handle()
 		LOG_WARNING(jobType, sid, log_fp, "Escape update user problem because update solution failed!");
 	}
 
+	// Step 4: 在 source 表或 contest_source* 表中存储 s_id 对应的题解内容
 	std::exception_ptr update_source_code_exception;
 	if(update_solution_exception == nullptr) { //如果 update solution 失败, 则跳过 update source code
 		try
 		{ // update source code
+			// get_source_code() 来源于 JobBase
 			RedisReply reply = this->get_source_code();
 			this->update_source_code(reply->str);
 		} catch (const std::exception & e) {
@@ -170,7 +185,7 @@ void UpdateJobBase::handle()
 	}
 
 	std::exception_ptr update_compile_info_exception;
-	//保存编译信息
+	// Step 5: 在 compile_info 表或 contest_compile_info* 表中插入s_id 对应的编译错误信息
 	if (result.judge_result == UnitedJudgeResult::COMPILE_ERROR) {
 		if(update_solution_exception == nullptr) { //如果 update solution 失败, 则跳过 update compile info
 			try {
@@ -188,6 +203,8 @@ void UpdateJobBase::handle()
 
 	Operation opt(redisConn);
 
+	// Step 6: 若所有表都更新成功，则本次同步到 mysql 的操作成功，
+	//         应将此状态反馈到 redis 数据库，并将 redis 数据库中本 solution 的无用的信息删除。
 	if (update_solution_exception == nullptr
 			&& update_user_and_problem_exception == nullptr
 			&& update_user_problem_exception == nullptr
@@ -200,6 +217,9 @@ void UpdateJobBase::handle()
 	} else {
 		LOG_WARNING(jobType, sid, log_fp, "Error occurred while update this job!");
 	}
+
+	// Step 7: 清除 redis 中过于久远的 solution 数据 (mysql 中有留存)，防止内存爆炸
+	//         可以理解为有延迟的将内存数据永久存储在硬盘中
 	this->clear_previous_jobs_info_in_redis();
 }
 

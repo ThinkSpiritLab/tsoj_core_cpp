@@ -10,6 +10,10 @@
 
 #include "ExerciseUpdateJobBase.hpp"
 
+/**
+ * @brief 普通练习类，定义了其独特的 update_solution 操作，即增加特有的 solution 记录。
+ * 而维护的 user 表、user_problem 表与 problem 表，均使用基类的定义完成。
+ */
 class ExerciseUpdateJob: public ExerciseUpdateJobBase
 {
 	private:

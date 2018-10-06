@@ -10,6 +10,9 @@
 
 #include "UpdateJobBase.hpp"
 
+/**
+ * @brief ExerciseUpdateJob 与 CourseUpdateJob 的虚基类，定义了解题状态查询与更新提交通过数等通用部分。
+ */
 class ExerciseUpdateJobBase : public UpdateJobBase
 {
 	private:

@@ -17,6 +17,9 @@
 
 #include <mysql++/mysql++.h>
 
+/**
+ * @brief 枚举类，标识每道题目对一个用户的状态
+ */
 enum class user_problem_status
 {
 	TODO = -1,
@@ -24,6 +27,10 @@ enum class user_problem_status
 	ATTEMPTED = 1,
 };
 
+/**
+ * @brief JobBase 的子类，同时是所有类型的 update 类的基类。
+ * @note 此类为虚基类，update_solution 等函数需要由子类实现，此类不可实例化
+ */
 class UpdateJobBase: public JobBase
 {
 	private:
@@ -53,21 +60,37 @@ class UpdateJobBase: public JobBase
 		///@brief is rejudge job
 		bool is_rejudge;
 
+		/**
+		 * @brief 需要同步到 mysql 数据库中的结果
+		 * @note 此处没有使用 Result.hpp 中定义的 Result，因为其中含有部分不需提交到 mysql 的参数。此处的 Result
+		 * 作为内部结构体，也不会轻易暴露在外造成混淆。
+		 */
 		struct Result
 		{
-				UnitedJudgeResult judge_result;
-				std::chrono::milliseconds cpu_time;
-				std::chrono::milliseconds real_time;
-				kerbal::utility::Byte memory;
-				int similarity_percentage;
+			/** 评测结果 */
+			UnitedJudgeResult judge_result;
+			/** CPU 时间用量，单位为 ms */
+			std::chrono::milliseconds cpu_time;
+			/** 墙上时间用量，单位为 ms */
+			std::chrono::milliseconds real_time;
+			/** 储存空间所用的字节长度，单位为 byte */
+			kerbal::utility::Byte memory;
+			/** 代码查重的相似度 */
+			int similarity_percentage;
 		} result;
 
 	protected:
+		// make_update_job 为一个全局函数，用于根据提供的信息生成一个具体的 UpdateJobBase 信息，
+		// 而 UpdateJobBase的实例化应该被控制，将随意 new 一个出来的可能性暴露出来是不妥当的，
+		// 因此构造函数定义为 protected，只能由 make_update_job 来生成，故 make_update_job 也需要成为友元函数。
 		friend
 		std::unique_ptr<UpdateJobBase>
 		make_update_job(int jobType, int sid, const RedisContext & redisConn,
 						std::unique_ptr<mysqlpp::Connection> && mysqlConn);
-
+		/**
+		 * @brief 通用基类的构造函数，除父类 JobBase 构造函数获得的信息除外，还额外获取更新类别任务的额外信息如 uid,
+		 * cid, postTime等信息。
+		 */
 		UpdateJobBase(int jobType, int sid, const RedisContext & redisConn,
 						std::unique_ptr<mysqlpp::Connection> && mysqlConn);
 	public:
