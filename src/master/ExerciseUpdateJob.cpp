@@ -19,6 +19,7 @@ ExerciseUpdateJob::ExerciseUpdateJob(int jobType, int sid, const kerbal::redis::
 
 void ExerciseUpdateJob::update_solution()
 {
+	// mysql 中未有过改 solution 记录，使用 insert
 	LOG_DEBUG(jobType, sid, log_fp, "ExerciseUpdateJob::update_solution");
 	mysqlpp::Query insert = mysqlConn->query(
 			"insert into solution "

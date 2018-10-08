@@ -10,6 +10,11 @@
 
 #include "ExerciseUpdateJobBase.hpp"
 
+/**
+ * @brief 课程练习类，定义了其独特的 update_solution 等操作。针对课程，此类还维护 user_problem 表中 cid 非空的数据。
+ * 该数据与普通的 user_problem 记录独立。即同一个 u_id 与 p_id 的数据也根据 cid 不同而不同。竞赛中用户的提交信息也记录
+ * 到 course_user 表中，在普通练习未 AC 的情况下，课程中的提交与 AC 会相应增加或更新到 user 表中。该 course_user 表也由此类维护。
+ */
 class CourseUpdateJob: public ExerciseUpdateJobBase
 {
 	private:

@@ -34,10 +34,23 @@ struct Result : public SolutionDetails
 		int signal;
 		int exit_code;
 
-		Result();
+		/** 代码查重的相似度 */
+		int similarity_percentage;
 
+		/**
+		 * @brief Result 构造函数，结果设定 为AC，资源用量、信号、退出代码、相似度置为 0
+		 */
+		Result();
+	
+		/**
+		 * @brief 将本结构体的 RunnerError 置为 err， 并将评测结果标为 UnitedJudgeResult::SYSTEM_ERROR
+		 * @param err 表示 RunnerError 的类型
+		 */
 		void setErrorCode(RunnerError err);
 
+		/**
+		 * @brief 重载 << 运算符，
+		 */
 		friend std::ostream& operator<<(std::ostream& out, const Result & src);
 };
 

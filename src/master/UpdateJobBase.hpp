@@ -18,6 +18,9 @@
 
 #include <mysql++/mysql++.h>
 
+/**
+ * @brief 枚举类，标识每道题目对一个用户的状态
+ */
 enum class user_problem_status
 {
 	TODO = -1,
@@ -25,6 +28,10 @@ enum class user_problem_status
 	ATTEMPTED = 1,
 };
 
+/**
+ * @brief JobBase 的子类，同时是所有类型的 update 类的基类。
+ * @note 此类为虚基类，update_solution 等函数需要由子类实现，此类不可实例化
+ */
 class UpdateJobBase: public JobBase
 {
 	private:
@@ -57,11 +64,17 @@ class UpdateJobBase: public JobBase
 		SolutionDetails result;
 
 	protected:
+		// make_update_job 为一个全局函数，用于根据提供的信息生成一个具体的 UpdateJobBase 信息，
+		// 而 UpdateJobBase的实例化应该被控制，将随意 new 一个出来的可能性暴露出来是不妥当的，
+		// 因此构造函数定义为 protected，只能由 make_update_job 来生成，故 make_update_job 也需要成为友元函数。
 		friend
 		std::unique_ptr<UpdateJobBase>
 		make_update_job(int jobType, int sid, const RedisContext & redisConn,
 						std::unique_ptr<mysqlpp::Connection> && mysqlConn);
-
+		/**
+		 * @brief 通用基类的构造函数，除父类 JobBase 构造函数获得的信息除外，还额外获取更新类别任务的额外信息如 uid,
+		 * cid, postTime等信息。
+		 */
 		UpdateJobBase(int jobType, int sid, const RedisContext & redisConn,
 						std::unique_ptr<mysqlpp::Connection> && mysqlConn);
 	public:

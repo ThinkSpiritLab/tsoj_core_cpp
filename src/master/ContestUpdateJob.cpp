@@ -22,6 +22,7 @@ void ContestUpdateJob::update_solution()
 {
 	LOG_DEBUG(jobType, sid, log_fp, "ContestUpdateJob::update_solution");
 
+	// 每个 solution 之前均不存在，使用 insert
 	mysqlpp::Query insert = mysqlConn->query(
 			"insert into contest_solution%0 "
 			"(s_id, u_id, p_id, s_lang, s_result, s_time, s_mem, s_posttime, s_similarity_percentage)"
@@ -86,6 +87,7 @@ int ContestUpdateJob::get_error_count()
 {
 	LOG_DEBUG(jobType, sid, log_fp, "ContestUpdateJob::get_error_count");
 
+	// 本题的非 AC 次数，并不是所有的非 AC 次数
 	mysqlpp::Query query = mysqlConn->query(
 			"select error_count from contest_user_problem%0 "
 			"where u_id = %1 and p_id = %2"
@@ -157,6 +159,7 @@ bool ContestUpdateJob::this_problem_has_not_accepted()
 	query.parse();
 	mysqlpp::StoreQueryResult res = query.store(jobType, pid);
 
+	// 该字段在竞赛题目建立时被创建，因此无论如何都能够查询到该字段，否则出现逻辑错误
 	if (res.empty()) {
 		if(query.errnum() != 0) {
 			MysqlEmptyResException e(query.errnum(), query.error());
@@ -177,6 +180,10 @@ void ContestUpdateJob::update_user_problem()
 	LOG_DEBUG(jobType, sid, log_fp, "ContestUpdateJob::update_user_problem");
 
 	bool is_ac = this->result.judge_result == UnitedJudgeResult::ACCEPTED ? true : false;
+
+	// get_contest_user_problem_status 有可能出错而抛出异常，因此用 try-catch 语句块。这导致了 user_problem_status
+	// 需定义在 try-catch 语句块之外，否则因为可见性的缘故，本函数的后续部分无法访问到它。其余部分同理。
+	// user_problem_status 为不考虑本次 solution 的之前状态。
 	user_problem_status user_problem_status = user_problem_status::TODO;
 	try {
 		user_problem_status = this->get_contest_user_problem_status();
@@ -240,6 +247,11 @@ void ContestUpdateJob::update_user_problem()
 			return;
 	}
 
+	// Q: 众所周知，slave 端是多进程进行判题的，若是由于系统调度的缘故，先提交的那个人的评测在后提交的人之后完成，这样
+	//    update 的队列中，后提交的人的更新任务在前。那么在这里修改 first_AC 的时候逻辑会出现问题。
+	//    个人能想到的是，所以是否可以去掉 is_first_ac 字段，并不在更新每一次提交的时候都检查一次，而是在 master 开始
+	//    评测任务之前，开启一个子进程，每隔一段时间（比如30秒），查询一次数据库，排序出提交时间最早的用户来更新 
+	//    contest_problem 表中的 first_ac_user 字段。
 	// update first_ac_user
 	if (is_ac == true && is_first_ac == true) {
 		mysqlpp::Query update = mysqlConn->query(

@@ -11,18 +11,24 @@
 #include <iostream>
 #include <string>
 
+/**
+ * @brief 枚举类，标识测评状态
+ */
 enum class JudgeStatus
 {
 	QUEUING = 0, COMPILING = 1, RUNNING = 2, JUDGING = 3, FINISHED = 4, UPDATED = 5
 };
 
+/**
+ * @brief 枚举类，标识用户所用的语言
+ */
 enum class Language
 {
 	C = 0, Cpp = 1, Java = 2, Cpp14 = 3
 };
 
 /**
- * 评测结果
+ * @brief 枚举类，标识测评结果
  */
 enum class UnitedJudgeResult
 {
@@ -63,9 +69,21 @@ enum class UnitedJudgeResult
 	SIMILAR_CODE = 9
 };
 
+/**
+ * @brief 根据传入的 UnitedJudgeResult，返回其对应含义的 std::string 类型说明。
+ * @param res UnitedJudgeResult 类型
+ * @return res 对应含义的 std::string 类型说明。
+ */	
 std::string getJudgeResultName(UnitedJudgeResult res);
+
+/**
+ * @brief 重载 UnitedJudgeResult 类的 << 运算符，输出其对应含义的 std::string
+ */
 std::ostream& operator<<(std::ostream& out, UnitedJudgeResult res);
 
+/**
+ * @brief 枚举类，标识 RE 的类型
+ */
 enum class RunnerError
 {
 	SUCCESS = 0,
@@ -83,7 +101,16 @@ enum class RunnerError
 	CHDIR_ERROR = -12,
 };
 
+/**
+ * @brief 根据传入的 RunnerError，返回其对应含义的 std::string 类型说明。
+ * @param err RunnerError 类型
+ * @return err 对应含义的 std::string 类型说明。
+ */	
 std::string getRunnerErrorName(RunnerError err);
+
+/**
+ * @brief 重载 RunnerError 类的 << 运算符，输出其对应含义的 std::string
+ */
 std::ostream& operator<<(std::ostream& out, RunnerError err);
 
 #endif /* SRC_UNITED_RESOURCE_HPP_ */

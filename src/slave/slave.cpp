@@ -242,8 +242,8 @@ void load_config()
 }
 
 /**
- * @brief slave端主程序循环
- * 加载配置信息；连接数据库；取待评测任务信息，交由子进程并评测；创建并分离发送心跳线程
+ * @brief slave 端主程序循环
+ * 加载配置信息；连接 redis 数据库；取待评测任务信息，交由子进程并评测；创建并分离发送心跳线程
  * @throw UNKNOWN_EXCEPTION
  */
 int main(int argc, const char * argv[]) try

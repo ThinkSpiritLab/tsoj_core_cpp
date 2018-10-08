@@ -86,6 +86,8 @@ void CourseUpdateJob::update_user_and_problem()
 	LOG_DEBUG(jobType, sid, log_fp, "CourseUpdateJob::update_user_and_problem");
 
 	// 先更新练习视角用户的提交数和通过数
+	// 使 course_user 中某个 user 的提交数与通过数同步到 user 表中
+	// course problem 的统计因数据库不支持暂未实现
 	this->supper_t::update_user_and_problem();
 
 	bool already_AC = false;
@@ -148,6 +150,7 @@ void CourseUpdateJob::update_user_problem()
 	LOG_DEBUG(jobType, sid, log_fp, "CourseUpdateJob::update_user_problem");
 
 	// 先更新练习视角的用户通过情况表
+	// 使课程中（cid 非空） user_problem 中某个 user 对某题的状态同步到非课程的 user_problem 中（cid 为空）
 	this->supper_t::update_user_problem();
 
 	user_problem_status old_status = this->get_course_user_problem_status();

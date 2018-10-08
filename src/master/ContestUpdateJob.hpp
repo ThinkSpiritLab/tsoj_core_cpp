@@ -10,6 +10,10 @@
 
 #include "UpdateJobBase.hpp"
 
+/**
+ * @brief 竞赛类，定义了其独特的 update_solution 操作以及竞赛所需的统计非 AC 提交数等功能
+ * 同时，该类负责维护所有 contest 相关的 source, compile_info, solution, user_problem 等表
+ */
 class ContestUpdateJob: public UpdateJobBase
 {
 	private:
