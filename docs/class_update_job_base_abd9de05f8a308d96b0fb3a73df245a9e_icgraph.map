@@ -1,0 +1,4 @@
+<map id="UpdateJobBase::clear_this_jobs_info_in_redis" name="UpdateJobBase::clear_this_jobs_info_in_redis">
+<area shape="rect" id="node1" title="删除 redis 中本条 job 不再需要的信息" alt="" coords="215,5,376,47"/>
+<area shape="rect" id="node2" href="$class_update_job_base.html#a1f2173cec66f3453d4a87c91c2ac8e29" title="执行任务" alt="" coords="5,13,167,39"/>
+</map>

@@ -8,11 +8,19 @@
 
 #include "Result.hpp"
 
-Result::Result() :
+SolutionDetails::SolutionDetails() :
 		judge_result(UnitedJudgeResult::ACCEPTED),
-		cpu_time(0), real_time(0), memory(0),
+		cpu_time(0),
+		real_time(0),
+		memory(0),
+		similarity_percentage(0)
+{
+}
+
+Result::Result() :
+		SolutionDetails(),
 		error(RunnerError::SUCCESS),
-		signal(0), exit_code(0), similarity_percentage(0)
+		signal(0), exit_code(0)
 {
 }
 
@@ -22,7 +30,7 @@ void Result::setErrorCode(RunnerError err)
 	this->judge_result = UnitedJudgeResult::SYSTEM_ERROR;
 }
 
-std::ostream& operator<<(std::ostream& out, const Result & src)
+std::ostream& operator<<(std::ostream& out, const SolutionDetails & src)
 {
 	return out << "result: " << src.judge_result
 
@@ -32,11 +40,18 @@ std::ostream& operator<<(std::ostream& out, const Result & src)
 
 			<< " memory: " << src.memory.count() << " Byte"
 
+			<< " similarity_percentage: " << src.similarity_percentage;
+}
+
+std::ostream& operator<<(std::ostream& out, const Result & src)
+{
+	return out << static_cast<const SolutionDetails&>(src)
+
 			<< " error: " << src.error
 
 			<< " signal: " << src.signal
 
-			<< " exit_code: " << src.exit_code
-
-			<< " similarity_percentage: " << src.similarity_percentage;
+			<< " exit_code: " << src.exit_code;
 }
+
+

@@ -17,6 +17,45 @@ ExerciseUpdateJobBase::ExerciseUpdateJobBase(int jobType, int sid, const RedisCo
 	LOG_DEBUG(jobType, sid, log_fp, "ExerciseUpdateJobBase::ExerciseUpdateJobBase");
 }
 
+void ExerciseUpdateJobBase::update_source_code(const char * source_code)
+{
+	if (source_code == nullptr) {
+		LOG_WARNING(jobType, sid, log_fp, "empty source code!");
+		return;
+	}
+
+	mysqlpp::Query insert = mysqlConn->query(
+			"insert into source (s_id, source_code)"
+			"values (%0, %1q)"
+	);
+	insert.parse();
+	mysqlpp::SimpleResult res = insert.execute(sid, source_code);
+	if (!res) {
+		MysqlEmptyResException e(insert.errnum(), insert.error());
+		EXCEPT_FATAL(jobType, sid, log_fp, "Update source code failed!", e);
+		throw e;
+	}
+}
+
+void ExerciseUpdateJobBase::update_compile_info(const char * compile_info)
+{
+	if (compile_info == nullptr) {
+		LOG_WARNING(jobType, sid, log_fp, "empty compile info!");
+		return;
+	}
+
+	mysqlpp::Query insert = mysqlConn->query(
+			"insert into compile_info (s_id, compile_error_info) values (%0, %1q)"
+	);
+	insert.parse();
+	mysqlpp::SimpleResult res = insert.execute(sid, compile_info);
+	if (!res) {
+		MysqlEmptyResException e(insert.errnum(), insert.error());
+		EXCEPT_FATAL(jobType, sid, log_fp, "Update compile info failed!", e);
+		throw e;
+	}
+}
+
 void ExerciseUpdateJobBase::update_exercise_problem_submit(int delta)
 {
 	LOG_DEBUG(jobType, sid, log_fp, "ExerciseUpdateJobBase::update_exercise_problem_submit");

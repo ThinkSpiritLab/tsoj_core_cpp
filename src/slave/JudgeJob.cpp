@@ -49,16 +49,14 @@ void JudgeJob::handle()
 	this->commitJudgeStatusToRedis(JudgeStatus::COMPILING);
 	LOG_DEBUG(jobType, sid, log_fp, "compile start");
 	Result compile_result = this->compile();
-
-	LOG_DEBUG(jobType, sid, log_fp, "compile finished");
-	LOG_DEBUG(jobType, sid, log_fp, "compile result: ", compile_result);
+	LOG_DEBUG(jobType, sid, log_fp, "compile finished. compile result: ", compile_result);
 
 	switch (compile_result.judge_result) {
 		case UnitedJudgeResult::ACCEPTED: {
 			LOG_DEBUG(jobType, sid, log_fp, "compile success");
 			// 编译成功则 run
 			Result result = this->running();
-			LOG_DEBUG(jobType, sid, log_fp, "judging finished");
+			LOG_DEBUG(jobType, sid, log_fp, "judge finished");
 			this->commitJudgeResultToRedis(result);
 			break;
 		}
@@ -141,7 +139,7 @@ Result JudgeJob::running()
 namespace
 {
 	void
-	staticCommitJudgeResultToRedis(int jobType, int sid, const kerbal::redis::RedisContext redisConn, const Result & result) try
+	staticCommitJudgeResultToRedis(int jobType, int sid, const kerbal::redis::RedisContext redisConn, const SolutionDetails & result) try
 	{
 		static boost::format judge_status_name_tmpl("judge_status:%d:%d");
 		Operation opt(redisConn);
@@ -154,12 +152,12 @@ namespace
 					  "similarity_percentage"_cptr, 0,
 					  "judge_server_id"_cptr, judge_server_id);
 	} catch (const std::exception & e) {
-		LOG_FATAL(jobType, sid, log_fp, "Commit judge result failed. Error information: ", e.what(), "; judge result: ", result);
+		EXCEPT_FATAL(jobType, sid, log_fp, "Commit judge result failed.", e, "; solution details: ", result);
 		throw;
 	}
 }
 
-void JudgeJob::commitJudgeResultToRedis(const Result & result)
+void JudgeJob::commitJudgeResultToRedis(const SolutionDetails & result)
 {
 	staticCommitJudgeResultToRedis(jobType, sid, redisConn, result);
 }
@@ -201,7 +199,7 @@ bool JudgeJob::set_compile_info() noexcept
 		Operation opt(redisConn);
 		opt.set((compile_info % jobType % sid).str(), buffer);
 	} catch (const std::exception & e) {
-		LOG_FATAL(jobType, sid, log_fp, "Set compile info failed. Error information: ", e.what());
+		EXCEPT_FATAL(jobType, sid, log_fp, "Set compile info failed.", e);
 		return false;
 	}
 
@@ -302,12 +300,12 @@ Result JudgeJob::execute(const Config & config) const noexcept
 			}, config.max_real_time));
 		} catch (const std::system_error & e) {
 			child_process->kill(SIGKILL);
-			LOG_FATAL(jobType, sid, log_fp, "Thread construct failed. Error information: ", e.what(), " , error code: ", e.code().value());
+			EXCEPT_FATAL(jobType, sid, log_fp, "Thread construct failed.", e, " , error code: ", e.code().value());
 			result.setErrorCode(RunnerError::PTHREAD_FAILED);
 			return result;
 		} catch (...) {
 			child_process->kill(SIGKILL);
-			LOG_FATAL(jobType, sid, log_fp, "Thread construct failed. Error information: ", "unknown exception");
+			UNKNOWN_EXCEPT_FATAL(jobType, sid, log_fp, "Thread construct failed.");
 			result.setErrorCode(RunnerError::PTHREAD_FAILED);
 			return result;
 		}
@@ -316,12 +314,12 @@ Result JudgeJob::execute(const Config & config) const noexcept
 			timeout_killer_thread->detach();
 		} catch (const std::system_error & e) {
 			child_process->kill(SIGKILL);
-			LOG_FATAL(jobType, sid, log_fp, "Thread detach failed. Error information: ", e.what(), " , error code: ", e.code().value());
+			EXCEPT_FATAL(jobType, sid, log_fp, "Thread detach failed.", e, " , error code: ", e.code().value());
 			result.setErrorCode(RunnerError::PTHREAD_FAILED);
 			return result;
 		} catch (...) {
 			child_process->kill(SIGKILL);
-			LOG_FATAL(jobType, sid, log_fp, "Thread detach failed. Error information: ", UNKNOWN_EXCEPTION_WHAT);
+			UNKNOWN_EXCEPT_FATAL(jobType, sid, log_fp, "Thread detach failed.");
 			result.setErrorCode(RunnerError::PTHREAD_FAILED);
 			return result;
 		}
@@ -347,7 +345,6 @@ Result JudgeJob::execute(const Config & config) const noexcept
 	result.exit_code = WEXITSTATUS(status);
 
 	if (result.exit_code != 0) {
-		LOG_WARNING(jobType, sid, log_fp, "exit code != 0");
 		result.judge_result = UnitedJudgeResult::RUNTIME_ERROR;
 		return result;
 	}
@@ -603,9 +600,9 @@ bool JudgeJob::insert_into_failed(const kerbal::redis::RedisContext & conn, int 
 		judge_failure_list.push_back("%d:%d"_fmt(jobType, sid).str());
 		return true;
 	} catch (const std::exception & e) {
-		LOG_FATAL(jobType, sid, log_fp, "Failed to push back failed judge job. Error information: ", e.what());
+		EXCEPT_FATAL(jobType, sid, log_fp, "Failed to push back failed judge job.", e);
 	} catch (...) {
-		LOG_FATAL(jobType, sid, log_fp, "Failed to push back failed judge job. Error information: ", UNKNOWN_EXCEPTION_WHAT);
+		UNKNOWN_EXCEPT_FATAL(jobType, sid, log_fp, "Failed to push back failed judge job.");
 	}
 	return false;
 }

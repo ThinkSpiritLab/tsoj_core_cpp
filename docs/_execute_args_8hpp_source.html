@@ -1,0 +1,90 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.8.15"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>TSOJ V4 Judge Core: /home/peter/git/Core/src/slave/ExecuteArgs.hpp 源文件</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="mlabel.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="ThinkSpirit_logo_2018.png"/></td>
+  <td id="projectalign" style="padding-left: 0.5em;">
+   <div id="projectname">TSOJ V4 Judge Core
+   </div>
+   <div id="projectbrief">oj.thinkspirit.org</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- 制作者 Doxygen 1.8.15 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+var searchBox = new SearchBox("searchBox", "search",false,'搜索');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(function() {
+  initMenu('',true,false,'search.php','搜索');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_80f0d4a0945c74dfa611dba2ec326a39.html">slave</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle">
+<div class="title">ExecuteArgs.hpp</div>  </div>
+</div><!--header-->
+<div class="contents">
+<a href="_execute_args_8hpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">/*</span></div><div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment"> * ExecuteArgs.hpp</span></div><div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> *</span></div><div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> *  Created on: 2018年7月1日</span></div><div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> *      Author: peter</span></div><div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> */</span></div><div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;</div><div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#ifndef SRC_EXECUTEARGS_HPP_</span></div><div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#define SRC_EXECUTEARGS_HPP_</span></div><div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div><div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div><div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div><div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div><div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;</div><div class="line"><a name="l00015"></a><span class="lineno"><a class="line" href="class_execute_args.html">   15</a></span>&#160;<span class="keyword">class </span><a class="code" href="class_execute_args.html">ExecuteArgs</a></div><div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;{</div><div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    <span class="keyword">private</span>:</div><div class="line"><a name="l00018"></a><span class="lineno"><a class="line" href="class_execute_args.html#a84a70b0a3478d1d0da567ed57a59ba78">   18</a></span>&#160;        std::vector&lt;std::string&gt; <a class="code" href="class_execute_args.html#a84a70b0a3478d1d0da567ed57a59ba78">args</a>;</div><div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;</div><div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    <span class="keyword">public</span>:</div><div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;        <a class="code" href="class_execute_args.html#a299f1137640de283511d95820f19deb5">ExecuteArgs</a>();</div><div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div><div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;        <span class="keyword">template</span>&lt;<span class="keyword">typename</span> ForwardInteger&gt;</div><div class="line"><a name="l00024"></a><span class="lineno"><a class="line" href="class_execute_args.html#ac49f3a5ab4b2180606980e14d616a8b5">   24</a></span>&#160;        <a class="code" href="class_execute_args.html#ac49f3a5ab4b2180606980e14d616a8b5">ExecuteArgs</a>(ForwardInteger begin, ForwardInteger end) :</div><div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;                <a class="code" href="class_execute_args.html#a84a70b0a3478d1d0da567ed57a59ba78">args</a>(begin, end)</div><div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;        {</div><div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;        }</div><div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div><div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;        <a class="code" href="class_execute_args.html#a299f1137640de283511d95820f19deb5">ExecuteArgs</a>(std::initializer_list&lt;std::string&gt; list);</div><div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div><div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;        <a class="code" href="class_execute_args.html">ExecuteArgs</a>&amp; <a class="code" href="class_execute_args.html#a61171df145c1f3d0484f8c1c72903d93">operator=</a>(std::initializer_list&lt;std::string&gt; list);</div><div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;</div><div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;        std::unique_ptr&lt;char*[]&gt; <a class="code" href="class_execute_args.html#a9e61c65a4f7832a6c33c3c85203ba574">getArgs</a>() <span class="keyword">const</span>;</div><div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;};</div><div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div><div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* SRC_EXECUTEARGS_HPP_ */</span><span class="preprocessor"></span></div><div class="ttc" id="class_execute_args_html_a84a70b0a3478d1d0da567ed57a59ba78"><div class="ttname"><a href="class_execute_args.html#a84a70b0a3478d1d0da567ed57a59ba78">ExecuteArgs::args</a></div><div class="ttdeci">std::vector&lt; std::string &gt; args</div><div class="ttdef"><b>Definition:</b> <a href="_execute_args_8hpp_source.html#l00018">ExecuteArgs.hpp:18</a></div></div>
+<div class="ttc" id="class_execute_args_html_a9e61c65a4f7832a6c33c3c85203ba574"><div class="ttname"><a href="class_execute_args.html#a9e61c65a4f7832a6c33c3c85203ba574">ExecuteArgs::getArgs</a></div><div class="ttdeci">std::unique_ptr&lt; char *[]&gt; getArgs() const</div><div class="ttdef"><b>Definition:</b> <a href="_execute_args_8cpp_source.html#l00025">ExecuteArgs.cpp:25</a></div></div>
+<div class="ttc" id="class_execute_args_html"><div class="ttname"><a href="class_execute_args.html">ExecuteArgs</a></div><div class="ttdef"><b>Definition:</b> <a href="_execute_args_8hpp_source.html#l00015">ExecuteArgs.hpp:15</a></div></div>
+<div class="ttc" id="class_execute_args_html_a299f1137640de283511d95820f19deb5"><div class="ttname"><a href="class_execute_args.html#a299f1137640de283511d95820f19deb5">ExecuteArgs::ExecuteArgs</a></div><div class="ttdeci">ExecuteArgs()</div><div class="ttdef"><b>Definition:</b> <a href="_execute_args_8cpp_source.html#l00010">ExecuteArgs.cpp:10</a></div></div>
+<div class="ttc" id="class_execute_args_html_ac49f3a5ab4b2180606980e14d616a8b5"><div class="ttname"><a href="class_execute_args.html#ac49f3a5ab4b2180606980e14d616a8b5">ExecuteArgs::ExecuteArgs</a></div><div class="ttdeci">ExecuteArgs(ForwardInteger begin, ForwardInteger end)</div><div class="ttdef"><b>Definition:</b> <a href="_execute_args_8hpp_source.html#l00024">ExecuteArgs.hpp:24</a></div></div>
+<div class="ttc" id="class_execute_args_html_a61171df145c1f3d0484f8c1c72903d93"><div class="ttname"><a href="class_execute_args.html#a61171df145c1f3d0484f8c1c72903d93">ExecuteArgs::operator=</a></div><div class="ttdeci">ExecuteArgs &amp; operator=(std::initializer_list&lt; std::string &gt; list)</div><div class="ttdef"><b>Definition:</b> <a href="_execute_args_8cpp_source.html#l00019">ExecuteArgs.cpp:19</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+<footer>
+<hr> Powered by
+<a href="http://www.doxygen.nl/" target="_blank"> Doxygen </a>
+<br>
+Contributors:
+<a href=""> Shaohua Zhang,&nbsp; Zhiqiang Shi,&nbsp; Xi Chen,&nbsp; Kehan Huang,&nbsp; Binjie Zhang,&nbsp; Wentsing Nee </a>
+<br> Copyright © 2010-2018
+<a href="http://www.thinkspirit.org" target="_blank"> Think Spirit. </a> All rights reserved.
+</footer>

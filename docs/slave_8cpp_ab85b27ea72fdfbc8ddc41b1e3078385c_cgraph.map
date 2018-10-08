@@ -1,0 +1,4 @@
+<map id="register_self" name="register_self">
+<area shape="rect" id="node1" title="发送心跳进程 每隔一段时间，将本机信息提交到数据库中表示当前在线的评测机集合中，表明自身正常工作，可以处理评测任务。" alt="" coords="5,13,99,39"/>
+<area shape="rect" id="node2" href="$logger_8cpp.html#a69cdb1d10e14a871dde1c18f2b9fe560" title=" " alt="" coords="147,5,301,47"/>
+</map>

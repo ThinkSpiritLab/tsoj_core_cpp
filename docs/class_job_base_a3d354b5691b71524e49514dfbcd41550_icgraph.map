@@ -1,0 +1,4 @@
+<map id="JobBase::getExitJobItem" name="JobBase::getExitJobItem">
+<area shape="rect" id="node1" title="获取规定的停止工作标识" alt="" coords="224,5,393,32"/>
+<area shape="rect" id="node2" href="$master_8cpp.html#a8cb7d2d303a160e9662c31d2e1625c77" title="SIGTERM 信号的处理函数 当收到 SIGTERM 信号，在代评测队列末端加上 type = 0, id = &#45;1 的任务，用于标识结束 slave 工作的意愿。之后在 loop 循环中会据此判断是..." alt="" coords="5,5,176,32"/>
+</map>

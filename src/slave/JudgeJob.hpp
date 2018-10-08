@@ -23,7 +23,7 @@ class JudgeJob: public JobBase
 
 	protected:
 		/** 本 job 临时工作路径 */
-		std::string dir;
+		const std::string dir;
 
 	public:
 
@@ -72,8 +72,8 @@ class JudgeJob: public JobBase
 		Result compile() const noexcept;
 
 		/**
-		 * @brief 当编译出错时，将编译错误信息写入到数据库。
-		 * @return 若编译错误信息写入数据库成功，返回 true ，否则返回 false
+		 * @brief 当编译出错时，将编译错误信息写入到 redis。
+		 * @return 若编译错误信息写入成功，返回 true ，否则返回 false
 		 * @exception 该函数保证不抛出任何异常
 		 */	
 		bool set_compile_info() noexcept;
@@ -95,7 +95,7 @@ class JudgeJob: public JobBase
 		/**
 		 * @brief 将评测结果提交到 redis 数据库。
 		 */		
-		void commitJudgeResultToRedis(const Result & result);
+		void commitJudgeResultToRedis(const SolutionDetails & result);
 
 	public:
 		/**

@@ -32,6 +32,18 @@ class ContestUpdateJob: public UpdateJobBase
 		virtual void update_solution() override final;
 
 		/**
+		 * @brief 将提交代码更新至 mysql
+		 * @param source_code 指向代码字符串的常量指针
+		 */
+		virtual void update_source_code(const char * source_code) override final;
+
+		/**
+		 * @brief 将编译错误信息更新至 mysql
+		 * @param compile_info 指向编译错误信息字符串的常量指针
+		 */
+		virtual void update_compile_info(const char * compile_info) override final;
+
+		/**
 		 * @brief 更新题目的提交数, 通过数, 用户的提交数, 通过数
 		 * @warning 仅规定 update user and problem 表的接口, 具体操作需由子类实现
 		 */

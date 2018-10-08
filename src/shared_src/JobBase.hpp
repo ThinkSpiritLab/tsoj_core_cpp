@@ -24,38 +24,38 @@
 class JobBase
 {
 	public:
-		/** Job 类型，如：竞赛、课程等 */
+		/// Job 类型，如：竞赛、课程等
 		int jobType;
 
-		/** student id */
+		/// solution id
 		int sid;
 
-		/** redis 连接 */
+		/// redis 连接
 		kerbal::redis::RedisContext redisConn;
 
 	public:
-		/** problem id */
+		/// problem id
 		int pid;
 
-		/** 语言 */
+		/// 语言
 		Language lang;
 
-		/** 测试用例数量 */
+		/// 测试用例数量
 		int cases; 
 
-		/** 时间限制 */
+		/// 时间限制
 		std::chrono::milliseconds timeLimit;
 
-		/** 空间限制 */
+		/// 空间限制
 		kerbal::utility::MB memoryLimit;
 
-		/** 重复率限制 */
+		/// 重复率限制
 		int similarity_threshold;
 
 		/**
 		 * @brief 将待处理 Job 信息分解，提取出 job_type 与 job_id
 		 * @param jobItem "job_type,job_id" 格式的字符串
-		 * @return
+		 * @return <job_type, job_id>
 		 * @exception std::invalid_argument
 		 */
 		static std::pair<int, int> parseJobItem(const std::string & jobItem);
@@ -91,7 +91,7 @@ class JobBase
 		/**
 		 * @brief 析构函数使用默认析构函数
 		 */
-		virtual ~JobBase() = default;
+		virtual ~JobBase() noexcept = default;
 
 		/**
 		 * @brief 本 Job 的处理函数。在基类中定义为纯虚函数。

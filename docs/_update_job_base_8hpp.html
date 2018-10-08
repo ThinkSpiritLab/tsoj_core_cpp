@@ -1,0 +1,261 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.8.15"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>TSOJ V4 Judge Core: /home/peter/git/Core/src/master/UpdateJobBase.hpp 文件参考</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="mlabel.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="ThinkSpirit_logo_2018.png"/></td>
+  <td id="projectalign" style="padding-left: 0.5em;">
+   <div id="projectname">TSOJ V4 Judge Core
+   </div>
+   <div id="projectbrief">oj.thinkspirit.org</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- 制作者 Doxygen 1.8.15 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+var searchBox = new SearchBox("searchBox", "search",false,'搜索');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(function() {
+  initMenu('',true,false,'search.php','搜索');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ae1a660fbe587eff2b475b14d217c1ef.html">master</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#define-members">宏定义</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle">
+<div class="title">UpdateJobBase.hpp 文件参考</div>  </div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;<a class="el" href="_job_base_8hpp_source.html">JobBase.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="_result_8hpp_source.html">Result.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="mysql__empty__res__exception_8hpp_source.html">mysql_empty_res_exception.hpp</a>&quot;</code><br />
+<code>#include &lt;mysql++/mysql++.h&gt;</code><br />
+</div><div class="textblock"><div class="dynheader">
+UpdateJobBase.hpp 的引用(Include)关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="_update_job_base_8hpp__incl.png" border="0" usemap="#_2home_2peter_2git_2_core_2src_2master_2_update_job_base_8hpp" alt=""/></div>
+<map name="_2home_2peter_2git_2_core_2src_2master_2_update_job_base_8hpp" id="_2home_2peter_2git_2_core_2src_2master_2_update_job_base_8hpp">
+<area shape="rect" id="node1" title=" " alt="" coords="635,5,845,47"/>
+<area shape="rect" id="node2" href="_job_base_8hpp.html" title=" " alt="" coords="379,95,477,121"/>
+<area shape="rect" id="node10" href="_result_8hpp.html" title=" " alt="" coords="611,95,696,121"/>
+<area shape="rect" id="node11" href="mysql__empty__res__exception_8hpp.html" title=" " alt="" coords="720,95,933,121"/>
+<area shape="rect" id="node13" title=" " alt="" coords="957,95,1096,121"/>
+<area shape="rect" id="node3" title=" " alt="" coords="5,177,176,203"/>
+<area shape="rect" id="node4" title=" " alt="" coords="201,169,322,211"/>
+<area shape="rect" id="node5" title=" " alt="" coords="646,169,789,211"/>
+<area shape="rect" id="node6" title=" " alt="" coords="525,259,579,285"/>
+<area shape="rect" id="node7" title=" " alt="" coords="397,177,459,203"/>
+<area shape="rect" id="node8" href="united__resource_8hpp.html" title=" " alt="" coords="483,177,621,203"/>
+<area shape="rect" id="node9" title=" " alt="" coords="723,259,795,285"/>
+<area shape="rect" id="node12" title=" " alt="" coords="915,177,994,203"/>
+</map>
+</div>
+</div><div class="textblock"><div class="dynheader">
+此图展示该文件直接或间接的被哪些文件引用了:</div>
+<div class="dyncontent">
+<div class="center"><img src="_update_job_base_8hpp__dep__incl.png" border="0" usemap="#_2home_2peter_2git_2_core_2src_2master_2_update_job_base_8hppdep" alt=""/></div>
+<map name="_2home_2peter_2git_2_core_2src_2master_2_update_job_base_8hppdep" id="_2home_2peter_2git_2_core_2src_2master_2_update_job_base_8hppdep">
+<area shape="rect" id="node1" title=" " alt="" coords="288,5,499,47"/>
+<area shape="rect" id="node2" href="_contest_update_job_8hpp.html" title=" " alt="" coords="56,102,283,143"/>
+<area shape="rect" id="node4" href="_update_job_base_8cpp.html" title=" " alt="" coords="189,303,400,344"/>
+<area shape="rect" id="node5" href="_exercise_update_job_base_8hpp.html" title=" " alt="" coords="365,95,571,151"/>
+<area shape="rect" id="node11" href="master_8cpp.html" title=" " alt="" coords="596,102,753,143"/>
+<area shape="rect" id="node3" href="_contest_update_job_8cpp.html" title=" " alt="" coords="5,206,232,247"/>
+<area shape="rect" id="node6" href="_course_update_job_8hpp.html" title=" " alt="" coords="357,206,579,247"/>
+<area shape="rect" id="node8" href="_exercise_update_job_8hpp.html" title=" " alt="" coords="603,206,834,247"/>
+<area shape="rect" id="node10" href="_exercise_update_job_base_8cpp.html" title=" " alt="" coords="858,199,1065,255"/>
+<area shape="rect" id="node7" href="_course_update_job_8cpp.html" title=" " alt="" coords="423,303,646,344"/>
+<area shape="rect" id="node9" href="_exercise_update_job_8cpp.html" title=" " alt="" coords="670,303,901,344"/>
+</map>
+</div>
+</div>
+<p><a href="_update_job_base_8hpp_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_update_job_base.html">UpdateJobBase</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
+宏定义</h2></td></tr>
+<tr class="memitem:abeb0b90f9269828cc2352deefd03754a"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_update_job_base_8hpp.html#abeb0b90f9269828cc2352deefd03754a">MYSQLPP_MYSQL_HEADERS_BURIED</a></td></tr>
+<tr class="separator:abeb0b90f9269828cc2352deefd03754a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:a43e6e31f40b2731ff3a1a6030b0b7cfd"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_update_job_base_8hpp.html#a43e6e31f40b2731ff3a1a6030b0b7cfd">user_problem_status</a> { <a class="el" href="_update_job_base_8hpp.html#a43e6e31f40b2731ff3a1a6030b0b7cfdab7b1e314614cf326c6e2b6eba1540682">user_problem_status::TODO</a> = -1, 
+<a class="el" href="_update_job_base_8hpp.html#a43e6e31f40b2731ff3a1a6030b0b7cfdaa806f1d2c42338ef5fa6497b66153e79">user_problem_status::ACCEPTED</a> = 0, 
+<a class="el" href="_update_job_base_8hpp.html#a43e6e31f40b2731ff3a1a6030b0b7cfdab6a678459f4245faabe8a32e5d823abc">user_problem_status::ATTEMPTED</a> = 1
+ }</td></tr>
+<tr class="separator:a43e6e31f40b2731ff3a1a6030b0b7cfd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a74c7f1fc913fef9438efd06e462d5b13"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="class_update_job_base.html">UpdateJobBase</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_update_job_base_8hpp.html#a74c7f1fc913fef9438efd06e462d5b13">make_update_job</a> (int jobType, int sid, const kerbal::redis::RedisContext &amp;redisConn, std::unique_ptr&lt; mysqlpp::Connection &gt; &amp;&amp;mysqlConn)</td></tr>
+<tr class="memdesc:a74c7f1fc913fef9438efd06e462d5b13"><td class="mdescLeft">&#160;</td><td class="mdescRight">根据传入的 jobType, sid 构造一个具体的 UpdateJob 对象, 并返回指向所构造对象的智能指针  <a href="#a74c7f1fc913fef9438efd06e462d5b13">更多...</a><br /></td></tr>
+<tr class="separator:a74c7f1fc913fef9438efd06e462d5b13"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">宏定义说明</h2>
+<a id="abeb0b90f9269828cc2352deefd03754a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abeb0b90f9269828cc2352deefd03754a">&#9670;&nbsp;</a></span>MYSQLPP_MYSQL_HEADERS_BURIED</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MYSQLPP_MYSQL_HEADERS_BURIED</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="_update_job_base_8hpp_source.html">UpdateJobBase.hpp</a> 第 <a class="el" href="_update_job_base_8hpp_source.html#l00016">16</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">枚举类型说明</h2>
+<a id="a43e6e31f40b2731ff3a1a6030b0b7cfd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a43e6e31f40b2731ff3a1a6030b0b7cfd">&#9670;&nbsp;</a></span>user_problem_status</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="_update_job_base_8hpp.html#a43e6e31f40b2731ff3a1a6030b0b7cfd">user_problem_status</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a43e6e31f40b2731ff3a1a6030b0b7cfdab7b1e314614cf326c6e2b6eba1540682"></a>TODO&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a43e6e31f40b2731ff3a1a6030b0b7cfdaa806f1d2c42338ef5fa6497b66153e79"></a>ACCEPTED&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a43e6e31f40b2731ff3a1a6030b0b7cfdab6a678459f4245faabe8a32e5d823abc"></a>ATTEMPTED&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="_update_job_base_8hpp_source.html">UpdateJobBase.hpp</a> 第 <a class="el" href="_update_job_base_8hpp_source.html#l00021">21</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">函数说明</h2>
+<a id="a74c7f1fc913fef9438efd06e462d5b13"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a74c7f1fc913fef9438efd06e462d5b13">&#9670;&nbsp;</a></span>make_update_job()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;<a class="el" href="class_update_job_base.html">UpdateJobBase</a>&gt; make_update_job </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>jobType</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>sid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const kerbal::redis::RedisContext &amp;&#160;</td>
+          <td class="paramname"><em>redisConn</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::unique_ptr&lt; mysqlpp::Connection &gt; &amp;&amp;&#160;</td>
+          <td class="paramname"><em>mysqlConn</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>根据传入的 jobType, sid 构造一个具体的 UpdateJob 对象, 并返回指向所构造对象的智能指针 </p>
+<dl class="section return"><dt>返回</dt><dd>指向构造对象的智能指针. 如果 job 为练习, 则指针实际指向的是一个 <a class="el" href="class_exercise_update_job.html">ExerciseUpdateJob</a> 对象 如果 job 为课程, 则指针实际指向的是一个 <a class="el" href="class_course_update_job.html">CourseUpdateJob</a> 对象 如果 job 为竞赛, 则指针实际指向的是一个 <a class="el" href="class_contest_update_job.html">ContestUpdateJob</a> 对象 </dd></dl>
+<dl class="section warning"><dt>警告</dt><dd>返回的对象具有多态性, 请谨慎处理! </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="_update_job_base_8cpp_source.html">UpdateJobBase.cpp</a> 第 <a class="el" href="_update_job_base_8cpp_source.html#l00024">24</a> 行定义.</p>
+<div class="dynheader">
+这是这个函数的调用关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="_update_job_base_8hpp_a74c7f1fc913fef9438efd06e462d5b13_icgraph.png" border="0" usemap="#_update_job_base_8hpp_a74c7f1fc913fef9438efd06e462d5b13_icgraph" alt=""/></div>
+<map name="_update_job_base_8hpp_a74c7f1fc913fef9438efd06e462d5b13_icgraph" id="_update_job_base_8hpp_a74c7f1fc913fef9438efd06e462d5b13_icgraph">
+<area shape="rect" id="node1" title="根据传入的 jobType, sid 构造一个具体的 UpdateJob 对象, 并返回指向所构造对象的智能指针" alt="" coords="104,5,228,32"/>
+<area shape="rect" id="node2" href="master_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4" title=" " alt="" coords="5,5,56,32"/>
+</map>
+</div>
+
+</div>
+</div>
+</div><!-- contents -->
+<footer>
+<hr> Powered by
+<a href="http://www.doxygen.nl/" target="_blank"> Doxygen </a>
+<br>
+Contributors:
+<a href=""> Shaohua Zhang,&nbsp; Zhiqiang Shi,&nbsp; Xi Chen,&nbsp; Kehan Huang,&nbsp; Binjie Zhang,&nbsp; Wentsing Nee </a>
+<br> Copyright © 2010-2018
+<a href="http://www.thinkspirit.org" target="_blank"> Think Spirit. </a> All rights reserved.
+</footer>

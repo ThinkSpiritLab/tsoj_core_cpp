@@ -13,11 +13,19 @@ namespace costream_ns = kerbal::utility::costream;
 
 extern costream_ns::costream<std::cerr> ccerr;
 
+/**
+ * @addtogroup log_level
+ * @{
+ */
 enum class LogLevel
 {
 	LEVEL_FATAL = 0, LEVEL_WARNING = 1, LEVEL_INFO = 2, LEVEL_DEBUG = 3
 };
 
+/**
+ * 日志告警级别萃取器
+ * @tparam level 日志告警级别
+ */
 template <LogLevel level>
 struct Log_level_traits;
 
@@ -49,6 +57,9 @@ struct Log_level_traits<LogLevel::LEVEL_DEBUG>
 		static const costream_ns::costream<std::cout> outstream;
 };
 
+/**
+ * @}
+ */
 
 std::string get_ymd_hms_in_local_time_zone(time_t time) noexcept;
 
@@ -160,12 +171,22 @@ void log_write(int type, int job_id, const char source_filename[], int line, std
 #endif
 #define EXCEPT_WARNING(type, job_id, log_fp, events, exception, x...)	LOG_WARNING(type, job_id, log_fp, events, \
 																		" Error information: ", exception.what(), " , Exception type: ", typeid(exception).name(), ##x)
+#ifdef UNKNOWN_EXCEPT_WARNING
+#	undef UNKNOWN_EXCEPT_WARNING
+#endif
+#define UNKNOWN_EXCEPT_WARNING(type, job_id, log_fp, events, x...)	LOG_WARNING(type, job_id, log_fp, events, \
+																		" Error information: ", UNKNOWN_EXCEPTION_WHAT, ##x)
 
 #ifdef EXCEPT_FATAL
 #	undef EXCEPT_FATAL
 #endif
 #define EXCEPT_FATAL(type, job_id, log_fp, events, exception, x...)	    LOG_FATAL(type, job_id, log_fp, events, \
 																		" Error information: ", exception.what(), " , Exception type: ", typeid(exception).name(), ##x)
+#ifdef UNKNOWN_EXCEPT_FATAL
+#	undef UNKNOWN_EXCEPT_FATAL
+#endif
+#define UNKNOWN_EXCEPT_FATAL(type, job_id, log_fp, events, x...)	    LOG_FATAL(type, job_id, log_fp, events, \
+																		" Error information: ", UNKNOWN_EXCEPTION_WHAT, ##x)
 
 #endif //LOGGER_H
 

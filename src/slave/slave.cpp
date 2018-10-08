@@ -137,11 +137,11 @@ void register_self() noexcept try
 			LOG_DEBUG(0, 0, log_fp, "Register self success");
 			std::this_thread::sleep_for(10_s);
 		} catch (const RedisException & e) {
-			LOG_FATAL(0, 0, log_fp, "Register self failed. Error information: ", e.what());
+			EXCEPT_FATAL(0, 0, log_fp, "Register self failed.", e);
 		}
 	}
 } catch (...) {
-	LOG_FATAL(0, 0, log_fp, "Register self failed. Error information: ", UNKNOWN_EXCEPTION_WHAT);
+	UNKNOWN_EXCEPT_FATAL(0, 0, log_fp, "Register self failed.");
 	exit(2);
 }
 
@@ -311,7 +311,7 @@ int main(int argc, const char * argv[]) try
 			EXCEPT_FATAL(0, 0, log_fp, "Fail to fetch job.", e, ", job_item: ", job_item);
 			continue;
 		} catch (...) {
-			LOG_FATAL(0, 0, log_fp, "Fail to fetch job. Error info: ", UNKNOWN_EXCEPTION_WHAT, ", job_item: "_cptr, job_item);
+			UNKNOWN_EXCEPT_FATAL(0, 0, log_fp, "Fail to fetch job.", ", job_item: ", job_item);
 			continue;
 		}
 
@@ -349,7 +349,7 @@ int main(int argc, const char * argv[]) try
 					EXCEPT_FATAL(job_type, job_id, log_fp, "Fail to create job.", e);
 					return;
 				} catch (...) {
-					LOG_FATAL(job_type, job_id, log_fp, "Fail to create job. Error information: ", UNKNOWN_EXCEPTION_WHAT);
+					UNKNOWN_EXCEPT_FATAL(job_type, job_id, log_fp, "Fail to create job");
 					return;
 				}
 
@@ -361,7 +361,7 @@ int main(int argc, const char * argv[]) try
 					job->push_back_failed_judge_job();
 					return;
 				} catch (...) {
-					LOG_FATAL(job_type, job_id, log_fp, "Fail to judge job. Error information: ", UNKNOWN_EXCEPTION_WHAT);
+					UNKNOWN_EXCEPT_FATAL(job_type, job_id, log_fp, "Fail to judge job.");
 					job->push_back_failed_judge_job();
 					return;
 				}
@@ -373,7 +373,7 @@ int main(int argc, const char * argv[]) try
 			JudgeJob::insert_into_failed(main_conn, job_type, job_id);
 			continue;
 		} catch (...) {
-			LOG_FATAL(job_type, job_id, log_fp, "Judge process fork failed. Error information: ", UNKNOWN_EXCEPTION_WHAT);
+			UNKNOWN_EXCEPT_FATAL(job_type, job_id, log_fp, "Judge process fork failed.");
 			JudgeJob::insert_into_failed(main_conn, job_type, job_id);
 			continue;
 		}
@@ -382,10 +382,10 @@ int main(int argc, const char * argv[]) try
 	return 0;
 
 } catch (const std::exception & e) {
-	EXCEPT_FATAL(0, 0, log_fp, "An uncatched exception catched by main.", e);
+	EXCEPT_FATAL(0, 0, log_fp, "An uncaught exception caught by main.", e);
 	throw;
 } catch (...) {
-	LOG_FATAL(0, 0, log_fp, "An uncatched exception catched by main. Error information: ", UNKNOWN_EXCEPTION_WHAT);
+	UNKNOWN_EXCEPT_FATAL(0, 0, log_fp, "An uncaught exception caught by main.");
 	throw;
 }
 

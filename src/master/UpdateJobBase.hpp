@@ -9,6 +9,7 @@
 #define SRC_MASTER_UPDATEJOBBASE_HPP_
 
 #include "JobBase.hpp"
+#include "Result.hpp"
 #include "mysql_empty_res_exception.hpp"
 
 #ifndef MYSQLPP_MYSQL_HEADERS_BURIED
@@ -53,14 +54,7 @@ class UpdateJobBase: public JobBase
 		///@brief is rejudge job
 		bool is_rejudge;
 
-		struct Result
-		{
-				UnitedJudgeResult judge_result;
-				std::chrono::milliseconds cpu_time;
-				std::chrono::milliseconds real_time;
-				kerbal::utility::Byte memory;
-				int similarity_percentage;
-		} result;
+		SolutionDetails result;
 
 	protected:
 		friend
@@ -84,21 +78,21 @@ class UpdateJobBase: public JobBase
 		 */
 		virtual void update_solution() = 0;
 
-	private:
 		/**
 		 * @brief 将提交代码更新至 mysql
 		 * @param source_code 指向代码字符串的常量指针
-		 * @warning 不建议子类重写该方法
+		 * @warning 仅规定 update source_code 表的接口, 具体操作需由子类实现
 		 */
-		void update_source_code(const char * source_code);
+		virtual void update_source_code(const char * source_code) = 0;
 
 		/**
 		 * @brief 将编译错误信息更新至 mysql
-		 * @param source_code 指向编译错误信息字符串的常量指针
-		 * @warning 不建议子类重写该方法
+		 * @param compile_info 指向编译错误信息字符串的常量指针
+		 * @warning 仅规定 update compile_info 表的接口, 具体操作需由子类实现
 		 */
-		void update_compile_info(const char * compile_info);
+		virtual void update_compile_info(const char * compile_info) = 0;
 
+	private:
 		/**
 		 * @brief 从 redis 中取得编译错误信息
 		 * @return Redis 返回集. 注意! 返回集的类型只可能为字符串类型, 否则该方法会通过抛出异常报告错误

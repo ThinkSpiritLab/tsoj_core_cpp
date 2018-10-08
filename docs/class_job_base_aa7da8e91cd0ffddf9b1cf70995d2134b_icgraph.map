@@ -1,0 +1,6 @@
+<map id="JobBase::commitJudgeStatusToRedis" name="JobBase::commitJudgeStatusToRedis">
+<area shape="rect" id="node1" title="将当前评测状态提交到 redis 数据库。" alt="" coords="387,49,584,90"/>
+<area shape="rect" id="node2" href="$class_update_job_base.html#a1f2173cec66f3453d4a87c91c2ac8e29" title="执行任务" alt="" coords="177,5,339,32"/>
+<area shape="rect" id="node3" href="$class_judge_job.html#a6fe58f9fcacc9ba6461e97f1a3ac76a3" title="本 Job 的处理函数。整个 job 的工作入口，包括编译执行判题等内容" alt="" coords="5,81,129,108"/>
+<area shape="rect" id="node4" href="$class_judge_job.html#a0d2e1e5cce842ef0daf71c95f98275f0" title="进入当前 job 的执行流程，并返回执行结果。" alt="" coords="194,107,322,133"/>
+</map>

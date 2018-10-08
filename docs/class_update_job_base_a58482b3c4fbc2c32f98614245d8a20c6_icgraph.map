@@ -1,0 +1,4 @@
+<map id="UpdateJobBase::get_compile_info" name="UpdateJobBase::get_compile_info">
+<area shape="rect" id="node1" title="从 redis 中取得编译错误信息" alt="" coords="215,5,356,47"/>
+<area shape="rect" id="node2" href="$class_update_job_base.html#a1f2173cec66f3453d4a87c91c2ac8e29" title="执行任务" alt="" coords="5,13,167,39"/>
+</map>

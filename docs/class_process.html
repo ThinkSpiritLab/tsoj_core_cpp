@@ -1,0 +1,569 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.8.15"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>TSOJ V4 Judge Core: Process类 参考</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="mlabel.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="ThinkSpirit_logo_2018.png"/></td>
+  <td id="projectalign" style="padding-left: 0.5em;">
+   <div id="projectname">TSOJ V4 Judge Core
+   </div>
+   <div id="projectbrief">oj.thinkspirit.org</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- 制作者 Doxygen 1.8.15 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+var searchBox = new SearchBox("searchBox", "search",false,'搜索');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(function() {
+  initMenu('',true,false,'search.php','搜索');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-types">Public 类型</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="#pro-attribs">Protected 属性</a> &#124;
+<a href="class_process-members.html">所有成员列表</a>  </div>
+  <div class="headertitle">
+<div class="title">Process类 参考</div>  </div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="process_8hpp_source.html">process.hpp</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
+Public 类型</h2></td></tr>
+<tr class="memitem:af48f4b4b2702d5debffa74cd8a8c245d"><td class="memItemLeft" align="right" valign="top">typedef pid_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_process.html#af48f4b4b2702d5debffa74cd8a8c245d">pid_type</a></td></tr>
+<tr class="separator:af48f4b4b2702d5debffa74cd8a8c245d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ac610736bcd131704c6c54faa0effaac7"><td class="memTemplParams" colspan="2">template&lt;typename Callable , typename ... Args&gt; </td></tr>
+<tr class="memitem:ac610736bcd131704c6c54faa0effaac7"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_process.html#ac610736bcd131704c6c54faa0effaac7">Process</a> (bool <a class="el" href="class_process.html#a60045b1dd7906b04fbcb8f552608812c">_kill</a>, Callable &amp;&amp;func, Args &amp;&amp;... args)</td></tr>
+<tr class="separator:ac610736bcd131704c6c54faa0effaac7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abac6991f5b2f4085895877de6ae84995"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_process.html#abac6991f5b2f4085895877de6ae84995">Process</a> (const <a class="el" href="class_process.html">Process</a> &amp;)=delete</td></tr>
+<tr class="separator:abac6991f5b2f4085895877de6ae84995"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e635933c12113d0e6f3883747c6508b"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_process.html#a5e635933c12113d0e6f3883747c6508b">~Process</a> () noexcept</td></tr>
+<tr class="separator:a5e635933c12113d0e6f3883747c6508b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b6399a9f1f9bf603dbf4541788c04e1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_process.html#af48f4b4b2702d5debffa74cd8a8c245d">pid_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_process.html#a1b6399a9f1f9bf603dbf4541788c04e1">get_child_id</a> () const</td></tr>
+<tr class="separator:a1b6399a9f1f9bf603dbf4541788c04e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe5b4494c81770df4ce0622ecd0c80a1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_process.html#afe5b4494c81770df4ce0622ecd0c80a1">kill</a> (int sig) noexcept</td></tr>
+<tr class="memdesc:afe5b4494c81770df4ce0622ecd0c80a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Send signal SIG to process number PID.  <a href="#afe5b4494c81770df4ce0622ecd0c80a1">更多...</a><br /></td></tr>
+<tr class="separator:afe5b4494c81770df4ce0622ecd0c80a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad230309c2e81a062b807aaca0b4571df"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_process.html#af48f4b4b2702d5debffa74cd8a8c245d">pid_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_process.html#ad230309c2e81a062b807aaca0b4571df">wait4</a> (int *status_loc, int options, struct rusage *usage) noexcept</td></tr>
+<tr class="separator:ad230309c2e81a062b807aaca0b4571df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a2091fd0d5e46774d15a7244a364ce120"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="class_process.html#af48f4b4b2702d5debffa74cd8a8c245d">pid_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_process.html#a2091fd0d5e46774d15a7244a364ce120">wait</a> () noexcept</td></tr>
+<tr class="memdesc:a2091fd0d5e46774d15a7244a364ce120"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wait for a child to die.  <a href="#a2091fd0d5e46774d15a7244a364ce120">更多...</a><br /></td></tr>
+<tr class="separator:a2091fd0d5e46774d15a7244a364ce120"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a135939ad6d438f3481c867d8e605fa36"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="class_process.html#af48f4b4b2702d5debffa74cd8a8c245d">pid_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_process.html#a135939ad6d438f3481c867d8e605fa36">wait</a> (int *status_loc) noexcept</td></tr>
+<tr class="memdesc:a135939ad6d438f3481c867d8e605fa36"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wait for a child to die.  <a href="#a135939ad6d438f3481c867d8e605fa36">更多...</a><br /></td></tr>
+<tr class="separator:a135939ad6d438f3481c867d8e605fa36"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58531ef1dd8d0f8bcce07a99326a7501"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="class_process.html#af48f4b4b2702d5debffa74cd8a8c245d">pid_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_process.html#a58531ef1dd8d0f8bcce07a99326a7501">wait3</a> (int *status_loc, int options, struct rusage *usage)</td></tr>
+<tr class="memdesc:a58531ef1dd8d0f8bcce07a99326a7501"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wait for a child to exit.  <a href="#a58531ef1dd8d0f8bcce07a99326a7501">更多...</a><br /></td></tr>
+<tr class="separator:a58531ef1dd8d0f8bcce07a99326a7501"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
+Protected 属性</h2></td></tr>
+<tr class="memitem:a48befbe543894dc16142c8c1e829119f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_process.html#af48f4b4b2702d5debffa74cd8a8c245d">pid_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_process.html#a48befbe543894dc16142c8c1e829119f">father_id</a></td></tr>
+<tr class="separator:a48befbe543894dc16142c8c1e829119f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf29d55e3c573d95b6cc03e05c787fbb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_process.html#af48f4b4b2702d5debffa74cd8a8c245d">pid_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_process.html#adf29d55e3c573d95b6cc03e05c787fbb">child_id</a></td></tr>
+<tr class="separator:adf29d55e3c573d95b6cc03e05c787fbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a60045b1dd7906b04fbcb8f552608812c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_process.html#a60045b1dd7906b04fbcb8f552608812c">_kill</a></td></tr>
+<tr class="separator:a60045b1dd7906b04fbcb8f552608812c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock">
+<p class="definition">在文件 <a class="el" href="process_8hpp_source.html">process.hpp</a> 第 <a class="el" href="process_8hpp_source.html#l00019">19</a> 行定义.</p>
+</div><h2 class="groupheader">成员类型定义说明</h2>
+<a id="af48f4b4b2702d5debffa74cd8a8c245d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af48f4b4b2702d5debffa74cd8a8c245d">&#9670;&nbsp;</a></span>pid_type</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef pid_t <a class="el" href="class_process.html#af48f4b4b2702d5debffa74cd8a8c245d">Process::pid_type</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="process_8hpp_source.html">process.hpp</a> 第 <a class="el" href="process_8hpp_source.html#l00022">22</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ac610736bcd131704c6c54faa0effaac7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac610736bcd131704c6c54faa0effaac7">&#9670;&nbsp;</a></span>Process() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Callable , typename ... Args&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Process::Process </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>_kill</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Callable &amp;&amp;&#160;</td>
+          <td class="paramname"><em>func</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Args &amp;&amp;...&#160;</td>
+          <td class="paramname"><em>args</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="process_8hpp_source.html">process.hpp</a> 第 <a class="el" href="process_8hpp_source.html#l00031">31</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abac6991f5b2f4085895877de6ae84995"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abac6991f5b2f4085895877de6ae84995">&#9670;&nbsp;</a></span>Process() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Process::Process </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_process.html">Process</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5e635933c12113d0e6f3883747c6508b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e635933c12113d0e6f3883747c6508b">&#9670;&nbsp;</a></span>~Process()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual Process::~Process </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="process_8hpp_source.html">process.hpp</a> 第 <a class="el" href="process_8hpp_source.html#l00047">47</a> 行定义.</p>
+<div class="dynheader">
+函数调用图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_process_a5e635933c12113d0e6f3883747c6508b_cgraph.png" border="0" usemap="#class_process_a5e635933c12113d0e6f3883747c6508b_cgraph" alt=""/></div>
+<map name="class_process_a5e635933c12113d0e6f3883747c6508b_cgraph" id="class_process_a5e635933c12113d0e6f3883747c6508b_cgraph">
+<area shape="rect" id="node1" title=" " alt="" coords="5,5,140,32"/>
+<area shape="rect" id="node2" href="class_process.html#afe5b4494c81770df4ce0622ecd0c80a1" title="Send signal SIG to process number PID." alt="" coords="188,5,283,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a1b6399a9f1f9bf603dbf4541788c04e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b6399a9f1f9bf603dbf4541788c04e1">&#9670;&nbsp;</a></span>get_child_id()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_process.html#af48f4b4b2702d5debffa74cd8a8c245d">pid_type</a> Process::get_child_id </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="process_8hpp_source.html">process.hpp</a> 第 <a class="el" href="process_8hpp_source.html#l00054">54</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afe5b4494c81770df4ce0622ecd0c80a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe5b4494c81770df4ce0622ecd0c80a1">&#9670;&nbsp;</a></span>kill()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Process::kill </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>sig</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Send signal SIG to process number PID. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">sig</td><td>signal send to child process. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>If success return 0, For errors, return other value. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="process_8hpp_source.html">process.hpp</a> 第 <a class="el" href="process_8hpp_source.html#l00064">64</a> 行定义.</p>
+<div class="dynheader">
+这是这个函数的调用关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_process_afe5b4494c81770df4ce0622ecd0c80a1_icgraph.png" border="0" usemap="#class_process_afe5b4494c81770df4ce0622ecd0c80a1_icgraph" alt=""/></div>
+<map name="class_process_afe5b4494c81770df4ce0622ecd0c80a1_icgraph" id="class_process_afe5b4494c81770df4ce0622ecd0c80a1_icgraph">
+<area shape="rect" id="node1" title="Send signal SIG to process number PID." alt="" coords="188,5,283,32"/>
+<area shape="rect" id="node2" href="class_process.html#a5e635933c12113d0e6f3883747c6508b" title=" " alt="" coords="5,5,140,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a2091fd0d5e46774d15a7244a364ce120"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2091fd0d5e46774d15a7244a364ce120">&#9670;&nbsp;</a></span>wait() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="class_process.html#af48f4b4b2702d5debffa74cd8a8c245d">pid_type</a> Process::wait </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Wait for a child to die. </p>
+<dl class="section return"><dt>返回</dt><dd>When one does, return its process ID. For errors, return (pid_type) -1. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="process_8hpp_source.html">process.hpp</a> 第 <a class="el" href="process_8hpp_source.html#l00074">74</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a135939ad6d438f3481c867d8e605fa36"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a135939ad6d438f3481c867d8e605fa36">&#9670;&nbsp;</a></span>wait() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="class_process.html#af48f4b4b2702d5debffa74cd8a8c245d">pid_type</a> Process::wait </td>
+          <td>(</td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>status_loc</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Wait for a child to die. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">status_loc</td><td>pointer to the variable to store child's status. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>When one does, put its status in *STAT_LOC and return its process ID. For errors, return (pid_type) -1. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="process_8hpp_source.html">process.hpp</a> 第 <a class="el" href="process_8hpp_source.html#l00085">85</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a58531ef1dd8d0f8bcce07a99326a7501"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58531ef1dd8d0f8bcce07a99326a7501">&#9670;&nbsp;</a></span>wait3()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="class_process.html#af48f4b4b2702d5debffa74cd8a8c245d">pid_type</a> Process::wait3 </td>
+          <td>(</td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>status_loc</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>options</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">struct rusage *&#160;</td>
+          <td class="paramname"><em>usage</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Wait for a child to exit. </p>
+<p class="">When one does, put its status in *STAT_LOC and return its process ID. For errors return (pid_t) -1. If USAGE is not nil, store information about the child's resource usage there. If the WUNTRACED bit is set in OPTIONS, return status for stopped children; otherwise don't. </p><dl class="section return"><dt>返回</dt><dd></dd></dl>
+
+<p class="definition">在文件 <a class="el" href="process_8hpp_source.html">process.hpp</a> 第 <a class="el" href="process_8hpp_source.html#l00098">98</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad230309c2e81a062b807aaca0b4571df"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad230309c2e81a062b807aaca0b4571df">&#9670;&nbsp;</a></span>wait4()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_process.html#af48f4b4b2702d5debffa74cd8a8c245d">pid_type</a> Process::wait4 </td>
+          <td>(</td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>status_loc</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>options</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">struct rusage *&#160;</td>
+          <td class="paramname"><em>usage</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="process_8hpp_source.html">process.hpp</a> 第 <a class="el" href="process_8hpp_source.html#l00103">103</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a60045b1dd7906b04fbcb8f552608812c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a60045b1dd7906b04fbcb8f552608812c">&#9670;&nbsp;</a></span>_kill</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Process::_kill</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="process_8hpp_source.html">process.hpp</a> 第 <a class="el" href="process_8hpp_source.html#l00027">27</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adf29d55e3c573d95b6cc03e05c787fbb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf29d55e3c573d95b6cc03e05c787fbb">&#9670;&nbsp;</a></span>child_id</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_process.html#af48f4b4b2702d5debffa74cd8a8c245d">pid_type</a> Process::child_id</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="process_8hpp_source.html">process.hpp</a> 第 <a class="el" href="process_8hpp_source.html#l00026">26</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a48befbe543894dc16142c8c1e829119f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a48befbe543894dc16142c8c1e829119f">&#9670;&nbsp;</a></span>father_id</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_process.html#af48f4b4b2702d5debffa74cd8a8c245d">pid_type</a> Process::father_id</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="process_8hpp_source.html">process.hpp</a> 第 <a class="el" href="process_8hpp_source.html#l00025">25</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>/home/peter/git/Core/src/shared_src/<a class="el" href="process_8hpp_source.html">process.hpp</a></li>
+</ul>
+</div><!-- contents -->
+<footer>
+<hr> Powered by
+<a href="http://www.doxygen.nl/" target="_blank"> Doxygen </a>
+<br>
+Contributors:
+<a href=""> Shaohua Zhang,&nbsp; Zhiqiang Shi,&nbsp; Xi Chen,&nbsp; Kehan Huang,&nbsp; Binjie Zhang,&nbsp; Wentsing Nee </a>
+<br> Copyright © 2010-2018
+<a href="http://www.thinkspirit.org" target="_blank"> Think Spirit. </a> All rights reserved.
+</footer>

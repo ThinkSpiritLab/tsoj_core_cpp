@@ -1,0 +1,4 @@
+<map id="ExerciseUpdateJobBase::update_user_problem" name="ExerciseUpdateJobBase::update_user_problem">
+<area shape="rect" id="node1" title="更新此用户此题的完成状态 &#160;用户所见到的每题 AC, TO_DO, ATTEMPT 三种状态即为user problem 表所提供的服务" alt="" coords="5,13,172,54"/>
+<area shape="rect" id="node2" href="$class_exercise_update_job_base.html#a9e7d46297cef3bbf492f108479d0079a" title="取得此用户此题在此次提交以前 AC, TO_DO 或 ATTEMPT 的状态" alt="" coords="220,5,409,61"/>
+</map>

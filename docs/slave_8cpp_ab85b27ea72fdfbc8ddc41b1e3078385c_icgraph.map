@@ -1,0 +1,4 @@
+<map id="register_self" name="register_self">
+<area shape="rect" id="node1" title="发送心跳进程 每隔一段时间，将本机信息提交到数据库中表示当前在线的评测机集合中，表明自身正常工作，可以处理评测任务。" alt="" coords="104,5,197,32"/>
+<area shape="rect" id="node2" href="$slave_8cpp.html#ac0f2228420376f4db7e1274f2b41667c" title="slave端主程序循环 加载配置信息；连接数据库；取待评测任务信息，交由子进程并评测；创建并分离发送心跳线程" alt="" coords="5,5,56,32"/>
+</map>

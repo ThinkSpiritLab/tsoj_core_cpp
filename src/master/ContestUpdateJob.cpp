@@ -38,6 +38,45 @@ void ContestUpdateJob::update_solution()
 	}
 }
 
+void ContestUpdateJob::update_source_code(const char * source_code)
+{
+	if (source_code == nullptr) {
+		LOG_WARNING(jobType, sid, log_fp, "empty source code!");
+		return;
+	}
+
+	mysqlpp::Query insert = mysqlConn->query(
+			"insert into contest_source%0 (s_id, source_code)"
+			"values (%1, %2q)"
+	);
+	insert.parse();
+	mysqlpp::SimpleResult res = insert.execute(jobType, sid, source_code);
+	if (!res) {
+		MysqlEmptyResException e(insert.errnum(), insert.error());
+		EXCEPT_FATAL(jobType, sid, log_fp, "Update source code failed!", e);
+		throw e;
+	}
+}
+
+void ContestUpdateJob::update_compile_info(const char * compile_info)
+{
+	if (compile_info == nullptr) {
+		LOG_WARNING(jobType, sid, log_fp, "empty compile info!");
+		return;
+	}
+
+	mysqlpp::Query insert = mysqlConn->query(
+			"insert into contest_compile_info%0 (s_id, compile_error_info) values (%1, %2q)"
+	);
+	insert.parse();
+	mysqlpp::SimpleResult res = insert.execute(jobType, sid, compile_info);
+	if (!res) {
+		MysqlEmptyResException e(insert.errnum(), insert.error());
+		EXCEPT_FATAL(jobType, sid, log_fp, "Update compile info failed!", e);
+		throw e;
+	}
+}
+
 void ContestUpdateJob::update_user_and_problem()
 {
 	//TODO SQL 里没有对应的表结构, 先设为空函数体

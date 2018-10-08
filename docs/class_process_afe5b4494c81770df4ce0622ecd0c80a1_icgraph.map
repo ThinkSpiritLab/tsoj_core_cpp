@@ -1,0 +1,4 @@
+<map id="Process::kill" name="Process::kill">
+<area shape="rect" id="node1" title="Send signal SIG to process number PID." alt="" coords="188,5,283,32"/>
+<area shape="rect" id="node2" href="$class_process.html#a5e635933c12113d0e6f3883747c6508b" title=" " alt="" coords="5,5,140,32"/>
+</map>

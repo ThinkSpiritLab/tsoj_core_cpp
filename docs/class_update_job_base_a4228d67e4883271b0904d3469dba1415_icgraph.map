@@ -1,0 +1,4 @@
+<map id="UpdateJobBase::update_solution" name="UpdateJobBase::update_solution">
+<area shape="rect" id="node1" title="将本次提交记录更新至 solution 表" alt="" coords="215,5,377,47"/>
+<area shape="rect" id="node2" href="$class_update_job_base.html#a1f2173cec66f3453d4a87c91c2ac8e29" title="执行任务" alt="" coords="5,13,167,39"/>
+</map>

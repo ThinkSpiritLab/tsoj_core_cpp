@@ -203,58 +203,6 @@ void UpdateJobBase::handle()
 	this->clear_previous_jobs_info_in_redis();
 }
 
-void UpdateJobBase::update_source_code(const char * source_code)
-{
-	if (source_code == nullptr) {
-		LOG_WARNING(jobType, sid, log_fp, "empty source code!");
-		return;
-	}
-
-	std::string source_code_table;
-	if (jobType == 0) {
-		source_code_table = "source";
-	} else {
-		source_code_table = "contest_source%d"_fmt(jobType).str();
-	}
-	mysqlpp::Query insert = mysqlConn->query(
-			"insert into %0 (s_id, source_code)"
-			"values (%1, %2q)"
-	);
-	insert.parse();
-	mysqlpp::SimpleResult res = insert.execute(source_code_table, sid, source_code);
-	if (!res) {
-		MysqlEmptyResException e(insert.errnum(), insert.error());
-		EXCEPT_FATAL(jobType, sid, log_fp, "Update source code failed!", e);
-		throw e;
-	}
-}
-
-void UpdateJobBase::update_compile_info(const char * compile_info)
-{
-	if (compile_info == nullptr) {
-		LOG_WARNING(jobType, sid, log_fp, "empty compile info!");
-		return;
-	}
-
-	std::string compile_info_table;
-	if (jobType == 0) {
-		compile_info_table = "compile_info";
-	} else {
-		compile_info_table = "contest_compile_info%d"_fmt(jobType).str();
-	}
-
-	mysqlpp::Query insert = mysqlConn->query(
-			"insert into %0 (s_id, compile_error_info) values (%1, %2q)"
-	);
-	insert.parse();
-	mysqlpp::SimpleResult res = insert.execute(compile_info_table, sid, compile_info);
-	if (!res) {
-		MysqlEmptyResException e(insert.errnum(), insert.error());
-		EXCEPT_FATAL(jobType, sid, log_fp, "Update compile info failed!", e);
-		throw e;
-	}
-}
-
 kerbal::redis::RedisReply UpdateJobBase::get_compile_info() const
 {
 	static RedisCommand query("get compile_info:%d:%d");

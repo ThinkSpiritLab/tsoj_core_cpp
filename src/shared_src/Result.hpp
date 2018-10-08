@@ -15,16 +15,24 @@
 #include <iostream>
 #include <chrono>
 
-struct Result
+struct SolutionDetails
 {
 		UnitedJudgeResult judge_result;
 		std::chrono::milliseconds cpu_time;
 		std::chrono::milliseconds real_time;
 		kerbal::utility::Byte memory;
+		int similarity_percentage;
+
+		SolutionDetails();
+
+		friend std::ostream& operator<<(std::ostream& out, const SolutionDetails & src);
+};
+
+struct Result : public SolutionDetails
+{
 		RunnerError error;
 		int signal;
 		int exit_code;
-		int similarity_percentage;
 
 		Result();
 

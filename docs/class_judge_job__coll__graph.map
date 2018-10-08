@@ -1,0 +1,5 @@
+<map id="JudgeJob" name="JudgeJob">
+<area shape="rect" id="node1" title="JobBase 的子类，用于实现提交代码的判题功能。" alt="" coords="17,171,96,197"/>
+<area shape="rect" id="node2" href="$class_job_base.html" title="JudgeJob 与 UpdateJob 的基类， 存有 Job的基本信息，并规定了所有 Job 必须遵循的函数接口。" alt="" coords="20,95,93,121"/>
+<area shape="rect" id="node3" title=" " alt="" coords="5,5,108,32"/>
+</map>

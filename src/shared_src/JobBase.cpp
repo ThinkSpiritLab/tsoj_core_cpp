@@ -27,8 +27,9 @@ std::pair<int, int> JobBase::parseJobItem(const std::string & args)
 	std::string::size_type cut_point = job_item.find(',');
 
 	if (cut_point == std::string::npos) {
-		LOG_FATAL(0, 0, log_fp, "Invalid job_item arguments: ", job_item);
-		throw std::invalid_argument("Invalid job_item arguments: " + job_item);
+		std::invalid_argument e("Invalid job_item arguments: " + job_item);
+		EXCEPT_FATAL(0, 0, log_fp, "Parse job item failed.", e);
+		throw e;
 	}
 
 	job_item[cut_point] = '\0';
@@ -37,9 +38,10 @@ std::pair<int, int> JobBase::parseJobItem(const std::string & args)
 		int job_type = std::stoi(job_item.c_str());
 		int job_id = std::stoi(job_item.c_str() + cut_point + 1);
 		return std::make_pair(job_type, job_id);
-	} catch (const std::invalid_argument & e) {
-		LOG_FATAL(0, 0, log_fp, "Invalid job_item arguments: ", job_item);
-		throw std::invalid_argument("Invalid job_item arguments: " + job_item);
+	} catch (const std::invalid_argument & ) {
+		std::invalid_argument e("Invalid job_item arguments: " + job_item);
+		EXCEPT_FATAL(0, 0, log_fp, "Parse job item failed.", e);
+		throw e;
 	}
 }
 
@@ -61,16 +63,16 @@ JobBase::JobBase(int jobType, int sid, const kerbal::redis::RedisContext & redis
 		this->memoryLimit = MB(opt.hget<unsigned long long>(job_info_key, "memory_limit"));
 		this->similarity_threshold = opt.hget<int>(job_info_key, "sim_threshold");
 	} catch (const RedisNilException & e) {
-		LOG_FATAL(jobType, sid, log_fp, "job details lost. Error information: ", e.what());
+		EXCEPT_FATAL(jobType, sid, log_fp, "Job details lost.", e);
 		throw;
 	} catch (const RedisUnexpectedCaseException & e) {
-		LOG_FATAL(jobType, sid, log_fp, "redis returns an unexpected type. Error information: ", e.what());
+		EXCEPT_FATAL(jobType, sid, log_fp, "Redis returns an unexpected type.", e);
 		throw;
 	} catch (const RedisException & e) {
-		LOG_FATAL(jobType, sid, log_fp, "Fail to fetch job details. Error information: ", e.what());
+		EXCEPT_FATAL(jobType, sid, log_fp, "Fail to fetch job details.", e);
 		throw;
 	} catch (const std::exception & e) {
-		LOG_FATAL(jobType, sid, log_fp, "Fail to fetch job details. Error information: ", e.what());
+		EXCEPT_FATAL(jobType, sid, log_fp, "Fail to fetch job details.", e);
 		throw;
 	}
 }
@@ -82,12 +84,13 @@ kerbal::redis::RedisReply JobBase::get_source_code() const
 	try {
 		reply = get_src_code_templ.execute(redisConn, this->jobType, this->sid);
 	} catch (const std::exception & e) {
-		LOG_FATAL(jobType, sid, log_fp, "Get source code failed! Error information: ", e.what());
+		EXCEPT_FATAL(jobType, sid, log_fp, "Get source code failed!", e);
 		throw;
 	}
 	if (reply.replyType() != RedisReplyType::STRING) {
-		LOG_FATAL(jobType, sid, log_fp, "Get source code failed! Error information: ", "unexpected redis reply type");
-		throw RedisUnexpectedCaseException(reply.replyType());
+		RedisUnexpectedCaseException e(reply.replyType());
+		EXCEPT_FATAL(jobType, sid, log_fp, "Get source code failed!", e);
+		throw e;
 	}
 	return reply;
 }
