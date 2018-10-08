@@ -1,0 +1,4 @@
+<map id="Config::limitCPUTime" name="Config::limitCPUTime">
+<area shape="rect" id="node1" title="检查是否有 CPU 时间限制" alt="" coords="220,5,371,32"/>
+<area shape="rect" id="node2" href="$class_judge_job.html#a45f3a298baec8013e313d506d5b764b5" title="启动 编译/执行 的实际工作。限制了资源信息，重定向流之后，启动实际工作进程。" alt="" coords="5,5,172,32"/>
+</map>

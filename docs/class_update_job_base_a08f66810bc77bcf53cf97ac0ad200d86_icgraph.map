@@ -1,0 +1,4 @@
+<map id="UpdateJobBase::update_user_and_problem" name="UpdateJobBase::update_user_and_problem">
+<area shape="rect" id="node1" title="更新题目的提交数, 通过数, 用户的提交数, 通过数" alt="" coords="215,5,377,47"/>
+<area shape="rect" id="node2" href="$class_update_job_base.html#a1f2173cec66f3453d4a87c91c2ac8e29" title="执行任务" alt="" coords="5,13,167,39"/>
+</map>

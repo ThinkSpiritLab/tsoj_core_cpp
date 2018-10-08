@@ -1,0 +1,18 @@
+span.mlabel {
+	background-color: #5cb85c;
+	border-top: 1px solid #5cb85c;
+	border-left: 1px solid #5cb85c;
+	border-right: 1px solid #5cb85c;
+	border-bottom: 1px solid #5cb85c;
+	text-shadow: none;
+	display: inline;
+	padding: .2em .6em .3em;
+	font-size: 75%;
+	font-weight: 700;
+	line-height: 1;
+	color: #fff;
+	text-align: center;
+	white-space: nowrap;
+	vertical-align: baseline;
+	border-radius: .25em;
+}

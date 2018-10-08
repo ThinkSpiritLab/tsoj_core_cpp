@@ -1,0 +1,8 @@
+<map id="UpdateJobBase" name="UpdateJobBase">
+<area shape="rect" id="node1" title=" " alt="" coords="100,80,215,107"/>
+<area shape="rect" id="node3" href="$class_contest_update_job.html" title=" " alt="" coords="5,155,136,181"/>
+<area shape="rect" id="node4" href="$class_exercise_update_job_base.html" title=" " alt="" coords="161,155,327,181"/>
+<area shape="rect" id="node2" href="$class_job_base.html" title="JudgeJob 与 UpdateJob 的基类， 存有 Job的基本信息，并规定了所有 Job 必须遵循的函数接口。" alt="" coords="121,5,194,32"/>
+<area shape="rect" id="node5" href="$class_course_update_job.html" title=" " alt="" coords="103,229,230,256"/>
+<area shape="rect" id="node6" href="$class_exercise_update_job.html" title=" " alt="" coords="255,229,391,256"/>
+</map>

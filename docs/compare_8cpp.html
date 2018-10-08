@@ -1,0 +1,222 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.8.15"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>TSOJ V4 Judge Core: /home/peter/git/Core/src/slave/compare.cpp 文件参考</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="mlabel.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="ThinkSpirit_logo_2018.png"/></td>
+  <td id="projectalign" style="padding-left: 0.5em;">
+   <div id="projectname">TSOJ V4 Judge Core
+   </div>
+   <div id="projectbrief">oj.thinkspirit.org</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- 制作者 Doxygen 1.8.15 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+var searchBox = new SearchBox("searchBox", "search",false,'搜索');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(function() {
+  initMenu('',true,false,'search.php','搜索');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_80f0d4a0945c74dfa611dba2ec326a39.html">slave</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle">
+<div class="title">compare.cpp 文件参考</div>  </div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;<a class="el" href="compare_8hpp_source.html">compare.hpp</a>&quot;</code><br />
+<code>#include &lt;cstdio&gt;</code><br />
+<code>#include &lt;memory&gt;</code><br />
+</div><div class="textblock"><div class="dynheader">
+compare.cpp 的引用(Include)关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="compare_8cpp__incl.png" border="0" usemap="#_2home_2peter_2git_2_core_2src_2slave_2compare_8cpp" alt=""/></div>
+<map name="_2home_2peter_2git_2_core_2src_2slave_2compare_8cpp" id="_2home_2peter_2git_2_core_2src_2slave_2compare_8cpp">
+<area shape="rect" id="node1" title=" " alt="" coords="107,5,266,47"/>
+<area shape="rect" id="node2" href="compare_8hpp.html" title=" " alt="" coords="37,95,134,121"/>
+<area shape="rect" id="node6" title=" " alt="" coords="158,95,215,121"/>
+<area shape="rect" id="node7" title=" " alt="" coords="240,95,309,121"/>
+<area shape="rect" id="node3" href="united__resource_8hpp.html" title=" " alt="" coords="16,169,155,196"/>
+<area shape="rect" id="node4" title=" " alt="" coords="5,244,77,271"/>
+<area shape="rect" id="node5" title=" " alt="" coords="102,244,157,271"/>
+</map>
+</div>
+</div>
+<p><a href="compare_8cpp_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:ae12d969be69c79ba2d8501fc5ab34eb7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="compare_8cpp.html#ae12d969be69c79ba2d8501fc5ab34eb7">find_next_nonspace</a> (int &amp;c1, int &amp;c2, std::unique_ptr&lt; FILE, int(*)(FILE *)&gt; &amp;f1, std::unique_ptr&lt; FILE, int(*)(FILE *)&gt; &amp;f2, <a class="el" href="united__resource_8hpp.html#a4633701595b7c3914a34eee8ba1b505e">UnitedJudgeResult</a> &amp;ret)</td></tr>
+<tr class="separator:ae12d969be69c79ba2d8501fc5ab34eb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a960c5c76653215ba60077e139ab6c000"><td class="memItemLeft" align="right" valign="top"><a class="el" href="united__resource_8hpp.html#a4633701595b7c3914a34eee8ba1b505e">UnitedJudgeResult</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="compare_8cpp.html#a960c5c76653215ba60077e139ab6c000">compare</a> (const char *file1, const char *file2)</td></tr>
+<tr class="separator:a960c5c76653215ba60077e139ab6c000"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">函数说明</h2>
+<a id="a960c5c76653215ba60077e139ab6c000"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a960c5c76653215ba60077e139ab6c000">&#9670;&nbsp;</a></span>compare()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="united__resource_8hpp.html#a4633701595b7c3914a34eee8ba1b505e">UnitedJudgeResult</a> compare </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>file1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>file2</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="compare_8cpp_source.html">compare.cpp</a> 第 <a class="el" href="compare_8cpp_source.html#l00048">48</a> 行定义.</p>
+<div class="dynheader">
+函数调用图:</div>
+<div class="dyncontent">
+<div class="center"><img src="compare_8cpp_a960c5c76653215ba60077e139ab6c000_cgraph.png" border="0" usemap="#compare_8cpp_a960c5c76653215ba60077e139ab6c000_cgraph" alt=""/></div>
+<map name="compare_8cpp_a960c5c76653215ba60077e139ab6c000_cgraph" id="compare_8cpp_a960c5c76653215ba60077e139ab6c000_cgraph">
+<area shape="rect" id="node1" title=" " alt="" coords="5,5,77,32"/>
+<area shape="rect" id="node2" href="compare_8cpp.html#ae12d969be69c79ba2d8501fc5ab34eb7" title=" " alt="" coords="125,5,264,32"/>
+</map>
+</div>
+<div class="dynheader">
+这是这个函数的调用关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="compare_8cpp_a960c5c76653215ba60077e139ab6c000_icgraph.png" border="0" usemap="#compare_8cpp_a960c5c76653215ba60077e139ab6c000_icgraph" alt=""/></div>
+<map name="compare_8cpp_a960c5c76653215ba60077e139ab6c000_icgraph" id="compare_8cpp_a960c5c76653215ba60077e139ab6c000_icgraph">
+<area shape="rect" id="node1" title=" " alt="" coords="353,5,425,32"/>
+<area shape="rect" id="node2" href="class_judge_job.html#a0d2e1e5cce842ef0daf71c95f98275f0" title="进入当前 job 的执行流程，并返回执行结果。" alt="" coords="177,5,305,32"/>
+<area shape="rect" id="node3" href="class_judge_job.html#a6fe58f9fcacc9ba6461e97f1a3ac76a3" title="本 Job 的处理函数。整个 job 的工作入口，包括编译执行判题等内容" alt="" coords="5,5,129,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="ae12d969be69c79ba2d8501fc5ab34eb7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae12d969be69c79ba2d8501fc5ab34eb7">&#9670;&nbsp;</a></span>find_next_nonspace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void find_next_nonspace </td>
+          <td>(</td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>c1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>c2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::unique_ptr&lt; FILE, int(*)(FILE *)&gt; &amp;&#160;</td>
+          <td class="paramname"><em>f1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::unique_ptr&lt; FILE, int(*)(FILE *)&gt; &amp;&#160;</td>
+          <td class="paramname"><em>f2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="united__resource_8hpp.html#a4633701595b7c3914a34eee8ba1b505e">UnitedJudgeResult</a> &amp;&#160;</td>
+          <td class="paramname"><em>ret</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="compare_8cpp_source.html">compare.cpp</a> 第 <a class="el" href="compare_8cpp_source.html#l00013">13</a> 行定义.</p>
+<div class="dynheader">
+这是这个函数的调用关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="compare_8cpp_ae12d969be69c79ba2d8501fc5ab34eb7_icgraph.png" border="0" usemap="#compare_8cpp_ae12d969be69c79ba2d8501fc5ab34eb7_icgraph" alt=""/></div>
+<map name="compare_8cpp_ae12d969be69c79ba2d8501fc5ab34eb7_icgraph" id="compare_8cpp_ae12d969be69c79ba2d8501fc5ab34eb7_icgraph">
+<area shape="rect" id="node1" title=" " alt="" coords="473,5,612,32"/>
+<area shape="rect" id="node2" href="compare_8hpp.html#a960c5c76653215ba60077e139ab6c000" title=" " alt="" coords="353,5,425,32"/>
+<area shape="rect" id="node3" href="class_judge_job.html#a0d2e1e5cce842ef0daf71c95f98275f0" title="进入当前 job 的执行流程，并返回执行结果。" alt="" coords="177,5,305,32"/>
+<area shape="rect" id="node4" href="class_judge_job.html#a6fe58f9fcacc9ba6461e97f1a3ac76a3" title="本 Job 的处理函数。整个 job 的工作入口，包括编译执行判题等内容" alt="" coords="5,5,129,32"/>
+</map>
+</div>
+
+</div>
+</div>
+</div><!-- contents -->
+<footer>
+<hr> Powered by
+<a href="http://www.doxygen.nl/" target="_blank"> Doxygen </a>
+<br>
+Contributors:
+<a href=""> Shaohua Zhang,&nbsp; Zhiqiang Shi,&nbsp; Xi Chen,&nbsp; Kehan Huang,&nbsp; Binjie Zhang,&nbsp; Wentsing Nee </a>
+<br> Copyright © 2010-2018
+<a href="http://www.thinkspirit.org" target="_blank"> Think Spirit. </a> All rights reserved.
+</footer>

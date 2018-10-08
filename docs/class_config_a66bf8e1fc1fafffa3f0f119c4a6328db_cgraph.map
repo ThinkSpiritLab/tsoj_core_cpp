@@ -1,0 +1,5 @@
+<map id="Config::load_seccomp_rules" name="Config::load_seccomp_rules">
+<area shape="rect" id="node1" title="根据本 config 设定的所允许的系统调用种类的标识，加载相应的限制" alt="" coords="5,39,157,80"/>
+<area shape="rect" id="node2" href="$class_config.html#abc5c2690ad9c6b7c15eb10800b724fa9" title="生产 c/c++ 对应的系统调用权限限制" alt="" coords="209,5,372,47"/>
+<area shape="rect" id="node3" href="$class_config.html#a1fb73bd5c89b879497891c46ad345b87" title="生产通用的系统调用权限限制" alt="" coords="205,71,376,112"/>
+</map>

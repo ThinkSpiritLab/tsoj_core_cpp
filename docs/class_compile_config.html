@@ -1,0 +1,224 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.8.15"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>TSOJ V4 Judge Core: CompileConfig类 参考</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="mlabel.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="ThinkSpirit_logo_2018.png"/></td>
+  <td id="projectalign" style="padding-left: 0.5em;">
+   <div id="projectname">TSOJ V4 Judge Core
+   </div>
+   <div id="projectbrief">oj.thinkspirit.org</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- 制作者 Doxygen 1.8.15 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+var searchBox = new SearchBox("searchBox", "search",false,'搜索');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(function() {
+  initMenu('',true,false,'search.php','搜索');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="class_compile_config-members.html">所有成员列表</a>  </div>
+  <div class="headertitle">
+<div class="title">CompileConfig类 参考</div>  </div>
+</div><!--header-->
+<div class="contents">
+
+<p><a class="el" href="class_config.html" title="运行配置类，根据具体运行需求提供所需的子进程运行限制条件与子进程运行环境  例如：运行时间限制，运行空间限制，子进程调用系统函数的权限等">Config</a> 的子类，将其父类参数设定为编译时需要的配置参数  
+ <a href="class_compile_config.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="_config_8hpp_source.html">Config.hpp</a>&gt;</code></p>
+<div class="dynheader">
+类 CompileConfig 继承关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_compile_config__inherit__graph.png" border="0" usemap="#_compile_config_inherit__map" alt="Inheritance graph"/></div>
+<map name="_compile_config_inherit__map" id="_compile_config_inherit__map">
+<area shape="rect" id="node1" title="Config 的子类，将其父类参数设定为编译时需要的配置参数" alt="" coords="5,80,113,107"/>
+<area shape="rect" id="node2" href="class_config.html" title="运行配置类，根据具体运行需求提供所需的子进程运行限制条件与子进程运行环境 &#160;例如：运行时间限制，运行空间限制，子进程调用系统函数的权限等" alt="" coords="29,5,89,32"/>
+</map>
+<center><span class="legend">[<a href="graph_legend.html">图例</a>]</span></center></div>
+<div class="dynheader">
+CompileConfig 的协作图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_compile_config__coll__graph.png" border="0" usemap="#_compile_config_coll__map" alt="Collaboration graph"/></div>
+<map name="_compile_config_coll__map" id="_compile_config_coll__map">
+<area shape="rect" id="node1" title="Config 的子类，将其父类参数设定为编译时需要的配置参数" alt="" coords="5,185,113,212"/>
+<area shape="rect" id="node2" href="class_config.html" title="运行配置类，根据具体运行需求提供所需的子进程运行限制条件与子进程运行环境 &#160;例如：运行时间限制，运行空间限制，子进程调用系统函数的权限等" alt="" coords="29,109,89,136"/>
+<area shape="rect" id="node3" href="class_execute_args.html" title=" " alt="" coords="11,5,108,32"/>
+</map>
+<center><span class="legend">[<a href="graph_legend.html">图例</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:adefeef0229d970ad5338d18cf9803793"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_compile_config.html#adefeef0229d970ad5338d18cf9803793">CompileConfig</a> (const <a class="el" href="class_judge_job.html">JudgeJob</a> &amp;job)</td></tr>
+<tr class="memdesc:adefeef0229d970ad5338d18cf9803793"><td class="mdescLeft">&#160;</td><td class="mdescRight">构造函数，配置程序编译的参数 <br />
+包含:执行路径、系统调用限制、时间空间限制、输入输出配置等  <a href="#adefeef0229d970ad5338d18cf9803793">更多...</a><br /></td></tr>
+<tr class="separator:adefeef0229d970ad5338d18cf9803793"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_class_config"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_class_config')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="class_config.html">Config</a></td></tr>
+<tr class="memitem:abd0c571c116924871e30444b192b792a inherit pub_methods_class_config"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#abd0c571c116924871e30444b192b792a">Config</a> ()</td></tr>
+<tr class="memdesc:abd0c571c116924871e30444b192b792a inherit pub_methods_class_config"><td class="mdescLeft">&#160;</td><td class="mdescRight">构造函数，设置程序的环境表内容，user id 与 group id  <a href="class_config.html#abd0c571c116924871e30444b192b792a">更多...</a><br /></td></tr>
+<tr class="separator:abd0c571c116924871e30444b192b792a inherit pub_methods_class_config"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3371c9240bdc3fb4cd0fefa6f9294c7 inherit pub_methods_class_config"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#ae3371c9240bdc3fb4cd0fefa6f9294c7">limitCPUTime</a> () const</td></tr>
+<tr class="memdesc:ae3371c9240bdc3fb4cd0fefa6f9294c7 inherit pub_methods_class_config"><td class="mdescLeft">&#160;</td><td class="mdescRight">检查是否有 CPU 时间限制  <a href="class_config.html#ae3371c9240bdc3fb4cd0fefa6f9294c7">更多...</a><br /></td></tr>
+<tr class="separator:ae3371c9240bdc3fb4cd0fefa6f9294c7 inherit pub_methods_class_config"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa171ad236eafa0d4f187d169e4a922f3 inherit pub_methods_class_config"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#aa171ad236eafa0d4f187d169e4a922f3">limitRealTime</a> () const</td></tr>
+<tr class="memdesc:aa171ad236eafa0d4f187d169e4a922f3 inherit pub_methods_class_config"><td class="mdescLeft">&#160;</td><td class="mdescRight">检查是否有墙上时间限制  <a href="class_config.html#aa171ad236eafa0d4f187d169e4a922f3">更多...</a><br /></td></tr>
+<tr class="separator:aa171ad236eafa0d4f187d169e4a922f3 inherit pub_methods_class_config"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69f9be5093ec916b366b3ad046e12bb7 inherit pub_methods_class_config"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#a69f9be5093ec916b366b3ad046e12bb7">limitMemory</a> () const</td></tr>
+<tr class="memdesc:a69f9be5093ec916b366b3ad046e12bb7 inherit pub_methods_class_config"><td class="mdescLeft">&#160;</td><td class="mdescRight">检查是否有储存空间的最大字节长度限制  <a href="class_config.html#a69f9be5093ec916b366b3ad046e12bb7">更多...</a><br /></td></tr>
+<tr class="separator:a69f9be5093ec916b366b3ad046e12bb7 inherit pub_methods_class_config"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf2c6f34290e8aa15d6e087df8c32882 inherit pub_methods_class_config"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#aaf2c6f34290e8aa15d6e087df8c32882">limitStack</a> () const</td></tr>
+<tr class="memdesc:aaf2c6f34290e8aa15d6e087df8c32882 inherit pub_methods_class_config"><td class="mdescLeft">&#160;</td><td class="mdescRight">检查是否有栈的最大字节长度限制  <a href="class_config.html#aaf2c6f34290e8aa15d6e087df8c32882">更多...</a><br /></td></tr>
+<tr class="separator:aaf2c6f34290e8aa15d6e087df8c32882 inherit pub_methods_class_config"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3690235ffa6f8c58eb9aef15138b1744 inherit pub_methods_class_config"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#a3690235ffa6f8c58eb9aef15138b1744">limitProcessNumber</a> () const</td></tr>
+<tr class="memdesc:a3690235ffa6f8c58eb9aef15138b1744 inherit pub_methods_class_config"><td class="mdescLeft">&#160;</td><td class="mdescRight">检查是否有程序最大子进程数限制  <a href="class_config.html#a3690235ffa6f8c58eb9aef15138b1744">更多...</a><br /></td></tr>
+<tr class="separator:a3690235ffa6f8c58eb9aef15138b1744 inherit pub_methods_class_config"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92a02bf20ae7e9925f895e5ccd4b2c85 inherit pub_methods_class_config"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#a92a02bf20ae7e9925f895e5ccd4b2c85">limitOutput</a> () const</td></tr>
+<tr class="memdesc:a92a02bf20ae7e9925f895e5ccd4b2c85 inherit pub_methods_class_config"><td class="mdescLeft">&#160;</td><td class="mdescRight">检查是否有最大输出字节长度限制  <a href="class_config.html#a92a02bf20ae7e9925f895e5ccd4b2c85">更多...</a><br /></td></tr>
+<tr class="separator:a92a02bf20ae7e9925f895e5ccd4b2c85 inherit pub_methods_class_config"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18b402cecc5c5dcad18d0c4c306b410b inherit pub_methods_class_config"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#a18b402cecc5c5dcad18d0c4c306b410b">check_is_valid_config</a> () const</td></tr>
+<tr class="memdesc:a18b402cecc5c5dcad18d0c4c306b410b inherit pub_methods_class_config"><td class="mdescLeft">&#160;</td><td class="mdescRight">检查限制值是否合理有效  <a href="class_config.html#a18b402cecc5c5dcad18d0c4c306b410b">更多...</a><br /></td></tr>
+<tr class="separator:a18b402cecc5c5dcad18d0c4c306b410b inherit pub_methods_class_config"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66bf8e1fc1fafffa3f0f119c4a6328db inherit pub_methods_class_config"><td class="memItemLeft" align="right" valign="top"><a class="el" href="united__resource_8hpp.html#af5aef12943fd8d013b8bf4c4fa2567de">RunnerError</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#a66bf8e1fc1fafffa3f0f119c4a6328db">load_seccomp_rules</a> () const</td></tr>
+<tr class="memdesc:a66bf8e1fc1fafffa3f0f119c4a6328db inherit pub_methods_class_config"><td class="mdescLeft">&#160;</td><td class="mdescRight">根据本 config 设定的所允许的系统调用种类的标识，加载相应的限制  <a href="class_config.html#a66bf8e1fc1fafffa3f0f119c4a6328db">更多...</a><br /></td></tr>
+<tr class="separator:a66bf8e1fc1fafffa3f0f119c4a6328db inherit pub_methods_class_config"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
+额外继承的成员函数</h2></td></tr>
+<tr class="inherit_header pub_attribs_class_config"><td colspan="2" onclick="javascript:toggleInherit('pub_attribs_class_config')"><img src="closed.png" alt="-"/>&#160;Public 属性 继承自 <a class="el" href="class_config.html">Config</a></td></tr>
+<tr class="memitem:a6b0efc1e83564686a6d5243e66e98bd8 inherit pub_attribs_class_config"><td class="memItemLeft" align="right" valign="top">std::chrono::milliseconds&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#a6b0efc1e83564686a6d5243e66e98bd8">max_cpu_time</a></td></tr>
+<tr class="separator:a6b0efc1e83564686a6d5243e66e98bd8 inherit pub_attribs_class_config"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c4946dfa3da5795ded9d5c9da83aa6c inherit pub_attribs_class_config"><td class="memItemLeft" align="right" valign="top">std::chrono::milliseconds&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#a0c4946dfa3da5795ded9d5c9da83aa6c">max_real_time</a></td></tr>
+<tr class="separator:a0c4946dfa3da5795ded9d5c9da83aa6c inherit pub_attribs_class_config"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8099e71c268e46a2a14e1a9c0807d5fb inherit pub_attribs_class_config"><td class="memItemLeft" align="right" valign="top">kerbal::utility::Byte&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#a8099e71c268e46a2a14e1a9c0807d5fb">max_memory</a></td></tr>
+<tr class="separator:a8099e71c268e46a2a14e1a9c0807d5fb inherit pub_attribs_class_config"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a760051e1717222f65c173ed1de9e75ce inherit pub_attribs_class_config"><td class="memItemLeft" align="right" valign="top">kerbal::utility::Byte&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#a760051e1717222f65c173ed1de9e75ce">max_stack</a></td></tr>
+<tr class="separator:a760051e1717222f65c173ed1de9e75ce inherit pub_attribs_class_config"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a203f5618770561ed0ae1a686b3de0f52 inherit pub_attribs_class_config"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#a203f5618770561ed0ae1a686b3de0f52">max_process_number</a></td></tr>
+<tr class="separator:a203f5618770561ed0ae1a686b3de0f52 inherit pub_attribs_class_config"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae13f901849d2ce4706a2e44e73503946 inherit pub_attribs_class_config"><td class="memItemLeft" align="right" valign="top">kerbal::utility::Byte&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#ae13f901849d2ce4706a2e44e73503946">max_output_size</a></td></tr>
+<tr class="separator:ae13f901849d2ce4706a2e44e73503946 inherit pub_attribs_class_config"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af2ad7834fbd9fcc5c1334a491e11067b inherit pub_attribs_class_config"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#af2ad7834fbd9fcc5c1334a491e11067b">exe_path</a></td></tr>
+<tr class="separator:af2ad7834fbd9fcc5c1334a491e11067b inherit pub_attribs_class_config"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a323b96bd5c421574d7022b29f514463f inherit pub_attribs_class_config"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#a323b96bd5c421574d7022b29f514463f">input_path</a></td></tr>
+<tr class="separator:a323b96bd5c421574d7022b29f514463f inherit pub_attribs_class_config"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aedbe366de848d7c498d214c03f937529 inherit pub_attribs_class_config"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#aedbe366de848d7c498d214c03f937529">output_path</a></td></tr>
+<tr class="separator:aedbe366de848d7c498d214c03f937529 inherit pub_attribs_class_config"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c153fa3955703c7cb7f635e2c89929d inherit pub_attribs_class_config"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#a6c153fa3955703c7cb7f635e2c89929d">error_path</a></td></tr>
+<tr class="separator:a6c153fa3955703c7cb7f635e2c89929d inherit pub_attribs_class_config"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a387911596aca8b2c10ab8a720287e37a inherit pub_attribs_class_config"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_execute_args.html">ExecuteArgs</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#a387911596aca8b2c10ab8a720287e37a">args</a></td></tr>
+<tr class="separator:a387911596aca8b2c10ab8a720287e37a inherit pub_attribs_class_config"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ec96582edf19a423c3ee150bf2a159f inherit pub_attribs_class_config"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_execute_args.html">ExecuteArgs</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#a9ec96582edf19a423c3ee150bf2a159f">env</a></td></tr>
+<tr class="separator:a9ec96582edf19a423c3ee150bf2a159f inherit pub_attribs_class_config"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2790aaafceb8f306282f1c57cf0ab85 inherit pub_attribs_class_config"><td class="memItemLeft" align="right" valign="top">enum <a class="el" href="_config_8hpp.html#a14b6d2c5ee1288f01d167a3ba7ef4328">Seccomp_rule</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#aa2790aaafceb8f306282f1c57cf0ab85">seccomp_rule_name</a></td></tr>
+<tr class="separator:aa2790aaafceb8f306282f1c57cf0ab85 inherit pub_attribs_class_config"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1672607dd55d951394ab1967a4d30441 inherit pub_attribs_class_config"><td class="memItemLeft" align="right" valign="top">uid_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#a1672607dd55d951394ab1967a4d30441">uid</a></td></tr>
+<tr class="separator:a1672607dd55d951394ab1967a4d30441 inherit pub_attribs_class_config"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1fea97dd1396fe429f7358e25020d360 inherit pub_attribs_class_config"><td class="memItemLeft" align="right" valign="top">gid_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#a1fea97dd1396fe429f7358e25020d360">gid</a></td></tr>
+<tr class="separator:a1fea97dd1396fe429f7358e25020d360 inherit pub_attribs_class_config"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pro_methods_class_config"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_class_config')"><img src="closed.png" alt="-"/>&#160;Protected 成员函数 继承自 <a class="el" href="class_config.html">Config</a></td></tr>
+<tr class="memitem:abc5c2690ad9c6b7c15eb10800b724fa9 inherit pro_methods_class_config"><td class="memItemLeft" align="right" valign="top"><a class="el" href="united__resource_8hpp.html#af5aef12943fd8d013b8bf4c4fa2567de">RunnerError</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#abc5c2690ad9c6b7c15eb10800b724fa9">c_cpp_seccomp_rules</a> () const</td></tr>
+<tr class="memdesc:abc5c2690ad9c6b7c15eb10800b724fa9 inherit pro_methods_class_config"><td class="mdescLeft">&#160;</td><td class="mdescRight">生产 c/c++ 对应的系统调用权限限制  <a href="class_config.html#abc5c2690ad9c6b7c15eb10800b724fa9">更多...</a><br /></td></tr>
+<tr class="separator:abc5c2690ad9c6b7c15eb10800b724fa9 inherit pro_methods_class_config"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1fb73bd5c89b879497891c46ad345b87 inherit pro_methods_class_config"><td class="memItemLeft" align="right" valign="top"><a class="el" href="united__resource_8hpp.html#af5aef12943fd8d013b8bf4c4fa2567de">RunnerError</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#a1fb73bd5c89b879497891c46ad345b87">general_seccomp_rules</a> () const</td></tr>
+<tr class="memdesc:a1fb73bd5c89b879497891c46ad345b87 inherit pro_methods_class_config"><td class="mdescLeft">&#160;</td><td class="mdescRight">生产通用的系统调用权限限制  <a href="class_config.html#a1fb73bd5c89b879497891c46ad345b87">更多...</a><br /></td></tr>
+<tr class="separator:a1fb73bd5c89b879497891c46ad345b87 inherit pro_methods_class_config"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pro_static_attribs_class_config"><td colspan="2" onclick="javascript:toggleInherit('pro_static_attribs_class_config')"><img src="closed.png" alt="-"/>&#160;静态 Protected 属性 继承自 <a class="el" href="class_config.html">Config</a></td></tr>
+<tr class="memitem:a3eef324bfca632666b2091c04af212b0 inherit pro_static_attribs_class_config"><td class="memItemLeft" align="right" valign="top">static const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#a3eef324bfca632666b2091c04af212b0">UNLIMITED</a> = -1</td></tr>
+<tr class="separator:a3eef324bfca632666b2091c04af212b0 inherit pro_static_attribs_class_config"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a884fb15819afb6b061c687c632cc201a inherit pro_static_attribs_class_config"><td class="memItemLeft" align="right" valign="top">static const kerbal::utility::Byte&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#a884fb15819afb6b061c687c632cc201a">MEMORY_UNLIMITED</a> { 0 }</td></tr>
+<tr class="separator:a884fb15819afb6b061c687c632cc201a inherit pro_static_attribs_class_config"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a05a0a27882754353b9a3d5eda7b568b2 inherit pro_static_attribs_class_config"><td class="memItemLeft" align="right" valign="top">static const std::chrono::milliseconds&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#a05a0a27882754353b9a3d5eda7b568b2">TIME_UNLIMITED</a> { 0 }</td></tr>
+<tr class="separator:a05a0a27882754353b9a3d5eda7b568b2 inherit pro_static_attribs_class_config"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p class=""><a class="el" href="class_config.html" title="运行配置类，根据具体运行需求提供所需的子进程运行限制条件与子进程运行环境  例如：运行时间限制，运行空间限制，子进程调用系统函数的权限等">Config</a> 的子类，将其父类参数设定为编译时需要的配置参数 </p>
+
+<p class="definition">在文件 <a class="el" href="_config_8hpp_source.html">Config.hpp</a> 第 <a class="el" href="_config_8hpp_source.html#l00178">178</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="adefeef0229d970ad5338d18cf9803793"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adefeef0229d970ad5338d18cf9803793">&#9670;&nbsp;</a></span>CompileConfig()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CompileConfig::CompileConfig </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_judge_job.html">JudgeJob</a> &amp;&#160;</td>
+          <td class="paramname"><em>job</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>构造函数，配置程序编译的参数 <br />
+包含:执行路径、系统调用限制、时间空间限制、输入输出配置等 </p>
+<dl class="section note"><dt>注解</dt><dd>编译配置参考源为 2018 ACM ICPC Programming Environment </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="_config_8cpp_source.html">Config.cpp</a> 第 <a class="el" href="_config_8cpp_source.html#l00081">81</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>/home/peter/git/Core/src/slave/<a class="el" href="_config_8hpp_source.html">Config.hpp</a></li>
+<li>/home/peter/git/Core/src/slave/<a class="el" href="_config_8cpp_source.html">Config.cpp</a></li>
+</ul>
+</div><!-- contents -->
+<footer>
+<hr> Powered by
+<a href="http://www.doxygen.nl/" target="_blank"> Doxygen </a>
+<br>
+Contributors:
+<a href=""> Shaohua Zhang,&nbsp; Zhiqiang Shi,&nbsp; Xi Chen,&nbsp; Kehan Huang,&nbsp; Binjie Zhang,&nbsp; Wentsing Nee </a>
+<br> Copyright © 2010-2018
+<a href="http://www.thinkspirit.org" target="_blank"> Think Spirit. </a> All rights reserved.
+</footer>

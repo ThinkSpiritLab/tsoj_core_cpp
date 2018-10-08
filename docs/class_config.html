@@ -1,0 +1,917 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.8.15"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>TSOJ V4 Judge Core: Config类 参考</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="mlabel.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="ThinkSpirit_logo_2018.png"/></td>
+  <td id="projectalign" style="padding-left: 0.5em;">
+   <div id="projectname">TSOJ V4 Judge Core
+   </div>
+   <div id="projectbrief">oj.thinkspirit.org</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- 制作者 Doxygen 1.8.15 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+var searchBox = new SearchBox("searchBox", "search",false,'搜索');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(function() {
+  initMenu('',true,false,'search.php','搜索');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="#pro-methods">Protected 成员函数</a> &#124;
+<a href="#pro-static-attribs">静态 Protected 属性</a> &#124;
+<a href="class_config-members.html">所有成员列表</a>  </div>
+  <div class="headertitle">
+<div class="title">Config类 参考</div>  </div>
+</div><!--header-->
+<div class="contents">
+
+<p>运行配置类，根据具体运行需求提供所需的子进程运行限制条件与子进程运行环境 <br />
+例如：运行时间限制，运行空间限制，子进程调用系统函数的权限等  
+ <a href="class_config.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="_config_8hpp_source.html">Config.hpp</a>&gt;</code></p>
+<div class="dynheader">
+类 Config 继承关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_config__inherit__graph.png" border="0" usemap="#_config_inherit__map" alt="Inheritance graph"/></div>
+<map name="_config_inherit__map" id="_config_inherit__map">
+<area shape="rect" id="node1" title="运行配置类，根据具体运行需求提供所需的子进程运行限制条件与子进程运行环境 &#160;例如：运行时间限制，运行空间限制，子进程调用系统函数的权限等" alt="" coords="95,5,155,32"/>
+<area shape="rect" id="node2" href="class_compile_config.html" title="Config 的子类，将其父类参数设定为编译时需要的配置参数" alt="" coords="5,80,113,107"/>
+<area shape="rect" id="node3" href="class_running_config.html" title="Config 的子类，将其父类参数设定为运行时需要的配置参数" alt="" coords="137,80,245,107"/>
+</map>
+<center><span class="legend">[<a href="graph_legend.html">图例</a>]</span></center></div>
+<div class="dynheader">
+Config 的协作图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_config__coll__graph.png" border="0" usemap="#_config_coll__map" alt="Collaboration graph"/></div>
+<map name="_config_coll__map" id="_config_coll__map">
+<area shape="rect" id="node1" title="运行配置类，根据具体运行需求提供所需的子进程运行限制条件与子进程运行环境 &#160;例如：运行时间限制，运行空间限制，子进程调用系统函数的权限等" alt="" coords="24,109,84,136"/>
+<area shape="rect" id="node2" href="class_execute_args.html" title=" " alt="" coords="5,5,103,32"/>
+</map>
+<center><span class="legend">[<a href="graph_legend.html">图例</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:abd0c571c116924871e30444b192b792a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#abd0c571c116924871e30444b192b792a">Config</a> ()</td></tr>
+<tr class="memdesc:abd0c571c116924871e30444b192b792a"><td class="mdescLeft">&#160;</td><td class="mdescRight">构造函数，设置程序的环境表内容，user id 与 group id  <a href="#abd0c571c116924871e30444b192b792a">更多...</a><br /></td></tr>
+<tr class="separator:abd0c571c116924871e30444b192b792a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3371c9240bdc3fb4cd0fefa6f9294c7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#ae3371c9240bdc3fb4cd0fefa6f9294c7">limitCPUTime</a> () const</td></tr>
+<tr class="memdesc:ae3371c9240bdc3fb4cd0fefa6f9294c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">检查是否有 CPU 时间限制  <a href="#ae3371c9240bdc3fb4cd0fefa6f9294c7">更多...</a><br /></td></tr>
+<tr class="separator:ae3371c9240bdc3fb4cd0fefa6f9294c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa171ad236eafa0d4f187d169e4a922f3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#aa171ad236eafa0d4f187d169e4a922f3">limitRealTime</a> () const</td></tr>
+<tr class="memdesc:aa171ad236eafa0d4f187d169e4a922f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">检查是否有墙上时间限制  <a href="#aa171ad236eafa0d4f187d169e4a922f3">更多...</a><br /></td></tr>
+<tr class="separator:aa171ad236eafa0d4f187d169e4a922f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69f9be5093ec916b366b3ad046e12bb7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#a69f9be5093ec916b366b3ad046e12bb7">limitMemory</a> () const</td></tr>
+<tr class="memdesc:a69f9be5093ec916b366b3ad046e12bb7"><td class="mdescLeft">&#160;</td><td class="mdescRight">检查是否有储存空间的最大字节长度限制  <a href="#a69f9be5093ec916b366b3ad046e12bb7">更多...</a><br /></td></tr>
+<tr class="separator:a69f9be5093ec916b366b3ad046e12bb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf2c6f34290e8aa15d6e087df8c32882"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#aaf2c6f34290e8aa15d6e087df8c32882">limitStack</a> () const</td></tr>
+<tr class="memdesc:aaf2c6f34290e8aa15d6e087df8c32882"><td class="mdescLeft">&#160;</td><td class="mdescRight">检查是否有栈的最大字节长度限制  <a href="#aaf2c6f34290e8aa15d6e087df8c32882">更多...</a><br /></td></tr>
+<tr class="separator:aaf2c6f34290e8aa15d6e087df8c32882"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3690235ffa6f8c58eb9aef15138b1744"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#a3690235ffa6f8c58eb9aef15138b1744">limitProcessNumber</a> () const</td></tr>
+<tr class="memdesc:a3690235ffa6f8c58eb9aef15138b1744"><td class="mdescLeft">&#160;</td><td class="mdescRight">检查是否有程序最大子进程数限制  <a href="#a3690235ffa6f8c58eb9aef15138b1744">更多...</a><br /></td></tr>
+<tr class="separator:a3690235ffa6f8c58eb9aef15138b1744"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92a02bf20ae7e9925f895e5ccd4b2c85"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#a92a02bf20ae7e9925f895e5ccd4b2c85">limitOutput</a> () const</td></tr>
+<tr class="memdesc:a92a02bf20ae7e9925f895e5ccd4b2c85"><td class="mdescLeft">&#160;</td><td class="mdescRight">检查是否有最大输出字节长度限制  <a href="#a92a02bf20ae7e9925f895e5ccd4b2c85">更多...</a><br /></td></tr>
+<tr class="separator:a92a02bf20ae7e9925f895e5ccd4b2c85"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18b402cecc5c5dcad18d0c4c306b410b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#a18b402cecc5c5dcad18d0c4c306b410b">check_is_valid_config</a> () const</td></tr>
+<tr class="memdesc:a18b402cecc5c5dcad18d0c4c306b410b"><td class="mdescLeft">&#160;</td><td class="mdescRight">检查限制值是否合理有效  <a href="#a18b402cecc5c5dcad18d0c4c306b410b">更多...</a><br /></td></tr>
+<tr class="separator:a18b402cecc5c5dcad18d0c4c306b410b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66bf8e1fc1fafffa3f0f119c4a6328db"><td class="memItemLeft" align="right" valign="top"><a class="el" href="united__resource_8hpp.html#af5aef12943fd8d013b8bf4c4fa2567de">RunnerError</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#a66bf8e1fc1fafffa3f0f119c4a6328db">load_seccomp_rules</a> () const</td></tr>
+<tr class="memdesc:a66bf8e1fc1fafffa3f0f119c4a6328db"><td class="mdescLeft">&#160;</td><td class="mdescRight">根据本 config 设定的所允许的系统调用种类的标识，加载相应的限制  <a href="#a66bf8e1fc1fafffa3f0f119c4a6328db">更多...</a><br /></td></tr>
+<tr class="separator:a66bf8e1fc1fafffa3f0f119c4a6328db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a6b0efc1e83564686a6d5243e66e98bd8"><td class="memItemLeft" align="right" valign="top">std::chrono::milliseconds&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#a6b0efc1e83564686a6d5243e66e98bd8">max_cpu_time</a></td></tr>
+<tr class="separator:a6b0efc1e83564686a6d5243e66e98bd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c4946dfa3da5795ded9d5c9da83aa6c"><td class="memItemLeft" align="right" valign="top">std::chrono::milliseconds&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#a0c4946dfa3da5795ded9d5c9da83aa6c">max_real_time</a></td></tr>
+<tr class="separator:a0c4946dfa3da5795ded9d5c9da83aa6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8099e71c268e46a2a14e1a9c0807d5fb"><td class="memItemLeft" align="right" valign="top">kerbal::utility::Byte&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#a8099e71c268e46a2a14e1a9c0807d5fb">max_memory</a></td></tr>
+<tr class="separator:a8099e71c268e46a2a14e1a9c0807d5fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a760051e1717222f65c173ed1de9e75ce"><td class="memItemLeft" align="right" valign="top">kerbal::utility::Byte&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#a760051e1717222f65c173ed1de9e75ce">max_stack</a></td></tr>
+<tr class="separator:a760051e1717222f65c173ed1de9e75ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a203f5618770561ed0ae1a686b3de0f52"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#a203f5618770561ed0ae1a686b3de0f52">max_process_number</a></td></tr>
+<tr class="separator:a203f5618770561ed0ae1a686b3de0f52"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae13f901849d2ce4706a2e44e73503946"><td class="memItemLeft" align="right" valign="top">kerbal::utility::Byte&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#ae13f901849d2ce4706a2e44e73503946">max_output_size</a></td></tr>
+<tr class="separator:ae13f901849d2ce4706a2e44e73503946"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af2ad7834fbd9fcc5c1334a491e11067b"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#af2ad7834fbd9fcc5c1334a491e11067b">exe_path</a></td></tr>
+<tr class="separator:af2ad7834fbd9fcc5c1334a491e11067b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a323b96bd5c421574d7022b29f514463f"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#a323b96bd5c421574d7022b29f514463f">input_path</a></td></tr>
+<tr class="separator:a323b96bd5c421574d7022b29f514463f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aedbe366de848d7c498d214c03f937529"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#aedbe366de848d7c498d214c03f937529">output_path</a></td></tr>
+<tr class="separator:aedbe366de848d7c498d214c03f937529"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c153fa3955703c7cb7f635e2c89929d"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#a6c153fa3955703c7cb7f635e2c89929d">error_path</a></td></tr>
+<tr class="separator:a6c153fa3955703c7cb7f635e2c89929d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a387911596aca8b2c10ab8a720287e37a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_execute_args.html">ExecuteArgs</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#a387911596aca8b2c10ab8a720287e37a">args</a></td></tr>
+<tr class="separator:a387911596aca8b2c10ab8a720287e37a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ec96582edf19a423c3ee150bf2a159f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_execute_args.html">ExecuteArgs</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#a9ec96582edf19a423c3ee150bf2a159f">env</a></td></tr>
+<tr class="separator:a9ec96582edf19a423c3ee150bf2a159f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2790aaafceb8f306282f1c57cf0ab85"><td class="memItemLeft" align="right" valign="top">enum <a class="el" href="_config_8hpp.html#a14b6d2c5ee1288f01d167a3ba7ef4328">Seccomp_rule</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#aa2790aaafceb8f306282f1c57cf0ab85">seccomp_rule_name</a></td></tr>
+<tr class="separator:aa2790aaafceb8f306282f1c57cf0ab85"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1672607dd55d951394ab1967a4d30441"><td class="memItemLeft" align="right" valign="top">uid_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#a1672607dd55d951394ab1967a4d30441">uid</a></td></tr>
+<tr class="separator:a1672607dd55d951394ab1967a4d30441"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1fea97dd1396fe429f7358e25020d360"><td class="memItemLeft" align="right" valign="top">gid_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#a1fea97dd1396fe429f7358e25020d360">gid</a></td></tr>
+<tr class="separator:a1fea97dd1396fe429f7358e25020d360"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
+Protected 成员函数</h2></td></tr>
+<tr class="memitem:abc5c2690ad9c6b7c15eb10800b724fa9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="united__resource_8hpp.html#af5aef12943fd8d013b8bf4c4fa2567de">RunnerError</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#abc5c2690ad9c6b7c15eb10800b724fa9">c_cpp_seccomp_rules</a> () const</td></tr>
+<tr class="memdesc:abc5c2690ad9c6b7c15eb10800b724fa9"><td class="mdescLeft">&#160;</td><td class="mdescRight">生产 c/c++ 对应的系统调用权限限制  <a href="#abc5c2690ad9c6b7c15eb10800b724fa9">更多...</a><br /></td></tr>
+<tr class="separator:abc5c2690ad9c6b7c15eb10800b724fa9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1fb73bd5c89b879497891c46ad345b87"><td class="memItemLeft" align="right" valign="top"><a class="el" href="united__resource_8hpp.html#af5aef12943fd8d013b8bf4c4fa2567de">RunnerError</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#a1fb73bd5c89b879497891c46ad345b87">general_seccomp_rules</a> () const</td></tr>
+<tr class="memdesc:a1fb73bd5c89b879497891c46ad345b87"><td class="mdescLeft">&#160;</td><td class="mdescRight">生产通用的系统调用权限限制  <a href="#a1fb73bd5c89b879497891c46ad345b87">更多...</a><br /></td></tr>
+<tr class="separator:a1fb73bd5c89b879497891c46ad345b87"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-static-attribs"></a>
+静态 Protected 属性</h2></td></tr>
+<tr class="memitem:a3eef324bfca632666b2091c04af212b0"><td class="memItemLeft" align="right" valign="top">static const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#a3eef324bfca632666b2091c04af212b0">UNLIMITED</a> = -1</td></tr>
+<tr class="separator:a3eef324bfca632666b2091c04af212b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a884fb15819afb6b061c687c632cc201a"><td class="memItemLeft" align="right" valign="top">static const kerbal::utility::Byte&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#a884fb15819afb6b061c687c632cc201a">MEMORY_UNLIMITED</a> { 0 }</td></tr>
+<tr class="separator:a884fb15819afb6b061c687c632cc201a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a05a0a27882754353b9a3d5eda7b568b2"><td class="memItemLeft" align="right" valign="top">static const std::chrono::milliseconds&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_config.html#a05a0a27882754353b9a3d5eda7b568b2">TIME_UNLIMITED</a> { 0 }</td></tr>
+<tr class="separator:a05a0a27882754353b9a3d5eda7b568b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p class="">运行配置类，根据具体运行需求提供所需的子进程运行限制条件与子进程运行环境 <br />
+例如：运行时间限制，运行空间限制，子进程调用系统函数的权限等 </p>
+<dl class="section warning"><dt>警告</dt><dd>对于时间空间等限制与子进程运行环境，此类仅仅提供了限制条件的具体值，但并未应用，即并未真正对进程做出限制。真正做出限制由 <a class="el" href="class_judge_job.html" title="JobBase 的子类，用于实现提交代码的判题功能。">JudgeJob</a> 自行完成。 <br />
+但子进程调用系统函数的权限限制，本类提供了接口函数直接使其生效。 </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="_config_8hpp_source.html">Config.hpp</a> 第 <a class="el" href="_config_8hpp_source.html#l00035">35</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="abd0c571c116924871e30444b192b792a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abd0c571c116924871e30444b192b792a">&#9670;&nbsp;</a></span>Config()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Config::Config </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>构造函数，设置程序的环境表内容，user id 与 group id </p>
+
+<p class="definition">在文件 <a class="el" href="_config_8cpp_source.html">Config.cpp</a> 第 <a class="el" href="_config_8cpp_source.html#l00024">24</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="abc5c2690ad9c6b7c15eb10800b724fa9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc5c2690ad9c6b7c15eb10800b724fa9">&#9670;&nbsp;</a></span>c_cpp_seccomp_rules()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="united__resource_8hpp.html#af5aef12943fd8d013b8bf4c4fa2567de">RunnerError</a> Config::c_cpp_seccomp_rules </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>生产 c/c++ 对应的系统调用权限限制 </p>
+<dl class="section return"><dt>返回</dt><dd>返回类型为枚举类 RunnerError。若限制成功返回 SUCCESS，否则返回 LOAD_SECCOMP_FAILED </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="_config_8cpp_source.html">Config.cpp</a> 第 <a class="el" href="_config_8cpp_source.html#l00157">157</a> 行定义.</p>
+<div class="dynheader">
+这是这个函数的调用关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_config_abc5c2690ad9c6b7c15eb10800b724fa9_icgraph.png" border="0" usemap="#class_config_abc5c2690ad9c6b7c15eb10800b724fa9_icgraph" alt=""/></div>
+<map name="class_config_abc5c2690ad9c6b7c15eb10800b724fa9_icgraph" id="class_config_abc5c2690ad9c6b7c15eb10800b724fa9_icgraph">
+<area shape="rect" id="node1" title="生产 c/c++ 对应的系统调用权限限制" alt="" coords="420,5,583,47"/>
+<area shape="rect" id="node2" href="class_config.html#a66bf8e1fc1fafffa3f0f119c4a6328db" title="根据本 config 设定的所允许的系统调用种类的标识，加载相应的限制" alt="" coords="220,5,372,47"/>
+<area shape="rect" id="node3" href="class_judge_job.html#a45f3a298baec8013e313d506d5b764b5" title="启动 编译/执行 的实际工作。限制了资源信息，重定向流之后，启动实际工作进程。" alt="" coords="5,13,172,39"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a18b402cecc5c5dcad18d0c4c306b410b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18b402cecc5c5dcad18d0c4c306b410b">&#9670;&nbsp;</a></span>check_is_valid_config()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Config::check_is_valid_config </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>检查限制值是否合理有效 </p>
+<dl class="section return"><dt>返回</dt><dd>若限制值合理有效，返回 true，否则返回 false </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="_config_8cpp_source.html">Config.cpp</a> 第 <a class="el" href="_config_8cpp_source.html#l00137">137</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1fb73bd5c89b879497891c46ad345b87"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1fb73bd5c89b879497891c46ad345b87">&#9670;&nbsp;</a></span>general_seccomp_rules()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="united__resource_8hpp.html#af5aef12943fd8d013b8bf4c4fa2567de">RunnerError</a> Config::general_seccomp_rules </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>生产通用的系统调用权限限制 </p>
+<dl class="section return"><dt>返回</dt><dd>返回类型为枚举类 RunnerError。若限制成功返回 SUCCESS，否则返回 LOAD_SECCOMP_FAILED </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="_config_8cpp_source.html">Config.cpp</a> 第 <a class="el" href="_config_8cpp_source.html#l00204">204</a> 行定义.</p>
+<div class="dynheader">
+这是这个函数的调用关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_config_a1fb73bd5c89b879497891c46ad345b87_icgraph.png" border="0" usemap="#class_config_a1fb73bd5c89b879497891c46ad345b87_icgraph" alt=""/></div>
+<map name="class_config_a1fb73bd5c89b879497891c46ad345b87_icgraph" id="class_config_a1fb73bd5c89b879497891c46ad345b87_icgraph">
+<area shape="rect" id="node1" title="生产通用的系统调用权限限制" alt="" coords="420,5,591,47"/>
+<area shape="rect" id="node2" href="class_config.html#a66bf8e1fc1fafffa3f0f119c4a6328db" title="根据本 config 设定的所允许的系统调用种类的标识，加载相应的限制" alt="" coords="220,5,372,47"/>
+<area shape="rect" id="node3" href="class_judge_job.html#a45f3a298baec8013e313d506d5b764b5" title="启动 编译/执行 的实际工作。限制了资源信息，重定向流之后，启动实际工作进程。" alt="" coords="5,13,172,39"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="ae3371c9240bdc3fb4cd0fefa6f9294c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae3371c9240bdc3fb4cd0fefa6f9294c7">&#9670;&nbsp;</a></span>limitCPUTime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Config::limitCPUTime </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>检查是否有 CPU 时间限制 </p>
+<dl class="section return"><dt>返回</dt><dd>若有 CPU 时间限制，返回 true，否则返回 false </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="_config_8hpp_source.html">Config.hpp</a> 第 <a class="el" href="_config_8hpp_source.html#l00086">86</a> 行定义.</p>
+<div class="dynheader">
+这是这个函数的调用关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_config_ae3371c9240bdc3fb4cd0fefa6f9294c7_icgraph.png" border="0" usemap="#class_config_ae3371c9240bdc3fb4cd0fefa6f9294c7_icgraph" alt=""/></div>
+<map name="class_config_ae3371c9240bdc3fb4cd0fefa6f9294c7_icgraph" id="class_config_ae3371c9240bdc3fb4cd0fefa6f9294c7_icgraph">
+<area shape="rect" id="node1" title="检查是否有 CPU 时间限制" alt="" coords="220,5,371,32"/>
+<area shape="rect" id="node2" href="class_judge_job.html#a45f3a298baec8013e313d506d5b764b5" title="启动 编译/执行 的实际工作。限制了资源信息，重定向流之后，启动实际工作进程。" alt="" coords="5,5,172,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a69f9be5093ec916b366b3ad046e12bb7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69f9be5093ec916b366b3ad046e12bb7">&#9670;&nbsp;</a></span>limitMemory()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Config::limitMemory </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>检查是否有储存空间的最大字节长度限制 </p>
+<dl class="section return"><dt>返回</dt><dd>若有储存空间的最大字节长度限制，返回 true，否则返回 false </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="_config_8hpp_source.html">Config.hpp</a> 第 <a class="el" href="_config_8hpp_source.html#l00104">104</a> 行定义.</p>
+<div class="dynheader">
+这是这个函数的调用关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_config_a69f9be5093ec916b366b3ad046e12bb7_icgraph.png" border="0" usemap="#class_config_a69f9be5093ec916b366b3ad046e12bb7_icgraph" alt=""/></div>
+<map name="class_config_a69f9be5093ec916b366b3ad046e12bb7_icgraph" id="class_config_a69f9be5093ec916b366b3ad046e12bb7_icgraph">
+<area shape="rect" id="node1" title="检查是否有储存空间的最大字节长度限制" alt="" coords="220,5,359,32"/>
+<area shape="rect" id="node2" href="class_judge_job.html#a45f3a298baec8013e313d506d5b764b5" title="启动 编译/执行 的实际工作。限制了资源信息，重定向流之后，启动实际工作进程。" alt="" coords="5,5,172,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a92a02bf20ae7e9925f895e5ccd4b2c85"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92a02bf20ae7e9925f895e5ccd4b2c85">&#9670;&nbsp;</a></span>limitOutput()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Config::limitOutput </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>检查是否有最大输出字节长度限制 </p>
+<dl class="section return"><dt>返回</dt><dd>若有最大输出字节长度限制，返回 true，否则返回 false </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="_config_8hpp_source.html">Config.hpp</a> 第 <a class="el" href="_config_8hpp_source.html#l00131">131</a> 行定义.</p>
+<div class="dynheader">
+这是这个函数的调用关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_config_a92a02bf20ae7e9925f895e5ccd4b2c85_icgraph.png" border="0" usemap="#class_config_a92a02bf20ae7e9925f895e5ccd4b2c85_icgraph" alt=""/></div>
+<map name="class_config_a92a02bf20ae7e9925f895e5ccd4b2c85_icgraph" id="class_config_a92a02bf20ae7e9925f895e5ccd4b2c85_icgraph">
+<area shape="rect" id="node1" title="检查是否有最大输出字节长度限制" alt="" coords="220,5,351,32"/>
+<area shape="rect" id="node2" href="class_judge_job.html#a45f3a298baec8013e313d506d5b764b5" title="启动 编译/执行 的实际工作。限制了资源信息，重定向流之后，启动实际工作进程。" alt="" coords="5,5,172,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a3690235ffa6f8c58eb9aef15138b1744"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3690235ffa6f8c58eb9aef15138b1744">&#9670;&nbsp;</a></span>limitProcessNumber()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Config::limitProcessNumber </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>检查是否有程序最大子进程数限制 </p>
+<dl class="section return"><dt>返回</dt><dd>若有程序最大子进程数限制，返回 true，否则返回 false </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="_config_8hpp_source.html">Config.hpp</a> 第 <a class="el" href="_config_8hpp_source.html#l00122">122</a> 行定义.</p>
+<div class="dynheader">
+这是这个函数的调用关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_config_a3690235ffa6f8c58eb9aef15138b1744_icgraph.png" border="0" usemap="#class_config_a3690235ffa6f8c58eb9aef15138b1744_icgraph" alt=""/></div>
+<map name="class_config_a3690235ffa6f8c58eb9aef15138b1744_icgraph" id="class_config_a3690235ffa6f8c58eb9aef15138b1744_icgraph">
+<area shape="rect" id="node1" title="检查是否有程序最大子进程数限制" alt="" coords="220,5,407,32"/>
+<area shape="rect" id="node2" href="class_judge_job.html#a45f3a298baec8013e313d506d5b764b5" title="启动 编译/执行 的实际工作。限制了资源信息，重定向流之后，启动实际工作进程。" alt="" coords="5,5,172,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="aa171ad236eafa0d4f187d169e4a922f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa171ad236eafa0d4f187d169e4a922f3">&#9670;&nbsp;</a></span>limitRealTime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Config::limitRealTime </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>检查是否有墙上时间限制 </p>
+<dl class="section return"><dt>返回</dt><dd>若有墙上时间限制，返回 true，否则返回 false </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="_config_8hpp_source.html">Config.hpp</a> 第 <a class="el" href="_config_8hpp_source.html#l00095">95</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aaf2c6f34290e8aa15d6e087df8c32882"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf2c6f34290e8aa15d6e087df8c32882">&#9670;&nbsp;</a></span>limitStack()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Config::limitStack </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>检查是否有栈的最大字节长度限制 </p>
+<dl class="section return"><dt>返回</dt><dd>若有栈的最大字节长度限制，返回 true，否则返回 false </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="_config_8hpp_source.html">Config.hpp</a> 第 <a class="el" href="_config_8hpp_source.html#l00113">113</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a66bf8e1fc1fafffa3f0f119c4a6328db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66bf8e1fc1fafffa3f0f119c4a6328db">&#9670;&nbsp;</a></span>load_seccomp_rules()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="united__resource_8hpp.html#af5aef12943fd8d013b8bf4c4fa2567de">RunnerError</a> Config::load_seccomp_rules </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>根据本 config 设定的所允许的系统调用种类的标识，加载相应的限制 </p>
+<dl class="section return"><dt>返回</dt><dd>返回类型为枚举类 RunnerError。若限制成功返回 SUCCESS，否则返回 LOAD_SECCOMP_FAILED </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="_config_8cpp_source.html">Config.cpp</a> 第 <a class="el" href="_config_8cpp_source.html#l00242">242</a> 行定义.</p>
+<div class="dynheader">
+函数调用图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_config_a66bf8e1fc1fafffa3f0f119c4a6328db_cgraph.png" border="0" usemap="#class_config_a66bf8e1fc1fafffa3f0f119c4a6328db_cgraph" alt=""/></div>
+<map name="class_config_a66bf8e1fc1fafffa3f0f119c4a6328db_cgraph" id="class_config_a66bf8e1fc1fafffa3f0f119c4a6328db_cgraph">
+<area shape="rect" id="node1" title="根据本 config 设定的所允许的系统调用种类的标识，加载相应的限制" alt="" coords="5,39,157,80"/>
+<area shape="rect" id="node2" href="class_config.html#abc5c2690ad9c6b7c15eb10800b724fa9" title="生产 c/c++ 对应的系统调用权限限制" alt="" coords="209,5,372,47"/>
+<area shape="rect" id="node3" href="class_config.html#a1fb73bd5c89b879497891c46ad345b87" title="生产通用的系统调用权限限制" alt="" coords="205,71,376,112"/>
+</map>
+</div>
+<div class="dynheader">
+这是这个函数的调用关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_config_a66bf8e1fc1fafffa3f0f119c4a6328db_icgraph.png" border="0" usemap="#class_config_a66bf8e1fc1fafffa3f0f119c4a6328db_icgraph" alt=""/></div>
+<map name="class_config_a66bf8e1fc1fafffa3f0f119c4a6328db_icgraph" id="class_config_a66bf8e1fc1fafffa3f0f119c4a6328db_icgraph">
+<area shape="rect" id="node1" title="根据本 config 设定的所允许的系统调用种类的标识，加载相应的限制" alt="" coords="220,5,372,47"/>
+<area shape="rect" id="node2" href="class_judge_job.html#a45f3a298baec8013e313d506d5b764b5" title="启动 编译/执行 的实际工作。限制了资源信息，重定向流之后，启动实际工作进程。" alt="" coords="5,13,172,39"/>
+</map>
+</div>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a387911596aca8b2c10ab8a720287e37a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a387911596aca8b2c10ab8a720287e37a">&#9670;&nbsp;</a></span>args</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_execute_args.html">ExecuteArgs</a> Config::args</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p class="">新执行程序的参数表 </p>
+
+<p class="definition">在文件 <a class="el" href="_config_8hpp_source.html">Config.hpp</a> 第 <a class="el" href="_config_8hpp_source.html#l00067">67</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9ec96582edf19a423c3ee150bf2a159f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ec96582edf19a423c3ee150bf2a159f">&#9670;&nbsp;</a></span>env</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_execute_args.html">ExecuteArgs</a> Config::env</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p class="">新执行程序的环境表 </p>
+
+<p class="definition">在文件 <a class="el" href="_config_8hpp_source.html">Config.hpp</a> 第 <a class="el" href="_config_8hpp_source.html#l00069">69</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6c153fa3955703c7cb7f635e2c89929d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c153fa3955703c7cb7f635e2c89929d">&#9670;&nbsp;</a></span>error_path</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* Config::error_path</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p class="">标准错误流路径 </p>
+
+<p class="definition">在文件 <a class="el" href="_config_8hpp_source.html">Config.hpp</a> 第 <a class="el" href="_config_8hpp_source.html#l00065">65</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af2ad7834fbd9fcc5c1334a491e11067b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af2ad7834fbd9fcc5c1334a491e11067b">&#9670;&nbsp;</a></span>exe_path</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* Config::exe_path</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p class="">新执行程序的路径名 </p>
+
+<p class="definition">在文件 <a class="el" href="_config_8hpp_source.html">Config.hpp</a> 第 <a class="el" href="_config_8hpp_source.html#l00059">59</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1fea97dd1396fe429f7358e25020d360"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1fea97dd1396fe429f7358e25020d360">&#9670;&nbsp;</a></span>gid</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">gid_t Config::gid</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p class="">进程的 group id </p>
+
+<p class="definition">在文件 <a class="el" href="_config_8hpp_source.html">Config.hpp</a> 第 <a class="el" href="_config_8hpp_source.html#l00075">75</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a323b96bd5c421574d7022b29f514463f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a323b96bd5c421574d7022b29f514463f">&#9670;&nbsp;</a></span>input_path</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* Config::input_path</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p class="">标准输入流路径 </p>
+
+<p class="definition">在文件 <a class="el" href="_config_8hpp_source.html">Config.hpp</a> 第 <a class="el" href="_config_8hpp_source.html#l00061">61</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6b0efc1e83564686a6d5243e66e98bd8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b0efc1e83564686a6d5243e66e98bd8">&#9670;&nbsp;</a></span>max_cpu_time</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::chrono::milliseconds Config::max_cpu_time</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p class="">最大 CPU 时间限制，单位为 ms </p>
+
+<p class="definition">在文件 <a class="el" href="_config_8hpp_source.html">Config.hpp</a> 第 <a class="el" href="_config_8hpp_source.html#l00047">47</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8099e71c268e46a2a14e1a9c0807d5fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8099e71c268e46a2a14e1a9c0807d5fb">&#9670;&nbsp;</a></span>max_memory</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">kerbal::utility::Byte Config::max_memory</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p class="">储存空间的最大字节长度，单位为 byte </p>
+
+<p class="definition">在文件 <a class="el" href="_config_8hpp_source.html">Config.hpp</a> 第 <a class="el" href="_config_8hpp_source.html#l00051">51</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae13f901849d2ce4706a2e44e73503946"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae13f901849d2ce4706a2e44e73503946">&#9670;&nbsp;</a></span>max_output_size</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">kerbal::utility::Byte Config::max_output_size</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p class="">可创建的文件的最大字节长度，即为输出字节的最大长度 </p>
+
+<p class="definition">在文件 <a class="el" href="_config_8hpp_source.html">Config.hpp</a> 第 <a class="el" href="_config_8hpp_source.html#l00057">57</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a203f5618770561ed0ae1a686b3de0f52"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a203f5618770561ed0ae1a686b3de0f52">&#9670;&nbsp;</a></span>max_process_number</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Config::max_process_number</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p class="">程序最大子进程数 </p>
+
+<p class="definition">在文件 <a class="el" href="_config_8hpp_source.html">Config.hpp</a> 第 <a class="el" href="_config_8hpp_source.html#l00055">55</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0c4946dfa3da5795ded9d5c9da83aa6c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0c4946dfa3da5795ded9d5c9da83aa6c">&#9670;&nbsp;</a></span>max_real_time</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::chrono::milliseconds Config::max_real_time</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p class="">最大墙上时间，单位为 ms </p>
+
+<p class="definition">在文件 <a class="el" href="_config_8hpp_source.html">Config.hpp</a> 第 <a class="el" href="_config_8hpp_source.html#l00049">49</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a760051e1717222f65c173ed1de9e75ce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a760051e1717222f65c173ed1de9e75ce">&#9670;&nbsp;</a></span>max_stack</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">kerbal::utility::Byte Config::max_stack</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p class="">栈的最大字节长度，单位为 byte </p>
+
+<p class="definition">在文件 <a class="el" href="_config_8hpp_source.html">Config.hpp</a> 第 <a class="el" href="_config_8hpp_source.html#l00053">53</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a884fb15819afb6b061c687c632cc201a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a884fb15819afb6b061c687c632cc201a">&#9670;&nbsp;</a></span>MEMORY_UNLIMITED</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const kerbal::utility::Byte Config::MEMORY_UNLIMITED { 0 }</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p class="">常量，用于表示无空间资源限制 </p>
+
+<p class="definition">在文件 <a class="el" href="_config_8hpp_source.html">Config.hpp</a> 第 <a class="el" href="_config_8hpp_source.html#l00041">41</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aedbe366de848d7c498d214c03f937529"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aedbe366de848d7c498d214c03f937529">&#9670;&nbsp;</a></span>output_path</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* Config::output_path</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p class="">标准输出流路径 </p>
+
+<p class="definition">在文件 <a class="el" href="_config_8hpp_source.html">Config.hpp</a> 第 <a class="el" href="_config_8hpp_source.html#l00063">63</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa2790aaafceb8f306282f1c57cf0ab85"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa2790aaafceb8f306282f1c57cf0ab85">&#9670;&nbsp;</a></span>seccomp_rule_name</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="_config_8hpp.html#a14b6d2c5ee1288f01d167a3ba7ef4328">Seccomp_rule</a> Config::seccomp_rule_name</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p class="">枚举变量，程序运行时允许的系统调用类型 </p>
+
+<p class="definition">在文件 <a class="el" href="_config_8hpp_source.html">Config.hpp</a> 第 <a class="el" href="_config_8hpp_source.html#l00071">71</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a05a0a27882754353b9a3d5eda7b568b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a05a0a27882754353b9a3d5eda7b568b2">&#9670;&nbsp;</a></span>TIME_UNLIMITED</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::chrono::milliseconds Config::TIME_UNLIMITED { 0 }</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p class="">常量，用于表示无时间资源限制 </p>
+
+<p class="definition">在文件 <a class="el" href="_config_8hpp_source.html">Config.hpp</a> 第 <a class="el" href="_config_8hpp_source.html#l00043">43</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1672607dd55d951394ab1967a4d30441"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1672607dd55d951394ab1967a4d30441">&#9670;&nbsp;</a></span>uid</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uid_t Config::uid</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p class="">进程的 user id </p>
+
+<p class="definition">在文件 <a class="el" href="_config_8hpp_source.html">Config.hpp</a> 第 <a class="el" href="_config_8hpp_source.html#l00073">73</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3eef324bfca632666b2091c04af212b0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3eef324bfca632666b2091c04af212b0">&#9670;&nbsp;</a></span>UNLIMITED</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const int Config::UNLIMITED = -1</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p class="">常量 -1，用于表示无限制 </p>
+
+<p class="definition">在文件 <a class="el" href="_config_8hpp_source.html">Config.hpp</a> 第 <a class="el" href="_config_8hpp_source.html#l00039">39</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>/home/peter/git/Core/src/slave/<a class="el" href="_config_8hpp_source.html">Config.hpp</a></li>
+<li>/home/peter/git/Core/src/slave/<a class="el" href="_config_8cpp_source.html">Config.cpp</a></li>
+</ul>
+</div><!-- contents -->
+<footer>
+<hr> Powered by
+<a href="http://www.doxygen.nl/" target="_blank"> Doxygen </a>
+<br>
+Contributors:
+<a href=""> Shaohua Zhang,&nbsp; Zhiqiang Shi,&nbsp; Xi Chen,&nbsp; Kehan Huang,&nbsp; Binjie Zhang,&nbsp; Wentsing Nee </a>
+<br> Copyright © 2010-2018
+<a href="http://www.thinkspirit.org" target="_blank"> Think Spirit. </a> All rights reserved.
+</footer>

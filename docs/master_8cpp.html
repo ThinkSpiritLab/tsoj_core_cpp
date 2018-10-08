@@ -1,0 +1,385 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.8.15"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>TSOJ V4 Judge Core: /home/peter/git/Core/src/master/master.cpp 文件参考</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="mlabel.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="ThinkSpirit_logo_2018.png"/></td>
+  <td id="projectalign" style="padding-left: 0.5em;">
+   <div id="projectname">TSOJ V4 Judge Core
+   </div>
+   <div id="projectbrief">oj.thinkspirit.org</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- 制作者 Doxygen 1.8.15 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+var searchBox = new SearchBox("searchBox", "search",false,'搜索');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(function() {
+  initMenu('',true,false,'search.php','搜索');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ae1a660fbe587eff2b475b14d217c1ef.html">master</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#func-members">函数</a> &#124;
+<a href="#var-members">变量</a>  </div>
+  <div class="headertitle">
+<div class="title">master.cpp 文件参考</div>  </div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;<a class="el" href="logger_8hpp_source.html">logger.hpp</a>&quot;</code><br />
+<code>#include &quot;load_helper.hpp&quot;</code><br />
+<code>#include &quot;<a class="el" href="_update_job_base_8hpp_source.html">UpdateJobBase.hpp</a>&quot;</code><br />
+<code>#include &lt;iostream&gt;</code><br />
+<code>#include &lt;fstream&gt;</code><br />
+<code>#include &lt;csignal&gt;</code><br />
+<code>#include &lt;thread&gt;</code><br />
+<code>#include &lt;kerbal/redis/redis_data_struct/list.hpp&gt;</code><br />
+<code>#include &lt;kerbal/redis/redis_data_struct/set.hpp&gt;</code><br />
+<code>#include &lt;kerbal/system/system.hpp&gt;</code><br />
+<code>#include &lt;kerbal/compatibility/chrono_suffix.hpp&gt;</code><br />
+</div><div class="textblock"><div class="dynheader">
+master.cpp 的引用(Include)关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="master_8cpp__incl.png" border="0" usemap="#_2home_2peter_2git_2_core_2src_2master_2master_8cpp" alt=""/></div>
+<map name="_2home_2peter_2git_2_core_2src_2master_2master_8cpp" id="_2home_2peter_2git_2_core_2src_2master_2master_8cpp">
+<area shape="rect" id="node1" title=" " alt="" coords="1009,5,1167,47"/>
+<area shape="rect" id="node2" href="logger_8hpp.html" title=" " alt="" coords="216,102,299,129"/>
+<area shape="rect" id="node5" title=" " alt="" coords="589,348,661,375"/>
+<area shape="rect" id="node9" title=" " alt="" coords="663,102,777,129"/>
+<area shape="rect" id="node10" href="_update_job_base_8hpp.html" title=" " alt="" coords="801,102,941,129"/>
+<area shape="rect" id="node22" title=" " alt="" coords="965,102,1032,129"/>
+<area shape="rect" id="node23" title=" " alt="" coords="1057,102,1119,129"/>
+<area shape="rect" id="node24" title=" " alt="" coords="1144,102,1203,129"/>
+<area shape="rect" id="node25" title=" " alt="" coords="1227,95,1367,136"/>
+<area shape="rect" id="node26" title=" " alt="" coords="1392,95,1533,136"/>
+<area shape="rect" id="node27" title=" " alt="" coords="1557,102,1733,129"/>
+<area shape="rect" id="node28" title=" " alt="" coords="1758,95,1893,136"/>
+<area shape="rect" id="node3" href="cptr_8hpp.html" title=" " alt="" coords="5,184,75,211"/>
+<area shape="rect" id="node6" title=" " alt="" coords="149,184,219,211"/>
+<area shape="rect" id="node7" title=" " alt="" coords="243,184,418,211"/>
+<area shape="rect" id="node8" title=" " alt="" coords="443,184,563,211"/>
+<area shape="rect" id="node4" title=" " alt="" coords="7,266,73,293"/>
+<area shape="rect" id="node11" href="_job_base_8hpp.html" title=" " alt="" coords="989,184,1088,211"/>
+<area shape="rect" id="node18" href="_result_8hpp.html" title=" " alt="" coords="717,184,803,211"/>
+<area shape="rect" id="node19" href="mysql__empty__res__exception_8hpp.html" title=" " alt="" coords="1429,184,1643,211"/>
+<area shape="rect" id="node21" title=" " alt="" coords="827,184,965,211"/>
+<area shape="rect" id="node12" title=" " alt="" coords="1301,266,1472,293"/>
+<area shape="rect" id="node13" title=" " alt="" coords="1105,259,1226,300"/>
+<area shape="rect" id="node14" title=" " alt="" coords="689,259,831,300"/>
+<area shape="rect" id="node15" title=" " alt="" coords="1237,348,1291,375"/>
+<area shape="rect" id="node16" title=" " alt="" coords="856,266,917,293"/>
+<area shape="rect" id="node17" href="united__resource_8hpp.html" title=" " alt="" coords="941,266,1080,293"/>
+<area shape="rect" id="node20" title=" " alt="" coords="1497,266,1575,293"/>
+</map>
+</div>
+</div>
+<p><a href="master_8cpp_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:ab85b27ea72fdfbc8ddc41b1e3078385c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="master_8cpp.html#ab85b27ea72fdfbc8ddc41b1e3078385c">register_self</a> () noexcept</td></tr>
+<tr class="memdesc:ab85b27ea72fdfbc8ddc41b1e3078385c"><td class="mdescLeft">&#160;</td><td class="mdescRight">发送心跳进程 每隔一段时间，将本机信息提交到数据库中表示当前在线的评测机集合中，表明自身正常工作，可以处理评测任务。  <a href="#ab85b27ea72fdfbc8ddc41b1e3078385c">更多...</a><br /></td></tr>
+<tr class="separator:ab85b27ea72fdfbc8ddc41b1e3078385c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8cb7d2d303a160e9662c31d2e1625c77"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="master_8cpp.html#a8cb7d2d303a160e9662c31d2e1625c77">regist_SIGTERM_handler</a> (int signum) noexcept</td></tr>
+<tr class="memdesc:a8cb7d2d303a160e9662c31d2e1625c77"><td class="mdescLeft">&#160;</td><td class="mdescRight">SIGTERM 信号的处理函数 当收到 SIGTERM 信号，在代评测队列末端加上 type = 0, id = -1 的任务，用于标识结束 slave 工作的意愿。之后在 loop 循环中会据此判断是否结束 slave 进程。  <a href="#a8cb7d2d303a160e9662c31d2e1625c77">更多...</a><br /></td></tr>
+<tr class="separator:a8cb7d2d303a160e9662c31d2e1625c77"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4441fe2b953c92f3c7b1dd1e527137de"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="master_8cpp.html#a4441fe2b953c92f3c7b1dd1e527137de">load_config</a> ()</td></tr>
+<tr class="separator:a4441fe2b953c92f3c7b1dd1e527137de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae66f6b31b5ad750f1fe042a706a4e3d4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="master_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4">main</a> ()</td></tr>
+<tr class="separator:ae66f6b31b5ad750f1fe042a706a4e3d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
+变量</h2></td></tr>
+<tr class="memitem:adcd82fb39f0a5da45948a65762fc3e99"><td class="memItemLeft" align="right" valign="top">std::ofstream&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="master_8cpp.html#adcd82fb39f0a5da45948a65762fc3e99">log_fp</a></td></tr>
+<tr class="separator:adcd82fb39f0a5da45948a65762fc3e99"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a93ec503f7a40c7c8eac8250532a519ed"><td class="memItemLeft" align="right" valign="top">constexpr std::chrono::minutes&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="master_8cpp.html#a93ec503f7a40c7c8eac8250532a519ed">EXPIRE_TIME</a> = 2_min</td></tr>
+<tr class="separator:a93ec503f7a40c7c8eac8250532a519ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb6e500ddf432db2ff61e0e83704b22e"><td class="memItemLeft" align="right" valign="top">constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="master_8cpp.html#acb6e500ddf432db2ff61e0e83704b22e">REDIS_SOLUTION_MAX_NUM</a> = 600</td></tr>
+<tr class="separator:acb6e500ddf432db2ff61e0e83704b22e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">函数说明</h2>
+<a id="a4441fe2b953c92f3c7b1dd1e527137de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4441fe2b953c92f3c7b1dd1e527137de">&#9670;&nbsp;</a></span>load_config()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void load_config </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="master_8cpp_source.html">master.cpp</a> 第 <a class="el" href="master_8cpp_source.html#l00123">123</a> 行定义.</p>
+<div class="dynheader">
+函数调用图:</div>
+<div class="dyncontent">
+<div class="center"><img src="master_8cpp_a4441fe2b953c92f3c7b1dd1e527137de_cgraph.png" border="0" usemap="#master_8cpp_a4441fe2b953c92f3c7b1dd1e527137de_cgraph" alt=""/></div>
+<map name="master_8cpp_a4441fe2b953c92f3c7b1dd1e527137de_cgraph" id="master_8cpp_a4441fe2b953c92f3c7b1dd1e527137de_cgraph">
+<area shape="rect" id="node1" title=" " alt="" coords="5,5,93,32"/>
+<area shape="rect" id="node2" href="load__helper_8cpp.html#a7aa49aa215539e705fe48842be5bef03" title=" " alt="" coords="141,5,220,32"/>
+</map>
+</div>
+<div class="dynheader">
+这是这个函数的调用关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="master_8cpp_a4441fe2b953c92f3c7b1dd1e527137de_icgraph.png" border="0" usemap="#master_8cpp_a4441fe2b953c92f3c7b1dd1e527137de_icgraph" alt=""/></div>
+<map name="master_8cpp_a4441fe2b953c92f3c7b1dd1e527137de_icgraph" id="master_8cpp_a4441fe2b953c92f3c7b1dd1e527137de_icgraph">
+<area shape="rect" id="node1" title=" " alt="" coords="104,5,192,32"/>
+<area shape="rect" id="node2" href="master_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4" title=" " alt="" coords="5,5,56,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="ae66f6b31b5ad750f1fe042a706a4e3d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae66f6b31b5ad750f1fe042a706a4e3d4">&#9670;&nbsp;</a></span>main()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int main </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p class="">创建并分离发送心跳线程</p>
+
+<p class="definition">在文件 <a class="el" href="master_8cpp_source.html">master.cpp</a> 第 <a class="el" href="master_8cpp_source.html#l00191">191</a> 行定义.</p>
+<div class="dynheader">
+函数调用图:</div>
+<div class="dyncontent">
+<div class="center"><img src="master_8cpp_ae66f6b31b5ad750f1fe042a706a4e3d4_cgraph.png" border="0" usemap="#master_8cpp_ae66f6b31b5ad750f1fe042a706a4e3d4_cgraph" alt=""/></div>
+<map name="master_8cpp_ae66f6b31b5ad750f1fe042a706a4e3d4_cgraph" id="master_8cpp_ae66f6b31b5ad750f1fe042a706a4e3d4_cgraph">
+<area shape="rect" id="node1" title=" " alt="" coords="5,112,56,139"/>
+<area shape="rect" id="node2" href="master_8cpp.html#a4441fe2b953c92f3c7b1dd1e527137de" title=" " alt="" coords="140,9,228,36"/>
+<area shape="rect" id="node4" href="master_8cpp.html#ab85b27ea72fdfbc8ddc41b1e3078385c" title="发送心跳进程 每隔一段时间，将本机信息提交到数据库中表示当前在线的评测机集合中，表明自身正常工作，可以处理评测任务。" alt="" coords="137,61,231,88"/>
+<area shape="rect" id="node6" href="class_job_base.html#a694f006cab5c06d8939ee7550d3a04ac" title="判断是否终止服务 loop" alt="" coords="117,112,251,139"/>
+<area shape="rect" id="node7" href="class_job_base.html#a45db2aacca3aa05d98aecaa560d54c8d" title="将待处理 Job 信息分解，提取出 job_type 与 job_id" alt="" coords="104,163,264,189"/>
+<area shape="rect" id="node8" href="_update_job_base_8cpp.html#a74c7f1fc913fef9438efd06e462d5b13" title="根据传入的 jobType, sid 构造一个具体的 UpdateJob 对象, 并返回指向所构造对象的智能指针" alt="" coords="122,213,246,240"/>
+<area shape="rect" id="node3" href="load__helper_8cpp.html#a7aa49aa215539e705fe48842be5bef03" title=" " alt="" coords="350,5,429,32"/>
+<area shape="rect" id="node5" href="logger_8cpp.html#a69cdb1d10e14a871dde1c18f2b9fe560" title=" " alt="" coords="312,57,467,98"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a8cb7d2d303a160e9662c31d2e1625c77"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8cb7d2d303a160e9662c31d2e1625c77">&#9670;&nbsp;</a></span>regist_SIGTERM_handler()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void regist_SIGTERM_handler </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>signum</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>SIGTERM 信号的处理函数 当收到 SIGTERM 信号，在代评测队列末端加上 type = 0, id = -1 的任务，用于标识结束 slave 工作的意愿。之后在 loop 循环中会据此判断是否结束 slave 进程。 </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">signum</td><td>信号编号 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>异常</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">该函数保证不抛出任何异常</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="master_8cpp_source.html">master.cpp</a> 第 <a class="el" href="master_8cpp_source.html#l00111">111</a> 行定义.</p>
+<div class="dynheader">
+函数调用图:</div>
+<div class="dyncontent">
+<div class="center"><img src="master_8cpp_a8cb7d2d303a160e9662c31d2e1625c77_cgraph.png" border="0" usemap="#master_8cpp_a8cb7d2d303a160e9662c31d2e1625c77_cgraph" alt=""/></div>
+<map name="master_8cpp_a8cb7d2d303a160e9662c31d2e1625c77_cgraph" id="master_8cpp_a8cb7d2d303a160e9662c31d2e1625c77_cgraph">
+<area shape="rect" id="node1" title="SIGTERM 信号的处理函数 当收到 SIGTERM 信号，在代评测队列末端加上 type = 0, id = &#45;1 的任务，用于标识结束 slave 工作的意愿。之后在 loop 循环中会据此判断是..." alt="" coords="5,5,176,32"/>
+<area shape="rect" id="node2" href="class_job_base.html#a3d354b5691b71524e49514dfbcd41550" title="获取规定的停止工作标识" alt="" coords="224,5,393,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="ab85b27ea72fdfbc8ddc41b1e3078385c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab85b27ea72fdfbc8ddc41b1e3078385c">&#9670;&nbsp;</a></span>register_self()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void register_self </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>发送心跳进程 每隔一段时间，将本机信息提交到数据库中表示当前在线的评测机集合中，表明自身正常工作，可以处理评测任务。 </p>
+<dl class="exception"><dt>异常</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">该函数保证不抛出任何异常</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="master_8cpp_source.html">master.cpp</a> 第 <a class="el" href="master_8cpp_source.html#l00064">64</a> 行定义.</p>
+<div class="dynheader">
+函数调用图:</div>
+<div class="dyncontent">
+<div class="center"><img src="master_8cpp_ab85b27ea72fdfbc8ddc41b1e3078385c_cgraph.png" border="0" usemap="#master_8cpp_ab85b27ea72fdfbc8ddc41b1e3078385c_cgraph" alt=""/></div>
+<map name="master_8cpp_ab85b27ea72fdfbc8ddc41b1e3078385c_cgraph" id="master_8cpp_ab85b27ea72fdfbc8ddc41b1e3078385c_cgraph">
+<area shape="rect" id="node1" title="发送心跳进程 每隔一段时间，将本机信息提交到数据库中表示当前在线的评测机集合中，表明自身正常工作，可以处理评测任务。" alt="" coords="5,13,99,39"/>
+<area shape="rect" id="node2" href="logger_8cpp.html#a69cdb1d10e14a871dde1c18f2b9fe560" title=" " alt="" coords="147,5,301,47"/>
+</map>
+</div>
+<div class="dynheader">
+这是这个函数的调用关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="master_8cpp_ab85b27ea72fdfbc8ddc41b1e3078385c_icgraph.png" border="0" usemap="#master_8cpp_ab85b27ea72fdfbc8ddc41b1e3078385c_icgraph" alt=""/></div>
+<map name="master_8cpp_ab85b27ea72fdfbc8ddc41b1e3078385c_icgraph" id="master_8cpp_ab85b27ea72fdfbc8ddc41b1e3078385c_icgraph">
+<area shape="rect" id="node1" title="发送心跳进程 每隔一段时间，将本机信息提交到数据库中表示当前在线的评测机集合中，表明自身正常工作，可以处理评测任务。" alt="" coords="104,5,197,32"/>
+<area shape="rect" id="node2" href="master_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4" title=" " alt="" coords="5,5,56,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<h2 class="groupheader">变量说明</h2>
+<a id="a93ec503f7a40c7c8eac8250532a519ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a93ec503f7a40c7c8eac8250532a519ed">&#9670;&nbsp;</a></span>EXPIRE_TIME</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::chrono::minutes EXPIRE_TIME = 2_min</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="master_8cpp_source.html">master.cpp</a> 第 <a class="el" href="master_8cpp_source.html#l00026">26</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adcd82fb39f0a5da45948a65762fc3e99"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adcd82fb39f0a5da45948a65762fc3e99">&#9670;&nbsp;</a></span>log_fp</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::ofstream log_fp</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p class="">日志文件的文件流 </p>
+
+<p class="definition">在文件 <a class="el" href="master_8cpp_source.html">master.cpp</a> 第 <a class="el" href="master_8cpp_source.html#l00024">24</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acb6e500ddf432db2ff61e0e83704b22e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb6e500ddf432db2ff61e0e83704b22e">&#9670;&nbsp;</a></span>REDIS_SOLUTION_MAX_NUM</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr int REDIS_SOLUTION_MAX_NUM = 600</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="master_8cpp_source.html">master.cpp</a> 第 <a class="el" href="master_8cpp_source.html#l00027">27</a> 行定义.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+<footer>
+<hr> Powered by
+<a href="http://www.doxygen.nl/" target="_blank"> Doxygen </a>
+<br>
+Contributors:
+<a href=""> Shaohua Zhang,&nbsp; Zhiqiang Shi,&nbsp; Xi Chen,&nbsp; Kehan Huang,&nbsp; Binjie Zhang,&nbsp; Wentsing Nee </a>
+<br> Copyright © 2010-2018
+<a href="http://www.thinkspirit.org" target="_blank"> Think Spirit. </a> All rights reserved.
+</footer>

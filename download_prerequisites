@@ -1,0 +1,3 @@
+sudo apt install libhiredis-dev
+sudo apt install libboost-dev
+sudo apt install libseccomp-dev

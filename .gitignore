@@ -1,5 +1,11 @@
+<<<<<<< HEAD
 /Debug/
 /Release/
 /debug/
 /release/
+=======
+/release/
+/debug/
+/cmake-build-debug/
+>>>>>>> refs/remotes/origin/separate
 /test_srcipt/

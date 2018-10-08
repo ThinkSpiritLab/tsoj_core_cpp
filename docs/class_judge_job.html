@@ -1,0 +1,883 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.8.15"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>TSOJ V4 Judge Core: JudgeJob类 参考</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="mlabel.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="ThinkSpirit_logo_2018.png"/></td>
+  <td id="projectalign" style="padding-left: 0.5em;">
+   <div id="projectname">TSOJ V4 Judge Core
+   </div>
+   <div id="projectbrief">oj.thinkspirit.org</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- 制作者 Doxygen 1.8.15 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+var searchBox = new SearchBox("searchBox", "search",false,'搜索');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(function() {
+  initMenu('',true,false,'search.php','搜索');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="#pro-methods">Protected 成员函数</a> &#124;
+<a href="#pro-attribs">Protected 属性</a> &#124;
+<a href="#pri-types">Private 类型</a> &#124;
+<a href="class_judge_job-members.html">所有成员列表</a>  </div>
+  <div class="headertitle">
+<div class="title">JudgeJob类 参考</div>  </div>
+</div><!--header-->
+<div class="contents">
+
+<p><a class="el" href="class_job_base.html" title="JudgeJob 与 UpdateJob 的基类， 存有 Job的基本信息，并规定了所有 Job 必须遵循的函数接口。">JobBase</a> 的子类，用于实现提交代码的判题功能。  
+ <a href="class_judge_job.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="_judge_job_8hpp_source.html">JudgeJob.hpp</a>&gt;</code></p>
+<div class="dynheader">
+类 JudgeJob 继承关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_judge_job__inherit__graph.png" border="0" usemap="#_judge_job_inherit__map" alt="Inheritance graph"/></div>
+<map name="_judge_job_inherit__map" id="_judge_job_inherit__map">
+<area shape="rect" id="node1" title="JobBase 的子类，用于实现提交代码的判题功能。" alt="" coords="5,80,84,107"/>
+<area shape="rect" id="node2" href="class_job_base.html" title="JudgeJob 与 UpdateJob 的基类， 存有 Job的基本信息，并规定了所有 Job 必须遵循的函数接口。" alt="" coords="8,5,81,32"/>
+</map>
+<center><span class="legend">[<a href="graph_legend.html">图例</a>]</span></center></div>
+<div class="dynheader">
+JudgeJob 的协作图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_judge_job__coll__graph.png" border="0" usemap="#_judge_job_coll__map" alt="Collaboration graph"/></div>
+<map name="_judge_job_coll__map" id="_judge_job_coll__map">
+<area shape="rect" id="node1" title="JobBase 的子类，用于实现提交代码的判题功能。" alt="" coords="17,171,96,197"/>
+<area shape="rect" id="node2" href="class_job_base.html" title="JudgeJob 与 UpdateJob 的基类， 存有 Job的基本信息，并规定了所有 Job 必须遵循的函数接口。" alt="" coords="20,95,93,121"/>
+<area shape="rect" id="node3" title=" " alt="" coords="5,5,108,32"/>
+</map>
+<center><span class="legend">[<a href="graph_legend.html">图例</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a4ee4a44b9976e9936f36a4d9a09c5925"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_judge_job.html#a4ee4a44b9976e9936f36a4d9a09c5925">JudgeJob</a> (int <a class="el" href="class_job_base.html#a895e989e70dde5842a9838c67e4e1e91">jobType</a>, int <a class="el" href="class_job_base.html#a1b5f881d50165db4ba63372469026c17">sid</a>, const kerbal::redis::RedisContext &amp;conn)</td></tr>
+<tr class="memdesc:a4ee4a44b9976e9936f36a4d9a09c5925"><td class="mdescLeft">&#160;</td><td class="mdescRight">初始化 job 基本信息，从数据库获得 job 详细内容  <a href="#a4ee4a44b9976e9936f36a4d9a09c5925">更多...</a><br /></td></tr>
+<tr class="separator:a4ee4a44b9976e9936f36a4d9a09c5925"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6fe58f9fcacc9ba6461e97f1a3ac76a3"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_judge_job.html#a6fe58f9fcacc9ba6461e97f1a3ac76a3">handle</a> () override</td></tr>
+<tr class="memdesc:a6fe58f9fcacc9ba6461e97f1a3ac76a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">本 Job 的处理函数。整个 job 的工作入口，包括编译执行判题等内容  <a href="#a6fe58f9fcacc9ba6461e97f1a3ac76a3">更多...</a><br /></td></tr>
+<tr class="separator:a6fe58f9fcacc9ba6461e97f1a3ac76a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf10b6952dc5b83dfa7cb0ec66b3845b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_judge_job.html#adf10b6952dc5b83dfa7cb0ec66b3845b">push_back_failed_judge_job</a> () noexcept</td></tr>
+<tr class="memdesc:adf10b6952dc5b83dfa7cb0ec66b3845b"><td class="mdescLeft">&#160;</td><td class="mdescRight">将评测失败的评测详情插入数据库、将评测失败的 job_item 插入评测失败队列  <a href="#adf10b6952dc5b83dfa7cb0ec66b3845b">更多...</a><br /></td></tr>
+<tr class="separator:adf10b6952dc5b83dfa7cb0ec66b3845b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_class_job_base"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_class_job_base')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="class_job_base.html">JobBase</a></td></tr>
+<tr class="memitem:a2ea51a36db0122575a48f13ce317c53e inherit pub_methods_class_job_base"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a2ea51a36db0122575a48f13ce317c53e">JobBase</a> (int <a class="el" href="class_job_base.html#a895e989e70dde5842a9838c67e4e1e91">jobType</a>, int <a class="el" href="class_job_base.html#a1b5f881d50165db4ba63372469026c17">sid</a>, const kerbal::redis::RedisContext &amp;<a class="el" href="class_job_base.html#a985b11d128f3b38ddd6f7dea662519e2">redisConn</a>)</td></tr>
+<tr class="memdesc:a2ea51a36db0122575a48f13ce317c53e inherit pub_methods_class_job_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">初始化 jobType, sid, redisConn  <a href="class_job_base.html#a2ea51a36db0122575a48f13ce317c53e">更多...</a><br /></td></tr>
+<tr class="separator:a2ea51a36db0122575a48f13ce317c53e inherit pub_methods_class_job_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6de81c238cbe4fc667f952b3c5d56693 inherit pub_methods_class_job_base"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a6de81c238cbe4fc667f952b3c5d56693">~JobBase</a> () noexcept=default</td></tr>
+<tr class="memdesc:a6de81c238cbe4fc667f952b3c5d56693 inherit pub_methods_class_job_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">析构函数使用默认析构函数  <a href="class_job_base.html#a6de81c238cbe4fc667f952b3c5d56693">更多...</a><br /></td></tr>
+<tr class="separator:a6de81c238cbe4fc667f952b3c5d56693 inherit pub_methods_class_job_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acba3c7755afaaaf0e522bc53eec10828 inherit pub_methods_class_job_base"><td class="memItemLeft" align="right" valign="top">kerbal::redis::RedisReply&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#acba3c7755afaaaf0e522bc53eec10828">get_source_code</a> () const</td></tr>
+<tr class="memdesc:acba3c7755afaaaf0e522bc53eec10828 inherit pub_methods_class_job_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">从 redis 中取得代码  <a href="class_job_base.html#acba3c7755afaaaf0e522bc53eec10828">更多...</a><br /></td></tr>
+<tr class="separator:acba3c7755afaaaf0e522bc53eec10828 inherit pub_methods_class_job_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a06b6dd6262e98277d929ccd68451a0b7 inherit pub_methods_class_job_base"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a06b6dd6262e98277d929ccd68451a0b7">storeSourceCode</a> () const</td></tr>
+<tr class="memdesc:a06b6dd6262e98277d929ccd68451a0b7 inherit pub_methods_class_job_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">从 redis 数据库获取本 Job 的代码并存储到工作空间中，用于编译运行。  <a href="class_job_base.html#a06b6dd6262e98277d929ccd68451a0b7">更多...</a><br /></td></tr>
+<tr class="separator:a06b6dd6262e98277d929ccd68451a0b7 inherit pub_methods_class_job_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa7da8e91cd0ffddf9b1cf70995d2134b inherit pub_methods_class_job_base"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#aa7da8e91cd0ffddf9b1cf70995d2134b">commitJudgeStatusToRedis</a> (<a class="el" href="united__resource_8hpp.html#a80b9d5506f136fd5cef4ccd153030f1a">JudgeStatus</a> value)</td></tr>
+<tr class="memdesc:aa7da8e91cd0ffddf9b1cf70995d2134b inherit pub_methods_class_job_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">将当前评测状态提交到 redis 数据库。  <a href="class_job_base.html#aa7da8e91cd0ffddf9b1cf70995d2134b">更多...</a><br /></td></tr>
+<tr class="separator:aa7da8e91cd0ffddf9b1cf70995d2134b inherit pub_methods_class_job_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a6edac1fe8ebfc2a8b38c40e426030582"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_judge_job.html#a6edac1fe8ebfc2a8b38c40e426030582">insert_into_failed</a> (const kerbal::redis::RedisContext &amp;conn, int <a class="el" href="class_job_base.html#a895e989e70dde5842a9838c67e4e1e91">jobType</a>, int <a class="el" href="class_job_base.html#a1b5f881d50165db4ba63372469026c17">sid</a>) noexcept</td></tr>
+<tr class="memdesc:a6edac1fe8ebfc2a8b38c40e426030582"><td class="mdescLeft">&#160;</td><td class="mdescRight">将评测失败的评测详情插入数据库、将评测失败的 job_item 插入评测失败队列  <a href="#a6edac1fe8ebfc2a8b38c40e426030582">更多...</a><br /></td></tr>
+<tr class="separator:a6edac1fe8ebfc2a8b38c40e426030582"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_static_methods_class_job_base"><td colspan="2" onclick="javascript:toggleInherit('pub_static_methods_class_job_base')"><img src="closed.png" alt="-"/>&#160;静态 Public 成员函数 继承自 <a class="el" href="class_job_base.html">JobBase</a></td></tr>
+<tr class="memitem:a45db2aacca3aa05d98aecaa560d54c8d inherit pub_static_methods_class_job_base"><td class="memItemLeft" align="right" valign="top">static std::pair&lt; int, int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a45db2aacca3aa05d98aecaa560d54c8d">parseJobItem</a> (const std::string &amp;jobItem)</td></tr>
+<tr class="memdesc:a45db2aacca3aa05d98aecaa560d54c8d inherit pub_static_methods_class_job_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">将待处理 Job 信息分解，提取出 job_type 与 job_id  <a href="class_job_base.html#a45db2aacca3aa05d98aecaa560d54c8d">更多...</a><br /></td></tr>
+<tr class="separator:a45db2aacca3aa05d98aecaa560d54c8d inherit pub_static_methods_class_job_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a694f006cab5c06d8939ee7550d3a04ac inherit pub_static_methods_class_job_base"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a694f006cab5c06d8939ee7550d3a04ac">isExitJob</a> (const std::string &amp;jobItem)</td></tr>
+<tr class="memdesc:a694f006cab5c06d8939ee7550d3a04ac inherit pub_static_methods_class_job_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">判断是否终止服务 loop  <a href="class_job_base.html#a694f006cab5c06d8939ee7550d3a04ac">更多...</a><br /></td></tr>
+<tr class="separator:a694f006cab5c06d8939ee7550d3a04ac inherit pub_static_methods_class_job_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d354b5691b71524e49514dfbcd41550 inherit pub_static_methods_class_job_base"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a3d354b5691b71524e49514dfbcd41550">getExitJobItem</a> ()</td></tr>
+<tr class="memdesc:a3d354b5691b71524e49514dfbcd41550 inherit pub_static_methods_class_job_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">获取规定的停止工作标识  <a href="class_job_base.html#a3d354b5691b71524e49514dfbcd41550">更多...</a><br /></td></tr>
+<tr class="separator:a3d354b5691b71524e49514dfbcd41550 inherit pub_static_methods_class_job_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
+Protected 成员函数</h2></td></tr>
+<tr class="memitem:a32a0d6b97470ddf01ab3f905f57615ec"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_judge_job.html#a32a0d6b97470ddf01ab3f905f57615ec">change_job_dir</a> () const</td></tr>
+<tr class="memdesc:a32a0d6b97470ddf01ab3f905f57615ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">将当前路径切换到本 job 的临时工作路径  <a href="#a32a0d6b97470ddf01ab3f905f57615ec">更多...</a><br /></td></tr>
+<tr class="separator:a32a0d6b97470ddf01ab3f905f57615ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3ecd7b1686ad8473e60154df16ef468"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_judge_job.html#ae3ecd7b1686ad8473e60154df16ef468">clean_job_dir</a> () const noexcept</td></tr>
+<tr class="memdesc:ae3ecd7b1686ad8473e60154df16ef468"><td class="mdescLeft">&#160;</td><td class="mdescRight">将当前路径切换出本 job 的临时工作路径并清理该工作区  <a href="#ae3ecd7b1686ad8473e60154df16ef468">更多...</a><br /></td></tr>
+<tr class="separator:ae3ecd7b1686ad8473e60154df16ef468"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e12c6a1d33861f95a053186ac3d3eb9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_result.html">Result</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_judge_job.html#a1e12c6a1d33861f95a053186ac3d3eb9">execute</a> (const <a class="el" href="class_config.html">Config</a> &amp;config) const noexcept</td></tr>
+<tr class="memdesc:a1e12c6a1d33861f95a053186ac3d3eb9"><td class="mdescLeft">&#160;</td><td class="mdescRight">根据当前 config 配置的值，执行编译/运行程序。过程中会对必要的权限检查， 并且会启动一个线程来监控，防止运行超时。执行结束后返回执行结果。  <a href="#a1e12c6a1d33861f95a053186ac3d3eb9">更多...</a><br /></td></tr>
+<tr class="separator:a1e12c6a1d33861f95a053186ac3d3eb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35fc1a76afeffbf6e958f64a6e620e1c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_result.html">Result</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_judge_job.html#a35fc1a76afeffbf6e958f64a6e620e1c">compile</a> () const noexcept</td></tr>
+<tr class="memdesc:a35fc1a76afeffbf6e958f64a6e620e1c"><td class="mdescLeft">&#160;</td><td class="mdescRight">进入当前 job 的编译流程，并返回编译结果。  <a href="#a35fc1a76afeffbf6e958f64a6e620e1c">更多...</a><br /></td></tr>
+<tr class="separator:a35fc1a76afeffbf6e958f64a6e620e1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82369eaa1b47b2106c45832bdda85e43"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_judge_job.html#a82369eaa1b47b2106c45832bdda85e43">set_compile_info</a> () noexcept</td></tr>
+<tr class="memdesc:a82369eaa1b47b2106c45832bdda85e43"><td class="mdescLeft">&#160;</td><td class="mdescRight">当编译出错时，将编译错误信息写入到 redis。  <a href="#a82369eaa1b47b2106c45832bdda85e43">更多...</a><br /></td></tr>
+<tr class="separator:a82369eaa1b47b2106c45832bdda85e43"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d2e1e5cce842ef0daf71c95f98275f0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_result.html">Result</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_judge_job.html#a0d2e1e5cce842ef0daf71c95f98275f0">running</a> ()</td></tr>
+<tr class="memdesc:a0d2e1e5cce842ef0daf71c95f98275f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">进入当前 job 的执行流程，并返回执行结果。  <a href="#a0d2e1e5cce842ef0daf71c95f98275f0">更多...</a><br /></td></tr>
+<tr class="separator:a0d2e1e5cce842ef0daf71c95f98275f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45f3a298baec8013e313d506d5b764b5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_judge_job.html#a45f3a298baec8013e313d506d5b764b5">child_process</a> (const <a class="el" href="class_config.html">Config</a> &amp;config) const</td></tr>
+<tr class="memdesc:a45f3a298baec8013e313d506d5b764b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">启动 编译/执行 的实际工作。限制了资源信息，重定向流之后，启动实际工作进程。  <a href="#a45f3a298baec8013e313d506d5b764b5">更多...</a><br /></td></tr>
+<tr class="separator:a45f3a298baec8013e313d506d5b764b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a37b4def8e9362835ceeecda28df71990"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_judge_job.html#a37b4def8e9362835ceeecda28df71990">commitJudgeResultToRedis</a> (const <a class="el" href="struct_solution_details.html">SolutionDetails</a> &amp;result)</td></tr>
+<tr class="memdesc:a37b4def8e9362835ceeecda28df71990"><td class="mdescLeft">&#160;</td><td class="mdescRight">将评测结果提交到 redis 数据库。  <a href="#a37b4def8e9362835ceeecda28df71990">更多...</a><br /></td></tr>
+<tr class="separator:a37b4def8e9362835ceeecda28df71990"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
+Protected 属性</h2></td></tr>
+<tr class="memitem:ae28fbbddace333bd7656cfde8bedaa95"><td class="memItemLeft" align="right" valign="top">const std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_judge_job.html#ae28fbbddace333bd7656cfde8bedaa95">dir</a></td></tr>
+<tr class="separator:ae28fbbddace333bd7656cfde8bedaa95"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-types"></a>
+Private 类型</h2></td></tr>
+<tr class="memitem:a21e84762e4d5363c6a3a8eb74eaab6af"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="class_job_base.html">JobBase</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_judge_job.html#a21e84762e4d5363c6a3a8eb74eaab6af">supper_t</a></td></tr>
+<tr class="separator:a21e84762e4d5363c6a3a8eb74eaab6af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
+额外继承的成员函数</h2></td></tr>
+<tr class="inherit_header pub_attribs_class_job_base"><td colspan="2" onclick="javascript:toggleInherit('pub_attribs_class_job_base')"><img src="closed.png" alt="-"/>&#160;Public 属性 继承自 <a class="el" href="class_job_base.html">JobBase</a></td></tr>
+<tr class="memitem:a895e989e70dde5842a9838c67e4e1e91 inherit pub_attribs_class_job_base"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a895e989e70dde5842a9838c67e4e1e91">jobType</a></td></tr>
+<tr class="memdesc:a895e989e70dde5842a9838c67e4e1e91 inherit pub_attribs_class_job_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Job 类型，如：竞赛、课程等  <a href="class_job_base.html#a895e989e70dde5842a9838c67e4e1e91">更多...</a><br /></td></tr>
+<tr class="separator:a895e989e70dde5842a9838c67e4e1e91 inherit pub_attribs_class_job_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b5f881d50165db4ba63372469026c17 inherit pub_attribs_class_job_base"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a1b5f881d50165db4ba63372469026c17">sid</a></td></tr>
+<tr class="memdesc:a1b5f881d50165db4ba63372469026c17 inherit pub_attribs_class_job_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">solution id  <a href="class_job_base.html#a1b5f881d50165db4ba63372469026c17">更多...</a><br /></td></tr>
+<tr class="separator:a1b5f881d50165db4ba63372469026c17 inherit pub_attribs_class_job_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a985b11d128f3b38ddd6f7dea662519e2 inherit pub_attribs_class_job_base"><td class="memItemLeft" align="right" valign="top">kerbal::redis::RedisContext&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a985b11d128f3b38ddd6f7dea662519e2">redisConn</a></td></tr>
+<tr class="memdesc:a985b11d128f3b38ddd6f7dea662519e2 inherit pub_attribs_class_job_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">redis 连接  <a href="class_job_base.html#a985b11d128f3b38ddd6f7dea662519e2">更多...</a><br /></td></tr>
+<tr class="separator:a985b11d128f3b38ddd6f7dea662519e2 inherit pub_attribs_class_job_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a281c54f87ea485dd646d19f0a8e7e986 inherit pub_attribs_class_job_base"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a281c54f87ea485dd646d19f0a8e7e986">pid</a></td></tr>
+<tr class="memdesc:a281c54f87ea485dd646d19f0a8e7e986 inherit pub_attribs_class_job_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">problem id  <a href="class_job_base.html#a281c54f87ea485dd646d19f0a8e7e986">更多...</a><br /></td></tr>
+<tr class="separator:a281c54f87ea485dd646d19f0a8e7e986 inherit pub_attribs_class_job_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abbfedbd4ddcecdafadcd635c6e254885 inherit pub_attribs_class_job_base"><td class="memItemLeft" align="right" valign="top"><a class="el" href="united__resource_8hpp.html#a315ca917ad583797f709ea477dd28705">Language</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#abbfedbd4ddcecdafadcd635c6e254885">lang</a></td></tr>
+<tr class="memdesc:abbfedbd4ddcecdafadcd635c6e254885 inherit pub_attribs_class_job_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">语言  <a href="class_job_base.html#abbfedbd4ddcecdafadcd635c6e254885">更多...</a><br /></td></tr>
+<tr class="separator:abbfedbd4ddcecdafadcd635c6e254885 inherit pub_attribs_class_job_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a55a4b41269bb36db8cdf2577cdb05d6f inherit pub_attribs_class_job_base"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a55a4b41269bb36db8cdf2577cdb05d6f">cases</a></td></tr>
+<tr class="memdesc:a55a4b41269bb36db8cdf2577cdb05d6f inherit pub_attribs_class_job_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">测试用例数量  <a href="class_job_base.html#a55a4b41269bb36db8cdf2577cdb05d6f">更多...</a><br /></td></tr>
+<tr class="separator:a55a4b41269bb36db8cdf2577cdb05d6f inherit pub_attribs_class_job_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28693bb0f592b592ac21c961b4733a49 inherit pub_attribs_class_job_base"><td class="memItemLeft" align="right" valign="top">std::chrono::milliseconds&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a28693bb0f592b592ac21c961b4733a49">timeLimit</a></td></tr>
+<tr class="memdesc:a28693bb0f592b592ac21c961b4733a49 inherit pub_attribs_class_job_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">时间限制  <a href="class_job_base.html#a28693bb0f592b592ac21c961b4733a49">更多...</a><br /></td></tr>
+<tr class="separator:a28693bb0f592b592ac21c961b4733a49 inherit pub_attribs_class_job_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3165f108ef68c479d89b2b04013c1150 inherit pub_attribs_class_job_base"><td class="memItemLeft" align="right" valign="top">kerbal::utility::MB&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a3165f108ef68c479d89b2b04013c1150">memoryLimit</a></td></tr>
+<tr class="memdesc:a3165f108ef68c479d89b2b04013c1150 inherit pub_attribs_class_job_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">空间限制  <a href="class_job_base.html#a3165f108ef68c479d89b2b04013c1150">更多...</a><br /></td></tr>
+<tr class="separator:a3165f108ef68c479d89b2b04013c1150 inherit pub_attribs_class_job_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a212de257a305128e8fb134958f8d54ab inherit pub_attribs_class_job_base"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a212de257a305128e8fb134958f8d54ab">similarity_threshold</a></td></tr>
+<tr class="memdesc:a212de257a305128e8fb134958f8d54ab inherit pub_attribs_class_job_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">重复率限制  <a href="class_job_base.html#a212de257a305128e8fb134958f8d54ab">更多...</a><br /></td></tr>
+<tr class="separator:a212de257a305128e8fb134958f8d54ab inherit pub_attribs_class_job_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p class=""><a class="el" href="class_job_base.html" title="JudgeJob 与 UpdateJob 的基类， 存有 Job的基本信息，并规定了所有 Job 必须遵循的函数接口。">JobBase</a> 的子类，用于实现提交代码的判题功能。 </p>
+
+<p class="definition">在文件 <a class="el" href="_judge_job_8hpp_source.html">JudgeJob.hpp</a> 第 <a class="el" href="_judge_job_8hpp_source.html#l00019">19</a> 行定义.</p>
+</div><h2 class="groupheader">成员类型定义说明</h2>
+<a id="a21e84762e4d5363c6a3a8eb74eaab6af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a21e84762e4d5363c6a3a8eb74eaab6af">&#9670;&nbsp;</a></span>supper_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef <a class="el" href="class_job_base.html">JobBase</a> <a class="el" href="class_judge_job.html#a21e84762e4d5363c6a3a8eb74eaab6af">JudgeJob::supper_t</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="_judge_job_8hpp_source.html">JudgeJob.hpp</a> 第 <a class="el" href="_judge_job_8hpp_source.html#l00022">22</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a4ee4a44b9976e9936f36a4d9a09c5925"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ee4a44b9976e9936f36a4d9a09c5925">&#9670;&nbsp;</a></span>JudgeJob()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">JudgeJob::JudgeJob </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>jobType</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>sid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const kerbal::redis::RedisContext &amp;&#160;</td>
+          <td class="paramname"><em>conn</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>初始化 job 基本信息，从数据库获得 job 详细内容 </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">jobType</td><td>Job 类型，如：竞赛、课程等 </td></tr>
+    <tr><td class="paramname">sid</td><td>student id </td></tr>
+    <tr><td class="paramname">redisConn</td><td>Redis连接 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="exception"><dt>异常</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::exception</td><td>等，表示获取 job 详细信息失败 </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="_judge_job_8cpp_source.html">JudgeJob.cpp</a> 第 <a class="el" href="_judge_job_8cpp_source.html#l00034">34</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a32a0d6b97470ddf01ab3f905f57615ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32a0d6b97470ddf01ab3f905f57615ec">&#9670;&nbsp;</a></span>change_job_dir()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void JudgeJob::change_job_dir </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>将当前路径切换到本 job 的临时工作路径 </p>
+<dl class="exception"><dt>异常</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="class_job_handle_exception.html" title="自定义的 Job 异常，继承于 std::exception，专用于 Job 处理中的异常">JobHandleException</a></td><td>，切换到临时工作路径失败 </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="_judge_job_8cpp_source.html">JudgeJob.cpp</a> 第 <a class="el" href="_judge_job_8cpp_source.html#l00209">209</a> 行定义.</p>
+<div class="dynheader">
+这是这个函数的调用关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_judge_job_a32a0d6b97470ddf01ab3f905f57615ec_icgraph.png" border="0" usemap="#class_judge_job_a32a0d6b97470ddf01ab3f905f57615ec_icgraph" alt=""/></div>
+<map name="class_judge_job_a32a0d6b97470ddf01ab3f905f57615ec_icgraph" id="class_judge_job_a32a0d6b97470ddf01ab3f905f57615ec_icgraph">
+<area shape="rect" id="node1" title="将当前路径切换到本 job 的临时工作路径" alt="" coords="177,5,351,32"/>
+<area shape="rect" id="node2" href="class_judge_job.html#a6fe58f9fcacc9ba6461e97f1a3ac76a3" title="本 Job 的处理函数。整个 job 的工作入口，包括编译执行判题等内容" alt="" coords="5,5,129,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a45f3a298baec8013e313d506d5b764b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45f3a298baec8013e313d506d5b764b5">&#9670;&nbsp;</a></span>child_process()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool JudgeJob::child_process </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_config.html">Config</a> &amp;&#160;</td>
+          <td class="paramname"><em>config</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>启动 编译/执行 的实际工作。限制了资源信息，重定向流之后，启动实际工作进程。 </p>
+<dl class="section return"><dt>返回</dt><dd>若该函数执行正常，返回值由取代此子进程的实际工作进程返回值决定，否则返回 false </dd></dl>
+<dl class="section note"><dt>注解</dt><dd>若限制资源信息、重定向流等信息失败，会产生用户自定义信号 SIGUSR1 ，用于调用函数判定系统出错 </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="_judge_job_8cpp_source.html">JudgeJob.cpp</a> 第 <a class="el" href="_judge_job_8cpp_source.html#l00412">412</a> 行定义.</p>
+<div class="dynheader">
+函数调用图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_judge_job_a45f3a298baec8013e313d506d5b764b5_cgraph.png" border="0" usemap="#class_judge_job_a45f3a298baec8013e313d506d5b764b5_cgraph" alt=""/></div>
+<map name="class_judge_job_a45f3a298baec8013e313d506d5b764b5_cgraph" id="class_judge_job_a45f3a298baec8013e313d506d5b764b5_cgraph">
+<area shape="rect" id="node1" title="启动 编译/执行 的实际工作。限制了资源信息，重定向流之后，启动实际工作进程。" alt="" coords="5,132,172,159"/>
+<area shape="rect" id="node2" href="class_config.html#a69f9be5093ec916b366b3ad046e12bb7" title="检查是否有储存空间的最大字节长度限制" alt="" coords="244,5,383,32"/>
+<area shape="rect" id="node3" href="class_config.html#ae3371c9240bdc3fb4cd0fefa6f9294c7" title="检查是否有 CPU 时间限制" alt="" coords="238,56,389,83"/>
+<area shape="rect" id="node4" href="class_config.html#a3690235ffa6f8c58eb9aef15138b1744" title="检查是否有程序最大子进程数限制" alt="" coords="220,107,407,133"/>
+<area shape="rect" id="node5" href="class_config.html#a92a02bf20ae7e9925f895e5ccd4b2c85" title="检查是否有最大输出字节长度限制" alt="" coords="248,157,379,184"/>
+<area shape="rect" id="node6" href="class_config.html#a66bf8e1fc1fafffa3f0f119c4a6328db" title="根据本 config 设定的所允许的系统调用种类的标识，加载相应的限制" alt="" coords="237,209,389,250"/>
+<area shape="rect" id="node9" href="class_execute_args.html#a9e61c65a4f7832a6c33c3c85203ba574" title=" " alt="" coords="238,275,389,301"/>
+<area shape="rect" id="node7" href="class_config.html#abc5c2690ad9c6b7c15eb10800b724fa9" title="生产 c/c++ 对应的系统调用权限限制" alt="" coords="459,175,621,217"/>
+<area shape="rect" id="node8" href="class_config.html#a1fb73bd5c89b879497891c46ad345b87" title="生产通用的系统调用权限限制" alt="" coords="455,241,625,282"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="ae3ecd7b1686ad8473e60154df16ef468"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae3ecd7b1686ad8473e60154df16ef468">&#9670;&nbsp;</a></span>clean_job_dir()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void JudgeJob::clean_job_dir </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>将当前路径切换出本 job 的临时工作路径并清理该工作区 </p>
+<dl class="exception"><dt>异常</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">该函数保证不抛出任何异常</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="_judge_job_8cpp_source.html">JudgeJob.cpp</a> 第 <a class="el" href="_judge_job_8cpp_source.html#l00221">221</a> 行定义.</p>
+<div class="dynheader">
+这是这个函数的调用关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_judge_job_ae3ecd7b1686ad8473e60154df16ef468_icgraph.png" border="0" usemap="#class_judge_job_ae3ecd7b1686ad8473e60154df16ef468_icgraph" alt=""/></div>
+<map name="class_judge_job_ae3ecd7b1686ad8473e60154df16ef468_icgraph" id="class_judge_job_ae3ecd7b1686ad8473e60154df16ef468_icgraph">
+<area shape="rect" id="node1" title="将当前路径切换出本 job 的临时工作路径并清理该工作区" alt="" coords="177,5,340,32"/>
+<area shape="rect" id="node2" href="class_judge_job.html#a6fe58f9fcacc9ba6461e97f1a3ac76a3" title="本 Job 的处理函数。整个 job 的工作入口，包括编译执行判题等内容" alt="" coords="5,5,129,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a37b4def8e9362835ceeecda28df71990"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a37b4def8e9362835ceeecda28df71990">&#9670;&nbsp;</a></span>commitJudgeResultToRedis()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void JudgeJob::commitJudgeResultToRedis </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="struct_solution_details.html">SolutionDetails</a> &amp;&#160;</td>
+          <td class="paramname"><em>result</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>将评测结果提交到 redis 数据库。 </p>
+
+<p class="definition">在文件 <a class="el" href="_judge_job_8cpp_source.html">JudgeJob.cpp</a> 第 <a class="el" href="_judge_job_8cpp_source.html#l00160">160</a> 行定义.</p>
+<div class="dynheader">
+这是这个函数的调用关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_judge_job_a37b4def8e9362835ceeecda28df71990_icgraph.png" border="0" usemap="#class_judge_job_a37b4def8e9362835ceeecda28df71990_icgraph" alt=""/></div>
+<map name="class_judge_job_a37b4def8e9362835ceeecda28df71990_icgraph" id="class_judge_job_a37b4def8e9362835ceeecda28df71990_icgraph">
+<area shape="rect" id="node1" title="将评测结果提交到 redis 数据库。" alt="" coords="177,5,380,47"/>
+<area shape="rect" id="node2" href="class_judge_job.html#a6fe58f9fcacc9ba6461e97f1a3ac76a3" title="本 Job 的处理函数。整个 job 的工作入口，包括编译执行判题等内容" alt="" coords="5,13,129,39"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a35fc1a76afeffbf6e958f64a6e620e1c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a35fc1a76afeffbf6e958f64a6e620e1c">&#9670;&nbsp;</a></span>compile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="struct_result.html">Result</a> JudgeJob::compile </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>进入当前 job 的编译流程，并返回编译结果。 </p>
+<dl class="section return"><dt>返回</dt><dd>编译的结果信息。包含资源使用信息与编译成功与否等。 </dd></dl>
+<dl class="exception"><dt>异常</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">该函数保证不抛出任何异常</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="_judge_job_8cpp_source.html">JudgeJob.cpp</a> 第 <a class="el" href="_judge_job_8cpp_source.html#l00383">383</a> 行定义.</p>
+<div class="dynheader">
+这是这个函数的调用关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_judge_job_a35fc1a76afeffbf6e958f64a6e620e1c_icgraph.png" border="0" usemap="#class_judge_job_a35fc1a76afeffbf6e958f64a6e620e1c_icgraph" alt=""/></div>
+<map name="class_judge_job_a35fc1a76afeffbf6e958f64a6e620e1c_icgraph" id="class_judge_job_a35fc1a76afeffbf6e958f64a6e620e1c_icgraph">
+<area shape="rect" id="node1" title="进入当前 job 的编译流程，并返回编译结果。" alt="" coords="177,5,308,32"/>
+<area shape="rect" id="node2" href="class_judge_job.html#a6fe58f9fcacc9ba6461e97f1a3ac76a3" title="本 Job 的处理函数。整个 job 的工作入口，包括编译执行判题等内容" alt="" coords="5,5,129,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a1e12c6a1d33861f95a053186ac3d3eb9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e12c6a1d33861f95a053186ac3d3eb9">&#9670;&nbsp;</a></span>execute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="struct_result.html">Result</a> JudgeJob::execute </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_config.html">Config</a> &amp;&#160;</td>
+          <td class="paramname"><em>config</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>根据当前 config 配置的值，执行编译/运行程序。过程中会对必要的权限检查， 并且会启动一个线程来监控，防止运行超时。执行结束后返回执行结果。 </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">config</td><td>执行配置 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>根据执行结果而确定的 <a class="el" href="struct_result.html">Result</a> 结构体。包含资源使用信息与程序退出代码等。 </dd></dl>
+<dl class="exception"><dt>异常</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">该函数保证不抛出任何异常</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="_judge_job_8cpp_source.html">JudgeJob.cpp</a> 第 <a class="el" href="_judge_job_8cpp_source.html#l00255">255</a> 行定义.</p>
+<div class="dynheader">
+函数调用图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_judge_job_a1e12c6a1d33861f95a053186ac3d3eb9_cgraph.png" border="0" usemap="#class_judge_job_a1e12c6a1d33861f95a053186ac3d3eb9_cgraph" alt=""/></div>
+<map name="class_judge_job_a1e12c6a1d33861f95a053186ac3d3eb9_cgraph" id="class_judge_job_a1e12c6a1d33861f95a053186ac3d3eb9_cgraph">
+<area shape="rect" id="node1" title="根据当前 config 配置的值，执行编译/运行程序。过程中会对必要的权限检查， 并且会启动一个线程来监控，防止运行超时。执行结束后返回执行结果。" alt="" coords="5,5,137,32"/>
+<area shape="rect" id="node2" href="struct_result.html#a8201d7586458dd80f361ab8c6cd93524" title=" " alt="" coords="185,5,331,32"/>
+</map>
+</div>
+<div class="dynheader">
+这是这个函数的调用关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_judge_job_a1e12c6a1d33861f95a053186ac3d3eb9_icgraph.png" border="0" usemap="#class_judge_job_a1e12c6a1d33861f95a053186ac3d3eb9_icgraph" alt=""/></div>
+<map name="class_judge_job_a1e12c6a1d33861f95a053186ac3d3eb9_icgraph" id="class_judge_job_a1e12c6a1d33861f95a053186ac3d3eb9_icgraph">
+<area shape="rect" id="node1" title="根据当前 config 配置的值，执行编译/运行程序。过程中会对必要的权限检查， 并且会启动一个线程来监控，防止运行超时。执行结束后返回执行结果。" alt="" coords="353,5,485,32"/>
+<area shape="rect" id="node2" href="class_judge_job.html#a0d2e1e5cce842ef0daf71c95f98275f0" title="进入当前 job 的执行流程，并返回执行结果。" alt="" coords="177,5,305,32"/>
+<area shape="rect" id="node3" href="class_judge_job.html#a6fe58f9fcacc9ba6461e97f1a3ac76a3" title="本 Job 的处理函数。整个 job 的工作入口，包括编译执行判题等内容" alt="" coords="5,5,129,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a6fe58f9fcacc9ba6461e97f1a3ac76a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6fe58f9fcacc9ba6461e97f1a3ac76a3">&#9670;&nbsp;</a></span>handle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void JudgeJob::handle </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>本 Job 的处理函数。整个 job 的工作入口，包括编译执行判题等内容 </p>
+<dl class="section warning"><dt>警告</dt><dd>本函数为虚函数，是对父类接口的实现。 </dd></dl>
+
+<p>实现了 <a class="el" href="class_job_base.html#aea684b77a3d8e913b87d8f3deb18c8fe">JobBase</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="_judge_job_8cpp_source.html">JudgeJob.cpp</a> 第 <a class="el" href="_judge_job_8cpp_source.html#l00039">39</a> 行定义.</p>
+<div class="dynheader">
+函数调用图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_judge_job_a6fe58f9fcacc9ba6461e97f1a3ac76a3_cgraph.png" border="0" usemap="#class_judge_job_a6fe58f9fcacc9ba6461e97f1a3ac76a3_cgraph" alt=""/></div>
+<map name="class_judge_job_a6fe58f9fcacc9ba6461e97f1a3ac76a3_cgraph" id="class_judge_job_a6fe58f9fcacc9ba6461e97f1a3ac76a3_cgraph">
+<area shape="rect" id="node1" title="本 Job 的处理函数。整个 job 的工作入口，包括编译执行判题等内容" alt="" coords="5,183,129,209"/>
+<area shape="rect" id="node2" href="class_judge_job.html#a32a0d6b97470ddf01ab3f905f57615ec" title="将当前路径切换到本 job 的临时工作路径" alt="" coords="192,5,365,32"/>
+<area shape="rect" id="node3" href="class_job_base.html#a06b6dd6262e98277d929ccd68451a0b7" title="从 redis 数据库获取本 Job 的代码并存储到工作空间中，用于编译运行。" alt="" coords="187,56,370,83"/>
+<area shape="rect" id="node5" href="class_job_base.html#aa7da8e91cd0ffddf9b1cf70995d2134b" title="将当前评测状态提交到 redis 数据库。" alt="" coords="428,125,625,166"/>
+<area shape="rect" id="node6" href="class_judge_job.html#a35fc1a76afeffbf6e958f64a6e620e1c" title="进入当前 job 的编译流程，并返回编译结果。" alt="" coords="213,157,344,184"/>
+<area shape="rect" id="node7" href="class_judge_job.html#a0d2e1e5cce842ef0daf71c95f98275f0" title="进入当前 job 的执行流程，并返回执行结果。" alt="" coords="215,208,343,235"/>
+<area shape="rect" id="node12" href="class_judge_job.html#a37b4def8e9362835ceeecda28df71990" title="将评测结果提交到 redis 数据库。" alt="" coords="177,259,380,301"/>
+<area shape="rect" id="node13" href="class_judge_job.html#a82369eaa1b47b2106c45832bdda85e43" title="当编译出错时，将编译错误信息写入到 redis。" alt="" coords="187,325,371,352"/>
+<area shape="rect" id="node14" href="class_judge_job.html#ae3ecd7b1686ad8473e60154df16ef468" title="将当前路径切换出本 job 的临时工作路径并清理该工作区" alt="" coords="197,376,360,403"/>
+<area shape="rect" id="node4" href="class_job_base.html#acba3c7755afaaaf0e522bc53eec10828" title="从 redis 中取得代码" alt="" coords="437,56,617,83"/>
+<area shape="rect" id="node8" href="class_judge_job.html#a1e12c6a1d33861f95a053186ac3d3eb9" title="根据当前 config 配置的值，执行编译/运行程序。过程中会对必要的权限检查， 并且会启动一个线程来监控，防止运行超时。执行结束后返回执行结果。" alt="" coords="461,200,593,227"/>
+<area shape="rect" id="node10" href="compare_8cpp.html#a960c5c76653215ba60077e139ab6c000" title=" " alt="" coords="491,251,563,277"/>
+<area shape="rect" id="node9" href="struct_result.html#a8201d7586458dd80f361ab8c6cd93524" title=" " alt="" coords="673,200,819,227"/>
+<area shape="rect" id="node11" href="compare_8cpp.html#ae12d969be69c79ba2d8501fc5ab34eb7" title=" " alt="" coords="677,251,815,277"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a6edac1fe8ebfc2a8b38c40e426030582"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6edac1fe8ebfc2a8b38c40e426030582">&#9670;&nbsp;</a></span>insert_into_failed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool JudgeJob::insert_into_failed </td>
+          <td>(</td>
+          <td class="paramtype">const kerbal::redis::RedisContext &amp;&#160;</td>
+          <td class="paramname"><em>conn</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>jobType</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>sid</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>将评测失败的评测详情插入数据库、将评测失败的 job_item 插入评测失败队列 </p>
+<dl class="exception"><dt>异常</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">该函数保证不抛出任何异常</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>注解</dt><dd>该函数为静态成员函数。无论对象创建是否成功均可使用，保证了逻辑的通用性。 </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="_judge_job_8cpp_source.html">JudgeJob.cpp</a> 第 <a class="el" href="_judge_job_8cpp_source.html#l00591">591</a> 行定义.</p>
+<div class="dynheader">
+这是这个函数的调用关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_judge_job_a6edac1fe8ebfc2a8b38c40e426030582_icgraph.png" border="0" usemap="#class_judge_job_a6edac1fe8ebfc2a8b38c40e426030582_icgraph" alt=""/></div>
+<map name="class_judge_job_a6edac1fe8ebfc2a8b38c40e426030582_icgraph" id="class_judge_job_a6edac1fe8ebfc2a8b38c40e426030582_icgraph">
+<area shape="rect" id="node1" title="将评测失败的评测详情插入数据库、将评测失败的 job_item 插入评测失败队列" alt="" coords="203,35,349,76"/>
+<area shape="rect" id="node2" href="class_judge_job.html#adf10b6952dc5b83dfa7cb0ec66b3845b" title="将评测失败的评测详情插入数据库、将评测失败的 job_item 插入评测失败队列" alt="" coords="5,5,155,47"/>
+<area shape="rect" id="node3" href="slave_8cpp.html#ac0f2228420376f4db7e1274f2b41667c" title="slave端主程序循环 加载配置信息；连接数据库；取待评测任务信息，交由子进程并评测；创建并分离发送心跳线程" alt="" coords="55,71,105,98"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="adf10b6952dc5b83dfa7cb0ec66b3845b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf10b6952dc5b83dfa7cb0ec66b3845b">&#9670;&nbsp;</a></span>push_back_failed_judge_job()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool JudgeJob::push_back_failed_judge_job </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>将评测失败的评测详情插入数据库、将评测失败的 job_item 插入评测失败队列 </p>
+<dl class="exception"><dt>异常</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">该函数保证不抛出任何异常</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>注解</dt><dd>该函数实际调用了 insert_into_failed 静态函数。是给 <a class="el" href="class_judge_job.html" title="JobBase 的子类，用于实现提交代码的判题功能。">JudgeJob</a> 对象创建成功后使用。若创建对象失败则不可使用此函数。 </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="_judge_job_8cpp_source.html">JudgeJob.cpp</a> 第 <a class="el" href="_judge_job_8cpp_source.html#l00585">585</a> 行定义.</p>
+<div class="dynheader">
+函数调用图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_judge_job_adf10b6952dc5b83dfa7cb0ec66b3845b_cgraph.png" border="0" usemap="#class_judge_job_adf10b6952dc5b83dfa7cb0ec66b3845b_cgraph" alt=""/></div>
+<map name="class_judge_job_adf10b6952dc5b83dfa7cb0ec66b3845b_cgraph" id="class_judge_job_adf10b6952dc5b83dfa7cb0ec66b3845b_cgraph">
+<area shape="rect" id="node1" title="将评测失败的评测详情插入数据库、将评测失败的 job_item 插入评测失败队列" alt="" coords="5,5,155,47"/>
+<area shape="rect" id="node2" href="class_judge_job.html#a6edac1fe8ebfc2a8b38c40e426030582" title="将评测失败的评测详情插入数据库、将评测失败的 job_item 插入评测失败队列" alt="" coords="203,5,349,47"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a0d2e1e5cce842ef0daf71c95f98275f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0d2e1e5cce842ef0daf71c95f98275f0">&#9670;&nbsp;</a></span>running()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="struct_result.html">Result</a> JudgeJob::running </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>进入当前 job 的执行流程，并返回执行结果。 </p>
+<dl class="section return"><dt>返回</dt><dd>执行的结果信息。包含资源使用信息与执行成功与否等。 </dd></dl>
+<dl class="exception"><dt>异常</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">该函数保证不抛出任何异常</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="_judge_job_8cpp_source.html">JudgeJob.cpp</a> 第 <a class="el" href="_judge_job_8cpp_source.html#l00093">93</a> 行定义.</p>
+<div class="dynheader">
+函数调用图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_judge_job_a0d2e1e5cce842ef0daf71c95f98275f0_cgraph.png" border="0" usemap="#class_judge_job_a0d2e1e5cce842ef0daf71c95f98275f0_cgraph" alt=""/></div>
+<map name="class_judge_job_a0d2e1e5cce842ef0daf71c95f98275f0_cgraph" id="class_judge_job_a0d2e1e5cce842ef0daf71c95f98275f0_cgraph">
+<area shape="rect" id="node1" title="进入当前 job 的执行流程，并返回执行结果。" alt="" coords="5,71,133,98"/>
+<area shape="rect" id="node2" href="class_job_base.html#aa7da8e91cd0ffddf9b1cf70995d2134b" title="将当前评测状态提交到 redis 数据库。" alt="" coords="181,5,379,47"/>
+<area shape="rect" id="node3" href="class_judge_job.html#a1e12c6a1d33861f95a053186ac3d3eb9" title="根据当前 config 配置的值，执行编译/运行程序。过程中会对必要的权限检查， 并且会启动一个线程来监控，防止运行超时。执行结束后返回执行结果。" alt="" coords="214,71,346,98"/>
+<area shape="rect" id="node5" href="compare_8cpp.html#a960c5c76653215ba60077e139ab6c000" title=" " alt="" coords="244,122,316,149"/>
+<area shape="rect" id="node4" href="struct_result.html#a8201d7586458dd80f361ab8c6cd93524" title=" " alt="" coords="427,71,572,98"/>
+<area shape="rect" id="node6" href="compare_8cpp.html#ae12d969be69c79ba2d8501fc5ab34eb7" title=" " alt="" coords="430,122,569,149"/>
+</map>
+</div>
+<div class="dynheader">
+这是这个函数的调用关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_judge_job_a0d2e1e5cce842ef0daf71c95f98275f0_icgraph.png" border="0" usemap="#class_judge_job_a0d2e1e5cce842ef0daf71c95f98275f0_icgraph" alt=""/></div>
+<map name="class_judge_job_a0d2e1e5cce842ef0daf71c95f98275f0_icgraph" id="class_judge_job_a0d2e1e5cce842ef0daf71c95f98275f0_icgraph">
+<area shape="rect" id="node1" title="进入当前 job 的执行流程，并返回执行结果。" alt="" coords="177,5,305,32"/>
+<area shape="rect" id="node2" href="class_judge_job.html#a6fe58f9fcacc9ba6461e97f1a3ac76a3" title="本 Job 的处理函数。整个 job 的工作入口，包括编译执行判题等内容" alt="" coords="5,5,129,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a82369eaa1b47b2106c45832bdda85e43"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82369eaa1b47b2106c45832bdda85e43">&#9670;&nbsp;</a></span>set_compile_info()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool JudgeJob::set_compile_info </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>当编译出错时，将编译错误信息写入到 redis。 </p>
+<dl class="section return"><dt>返回</dt><dd>若编译错误信息写入成功，返回 true ，否则返回 false </dd></dl>
+<dl class="exception"><dt>异常</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">该函数保证不抛出任何异常</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="_judge_job_8cpp_source.html">JudgeJob.cpp</a> 第 <a class="el" href="_judge_job_8cpp_source.html#l00165">165</a> 行定义.</p>
+<div class="dynheader">
+这是这个函数的调用关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_judge_job_a82369eaa1b47b2106c45832bdda85e43_icgraph.png" border="0" usemap="#class_judge_job_a82369eaa1b47b2106c45832bdda85e43_icgraph" alt=""/></div>
+<map name="class_judge_job_a82369eaa1b47b2106c45832bdda85e43_icgraph" id="class_judge_job_a82369eaa1b47b2106c45832bdda85e43_icgraph">
+<area shape="rect" id="node1" title="当编译出错时，将编译错误信息写入到 redis。" alt="" coords="177,5,361,32"/>
+<area shape="rect" id="node2" href="class_judge_job.html#a6fe58f9fcacc9ba6461e97f1a3ac76a3" title="本 Job 的处理函数。整个 job 的工作入口，包括编译执行判题等内容" alt="" coords="5,5,129,32"/>
+</map>
+</div>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="ae28fbbddace333bd7656cfde8bedaa95"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae28fbbddace333bd7656cfde8bedaa95">&#9670;&nbsp;</a></span>dir</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string JudgeJob::dir</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p class="">本 job 临时工作路径 </p>
+
+<p class="definition">在文件 <a class="el" href="_judge_job_8hpp_source.html">JudgeJob.hpp</a> 第 <a class="el" href="_judge_job_8hpp_source.html#l00026">26</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>/home/peter/git/Core/src/slave/<a class="el" href="_judge_job_8hpp_source.html">JudgeJob.hpp</a></li>
+<li>/home/peter/git/Core/src/slave/<a class="el" href="_judge_job_8cpp_source.html">JudgeJob.cpp</a></li>
+</ul>
+</div><!-- contents -->
+<footer>
+<hr> Powered by
+<a href="http://www.doxygen.nl/" target="_blank"> Doxygen </a>
+<br>
+Contributors:
+<a href=""> Shaohua Zhang,&nbsp; Zhiqiang Shi,&nbsp; Xi Chen,&nbsp; Kehan Huang,&nbsp; Binjie Zhang,&nbsp; Wentsing Nee </a>
+<br> Copyright © 2010-2018
+<a href="http://www.thinkspirit.org" target="_blank"> Think Spirit. </a> All rights reserved.
+</footer>

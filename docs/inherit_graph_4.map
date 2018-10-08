@@ -1,0 +1,4 @@
+<map id="类继承关系图" name="类继承关系图">
+<area shape="rect" id="node1" title=" " alt="" coords="5,5,84,32"/>
+<area shape="rect" id="node2" href="$class_job_handle_exception.html" title="自定义的 Job 异常，继承于 std::exception，专用于 Job 处理中的异常" alt="" coords="132,5,275,32"/>
+</map>

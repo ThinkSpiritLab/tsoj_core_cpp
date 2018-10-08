@@ -1,0 +1,1050 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.8.15"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>TSOJ V4 Judge Core: UpdateJobBase类 参考</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="mlabel.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="ThinkSpirit_logo_2018.png"/></td>
+  <td id="projectalign" style="padding-left: 0.5em;">
+   <div id="projectname">TSOJ V4 Judge Core
+   </div>
+   <div id="projectbrief">oj.thinkspirit.org</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- 制作者 Doxygen 1.8.15 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+var searchBox = new SearchBox("searchBox", "search",false,'搜索');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(function() {
+  initMenu('',true,false,'search.php','搜索');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pro-types">Protected 类型</a> &#124;
+<a href="#pro-methods">Protected 成员函数</a> &#124;
+<a href="#pro-attribs">Protected 属性</a> &#124;
+<a href="#pri-types">Private 类型</a> &#124;
+<a href="#pri-methods">Private 成员函数</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="class_update_job_base-members.html">所有成员列表</a>  </div>
+  <div class="headertitle">
+<div class="title">UpdateJobBase类 参考<span class="mlabels"><span class="mlabel">abstract</span></span></div>  </div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_update_job_base_8hpp_source.html">UpdateJobBase.hpp</a>&gt;</code></p>
+<div class="dynheader">
+类 UpdateJobBase 继承关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_update_job_base__inherit__graph.png" border="0" usemap="#_update_job_base_inherit__map" alt="Inheritance graph"/></div>
+<map name="_update_job_base_inherit__map" id="_update_job_base_inherit__map">
+<area shape="rect" id="node1" title=" " alt="" coords="100,80,215,107"/>
+<area shape="rect" id="node3" href="class_contest_update_job.html" title=" " alt="" coords="5,155,136,181"/>
+<area shape="rect" id="node4" href="class_exercise_update_job_base.html" title=" " alt="" coords="161,155,327,181"/>
+<area shape="rect" id="node2" href="class_job_base.html" title="JudgeJob 与 UpdateJob 的基类， 存有 Job的基本信息，并规定了所有 Job 必须遵循的函数接口。" alt="" coords="121,5,194,32"/>
+<area shape="rect" id="node5" href="class_course_update_job.html" title=" " alt="" coords="103,229,230,256"/>
+<area shape="rect" id="node6" href="class_exercise_update_job.html" title=" " alt="" coords="255,229,391,256"/>
+</map>
+<center><span class="legend">[<a href="graph_legend.html">图例</a>]</span></center></div>
+<div class="dynheader">
+UpdateJobBase 的协作图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_update_job_base__coll__graph.png" border="0" usemap="#_update_job_base_coll__map" alt="Collaboration graph"/></div>
+<map name="_update_job_base_coll__map" id="_update_job_base_coll__map">
+<area shape="rect" id="node1" title=" " alt="" coords="86,184,201,211"/>
+<area shape="rect" id="node2" href="class_job_base.html" title="JudgeJob 与 UpdateJob 的基类， 存有 Job的基本信息，并规定了所有 Job 必须遵循的函数接口。" alt="" coords="20,95,93,121"/>
+<area shape="rect" id="node3" title=" " alt="" coords="5,5,108,32"/>
+<area shape="rect" id="node4" href="struct_solution_details.html" title=" " alt="" coords="117,95,228,121"/>
+</map>
+<center><span class="legend">[<a href="graph_legend.html">图例</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a1f2173cec66f3453d4a87c91c2ac8e29"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_update_job_base.html#a1f2173cec66f3453d4a87c91c2ac8e29">handle</a> () override final</td></tr>
+<tr class="memdesc:a1f2173cec66f3453d4a87c91c2ac8e29"><td class="mdescLeft">&#160;</td><td class="mdescRight">执行任务  <a href="#a1f2173cec66f3453d4a87c91c2ac8e29">更多...</a><br /></td></tr>
+<tr class="separator:a1f2173cec66f3453d4a87c91c2ac8e29"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf4225845eb0322c1656ebdf5b7f81d6"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_update_job_base.html#aaf4225845eb0322c1656ebdf5b7f81d6">~UpdateJobBase</a> () noexcept=default</td></tr>
+<tr class="separator:aaf4225845eb0322c1656ebdf5b7f81d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_class_job_base"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_class_job_base')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="class_job_base.html">JobBase</a></td></tr>
+<tr class="memitem:a2ea51a36db0122575a48f13ce317c53e inherit pub_methods_class_job_base"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a2ea51a36db0122575a48f13ce317c53e">JobBase</a> (int <a class="el" href="class_job_base.html#a895e989e70dde5842a9838c67e4e1e91">jobType</a>, int <a class="el" href="class_job_base.html#a1b5f881d50165db4ba63372469026c17">sid</a>, const kerbal::redis::RedisContext &amp;<a class="el" href="class_job_base.html#a985b11d128f3b38ddd6f7dea662519e2">redisConn</a>)</td></tr>
+<tr class="memdesc:a2ea51a36db0122575a48f13ce317c53e inherit pub_methods_class_job_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">初始化 jobType, sid, redisConn  <a href="class_job_base.html#a2ea51a36db0122575a48f13ce317c53e">更多...</a><br /></td></tr>
+<tr class="separator:a2ea51a36db0122575a48f13ce317c53e inherit pub_methods_class_job_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6de81c238cbe4fc667f952b3c5d56693 inherit pub_methods_class_job_base"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a6de81c238cbe4fc667f952b3c5d56693">~JobBase</a> () noexcept=default</td></tr>
+<tr class="memdesc:a6de81c238cbe4fc667f952b3c5d56693 inherit pub_methods_class_job_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">析构函数使用默认析构函数  <a href="class_job_base.html#a6de81c238cbe4fc667f952b3c5d56693">更多...</a><br /></td></tr>
+<tr class="separator:a6de81c238cbe4fc667f952b3c5d56693 inherit pub_methods_class_job_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acba3c7755afaaaf0e522bc53eec10828 inherit pub_methods_class_job_base"><td class="memItemLeft" align="right" valign="top">kerbal::redis::RedisReply&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#acba3c7755afaaaf0e522bc53eec10828">get_source_code</a> () const</td></tr>
+<tr class="memdesc:acba3c7755afaaaf0e522bc53eec10828 inherit pub_methods_class_job_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">从 redis 中取得代码  <a href="class_job_base.html#acba3c7755afaaaf0e522bc53eec10828">更多...</a><br /></td></tr>
+<tr class="separator:acba3c7755afaaaf0e522bc53eec10828 inherit pub_methods_class_job_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a06b6dd6262e98277d929ccd68451a0b7 inherit pub_methods_class_job_base"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a06b6dd6262e98277d929ccd68451a0b7">storeSourceCode</a> () const</td></tr>
+<tr class="memdesc:a06b6dd6262e98277d929ccd68451a0b7 inherit pub_methods_class_job_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">从 redis 数据库获取本 Job 的代码并存储到工作空间中，用于编译运行。  <a href="class_job_base.html#a06b6dd6262e98277d929ccd68451a0b7">更多...</a><br /></td></tr>
+<tr class="separator:a06b6dd6262e98277d929ccd68451a0b7 inherit pub_methods_class_job_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa7da8e91cd0ffddf9b1cf70995d2134b inherit pub_methods_class_job_base"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#aa7da8e91cd0ffddf9b1cf70995d2134b">commitJudgeStatusToRedis</a> (<a class="el" href="united__resource_8hpp.html#a80b9d5506f136fd5cef4ccd153030f1a">JudgeStatus</a> value)</td></tr>
+<tr class="memdesc:aa7da8e91cd0ffddf9b1cf70995d2134b inherit pub_methods_class_job_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">将当前评测状态提交到 redis 数据库。  <a href="class_job_base.html#aa7da8e91cd0ffddf9b1cf70995d2134b">更多...</a><br /></td></tr>
+<tr class="separator:aa7da8e91cd0ffddf9b1cf70995d2134b inherit pub_methods_class_job_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-types"></a>
+Protected 类型</h2></td></tr>
+<tr class="memitem:a4dae0fce7e364370c039cbc003eb8395"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_update_job_base.html#a4dae0fce7e364370c039cbc003eb8395">RedisContext</a> = kerbal::redis::RedisContext</td></tr>
+<tr class="separator:a4dae0fce7e364370c039cbc003eb8395"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
+Protected 成员函数</h2></td></tr>
+<tr class="memitem:aaeee903bfb8a86a7ea32ede6507559da"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_update_job_base.html#aaeee903bfb8a86a7ea32ede6507559da">UpdateJobBase</a> (int <a class="el" href="class_job_base.html#a895e989e70dde5842a9838c67e4e1e91">jobType</a>, int <a class="el" href="class_job_base.html#a1b5f881d50165db4ba63372469026c17">sid</a>, const <a class="el" href="class_update_job_base.html#a4dae0fce7e364370c039cbc003eb8395">RedisContext</a> &amp;<a class="el" href="class_job_base.html#a985b11d128f3b38ddd6f7dea662519e2">redisConn</a>, std::unique_ptr&lt; mysqlpp::Connection &gt; &amp;&amp;<a class="el" href="class_update_job_base.html#a4c9aff7e119a5ab78198fa8d093b0bae">mysqlConn</a>)</td></tr>
+<tr class="separator:aaeee903bfb8a86a7ea32ede6507559da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4228d67e4883271b0904d3469dba1415"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_update_job_base.html#a4228d67e4883271b0904d3469dba1415">update_solution</a> ()=0</td></tr>
+<tr class="memdesc:a4228d67e4883271b0904d3469dba1415"><td class="mdescLeft">&#160;</td><td class="mdescRight">将本次提交记录更新至 solution 表  <a href="#a4228d67e4883271b0904d3469dba1415">更多...</a><br /></td></tr>
+<tr class="separator:a4228d67e4883271b0904d3469dba1415"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9fb74f04b478236af2a74b1e6cb4621a"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_update_job_base.html#a9fb74f04b478236af2a74b1e6cb4621a">update_source_code</a> (const char *source_code)=0</td></tr>
+<tr class="memdesc:a9fb74f04b478236af2a74b1e6cb4621a"><td class="mdescLeft">&#160;</td><td class="mdescRight">将提交代码更新至 mysql  <a href="#a9fb74f04b478236af2a74b1e6cb4621a">更多...</a><br /></td></tr>
+<tr class="separator:a9fb74f04b478236af2a74b1e6cb4621a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab829aaf57d148eb434b26f2033783721"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_update_job_base.html#ab829aaf57d148eb434b26f2033783721">update_compile_info</a> (const char *compile_info)=0</td></tr>
+<tr class="memdesc:ab829aaf57d148eb434b26f2033783721"><td class="mdescLeft">&#160;</td><td class="mdescRight">将编译错误信息更新至 mysql  <a href="#ab829aaf57d148eb434b26f2033783721">更多...</a><br /></td></tr>
+<tr class="separator:ab829aaf57d148eb434b26f2033783721"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08f66810bc77bcf53cf97ac0ad200d86"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_update_job_base.html#a08f66810bc77bcf53cf97ac0ad200d86">update_user_and_problem</a> ()=0</td></tr>
+<tr class="memdesc:a08f66810bc77bcf53cf97ac0ad200d86"><td class="mdescLeft">&#160;</td><td class="mdescRight">更新题目的提交数, 通过数, 用户的提交数, 通过数  <a href="#a08f66810bc77bcf53cf97ac0ad200d86">更多...</a><br /></td></tr>
+<tr class="separator:a08f66810bc77bcf53cf97ac0ad200d86"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f9c939aca4766afe525e63db2ec2841"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_update_job_base.html#a5f9c939aca4766afe525e63db2ec2841">update_user_problem</a> ()=0</td></tr>
+<tr class="memdesc:a5f9c939aca4766afe525e63db2ec2841"><td class="mdescLeft">&#160;</td><td class="mdescRight">更新此用户此题的完成状态  用户所见到的每题 AC, TO_DO, ATTEMPT 三种状态即为user problem 表所提供的服务  <a href="#a5f9c939aca4766afe525e63db2ec2841">更多...</a><br /></td></tr>
+<tr class="separator:a5f9c939aca4766afe525e63db2ec2841"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
+Protected 属性</h2></td></tr>
+<tr class="memitem:a4c9aff7e119a5ab78198fa8d093b0bae"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; mysqlpp::Connection &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_update_job_base.html#a4c9aff7e119a5ab78198fa8d093b0bae">mysqlConn</a></td></tr>
+<tr class="separator:a4c9aff7e119a5ab78198fa8d093b0bae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa4839531bda4ea300c2d92619e41f124"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_update_job_base.html#aa4839531bda4ea300c2d92619e41f124">uid</a></td></tr>
+<tr class="memdesc:aa4839531bda4ea300c2d92619e41f124"><td class="mdescLeft">&#160;</td><td class="mdescRight">user id  <a href="#aa4839531bda4ea300c2d92619e41f124">更多...</a><br /></td></tr>
+<tr class="separator:aa4839531bda4ea300c2d92619e41f124"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb7dec321f22e82b69545cc6bd6f86df"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_update_job_base.html#abb7dec321f22e82b69545cc6bd6f86df">cid</a></td></tr>
+<tr class="memdesc:abb7dec321f22e82b69545cc6bd6f86df"><td class="mdescLeft">&#160;</td><td class="mdescRight">course_id  <a href="#abb7dec321f22e82b69545cc6bd6f86df">更多...</a><br /></td></tr>
+<tr class="separator:abb7dec321f22e82b69545cc6bd6f86df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36607d96cb00513ff767e985fabb6121"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_update_job_base.html#a36607d96cb00513ff767e985fabb6121">postTime</a></td></tr>
+<tr class="memdesc:a36607d96cb00513ff767e985fabb6121"><td class="mdescLeft">&#160;</td><td class="mdescRight">post time  <a href="#a36607d96cb00513ff767e985fabb6121">更多...</a><br /></td></tr>
+<tr class="separator:a36607d96cb00513ff767e985fabb6121"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9004fa89814299a4dea1437584e89d3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_update_job_base.html#ae9004fa89814299a4dea1437584e89d3">no_store_ac_code</a></td></tr>
+<tr class="memdesc:ae9004fa89814299a4dea1437584e89d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">whether the user has pass the problem before  <a href="#ae9004fa89814299a4dea1437584e89d3">更多...</a><br /></td></tr>
+<tr class="separator:ae9004fa89814299a4dea1437584e89d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7fd81c0c98a2b49369541785ed0d7579"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_update_job_base.html#a7fd81c0c98a2b49369541785ed0d7579">is_rejudge</a></td></tr>
+<tr class="memdesc:a7fd81c0c98a2b49369541785ed0d7579"><td class="mdescLeft">&#160;</td><td class="mdescRight">is rejudge job  <a href="#a7fd81c0c98a2b49369541785ed0d7579">更多...</a><br /></td></tr>
+<tr class="separator:a7fd81c0c98a2b49369541785ed0d7579"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30801615bcfa6444b5933d558fca93eb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_solution_details.html">SolutionDetails</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_update_job_base.html#a30801615bcfa6444b5933d558fca93eb">result</a></td></tr>
+<tr class="separator:a30801615bcfa6444b5933d558fca93eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-types"></a>
+Private 类型</h2></td></tr>
+<tr class="memitem:a1fa13638635089d5f071b166dfd5c4b7"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="class_job_base.html">JobBase</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_update_job_base.html#a1fa13638635089d5f071b166dfd5c4b7">supper_t</a></td></tr>
+<tr class="separator:a1fa13638635089d5f071b166dfd5c4b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
+Private 成员函数</h2></td></tr>
+<tr class="memitem:a58482b3c4fbc2c32f98614245d8a20c6"><td class="memItemLeft" align="right" valign="top">kerbal::redis::RedisReply&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_update_job_base.html#a58482b3c4fbc2c32f98614245d8a20c6">get_compile_info</a> () const</td></tr>
+<tr class="memdesc:a58482b3c4fbc2c32f98614245d8a20c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">从 redis 中取得编译错误信息  <a href="#a58482b3c4fbc2c32f98614245d8a20c6">更多...</a><br /></td></tr>
+<tr class="separator:a58482b3c4fbc2c32f98614245d8a20c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc854203cf6eac1d9e760c194b55e0c3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_update_job_base.html#acc854203cf6eac1d9e760c194b55e0c3">core_update_failed_table</a> (const kerbal::redis::RedisReply &amp;source_code, const kerbal::redis::RedisReply &amp;compile_error_info) noexcept</td></tr>
+<tr class="memdesc:acc854203cf6eac1d9e760c194b55e0c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">如果 update job 的过程中产生失败, 则将记录插入 core_update_failed 表中  <a href="#acc854203cf6eac1d9e760c194b55e0c3">更多...</a><br /></td></tr>
+<tr class="separator:acc854203cf6eac1d9e760c194b55e0c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acac0b7349fdc21b23009c14d6d34547c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_update_job_base.html#acac0b7349fdc21b23009c14d6d34547c">clear_previous_jobs_info_in_redis</a> () noexcept</td></tr>
+<tr class="memdesc:acac0b7349fdc21b23009c14d6d34547c"><td class="mdescLeft">&#160;</td><td class="mdescRight">删除 redis 中本条 job 向前推 600 条的 job 信息  <a href="#acac0b7349fdc21b23009c14d6d34547c">更多...</a><br /></td></tr>
+<tr class="separator:acac0b7349fdc21b23009c14d6d34547c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd9de05f8a308d96b0fb3a73df245a9e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_update_job_base.html#abd9de05f8a308d96b0fb3a73df245a9e">clear_this_jobs_info_in_redis</a> () noexcept</td></tr>
+<tr class="memdesc:abd9de05f8a308d96b0fb3a73df245a9e"><td class="mdescLeft">&#160;</td><td class="mdescRight">删除 redis 中本条 job 不再需要的信息  <a href="#abd9de05f8a308d96b0fb3a73df245a9e">更多...</a><br /></td></tr>
+<tr class="separator:abd9de05f8a308d96b0fb3a73df245a9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:afe0e352881f68f46e538140550a558f3"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="class_update_job_base.html">UpdateJobBase</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_update_job_base.html#afe0e352881f68f46e538140550a558f3">make_update_job</a> (int <a class="el" href="class_job_base.html#a895e989e70dde5842a9838c67e4e1e91">jobType</a>, int <a class="el" href="class_job_base.html#a1b5f881d50165db4ba63372469026c17">sid</a>, const <a class="el" href="class_update_job_base.html#a4dae0fce7e364370c039cbc003eb8395">RedisContext</a> &amp;<a class="el" href="class_job_base.html#a985b11d128f3b38ddd6f7dea662519e2">redisConn</a>, std::unique_ptr&lt; mysqlpp::Connection &gt; &amp;&amp;<a class="el" href="class_update_job_base.html#a4c9aff7e119a5ab78198fa8d093b0bae">mysqlConn</a>)</td></tr>
+<tr class="memdesc:afe0e352881f68f46e538140550a558f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">根据传入的 jobType, sid 构造一个具体的 UpdateJob 对象, 并返回指向所构造对象的智能指针  <a href="#afe0e352881f68f46e538140550a558f3">更多...</a><br /></td></tr>
+<tr class="separator:afe0e352881f68f46e538140550a558f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
+额外继承的成员函数</h2></td></tr>
+<tr class="inherit_header pub_static_methods_class_job_base"><td colspan="2" onclick="javascript:toggleInherit('pub_static_methods_class_job_base')"><img src="closed.png" alt="-"/>&#160;静态 Public 成员函数 继承自 <a class="el" href="class_job_base.html">JobBase</a></td></tr>
+<tr class="memitem:a45db2aacca3aa05d98aecaa560d54c8d inherit pub_static_methods_class_job_base"><td class="memItemLeft" align="right" valign="top">static std::pair&lt; int, int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a45db2aacca3aa05d98aecaa560d54c8d">parseJobItem</a> (const std::string &amp;jobItem)</td></tr>
+<tr class="memdesc:a45db2aacca3aa05d98aecaa560d54c8d inherit pub_static_methods_class_job_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">将待处理 Job 信息分解，提取出 job_type 与 job_id  <a href="class_job_base.html#a45db2aacca3aa05d98aecaa560d54c8d">更多...</a><br /></td></tr>
+<tr class="separator:a45db2aacca3aa05d98aecaa560d54c8d inherit pub_static_methods_class_job_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a694f006cab5c06d8939ee7550d3a04ac inherit pub_static_methods_class_job_base"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a694f006cab5c06d8939ee7550d3a04ac">isExitJob</a> (const std::string &amp;jobItem)</td></tr>
+<tr class="memdesc:a694f006cab5c06d8939ee7550d3a04ac inherit pub_static_methods_class_job_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">判断是否终止服务 loop  <a href="class_job_base.html#a694f006cab5c06d8939ee7550d3a04ac">更多...</a><br /></td></tr>
+<tr class="separator:a694f006cab5c06d8939ee7550d3a04ac inherit pub_static_methods_class_job_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d354b5691b71524e49514dfbcd41550 inherit pub_static_methods_class_job_base"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a3d354b5691b71524e49514dfbcd41550">getExitJobItem</a> ()</td></tr>
+<tr class="memdesc:a3d354b5691b71524e49514dfbcd41550 inherit pub_static_methods_class_job_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">获取规定的停止工作标识  <a href="class_job_base.html#a3d354b5691b71524e49514dfbcd41550">更多...</a><br /></td></tr>
+<tr class="separator:a3d354b5691b71524e49514dfbcd41550 inherit pub_static_methods_class_job_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_attribs_class_job_base"><td colspan="2" onclick="javascript:toggleInherit('pub_attribs_class_job_base')"><img src="closed.png" alt="-"/>&#160;Public 属性 继承自 <a class="el" href="class_job_base.html">JobBase</a></td></tr>
+<tr class="memitem:a895e989e70dde5842a9838c67e4e1e91 inherit pub_attribs_class_job_base"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a895e989e70dde5842a9838c67e4e1e91">jobType</a></td></tr>
+<tr class="memdesc:a895e989e70dde5842a9838c67e4e1e91 inherit pub_attribs_class_job_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Job 类型，如：竞赛、课程等  <a href="class_job_base.html#a895e989e70dde5842a9838c67e4e1e91">更多...</a><br /></td></tr>
+<tr class="separator:a895e989e70dde5842a9838c67e4e1e91 inherit pub_attribs_class_job_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b5f881d50165db4ba63372469026c17 inherit pub_attribs_class_job_base"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a1b5f881d50165db4ba63372469026c17">sid</a></td></tr>
+<tr class="memdesc:a1b5f881d50165db4ba63372469026c17 inherit pub_attribs_class_job_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">solution id  <a href="class_job_base.html#a1b5f881d50165db4ba63372469026c17">更多...</a><br /></td></tr>
+<tr class="separator:a1b5f881d50165db4ba63372469026c17 inherit pub_attribs_class_job_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a985b11d128f3b38ddd6f7dea662519e2 inherit pub_attribs_class_job_base"><td class="memItemLeft" align="right" valign="top">kerbal::redis::RedisContext&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a985b11d128f3b38ddd6f7dea662519e2">redisConn</a></td></tr>
+<tr class="memdesc:a985b11d128f3b38ddd6f7dea662519e2 inherit pub_attribs_class_job_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">redis 连接  <a href="class_job_base.html#a985b11d128f3b38ddd6f7dea662519e2">更多...</a><br /></td></tr>
+<tr class="separator:a985b11d128f3b38ddd6f7dea662519e2 inherit pub_attribs_class_job_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a281c54f87ea485dd646d19f0a8e7e986 inherit pub_attribs_class_job_base"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a281c54f87ea485dd646d19f0a8e7e986">pid</a></td></tr>
+<tr class="memdesc:a281c54f87ea485dd646d19f0a8e7e986 inherit pub_attribs_class_job_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">problem id  <a href="class_job_base.html#a281c54f87ea485dd646d19f0a8e7e986">更多...</a><br /></td></tr>
+<tr class="separator:a281c54f87ea485dd646d19f0a8e7e986 inherit pub_attribs_class_job_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abbfedbd4ddcecdafadcd635c6e254885 inherit pub_attribs_class_job_base"><td class="memItemLeft" align="right" valign="top"><a class="el" href="united__resource_8hpp.html#a315ca917ad583797f709ea477dd28705">Language</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#abbfedbd4ddcecdafadcd635c6e254885">lang</a></td></tr>
+<tr class="memdesc:abbfedbd4ddcecdafadcd635c6e254885 inherit pub_attribs_class_job_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">语言  <a href="class_job_base.html#abbfedbd4ddcecdafadcd635c6e254885">更多...</a><br /></td></tr>
+<tr class="separator:abbfedbd4ddcecdafadcd635c6e254885 inherit pub_attribs_class_job_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a55a4b41269bb36db8cdf2577cdb05d6f inherit pub_attribs_class_job_base"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a55a4b41269bb36db8cdf2577cdb05d6f">cases</a></td></tr>
+<tr class="memdesc:a55a4b41269bb36db8cdf2577cdb05d6f inherit pub_attribs_class_job_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">测试用例数量  <a href="class_job_base.html#a55a4b41269bb36db8cdf2577cdb05d6f">更多...</a><br /></td></tr>
+<tr class="separator:a55a4b41269bb36db8cdf2577cdb05d6f inherit pub_attribs_class_job_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28693bb0f592b592ac21c961b4733a49 inherit pub_attribs_class_job_base"><td class="memItemLeft" align="right" valign="top">std::chrono::milliseconds&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a28693bb0f592b592ac21c961b4733a49">timeLimit</a></td></tr>
+<tr class="memdesc:a28693bb0f592b592ac21c961b4733a49 inherit pub_attribs_class_job_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">时间限制  <a href="class_job_base.html#a28693bb0f592b592ac21c961b4733a49">更多...</a><br /></td></tr>
+<tr class="separator:a28693bb0f592b592ac21c961b4733a49 inherit pub_attribs_class_job_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3165f108ef68c479d89b2b04013c1150 inherit pub_attribs_class_job_base"><td class="memItemLeft" align="right" valign="top">kerbal::utility::MB&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a3165f108ef68c479d89b2b04013c1150">memoryLimit</a></td></tr>
+<tr class="memdesc:a3165f108ef68c479d89b2b04013c1150 inherit pub_attribs_class_job_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">空间限制  <a href="class_job_base.html#a3165f108ef68c479d89b2b04013c1150">更多...</a><br /></td></tr>
+<tr class="separator:a3165f108ef68c479d89b2b04013c1150 inherit pub_attribs_class_job_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a212de257a305128e8fb134958f8d54ab inherit pub_attribs_class_job_base"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a212de257a305128e8fb134958f8d54ab">similarity_threshold</a></td></tr>
+<tr class="memdesc:a212de257a305128e8fb134958f8d54ab inherit pub_attribs_class_job_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">重复率限制  <a href="class_job_base.html#a212de257a305128e8fb134958f8d54ab">更多...</a><br /></td></tr>
+<tr class="separator:a212de257a305128e8fb134958f8d54ab inherit pub_attribs_class_job_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock">
+<p class="definition">在文件 <a class="el" href="_update_job_base_8hpp_source.html">UpdateJobBase.hpp</a> 第 <a class="el" href="_update_job_base_8hpp_source.html#l00028">28</a> 行定义.</p>
+</div><h2 class="groupheader">成员类型定义说明</h2>
+<a id="a4dae0fce7e364370c039cbc003eb8395"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4dae0fce7e364370c039cbc003eb8395">&#9670;&nbsp;</a></span>RedisContext</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="class_update_job_base.html#a4dae0fce7e364370c039cbc003eb8395">UpdateJobBase::RedisContext</a> =  kerbal::redis::RedisContext</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="_update_job_base_8hpp_source.html">UpdateJobBase.hpp</a> 第 <a class="el" href="_update_job_base_8hpp_source.html#l00035">35</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1fa13638635089d5f071b166dfd5c4b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1fa13638635089d5f071b166dfd5c4b7">&#9670;&nbsp;</a></span>supper_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef <a class="el" href="class_job_base.html">JobBase</a> <a class="el" href="class_update_job_base.html#a1fa13638635089d5f071b166dfd5c4b7">UpdateJobBase::supper_t</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="_update_job_base_8hpp_source.html">UpdateJobBase.hpp</a> 第 <a class="el" href="_update_job_base_8hpp_source.html#l00031">31</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">构造及析构函数说明</h2>
+<a id="aaeee903bfb8a86a7ea32ede6507559da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaeee903bfb8a86a7ea32ede6507559da">&#9670;&nbsp;</a></span>UpdateJobBase()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">UpdateJobBase::UpdateJobBase </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>jobType</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>sid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="class_update_job_base.html#a4dae0fce7e364370c039cbc003eb8395">RedisContext</a> &amp;&#160;</td>
+          <td class="paramname"><em>redisConn</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::unique_ptr&lt; mysqlpp::Connection &gt; &amp;&amp;&#160;</td>
+          <td class="paramname"><em>mysqlConn</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="_update_job_base_8cpp_source.html">UpdateJobBase.cpp</a> 第 <a class="el" href="_update_job_base_8cpp_source.html#l00062">62</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aaf4225845eb0322c1656ebdf5b7f81d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf4225845eb0322c1656ebdf5b7f81d6">&#9670;&nbsp;</a></span>~UpdateJobBase()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual UpdateJobBase::~UpdateJobBase </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="acac0b7349fdc21b23009c14d6d34547c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acac0b7349fdc21b23009c14d6d34547c">&#9670;&nbsp;</a></span>clear_previous_jobs_info_in_redis()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void UpdateJobBase::clear_previous_jobs_info_in_redis </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>删除 redis 中本条 job 向前推 600 条的 job 信息 </p>
+
+<p class="definition">在文件 <a class="el" href="_update_job_base_8cpp_source.html">UpdateJobBase.cpp</a> 第 <a class="el" href="_update_job_base_8cpp_source.html#l00224">224</a> 行定义.</p>
+<div class="dynheader">
+这是这个函数的调用关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_update_job_base_acac0b7349fdc21b23009c14d6d34547c_icgraph.png" border="0" usemap="#class_update_job_base_acac0b7349fdc21b23009c14d6d34547c_icgraph" alt=""/></div>
+<map name="class_update_job_base_acac0b7349fdc21b23009c14d6d34547c_icgraph" id="class_update_job_base_acac0b7349fdc21b23009c14d6d34547c_icgraph">
+<area shape="rect" id="node1" title="删除 redis 中本条 job 向前推 600 条的 job 信息" alt="" coords="215,5,404,47"/>
+<area shape="rect" id="node2" href="class_update_job_base.html#a1f2173cec66f3453d4a87c91c2ac8e29" title="执行任务" alt="" coords="5,13,167,39"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="abd9de05f8a308d96b0fb3a73df245a9e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abd9de05f8a308d96b0fb3a73df245a9e">&#9670;&nbsp;</a></span>clear_this_jobs_info_in_redis()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void UpdateJobBase::clear_this_jobs_info_in_redis </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>删除 redis 中本条 job 不再需要的信息 </p>
+
+<p class="definition">在文件 <a class="el" href="_update_job_base_8cpp_source.html">UpdateJobBase.cpp</a> 第 <a class="el" href="_update_job_base_8cpp_source.html#l00268">268</a> 行定义.</p>
+<div class="dynheader">
+这是这个函数的调用关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_update_job_base_abd9de05f8a308d96b0fb3a73df245a9e_icgraph.png" border="0" usemap="#class_update_job_base_abd9de05f8a308d96b0fb3a73df245a9e_icgraph" alt=""/></div>
+<map name="class_update_job_base_abd9de05f8a308d96b0fb3a73df245a9e_icgraph" id="class_update_job_base_abd9de05f8a308d96b0fb3a73df245a9e_icgraph">
+<area shape="rect" id="node1" title="删除 redis 中本条 job 不再需要的信息" alt="" coords="215,5,376,47"/>
+<area shape="rect" id="node2" href="class_update_job_base.html#a1f2173cec66f3453d4a87c91c2ac8e29" title="执行任务" alt="" coords="5,13,167,39"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="acc854203cf6eac1d9e760c194b55e0c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc854203cf6eac1d9e760c194b55e0c3">&#9670;&nbsp;</a></span>core_update_failed_table()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void UpdateJobBase::core_update_failed_table </td>
+          <td>(</td>
+          <td class="paramtype">const kerbal::redis::RedisReply &amp;&#160;</td>
+          <td class="paramname"><em>source_code</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const kerbal::redis::RedisReply &amp;&#160;</td>
+          <td class="paramname"><em>compile_error_info</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>如果 update job 的过程中产生失败, 则将记录插入 core_update_failed 表中 </p>
+<dl class="exception"><dt>异常</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">本方法承诺不抛出任何异常.</td><td>因为它本身就是对错误结果的处理函数 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section warning"><dt>警告</dt><dd>若此方法在更新表时失败, 则说明 mysql 连接可能已失效, 接下来可能会发生一系列未定义行为 (TODO) </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="_update_job_base_8cpp_source.html">UpdateJobBase.cpp</a> 第 <a class="el" href="_update_job_base_8cpp_source.html#l00293">293</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a58482b3c4fbc2c32f98614245d8a20c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58482b3c4fbc2c32f98614245d8a20c6">&#9670;&nbsp;</a></span>get_compile_info()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">kerbal::redis::RedisReply UpdateJobBase::get_compile_info </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>从 redis 中取得编译错误信息 </p>
+<dl class="section return"><dt>返回</dt><dd>Redis 返回集. 注意! 返回集的类型只可能为字符串类型, 否则该方法会通过抛出异常报告错误 </dd></dl>
+<dl class="exception"><dt>异常</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">RedisUnexpectedCaseException</td><td>如果取得的结果不为字符串类型 (包括空类型), 则抛出此异常 </td></tr>
+    <tr><td class="paramname">std::exception</td><td>该方法执行过程中还会因 redis 操作失败 </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="_update_job_base_8cpp_source.html">UpdateJobBase.cpp</a> 第 <a class="el" href="_update_job_base_8cpp_source.html#l00206">206</a> 行定义.</p>
+<div class="dynheader">
+这是这个函数的调用关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_update_job_base_a58482b3c4fbc2c32f98614245d8a20c6_icgraph.png" border="0" usemap="#class_update_job_base_a58482b3c4fbc2c32f98614245d8a20c6_icgraph" alt=""/></div>
+<map name="class_update_job_base_a58482b3c4fbc2c32f98614245d8a20c6_icgraph" id="class_update_job_base_a58482b3c4fbc2c32f98614245d8a20c6_icgraph">
+<area shape="rect" id="node1" title="从 redis 中取得编译错误信息" alt="" coords="215,5,356,47"/>
+<area shape="rect" id="node2" href="class_update_job_base.html#a1f2173cec66f3453d4a87c91c2ac8e29" title="执行任务" alt="" coords="5,13,167,39"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a1f2173cec66f3453d4a87c91c2ac8e29"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f2173cec66f3453d4a87c91c2ac8e29">&#9670;&nbsp;</a></span>handle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void UpdateJobBase::handle </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">final</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>执行任务 </p>
+<dl class="section warning"><dt>警告</dt><dd>本方法实现了基类中规定的 void <a class="el" href="class_update_job_base.html#a1f2173cec66f3453d4a87c91c2ac8e29" title="执行任务">handle()</a> 接口, 且子类不可再覆盖 </dd></dl>
+
+<p>实现了 <a class="el" href="class_job_base.html#aea684b77a3d8e913b87d8f3deb18c8fe">JobBase</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="_update_job_base_8cpp_source.html">UpdateJobBase.cpp</a> 第 <a class="el" href="_update_job_base_8cpp_source.html#l00118">118</a> 行定义.</p>
+<div class="dynheader">
+函数调用图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_update_job_base_a1f2173cec66f3453d4a87c91c2ac8e29_cgraph.png" border="0" usemap="#class_update_job_base_a1f2173cec66f3453d4a87c91c2ac8e29_cgraph" alt=""/></div>
+<map name="class_update_job_base_a1f2173cec66f3453d4a87c91c2ac8e29_cgraph" id="class_update_job_base_a1f2173cec66f3453d4a87c91c2ac8e29_cgraph">
+<area shape="rect" id="node1" title="执行任务" alt="" coords="5,294,167,321"/>
+<area shape="rect" id="node2" href="class_update_job_base.html#a4228d67e4883271b0904d3469dba1415" title="将本次提交记录更新至 solution 表" alt="" coords="232,5,395,47"/>
+<area shape="rect" id="node3" href="class_update_job_base.html#a08f66810bc77bcf53cf97ac0ad200d86" title="更新题目的提交数, 通过数, 用户的提交数, 通过数" alt="" coords="232,71,395,112"/>
+<area shape="rect" id="node4" href="class_update_job_base.html#a5f9c939aca4766afe525e63db2ec2841" title="更新此用户此题的完成状态 &#160;用户所见到的每题 AC, TO_DO, ATTEMPT 三种状态即为user problem 表所提供的服务" alt="" coords="232,136,395,177"/>
+<area shape="rect" id="node5" href="class_job_base.html#acba3c7755afaaaf0e522bc53eec10828" title="从 redis 中取得代码" alt="" coords="223,202,403,229"/>
+<area shape="rect" id="node6" href="class_update_job_base.html#a9fb74f04b478236af2a74b1e6cb4621a" title="将提交代码更新至 mysql" alt="" coords="232,253,395,295"/>
+<area shape="rect" id="node7" href="class_update_job_base.html#a58482b3c4fbc2c32f98614245d8a20c6" title="从 redis 中取得编译错误信息" alt="" coords="243,319,384,360"/>
+<area shape="rect" id="node8" href="class_update_job_base.html#ab829aaf57d148eb434b26f2033783721" title="将编译错误信息更新至 mysql" alt="" coords="232,384,395,425"/>
+<area shape="rect" id="node9" href="class_job_base.html#aa7da8e91cd0ffddf9b1cf70995d2134b" title="将当前评测状态提交到 redis 数据库。" alt="" coords="215,449,412,491"/>
+<area shape="rect" id="node10" href="class_update_job_base.html#abd9de05f8a308d96b0fb3a73df245a9e" title="删除 redis 中本条 job 不再需要的信息" alt="" coords="233,515,394,556"/>
+<area shape="rect" id="node11" href="class_update_job_base.html#acac0b7349fdc21b23009c14d6d34547c" title="删除 redis 中本条 job 向前推 600 条的 job 信息" alt="" coords="219,580,408,621"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="ab829aaf57d148eb434b26f2033783721"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab829aaf57d148eb434b26f2033783721">&#9670;&nbsp;</a></span>update_compile_info()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void UpdateJobBase::update_compile_info </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>compile_info</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>将编译错误信息更新至 mysql </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">compile_info</td><td>指向编译错误信息字符串的常量指针 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section warning"><dt>警告</dt><dd>仅规定 update compile_info 表的接口, 具体操作需由子类实现 </dd></dl>
+
+<p>在 <a class="el" href="class_contest_update_job.html#a3bca7b4472833a787048f42b098c4951">ContestUpdateJob</a> , 以及 <a class="el" href="class_exercise_update_job_base.html#a1c3733a28199be61b8e6d1b926ac61b4">ExerciseUpdateJobBase</a> 内被实现.</p>
+<div class="dynheader">
+这是这个函数的调用关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_update_job_base_ab829aaf57d148eb434b26f2033783721_icgraph.png" border="0" usemap="#class_update_job_base_ab829aaf57d148eb434b26f2033783721_icgraph" alt=""/></div>
+<map name="class_update_job_base_ab829aaf57d148eb434b26f2033783721_icgraph" id="class_update_job_base_ab829aaf57d148eb434b26f2033783721_icgraph">
+<area shape="rect" id="node1" title="将编译错误信息更新至 mysql" alt="" coords="215,5,377,47"/>
+<area shape="rect" id="node2" href="class_update_job_base.html#a1f2173cec66f3453d4a87c91c2ac8e29" title="执行任务" alt="" coords="5,13,167,39"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a4228d67e4883271b0904d3469dba1415"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4228d67e4883271b0904d3469dba1415">&#9670;&nbsp;</a></span>update_solution()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void UpdateJobBase::update_solution </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>将本次提交记录更新至 solution 表 </p>
+<dl class="section warning"><dt>警告</dt><dd>仅规定 update solution 表的接口, 具体操作需由子类实现 </dd></dl>
+
+<p>在 <a class="el" href="class_contest_update_job.html#adc7b7e7e00cdfffddaa2704b8328acfd">ContestUpdateJob</a>, <a class="el" href="class_exercise_update_job_base.html#aeffacc3e79890db8714821706e1d2a48">ExerciseUpdateJobBase</a>, <a class="el" href="class_course_update_job.html#a292e721ec77f7f85ea613bb80c11fca3">CourseUpdateJob</a> , 以及 <a class="el" href="class_exercise_update_job.html#a316c037e1c1d4da1d454a95648e5e2c3">ExerciseUpdateJob</a> 内被实现.</p>
+<div class="dynheader">
+这是这个函数的调用关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_update_job_base_a4228d67e4883271b0904d3469dba1415_icgraph.png" border="0" usemap="#class_update_job_base_a4228d67e4883271b0904d3469dba1415_icgraph" alt=""/></div>
+<map name="class_update_job_base_a4228d67e4883271b0904d3469dba1415_icgraph" id="class_update_job_base_a4228d67e4883271b0904d3469dba1415_icgraph">
+<area shape="rect" id="node1" title="将本次提交记录更新至 solution 表" alt="" coords="215,5,377,47"/>
+<area shape="rect" id="node2" href="class_update_job_base.html#a1f2173cec66f3453d4a87c91c2ac8e29" title="执行任务" alt="" coords="5,13,167,39"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a9fb74f04b478236af2a74b1e6cb4621a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9fb74f04b478236af2a74b1e6cb4621a">&#9670;&nbsp;</a></span>update_source_code()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void UpdateJobBase::update_source_code </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>source_code</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>将提交代码更新至 mysql </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">source_code</td><td>指向代码字符串的常量指针 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section warning"><dt>警告</dt><dd>仅规定 update source_code 表的接口, 具体操作需由子类实现 </dd></dl>
+
+<p>在 <a class="el" href="class_contest_update_job.html#a1a65be93b0afd4ef59d3359f610181f6">ContestUpdateJob</a> , 以及 <a class="el" href="class_exercise_update_job_base.html#ab96e1d910f096da10acc7f4811fca635">ExerciseUpdateJobBase</a> 内被实现.</p>
+<div class="dynheader">
+这是这个函数的调用关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_update_job_base_a9fb74f04b478236af2a74b1e6cb4621a_icgraph.png" border="0" usemap="#class_update_job_base_a9fb74f04b478236af2a74b1e6cb4621a_icgraph" alt=""/></div>
+<map name="class_update_job_base_a9fb74f04b478236af2a74b1e6cb4621a_icgraph" id="class_update_job_base_a9fb74f04b478236af2a74b1e6cb4621a_icgraph">
+<area shape="rect" id="node1" title="将提交代码更新至 mysql" alt="" coords="215,5,377,47"/>
+<area shape="rect" id="node2" href="class_update_job_base.html#a1f2173cec66f3453d4a87c91c2ac8e29" title="执行任务" alt="" coords="5,13,167,39"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a08f66810bc77bcf53cf97ac0ad200d86"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a08f66810bc77bcf53cf97ac0ad200d86">&#9670;&nbsp;</a></span>update_user_and_problem()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void UpdateJobBase::update_user_and_problem </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>更新题目的提交数, 通过数, 用户的提交数, 通过数 </p>
+<dl class="section warning"><dt>警告</dt><dd>仅规定 update user and problem 表的接口, 具体操作需由子类实现 </dd></dl>
+
+<p>在 <a class="el" href="class_course_update_job.html#acdb8cfc94cfe73b2092c1e18a06be0a8">CourseUpdateJob</a>, <a class="el" href="class_exercise_update_job_base.html#a9405c9cf05a1de216d8dece91629af5c">ExerciseUpdateJobBase</a>, <a class="el" href="class_contest_update_job.html#ae319b437b9630517719da7f036cd61f5">ContestUpdateJob</a> , 以及 <a class="el" href="class_exercise_update_job.html#a5d23fe341214e8c3adaf6bc80d7b11f6">ExerciseUpdateJob</a> 内被实现.</p>
+<div class="dynheader">
+这是这个函数的调用关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_update_job_base_a08f66810bc77bcf53cf97ac0ad200d86_icgraph.png" border="0" usemap="#class_update_job_base_a08f66810bc77bcf53cf97ac0ad200d86_icgraph" alt=""/></div>
+<map name="class_update_job_base_a08f66810bc77bcf53cf97ac0ad200d86_icgraph" id="class_update_job_base_a08f66810bc77bcf53cf97ac0ad200d86_icgraph">
+<area shape="rect" id="node1" title="更新题目的提交数, 通过数, 用户的提交数, 通过数" alt="" coords="215,5,377,47"/>
+<area shape="rect" id="node2" href="class_update_job_base.html#a1f2173cec66f3453d4a87c91c2ac8e29" title="执行任务" alt="" coords="5,13,167,39"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="a5f9c939aca4766afe525e63db2ec2841"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f9c939aca4766afe525e63db2ec2841">&#9670;&nbsp;</a></span>update_user_problem()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void UpdateJobBase::update_user_problem </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>更新此用户此题的完成状态  用户所见到的每题 AC, TO_DO, ATTEMPT 三种状态即为user problem 表所提供的服务 </p>
+<dl class="section warning"><dt>警告</dt><dd>仅规定 update user problem 表的接口, 具体操作需由子类实现 </dd></dl>
+
+<p>在 <a class="el" href="class_exercise_update_job_base.html#a09d6e54f3da0de277e9a8d6d0abadf69">ExerciseUpdateJobBase</a>, <a class="el" href="class_contest_update_job.html#a4ddf2505c8a467684c1f17cc2242306d">ContestUpdateJob</a>, <a class="el" href="class_course_update_job.html#ae5db69f67a4841f33872af2b29f350df">CourseUpdateJob</a> , 以及 <a class="el" href="class_exercise_update_job.html#ae8669a380090ac1bd45d89d6d0d20387">ExerciseUpdateJob</a> 内被实现.</p>
+<div class="dynheader">
+这是这个函数的调用关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_update_job_base_a5f9c939aca4766afe525e63db2ec2841_icgraph.png" border="0" usemap="#class_update_job_base_a5f9c939aca4766afe525e63db2ec2841_icgraph" alt=""/></div>
+<map name="class_update_job_base_a5f9c939aca4766afe525e63db2ec2841_icgraph" id="class_update_job_base_a5f9c939aca4766afe525e63db2ec2841_icgraph">
+<area shape="rect" id="node1" title="更新此用户此题的完成状态 &#160;用户所见到的每题 AC, TO_DO, ATTEMPT 三种状态即为user problem 表所提供的服务" alt="" coords="215,5,377,47"/>
+<area shape="rect" id="node2" href="class_update_job_base.html#a1f2173cec66f3453d4a87c91c2ac8e29" title="执行任务" alt="" coords="5,13,167,39"/>
+</map>
+</div>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="afe0e352881f68f46e538140550a558f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe0e352881f68f46e538140550a558f3">&#9670;&nbsp;</a></span>make_update_job</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;<a class="el" href="class_update_job_base.html">UpdateJobBase</a>&gt; make_update_job </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>jobType</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>sid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="class_update_job_base.html#a4dae0fce7e364370c039cbc003eb8395">RedisContext</a> &amp;&#160;</td>
+          <td class="paramname"><em>redisConn</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::unique_ptr&lt; mysqlpp::Connection &gt; &amp;&amp;&#160;</td>
+          <td class="paramname"><em>mysqlConn</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>根据传入的 jobType, sid 构造一个具体的 UpdateJob 对象, 并返回指向所构造对象的智能指针 </p>
+<dl class="section return"><dt>返回</dt><dd>指向构造对象的智能指针. 如果 job 为练习, 则指针实际指向的是一个 <a class="el" href="class_exercise_update_job.html">ExerciseUpdateJob</a> 对象 如果 job 为课程, 则指针实际指向的是一个 <a class="el" href="class_course_update_job.html">CourseUpdateJob</a> 对象 如果 job 为竞赛, 则指针实际指向的是一个 <a class="el" href="class_contest_update_job.html">ContestUpdateJob</a> 对象 </dd></dl>
+<dl class="section warning"><dt>警告</dt><dd>返回的对象具有多态性, 请谨慎处理! </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="_update_job_base_8cpp_source.html">UpdateJobBase.cpp</a> 第 <a class="el" href="_update_job_base_8cpp_source.html#l00024">24</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="abb7dec321f22e82b69545cc6bd6f86df"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abb7dec321f22e82b69545cc6bd6f86df">&#9670;&nbsp;</a></span>cid</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int UpdateJobBase::cid</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>course_id </p>
+
+<p class="definition">在文件 <a class="el" href="_update_job_base_8hpp_source.html">UpdateJobBase.hpp</a> 第 <a class="el" href="_update_job_base_8hpp_source.html#l00043">43</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7fd81c0c98a2b49369541785ed0d7579"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7fd81c0c98a2b49369541785ed0d7579">&#9670;&nbsp;</a></span>is_rejudge</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool UpdateJobBase::is_rejudge</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>is rejudge job </p>
+
+<p class="definition">在文件 <a class="el" href="_update_job_base_8hpp_source.html">UpdateJobBase.hpp</a> 第 <a class="el" href="_update_job_base_8hpp_source.html#l00055">55</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4c9aff7e119a5ab78198fa8d093b0bae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c9aff7e119a5ab78198fa8d093b0bae">&#9670;&nbsp;</a></span>mysqlConn</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;mysqlpp::Connection&gt; UpdateJobBase::mysqlConn</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="_update_job_base_8hpp_source.html">UpdateJobBase.hpp</a> 第 <a class="el" href="_update_job_base_8hpp_source.html#l00037">37</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae9004fa89814299a4dea1437584e89d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9004fa89814299a4dea1437584e89d3">&#9670;&nbsp;</a></span>no_store_ac_code</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool UpdateJobBase::no_store_ac_code</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>whether the user has pass the problem before </p>
+<p class="">whether store the user's code if this solution is accepted </p>
+
+<p class="definition">在文件 <a class="el" href="_update_job_base_8hpp_source.html">UpdateJobBase.hpp</a> 第 <a class="el" href="_update_job_base_8hpp_source.html#l00052">52</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a36607d96cb00513ff767e985fabb6121"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a36607d96cb00513ff767e985fabb6121">&#9670;&nbsp;</a></span>postTime</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string UpdateJobBase::postTime</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>post time </p>
+
+<p class="definition">在文件 <a class="el" href="_update_job_base_8hpp_source.html">UpdateJobBase.hpp</a> 第 <a class="el" href="_update_job_base_8hpp_source.html#l00046">46</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a30801615bcfa6444b5933d558fca93eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a30801615bcfa6444b5933d558fca93eb">&#9670;&nbsp;</a></span>result</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="struct_solution_details.html">SolutionDetails</a> UpdateJobBase::result</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="_update_job_base_8hpp_source.html">UpdateJobBase.hpp</a> 第 <a class="el" href="_update_job_base_8hpp_source.html#l00057">57</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa4839531bda4ea300c2d92619e41f124"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4839531bda4ea300c2d92619e41f124">&#9670;&nbsp;</a></span>uid</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int UpdateJobBase::uid</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>user id </p>
+
+<p class="definition">在文件 <a class="el" href="_update_job_base_8hpp_source.html">UpdateJobBase.hpp</a> 第 <a class="el" href="_update_job_base_8hpp_source.html#l00040">40</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>/home/peter/git/Core/src/master/<a class="el" href="_update_job_base_8hpp_source.html">UpdateJobBase.hpp</a></li>
+<li>/home/peter/git/Core/src/master/<a class="el" href="_update_job_base_8cpp_source.html">UpdateJobBase.cpp</a></li>
+</ul>
+</div><!-- contents -->
+<footer>
+<hr> Powered by
+<a href="http://www.doxygen.nl/" target="_blank"> Doxygen </a>
+<br>
+Contributors:
+<a href=""> Shaohua Zhang,&nbsp; Zhiqiang Shi,&nbsp; Xi Chen,&nbsp; Kehan Huang,&nbsp; Binjie Zhang,&nbsp; Wentsing Nee </a>
+<br> Copyright © 2010-2018
+<a href="http://www.thinkspirit.org" target="_blank"> Think Spirit. </a> All rights reserved.
+</footer>

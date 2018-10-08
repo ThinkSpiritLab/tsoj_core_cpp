@@ -1,0 +1,4 @@
+<map id="JudgeJob::push_back_failed_judge_job" name="JudgeJob::push_back_failed_judge_job">
+<area shape="rect" id="node1" title="将评测失败的评测详情插入数据库、将评测失败的 job_item 插入评测失败队列" alt="" coords="5,5,155,47"/>
+<area shape="rect" id="node2" href="$class_judge_job.html#a6edac1fe8ebfc2a8b38c40e426030582" title="将评测失败的评测详情插入数据库、将评测失败的 job_item 插入评测失败队列" alt="" coords="203,5,349,47"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="CompileConfig" name="CompileConfig">
+<area shape="rect" id="node1" title="Config 的子类，将其父类参数设定为编译时需要的配置参数" alt="" coords="5,185,113,212"/>
+<area shape="rect" id="node2" href="$class_config.html" title="运行配置类，根据具体运行需求提供所需的子进程运行限制条件与子进程运行环境 &#160;例如：运行时间限制，运行空间限制，子进程调用系统函数的权限等" alt="" coords="29,109,89,136"/>
+<area shape="rect" id="node3" href="$class_execute_args.html" title=" " alt="" coords="11,5,108,32"/>
+</map>

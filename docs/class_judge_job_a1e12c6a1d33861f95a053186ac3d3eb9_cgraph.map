@@ -1,0 +1,4 @@
+<map id="JudgeJob::execute" name="JudgeJob::execute">
+<area shape="rect" id="node1" title="根据当前 config 配置的值，执行编译/运行程序。过程中会对必要的权限检查， 并且会启动一个线程来监控，防止运行超时。执行结束后返回执行结果。" alt="" coords="5,5,137,32"/>
+<area shape="rect" id="node2" href="$struct_result.html#a8201d7586458dd80f361ab8c6cd93524" title=" " alt="" coords="185,5,331,32"/>
+</map>
