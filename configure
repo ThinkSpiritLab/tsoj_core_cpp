@@ -1,6 +1,0 @@
-mkdir debug 2>/dev/null
-mkdir release 2>/dev/null
-
-release_makefile="./release/makefile"
-
-

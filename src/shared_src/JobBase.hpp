@@ -112,7 +112,7 @@ class JobBase
 		 * @warning 本函数为纯虚函数，但是有实现。实际上，其子类的部分相同信息可由此函数取得。这部分有：pid, lang, cases, timeLimit, memoryLimit
 		 * @exception JobHandleException
 		 */
-		void storeSourceCode() const;
+		void storeSourceCode(const std::string & parent_path = "./", const std::string & file_name = "Main") const;
 
 		/**
 		 * @brief 将当前评测状态提交到 redis 数据库。

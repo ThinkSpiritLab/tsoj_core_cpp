@@ -27,6 +27,21 @@ enum class Language
 	C = 0, Cpp = 1, Java = 2, Cpp14 = 3
 };
 
+inline const char * source_file_suffix(Language lang)
+{
+	switch (lang) {
+		case Language::Cpp:
+		case Language::Cpp14:
+			return "cpp";
+		case Language::C:
+			return "c";
+		case Language::Java:
+			return "java";
+		default:
+			throw std::invalid_argument("Undefined language enumerate");
+	}
+}
+
 /**
  * @brief 枚举类，标识测评结果
  */

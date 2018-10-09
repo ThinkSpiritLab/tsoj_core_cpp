@@ -34,6 +34,17 @@ using kerbal::redis::RedisContext;
 JudgeJob::JudgeJob(int jobType, int sid, const kerbal::redis::RedisContext & conn) :
 			supper_t(jobType, sid, conn), dir((boost::format(init_dir + "/job-%d-%d") % jobType % sid).str())
 {
+	kerbal::redis::Operation opt(redisConn);
+	static boost::format key_name_tmpl("job_info:%d:%d");
+	const std::string job_info_key = (key_name_tmpl % jobType % sid).str();
+
+	try {
+		this->have_accepted = (bool)(opt.hget<int>(job_info_key, "have_accepted"));
+		this->no_store_ac_code = (bool)(opt.hget<int>(job_info_key, "no_store_ac_code"));
+	} catch (const std::exception & e) {
+		EXCEPT_FATAL(jobType, sid, log_fp, "Fail to fetch job details.", e);
+		throw;
+	}
 }
 
 void JudgeJob::handle()
@@ -45,39 +56,61 @@ void JudgeJob::handle()
 
 	LOG_DEBUG(jobType, sid, log_fp, "store source code finished");
 
-	// compile
-	this->commitJudgeStatusToRedis(JudgeStatus::COMPILING);
-	LOG_DEBUG(jobType, sid, log_fp, "compile start");
-	Result compile_result = this->compile();
-	LOG_DEBUG(jobType, sid, log_fp, "compile finished. compile result: ", compile_result);
-
-	switch (compile_result.judge_result) {
-		case UnitedJudgeResult::ACCEPTED: {
-			LOG_DEBUG(jobType, sid, log_fp, "compile success");
-			// 编译成功则 run
-			Result result = this->running();
-			LOG_DEBUG(jobType, sid, log_fp, "judge finished");
-			this->commitJudgeResultToRedis(result);
-			break;
-		}
-		case UnitedJudgeResult::COMPILE_RESOURCE_LIMIT_EXCEED:
-			LOG_WARNING(jobType, sid, log_fp, "compile resource limit exceed");
-			this->commitJudgeResultToRedis(compile_result);
-			break;
-		case UnitedJudgeResult::SYSTEM_ERROR:
-			LOG_DEBUG(jobType, sid, log_fp, "system error");
-			this->commitJudgeResultToRedis(compile_result);
-			break;
-		case UnitedJudgeResult::COMPILE_ERROR:
-		default:
-			LOG_DEBUG(jobType, sid, log_fp, "compile failed");
-			this->commitJudgeResultToRedis(compile_result);
-
-			if (this->set_compile_info() == false) {
-				LOG_WARNING(jobType, sid, log_fp, "An error occurred while getting compile info.");
-			}
-			break;
+	SolutionDetails judgeResult;
+	judgeResult.similarity_percentage = -1;
+	try {
+		judgeResult.similarity_percentage = this->calculate_similarity();
+	} catch (const std::exception & e) {
+		EXCEPT_FATAL(jobType, sid, log_fp, "An error occurred while calculate similarity.", e);
+		//DO NOT THROW
 	}
+
+	LOG_DEBUG(jobType, sid, log_fp, "similarity: ", judgeResult.similarity_percentage);
+
+	if (this->similarity_threshold != 0 && !this->have_accepted &&
+			judgeResult.similarity_percentage > this->similarity_threshold) {
+		judgeResult.judge_result = UnitedJudgeResult::SIMILAR_CODE;
+	} else {
+
+		// compile
+		this->commitJudgeStatusToRedis(JudgeStatus::COMPILING);
+		LOG_DEBUG(jobType, sid, log_fp, "compile start");
+		judgeResult = static_cast<SolutionDetails&&>(this->compile());
+		LOG_DEBUG(jobType, sid, log_fp, "compile finished. compile result: ", judgeResult);
+
+		switch (judgeResult.judge_result) {
+			case UnitedJudgeResult::ACCEPTED: {
+				LOG_DEBUG(jobType, sid, log_fp, "compile success");
+				// 编译成功则 run
+				judgeResult = static_cast<SolutionDetails&&>(this->running());
+				LOG_DEBUG(jobType, sid, log_fp, "judge finished");
+
+				// 如果用户 AC 且要求留存代码, 则将代码保存至留存目录
+				if (judgeResult.judge_result == UnitedJudgeResult::ACCEPTED  && this->no_store_ac_code != true) {
+					this->storeSourceCode("%s/%d/%d/"_fmt(accepted_solutions_dir, pid,
+							lang == Language::Java ? 2 : 0).str(), std::to_string(sid));
+				}
+				break;
+			}
+			case UnitedJudgeResult::COMPILE_RESOURCE_LIMIT_EXCEED:
+				LOG_WARNING(jobType, sid, log_fp, "compile resource limit exceed");
+				break;
+			case UnitedJudgeResult::SYSTEM_ERROR:
+				LOG_DEBUG(jobType, sid, log_fp, "system error");
+				break;
+			case UnitedJudgeResult::COMPILE_ERROR:
+			default:
+				LOG_DEBUG(jobType, sid, log_fp, "compile failed");
+
+				if (this->set_compile_info() == false) {
+					LOG_WARNING(jobType, sid, log_fp, "An error occurred while getting compile info.");
+				}
+				break;
+		}
+	}
+
+	LOG_DEBUG(jobType, sid, log_fp, "judge result: ", judgeResult);
+	this->commitJudgeResultToRedis(judgeResult);
 
 	//update update_queue
 	static RedisCommand update_queue("rpush update_queue %d,%d");
@@ -88,6 +121,65 @@ void JudgeJob::handle()
 	this->clean_job_dir();
 #endif
 
+}
+
+int JudgeJob::calculate_similarity()
+{
+	std::string sim_cmd;
+	switch (this->lang) {
+		case Language::C:
+			sim_cmd = (boost::format("sim_c -S -P Main.c / %s/%d/0/* > sim.txt") % accepted_solutions_dir % this->pid).str();
+			break;
+		case Language::Cpp:
+		case Language::Cpp14:
+			sim_cmd = (boost::format("sim_c -S -P Main.cpp / %s/%d/0/* > sim.txt") % accepted_solutions_dir % this->pid).str();
+			break;
+		case Language::Java:
+			sim_cmd = (boost::format("sim_java -S -P Main.java / %s/%d/2/* > sim.txt") % accepted_solutions_dir % this->pid).str();
+			break;
+	}
+
+	int sim_cmd_return_value = system(sim_cmd.c_str());
+	if (-1 == sim_cmd_return_value) {
+		throw JobHandleException("sim execute failed");
+	}
+	if (!WIFEXITED(sim_cmd_return_value) || WEXITSTATUS(sim_cmd_return_value)) {
+		throw JobHandleException("sim command exits incorrectly, exit status: " + std::to_string(WEXITSTATUS(sim_cmd_return_value)));
+	}
+
+	std::ifstream fp("sim.txt", std::ios::in);
+
+	if (!fp) {
+		throw JobHandleException("sim.txt open failed");
+	}
+
+	std::string buf;
+	while (std::getline(fp, buf)) {
+		if (buf.empty()) {
+			break;
+		}
+	}
+
+	int max_similarity = 0;
+	while (std::getline(fp, buf)) {
+		std::string::reverse_iterator en = std::find(buf.rbegin(), buf.rend(), '%');
+		if (en != buf.rend()) {
+			do {
+				++en;
+			} while (std::isspace(*en));
+			std::string::reverse_iterator be = std::find_if_not(en, buf.rend(), ::isdigit);
+			--en;
+			--be;
+			try {
+				int now_similarity = std::stoi(buf.substr(buf.length() - (std::distance(buf.rbegin(), be)) - 1, std::distance(en, be)));
+				max_similarity = std::max(max_similarity, now_similarity);
+			} catch (const std::invalid_argument & e) {
+				throw JobHandleException("an error occurred while calculate max similarity");
+			}
+		}
+	}
+
+	return max_similarity;
 }
 
 Result JudgeJob::running()
@@ -149,7 +241,7 @@ namespace
 					  "cpu_time"_cptr, result.cpu_time.count(),
 					  "real_time"_cptr, result.real_time.count(),
 					  "memory"_cptr, (kerbal::utility::Byte(result.memory)).count(),
-					  "similarity_percentage"_cptr, 0,
+					  "similarity_percentage"_cptr, result.similarity_percentage,
 					  "judge_server_id"_cptr, judge_server_id);
 	} catch (const std::exception & e) {
 		EXCEPT_FATAL(jobType, sid, log_fp, "Commit judge result failed.", e, "; solution details: ", result);

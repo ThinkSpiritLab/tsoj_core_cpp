@@ -95,25 +95,19 @@ kerbal::redis::RedisReply JobBase::get_source_code() const
 	return reply;
 }
 
-void JobBase::storeSourceCode() const
+void JobBase::storeSourceCode(const std::string & parent_path_args, const std::string & file_name) const
 {
 	RedisReply reply = this->get_source_code();
 
-	static constexpr const char * stored_file_name[] = {"Main.c", "Main.cpp", "Main.java"};
-	size_t i = 1;
-	switch (lang) {
-		case Language::Cpp:
-		case Language::Cpp14:
-			i = 1;
-			break;
-		case Language::C:
-			i = 0;
-			break;
-		case Language::Java:
-			i = 2;
-			break;
+	std::string parent_path = parent_path_args;
+	if (parent_path.size() == 0) {
+		parent_path = "./";
+	} else {
+		if (parent_path.back() != '/') {
+			parent_path += '/';
+		}
 	}
-	std::ofstream fout(stored_file_name[i], std::ios::out);
+	std::ofstream fout(parent_path + file_name + '.' + source_file_suffix(lang), std::ios::out);
 	if (!fout) {
 		LOG_FATAL(jobType, sid, log_fp, "Open source code file failed");
 		throw JobHandleException("Open source code file failed");

@@ -25,6 +25,9 @@ class JudgeJob: public JobBase
 		/** 本 job 临时工作路径 */
 		const std::string dir;
 
+		int have_accepted;
+		int no_store_ac_code;
+
 	public:
 
 		/**
@@ -54,6 +57,8 @@ class JudgeJob: public JobBase
 		 * @exception 该函数保证不抛出任何异常
 		 */
 		void clean_job_dir() const noexcept;
+
+		int calculate_similarity();
 
 		/**
 		 * @brief 根据当前 config 配置的值，执行编译/运行程序。过程中会对必要的权限检查，
