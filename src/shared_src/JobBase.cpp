@@ -106,7 +106,15 @@ void JobBase::storeSourceCode(const std::string & parent_path_args, const std::s
 		if (parent_path.back() != '/') {
 			parent_path += '/';
 		}
+		int make_parent_path_return_value = system(("mkdir -p " + parent_path).c_str());
+		if (-1 == make_parent_path_return_value) {
+			throw JobHandleException("make path failed");
+		}
+		if (!WIFEXITED(make_parent_path_return_value) || WEXITSTATUS(make_parent_path_return_value)) {
+			throw JobHandleException("make path failed, exit status: " + std::to_string(WEXITSTATUS(make_parent_path_return_value)));
+		}
 	}
+
 	std::ofstream fout(parent_path + file_name + '.' + source_file_suffix(lang), std::ios::out);
 	if (!fout) {
 		LOG_FATAL(jobType, sid, log_fp, "Open source code file failed");
