@@ -588,7 +588,7 @@ bool JudgeJob::child_process(const Config & config) const
 		// 标准输出与错误输出指定为同一个文件
 		auto of_ptr = fopen(config.output_path, "w"); //DO NOT fclose this ptr while exit brace
 		if (!of_ptr) {
-			LOG_FATAL(jobType, sid, log_fp, "can not open \"", config.output_path, "\"");
+			LOG_FATAL(jobType, sid, log_fp, "can not open [", config.output_path, "]");
 			raise(SIGUSR1);
 			return false;
 		} else {

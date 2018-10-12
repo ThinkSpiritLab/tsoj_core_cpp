@@ -54,12 +54,6 @@ class ContestUpdateJob: public UpdateJobBase
 		virtual void update_user_and_problem() override final;
 
 		/**
-		 * @brief 判断此题之前是否有用户 AC 过, 换句话说, 判断这次提交是否是首 A
-		 * @return 如果之前没有用户 AC 过, 返回 true, 即本次为首 A 提交
-		 */
-		bool this_problem_has_not_accepted();
-
-		/**
 		 * @brief 查询该 job 对应的 user 在 pid 问题下错误的次数
 		 */
 		int get_error_count();

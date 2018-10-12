@@ -149,32 +149,6 @@ user_problem_status ContestUpdateJob::get_contest_user_problem_status()
 	}
 }
 
-bool ContestUpdateJob::this_problem_has_not_accepted()
-{
-	LOG_DEBUG(jobType, sid, log_fp, "ContestUpdateJob::this_problem_has_not_accepted");
-
-	mysqlpp::Query query = mysqlConn->query(
-			"select first_ac_user from contest_problem where ct_id = %0 and p_id = %1"
-	);
-	query.parse();
-	mysqlpp::StoreQueryResult res = query.store(jobType, pid);
-
-	// 该字段在竞赛题目建立时被创建，因此无论如何都能够查询到该字段，否则出现逻辑错误
-	if (res.empty()) {
-		if(query.errnum() != 0) {
-			MysqlEmptyResException e(query.errnum(), query.error());
-			EXCEPT_FATAL(jobType, sid, log_fp, "Query problem's first_ac_user failed!", e);
-			throw e;
-		} else {
-			std::logic_error e("Check whether you have deleted the problem");
-			LOG_FATAL(jobType, sid, log_fp, "Check whether you have deleted the problem ", pid, " of the contest No.", jobType, " ?");
-			throw e;
-		}
-	}
-	return res[0][0] == "NULL" ? true : false; //该字段在竞赛开始时为 NULL, 即尚未有人通过此题
-}
-
-
 void ContestUpdateJob::update_user_problem_status()
 {
 	LOG_DEBUG(jobType, sid, log_fp, "ContestUpdateJob::update_user_problem");
@@ -192,16 +166,6 @@ void ContestUpdateJob::update_user_problem_status()
 		throw;
 	}
 
-	bool is_first_ac = false;
-	if (is_ac == true) {
-		try {
-			is_first_ac = this->this_problem_has_not_accepted() == true ? true : false;
-		} catch (const std::exception & e) {
-			EXCEPT_FATAL(jobType, sid, log_fp, "Query is first ac failed!", e);
-			throw;
-		}
-	}
-
 	switch (user_problem_status) {
 		case user_problem_status::TODO: {
 			int error_count = 0;
@@ -209,12 +173,12 @@ void ContestUpdateJob::update_user_problem_status()
 				error_count++;
 			}
 			mysqlpp::Query insert = mysqlConn->query(
-					"insert into contest_user_problem%0 (u_id, p_id, is_ac, ac_time, error_count, is_first_ac) "
-					"values (%1, %2, %3, %4q, %5, %6)"
+					"insert into contest_user_problem%0 (u_id, p_id, is_ac, ac_time, error_count) "
+					"values (%1, %2, %3, %4q, %5)"
 			);
 			insert.parse();
 
-			mysqlpp::SimpleResult res = insert.execute(jobType, uid, pid, is_ac, postTime, error_count, is_first_ac);
+			mysqlpp::SimpleResult res = insert.execute(jobType, uid, pid, is_ac, postTime, error_count);
 			if (!res) {
 				MysqlEmptyResException e(insert.errnum(), insert.error());
 				EXCEPT_FATAL(jobType, sid, log_fp, "insert user problem status failed!", e);
@@ -230,12 +194,12 @@ void ContestUpdateJob::update_user_problem_status()
 			}
 
 			mysqlpp::Query update = mysqlConn->query(
-					"update contest_user_problem%0 set is_ac = %1, ac_time = %2q, error_count = %3, is_first_ac = %4 "
-					"where u_id = %5 and p_id = %6"
+					"update contest_user_problem%0 set is_ac = %1, ac_time = %2q, error_count = %3 "
+					"where u_id = %4 and p_id = %5"
 			);
 			update.parse();
 
-			mysqlpp::SimpleResult res = update.execute(jobType, is_ac, postTime, error_count, is_first_ac, uid, pid);
+			mysqlpp::SimpleResult res = update.execute(jobType, is_ac, postTime, error_count, uid, pid);
 			if (!res) {
 				MysqlEmptyResException e(update.errnum(), update.error());
 				EXCEPT_FATAL(jobType, sid, log_fp, "update user problem status failed!", e);
@@ -245,26 +209,6 @@ void ContestUpdateJob::update_user_problem_status()
 		}
 		case user_problem_status::ACCEPTED:
 			return;
-	}
-
-	// Q: 众所周知，slave 端是多进程进行判题的，若是由于系统调度的缘故，先提交的那个人的评测在后提交的人之后完成，这样
-	//    update 的队列中，后提交的人的更新任务在前。那么在这里修改 first_AC 的时候逻辑会出现问题。
-	//    个人能想到的是，所以是否可以去掉 is_first_ac 字段，并不在更新每一次提交的时候都检查一次，而是在 master 开始
-	//    评测任务之前，开启一个子进程，每隔一段时间（比如30秒），查询一次数据库，排序出提交时间最早的用户来更新 
-	//    contest_problem 表中的 first_ac_user 字段。
-	// update first_ac_user
-	if (is_ac == true && is_first_ac == true) {
-		mysqlpp::Query update = mysqlConn->query(
-				"update contest_problem set first_ac_user = %0 where ct_id = %1 and p_id = %2"
-		);
-		update.parse();
-		mysqlpp::SimpleResult res = update.execute(uid, jobType, pid);
-
-		if (!res) {
-			MysqlEmptyResException e(update.errnum(), update.error());
-			EXCEPT_FATAL(jobType, sid, log_fp, "update first_ac_user failed!", e);
-			throw e;
-		}
 	}
 	return;
 }
