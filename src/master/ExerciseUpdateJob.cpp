@@ -43,8 +43,8 @@ void ExerciseUpdateJob::update_user_and_problem()
 	this->supper_t::update_user_and_problem();
 }
 
-void ExerciseUpdateJob::update_user_problem()
+void ExerciseUpdateJob::update_user_problem_status()
 {
 	LOG_DEBUG(jobType, sid, log_fp, "ExerciseUpdateJob::update_user_problem");
-	this->supper_t::update_user_problem();
+	this->supper_t::update_user_problem_status();
 }

@@ -1,6 +1,0 @@
-<map id="ContestUpdateJob::update_user_problem" name="ContestUpdateJob::update_user_problem">
-<area shape="rect" id="node1" title="更新此用户此题的完成状态 &#160;用户所见到的每题 AC, TO_DO, ATTEMPT 三种状态即为user problem 表所提供的服务" alt="" coords="5,85,184,126"/>
-<area shape="rect" id="node2" href="$class_contest_update_job.html#ae28fd6df5e2ce9100552a7c7fd09b2aa" title="取得此用户此题在此次提交以前 AC, TO_DO 或 ATTEMPT 的状态" alt="" coords="247,5,405,61"/>
-<area shape="rect" id="node3" href="$class_contest_update_job.html#a218fd3192428a2c3c77f4485a25907f6" title="判断此题之前是否有用户 AC 过, 换句话说, 判断这次提交是否是首 A" alt="" coords="232,85,420,126"/>
-<area shape="rect" id="node4" href="$class_contest_update_job.html#a1314c51ecd4a0d7cc1d3c66df3690566" title="查询该 job 对应的 user 在 pid 问题下错误的次数" alt="" coords="247,150,405,191"/>
-</map>

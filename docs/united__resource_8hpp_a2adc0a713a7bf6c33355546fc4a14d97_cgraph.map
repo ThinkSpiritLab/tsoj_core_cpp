@@ -1,4 +1,4 @@
 <map id="operator&lt;&lt;" name="operator&lt;&lt;">
-<area shape="rect" id="node1" title=" " alt="" coords="5,5,91,32"/>
-<area shape="rect" id="node2" href="$united__resource_8cpp.html#afaa1294b71098e58355c7e6aa0e74aba" title=" " alt="" coords="139,5,287,32"/>
+<area shape="rect" id="node1" title="重载 UnitedJudgeResult 类的 &lt;&lt; 运算符，输出其对应含义的 std::string" alt="" coords="5,5,91,32"/>
+<area shape="rect" id="node2" href="$united__resource_8cpp.html#afaa1294b71098e58355c7e6aa0e74aba" title="根据传入的 UnitedJudgeResult，返回其对应含义的 std::string 类型说明。" alt="" coords="139,5,287,32"/>
 </map>

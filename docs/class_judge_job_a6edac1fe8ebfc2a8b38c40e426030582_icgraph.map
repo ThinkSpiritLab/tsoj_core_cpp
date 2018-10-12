@@ -1,5 +1,5 @@
 <map id="JudgeJob::insert_into_failed" name="JudgeJob::insert_into_failed">
 <area shape="rect" id="node1" title="将评测失败的评测详情插入数据库、将评测失败的 job_item 插入评测失败队列" alt="" coords="203,35,349,76"/>
 <area shape="rect" id="node2" href="$class_judge_job.html#adf10b6952dc5b83dfa7cb0ec66b3845b" title="将评测失败的评测详情插入数据库、将评测失败的 job_item 插入评测失败队列" alt="" coords="5,5,155,47"/>
-<area shape="rect" id="node3" href="$slave_8cpp.html#ac0f2228420376f4db7e1274f2b41667c" title="slave端主程序循环 加载配置信息；连接数据库；取待评测任务信息，交由子进程并评测；创建并分离发送心跳线程" alt="" coords="55,71,105,98"/>
+<area shape="rect" id="node3" href="$slave_8cpp.html#ac0f2228420376f4db7e1274f2b41667c" title="slave 端主程序循环 加载配置信息；连接 redis 数据库；取待评测任务信息，交由子进程并评测；创建并分离发送心跳线程" alt="" coords="55,71,105,98"/>
 </map>

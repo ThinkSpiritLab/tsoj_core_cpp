@@ -1,4 +1,0 @@
-<map id="UpdateJobBase::update_user_problem" name="UpdateJobBase::update_user_problem">
-<area shape="rect" id="node1" title="更新此用户此题的完成状态 &#160;用户所见到的每题 AC, TO_DO, ATTEMPT 三种状态即为user problem 表所提供的服务" alt="" coords="215,5,377,47"/>
-<area shape="rect" id="node2" href="$class_update_job_base.html#a1f2173cec66f3453d4a87c91c2ac8e29" title="执行任务" alt="" coords="5,13,167,39"/>
-</map>

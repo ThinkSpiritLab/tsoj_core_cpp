@@ -121,9 +121,9 @@ Public 成员函数</h2></td></tr>
 <tr class="memitem:acba3c7755afaaaf0e522bc53eec10828 inherit pub_methods_class_job_base"><td class="memItemLeft" align="right" valign="top">kerbal::redis::RedisReply&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#acba3c7755afaaaf0e522bc53eec10828">get_source_code</a> () const</td></tr>
 <tr class="memdesc:acba3c7755afaaaf0e522bc53eec10828 inherit pub_methods_class_job_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">从 redis 中取得代码  <a href="class_job_base.html#acba3c7755afaaaf0e522bc53eec10828">更多...</a><br /></td></tr>
 <tr class="separator:acba3c7755afaaaf0e522bc53eec10828 inherit pub_methods_class_job_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a06b6dd6262e98277d929ccd68451a0b7 inherit pub_methods_class_job_base"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a06b6dd6262e98277d929ccd68451a0b7">storeSourceCode</a> () const</td></tr>
-<tr class="memdesc:a06b6dd6262e98277d929ccd68451a0b7 inherit pub_methods_class_job_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">从 redis 数据库获取本 Job 的代码并存储到工作空间中，用于编译运行。  <a href="class_job_base.html#a06b6dd6262e98277d929ccd68451a0b7">更多...</a><br /></td></tr>
-<tr class="separator:a06b6dd6262e98277d929ccd68451a0b7 inherit pub_methods_class_job_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84501360b84b0716aa82b93f6958cb78 inherit pub_methods_class_job_base"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a84501360b84b0716aa82b93f6958cb78">storeSourceCode</a> (const std::string &amp;parent_path=&quot;./&quot;, const std::string &amp;file_name=&quot;Main&quot;) const</td></tr>
+<tr class="memdesc:a84501360b84b0716aa82b93f6958cb78 inherit pub_methods_class_job_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">从 redis 数据库获取本 Job 的代码并存储到工作空间中，用于编译运行。  <a href="class_job_base.html#a84501360b84b0716aa82b93f6958cb78">更多...</a><br /></td></tr>
+<tr class="separator:a84501360b84b0716aa82b93f6958cb78 inherit pub_methods_class_job_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa7da8e91cd0ffddf9b1cf70995d2134b inherit pub_methods_class_job_base"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#aa7da8e91cd0ffddf9b1cf70995d2134b">commitJudgeStatusToRedis</a> (<a class="el" href="united__resource_8hpp.html#a80b9d5506f136fd5cef4ccd153030f1a">JudgeStatus</a> value)</td></tr>
 <tr class="memdesc:aa7da8e91cd0ffddf9b1cf70995d2134b inherit pub_methods_class_job_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">将当前评测状态提交到 redis 数据库。  <a href="class_job_base.html#aa7da8e91cd0ffddf9b1cf70995d2134b">更多...</a><br /></td></tr>
 <tr class="separator:aa7da8e91cd0ffddf9b1cf70995d2134b inherit pub_methods_class_job_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -152,6 +152,8 @@ Protected 成员函数</h2></td></tr>
 <tr class="memitem:ae3ecd7b1686ad8473e60154df16ef468"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_judge_job.html#ae3ecd7b1686ad8473e60154df16ef468">clean_job_dir</a> () const noexcept</td></tr>
 <tr class="memdesc:ae3ecd7b1686ad8473e60154df16ef468"><td class="mdescLeft">&#160;</td><td class="mdescRight">将当前路径切换出本 job 的临时工作路径并清理该工作区  <a href="#ae3ecd7b1686ad8473e60154df16ef468">更多...</a><br /></td></tr>
 <tr class="separator:ae3ecd7b1686ad8473e60154df16ef468"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a9896ab3eaa3056757d2f7531193ea7"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_judge_job.html#a1a9896ab3eaa3056757d2f7531193ea7">calculate_similarity</a> ()</td></tr>
+<tr class="separator:a1a9896ab3eaa3056757d2f7531193ea7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1e12c6a1d33861f95a053186ac3d3eb9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_result.html">Result</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_judge_job.html#a1e12c6a1d33861f95a053186ac3d3eb9">execute</a> (const <a class="el" href="class_config.html">Config</a> &amp;config) const noexcept</td></tr>
 <tr class="memdesc:a1e12c6a1d33861f95a053186ac3d3eb9"><td class="mdescLeft">&#160;</td><td class="mdescRight">根据当前 config 配置的值，执行编译/运行程序。过程中会对必要的权限检查， 并且会启动一个线程来监控，防止运行超时。执行结束后返回执行结果。  <a href="#a1e12c6a1d33861f95a053186ac3d3eb9">更多...</a><br /></td></tr>
 <tr class="separator:a1e12c6a1d33861f95a053186ac3d3eb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -175,6 +177,10 @@ Protected 成员函数</h2></td></tr>
 Protected 属性</h2></td></tr>
 <tr class="memitem:ae28fbbddace333bd7656cfde8bedaa95"><td class="memItemLeft" align="right" valign="top">const std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_judge_job.html#ae28fbbddace333bd7656cfde8bedaa95">dir</a></td></tr>
 <tr class="separator:ae28fbbddace333bd7656cfde8bedaa95"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e9dcff9179f50957e14ed61d2376372"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_judge_job.html#a9e9dcff9179f50957e14ed61d2376372">have_accepted</a></td></tr>
+<tr class="separator:a9e9dcff9179f50957e14ed61d2376372"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a94ce01ab0a2947ae53df798b4a969a53"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_judge_job.html#a94ce01ab0a2947ae53df798b4a969a53">no_store_ac_code</a></td></tr>
+<tr class="separator:a94ce01ab0a2947ae53df798b4a969a53"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-types"></a>
 Private 类型</h2></td></tr>
@@ -295,6 +301,42 @@ Private 类型</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">成员函数说明</h2>
+<a id="a1a9896ab3eaa3056757d2f7531193ea7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a9896ab3eaa3056757d2f7531193ea7">&#9670;&nbsp;</a></span>calculate_similarity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int JudgeJob::calculate_similarity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="_judge_job_8cpp_source.html">JudgeJob.cpp</a> 第 <a class="el" href="_judge_job_8cpp_source.html#l00126">126</a> 行定义.</p>
+<div class="dynheader">
+这是这个函数的调用关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_judge_job_a1a9896ab3eaa3056757d2f7531193ea7_icgraph.png" border="0" usemap="#class_judge_job_a1a9896ab3eaa3056757d2f7531193ea7_icgraph" alt=""/></div>
+<map name="class_judge_job_a1a9896ab3eaa3056757d2f7531193ea7_icgraph" id="class_judge_job_a1a9896ab3eaa3056757d2f7531193ea7_icgraph">
+<area shape="rect" id="node1" title=" " alt="" coords="177,5,316,47"/>
+<area shape="rect" id="node2" href="class_judge_job.html#a6fe58f9fcacc9ba6461e97f1a3ac76a3" title="本 Job 的处理函数。整个 job 的工作入口，包括编译执行判题等内容" alt="" coords="5,13,129,39"/>
+</map>
+</div>
+
+</div>
+</div>
 <a id="a32a0d6b97470ddf01ab3f905f57615ec"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a32a0d6b97470ddf01ab3f905f57615ec">&#9670;&nbsp;</a></span>change_job_dir()</h2>
 
@@ -326,7 +368,7 @@ Private 类型</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">在文件 <a class="el" href="_judge_job_8cpp_source.html">JudgeJob.cpp</a> 第 <a class="el" href="_judge_job_8cpp_source.html#l00209">209</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="_judge_job_8cpp_source.html">JudgeJob.cpp</a> 第 <a class="el" href="_judge_job_8cpp_source.html#l00301">301</a> 行定义.</p>
 <div class="dynheader">
 这是这个函数的调用关系图:</div>
 <div class="dyncontent">
@@ -367,7 +409,7 @@ Private 类型</h2></td></tr>
 <dl class="section return"><dt>返回</dt><dd>若该函数执行正常，返回值由取代此子进程的实际工作进程返回值决定，否则返回 false </dd></dl>
 <dl class="section note"><dt>注解</dt><dd>若限制资源信息、重定向流等信息失败，会产生用户自定义信号 SIGUSR1 ，用于调用函数判定系统出错 </dd></dl>
 
-<p class="definition">在文件 <a class="el" href="_judge_job_8cpp_source.html">JudgeJob.cpp</a> 第 <a class="el" href="_judge_job_8cpp_source.html#l00412">412</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="_judge_job_8cpp_source.html">JudgeJob.cpp</a> 第 <a class="el" href="_judge_job_8cpp_source.html#l00504">504</a> 行定义.</p>
 <div class="dynheader">
 函数调用图:</div>
 <div class="dyncontent">
@@ -379,7 +421,7 @@ Private 类型</h2></td></tr>
 <area shape="rect" id="node4" href="class_config.html#a3690235ffa6f8c58eb9aef15138b1744" title="检查是否有程序最大子进程数限制" alt="" coords="220,107,407,133"/>
 <area shape="rect" id="node5" href="class_config.html#a92a02bf20ae7e9925f895e5ccd4b2c85" title="检查是否有最大输出字节长度限制" alt="" coords="248,157,379,184"/>
 <area shape="rect" id="node6" href="class_config.html#a66bf8e1fc1fafffa3f0f119c4a6328db" title="根据本 config 设定的所允许的系统调用种类的标识，加载相应的限制" alt="" coords="237,209,389,250"/>
-<area shape="rect" id="node9" href="class_execute_args.html#a9e61c65a4f7832a6c33c3c85203ba574" title=" " alt="" coords="238,275,389,301"/>
+<area shape="rect" id="node9" href="class_execute_args.html#a9e61c65a4f7832a6c33c3c85203ba574" title="返回命令行参数列表" alt="" coords="238,275,389,301"/>
 <area shape="rect" id="node7" href="class_config.html#abc5c2690ad9c6b7c15eb10800b724fa9" title="生产 c/c++ 对应的系统调用权限限制" alt="" coords="459,175,621,217"/>
 <area shape="rect" id="node8" href="class_config.html#a1fb73bd5c89b879497891c46ad345b87" title="生产通用的系统调用权限限制" alt="" coords="455,241,625,282"/>
 </map>
@@ -418,7 +460,7 @@ Private 类型</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">在文件 <a class="el" href="_judge_job_8cpp_source.html">JudgeJob.cpp</a> 第 <a class="el" href="_judge_job_8cpp_source.html#l00221">221</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="_judge_job_8cpp_source.html">JudgeJob.cpp</a> 第 <a class="el" href="_judge_job_8cpp_source.html#l00313">313</a> 行定义.</p>
 <div class="dynheader">
 这是这个函数的调用关系图:</div>
 <div class="dyncontent">
@@ -457,7 +499,7 @@ Private 类型</h2></td></tr>
 
 <p>将评测结果提交到 redis 数据库。 </p>
 
-<p class="definition">在文件 <a class="el" href="_judge_job_8cpp_source.html">JudgeJob.cpp</a> 第 <a class="el" href="_judge_job_8cpp_source.html#l00160">160</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="_judge_job_8cpp_source.html">JudgeJob.cpp</a> 第 <a class="el" href="_judge_job_8cpp_source.html#l00252">252</a> 行定义.</p>
 <div class="dynheader">
 这是这个函数的调用关系图:</div>
 <div class="dyncontent">
@@ -502,7 +544,7 @@ Private 类型</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">在文件 <a class="el" href="_judge_job_8cpp_source.html">JudgeJob.cpp</a> 第 <a class="el" href="_judge_job_8cpp_source.html#l00383">383</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="_judge_job_8cpp_source.html">JudgeJob.cpp</a> 第 <a class="el" href="_judge_job_8cpp_source.html#l00475">475</a> 行定义.</p>
 <div class="dynheader">
 这是这个函数的调用关系图:</div>
 <div class="dyncontent">
@@ -554,14 +596,16 @@ Private 类型</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">在文件 <a class="el" href="_judge_job_8cpp_source.html">JudgeJob.cpp</a> 第 <a class="el" href="_judge_job_8cpp_source.html#l00255">255</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="_judge_job_8cpp_source.html">JudgeJob.cpp</a> 第 <a class="el" href="_judge_job_8cpp_source.html#l00347">347</a> 行定义.</p>
 <div class="dynheader">
 函数调用图:</div>
 <div class="dyncontent">
 <div class="center"><img src="class_judge_job_a1e12c6a1d33861f95a053186ac3d3eb9_cgraph.png" border="0" usemap="#class_judge_job_a1e12c6a1d33861f95a053186ac3d3eb9_cgraph" alt=""/></div>
 <map name="class_judge_job_a1e12c6a1d33861f95a053186ac3d3eb9_cgraph" id="class_judge_job_a1e12c6a1d33861f95a053186ac3d3eb9_cgraph">
-<area shape="rect" id="node1" title="根据当前 config 配置的值，执行编译/运行程序。过程中会对必要的权限检查， 并且会启动一个线程来监控，防止运行超时。执行结束后返回执行结果。" alt="" coords="5,5,137,32"/>
-<area shape="rect" id="node2" href="struct_result.html#a8201d7586458dd80f361ab8c6cd93524" title=" " alt="" coords="185,5,331,32"/>
+<area shape="rect" id="node1" title="根据当前 config 配置的值，执行编译/运行程序。过程中会对必要的权限检查， 并且会启动一个线程来监控，防止运行超时。执行结束后返回执行结果。" alt="" coords="5,56,137,83"/>
+<area shape="rect" id="node2" href="struct_result.html#a8201d7586458dd80f361ab8c6cd93524" title="将本结构体的 RunnerError 置为 err， 并将评测结果标为 UnitedJudgeResult::SYSTEM_ERROR" alt="" coords="185,5,331,32"/>
+<area shape="rect" id="node3" href="classprocess.html#a217a9f72c54fb962f5c56cf0934901e5" title="Send signal SIG to the process." alt="" coords="212,56,304,83"/>
+<area shape="rect" id="node4" href="classprocess.html#a2a3c8b98c92999ffe95abf1de7ee17d2" title=" " alt="" coords="210,107,306,133"/>
 </map>
 </div>
 <div class="dynheader">
@@ -605,26 +649,30 @@ Private 类型</h2></td></tr>
 
 <p>实现了 <a class="el" href="class_job_base.html#aea684b77a3d8e913b87d8f3deb18c8fe">JobBase</a>.</p>
 
-<p class="definition">在文件 <a class="el" href="_judge_job_8cpp_source.html">JudgeJob.cpp</a> 第 <a class="el" href="_judge_job_8cpp_source.html#l00039">39</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="_judge_job_8cpp_source.html">JudgeJob.cpp</a> 第 <a class="el" href="_judge_job_8cpp_source.html#l00050">50</a> 行定义.</p>
 <div class="dynheader">
 函数调用图:</div>
 <div class="dyncontent">
 <div class="center"><img src="class_judge_job_a6fe58f9fcacc9ba6461e97f1a3ac76a3_cgraph.png" border="0" usemap="#class_judge_job_a6fe58f9fcacc9ba6461e97f1a3ac76a3_cgraph" alt=""/></div>
 <map name="class_judge_job_a6fe58f9fcacc9ba6461e97f1a3ac76a3_cgraph" id="class_judge_job_a6fe58f9fcacc9ba6461e97f1a3ac76a3_cgraph">
-<area shape="rect" id="node1" title="本 Job 的处理函数。整个 job 的工作入口，包括编译执行判题等内容" alt="" coords="5,183,129,209"/>
+<area shape="rect" id="node1" title="本 Job 的处理函数。整个 job 的工作入口，包括编译执行判题等内容" alt="" coords="5,224,129,251"/>
 <area shape="rect" id="node2" href="class_judge_job.html#a32a0d6b97470ddf01ab3f905f57615ec" title="将当前路径切换到本 job 的临时工作路径" alt="" coords="192,5,365,32"/>
-<area shape="rect" id="node3" href="class_job_base.html#a06b6dd6262e98277d929ccd68451a0b7" title="从 redis 数据库获取本 Job 的代码并存储到工作空间中，用于编译运行。" alt="" coords="187,56,370,83"/>
-<area shape="rect" id="node5" href="class_job_base.html#aa7da8e91cd0ffddf9b1cf70995d2134b" title="将当前评测状态提交到 redis 数据库。" alt="" coords="428,125,625,166"/>
-<area shape="rect" id="node6" href="class_judge_job.html#a35fc1a76afeffbf6e958f64a6e620e1c" title="进入当前 job 的编译流程，并返回编译结果。" alt="" coords="213,157,344,184"/>
-<area shape="rect" id="node7" href="class_judge_job.html#a0d2e1e5cce842ef0daf71c95f98275f0" title="进入当前 job 的执行流程，并返回执行结果。" alt="" coords="215,208,343,235"/>
-<area shape="rect" id="node12" href="class_judge_job.html#a37b4def8e9362835ceeecda28df71990" title="将评测结果提交到 redis 数据库。" alt="" coords="177,259,380,301"/>
-<area shape="rect" id="node13" href="class_judge_job.html#a82369eaa1b47b2106c45832bdda85e43" title="当编译出错时，将编译错误信息写入到 redis。" alt="" coords="187,325,371,352"/>
-<area shape="rect" id="node14" href="class_judge_job.html#ae3ecd7b1686ad8473e60154df16ef468" title="将当前路径切换出本 job 的临时工作路径并清理该工作区" alt="" coords="197,376,360,403"/>
-<area shape="rect" id="node4" href="class_job_base.html#acba3c7755afaaaf0e522bc53eec10828" title="从 redis 中取得代码" alt="" coords="437,56,617,83"/>
-<area shape="rect" id="node8" href="class_judge_job.html#a1e12c6a1d33861f95a053186ac3d3eb9" title="根据当前 config 配置的值，执行编译/运行程序。过程中会对必要的权限检查， 并且会启动一个线程来监控，防止运行超时。执行结束后返回执行结果。" alt="" coords="461,200,593,227"/>
-<area shape="rect" id="node10" href="compare_8cpp.html#a960c5c76653215ba60077e139ab6c000" title=" " alt="" coords="491,251,563,277"/>
-<area shape="rect" id="node9" href="struct_result.html#a8201d7586458dd80f361ab8c6cd93524" title=" " alt="" coords="673,200,819,227"/>
-<area shape="rect" id="node11" href="compare_8cpp.html#ae12d969be69c79ba2d8501fc5ab34eb7" title=" " alt="" coords="677,251,815,277"/>
+<area shape="rect" id="node3" href="class_job_base.html#a84501360b84b0716aa82b93f6958cb78" title="从 redis 数据库获取本 Job 的代码并存储到工作空间中，用于编译运行。" alt="" coords="187,56,370,83"/>
+<area shape="rect" id="node6" href="class_judge_job.html#a1a9896ab3eaa3056757d2f7531193ea7" title=" " alt="" coords="209,107,348,149"/>
+<area shape="rect" id="node7" href="class_job_base.html#aa7da8e91cd0ffddf9b1cf70995d2134b" title="将当前评测状态提交到 redis 数据库。" alt="" coords="428,187,625,229"/>
+<area shape="rect" id="node8" href="class_judge_job.html#a35fc1a76afeffbf6e958f64a6e620e1c" title="进入当前 job 的编译流程，并返回编译结果。" alt="" coords="213,224,344,251"/>
+<area shape="rect" id="node9" href="class_judge_job.html#a0d2e1e5cce842ef0daf71c95f98275f0" title="进入当前 job 的执行流程，并返回执行结果。" alt="" coords="215,275,343,301"/>
+<area shape="rect" id="node16" href="class_judge_job.html#a82369eaa1b47b2106c45832bdda85e43" title="当编译出错时，将编译错误信息写入到 redis。" alt="" coords="187,325,371,352"/>
+<area shape="rect" id="node17" href="class_judge_job.html#a37b4def8e9362835ceeecda28df71990" title="将评测结果提交到 redis 数据库。" alt="" coords="177,377,380,418"/>
+<area shape="rect" id="node18" href="class_judge_job.html#ae3ecd7b1686ad8473e60154df16ef468" title="将当前路径切换出本 job 的临时工作路径并清理该工作区" alt="" coords="197,443,360,469"/>
+<area shape="rect" id="node4" href="class_job_base.html#acba3c7755afaaaf0e522bc53eec10828" title="从 redis 中取得代码" alt="" coords="437,31,617,57"/>
+<area shape="rect" id="node5" href="united__resource_8hpp.html#a91baaf0c9418f69eaac1098cd545a78e" title=" " alt="" coords="465,81,589,108"/>
+<area shape="rect" id="node10" href="class_judge_job.html#a1e12c6a1d33861f95a053186ac3d3eb9" title="根据当前 config 配置的值，执行编译/运行程序。过程中会对必要的权限检查， 并且会启动一个线程来监控，防止运行超时。执行结束后返回执行结果。" alt="" coords="461,264,593,291"/>
+<area shape="rect" id="node14" href="compare_8cpp.html#a960c5c76653215ba60077e139ab6c000" title="根据用户答案路径和标准答案路径，提取相应文件并进行比对。比对结果作为判题结果，并返回。" alt="" coords="491,327,563,353"/>
+<area shape="rect" id="node11" href="struct_result.html#a8201d7586458dd80f361ab8c6cd93524" title="将本结构体的 RunnerError 置为 err， 并将评测结果标为 UnitedJudgeResult::SYSTEM_ERROR" alt="" coords="673,200,819,227"/>
+<area shape="rect" id="node12" href="classprocess.html#a217a9f72c54fb962f5c56cf0934901e5" title="Send signal SIG to the process." alt="" coords="700,251,792,277"/>
+<area shape="rect" id="node13" href="classprocess.html#a2a3c8b98c92999ffe95abf1de7ee17d2" title=" " alt="" coords="698,301,794,328"/>
+<area shape="rect" id="node15" href="compare_8cpp.html#ae12d969be69c79ba2d8501fc5ab34eb7" title=" " alt="" coords="677,352,815,379"/>
 </map>
 </div>
 
@@ -679,7 +727,7 @@ Private 类型</h2></td></tr>
 </dl>
 <dl class="section note"><dt>注解</dt><dd>该函数为静态成员函数。无论对象创建是否成功均可使用，保证了逻辑的通用性。 </dd></dl>
 
-<p class="definition">在文件 <a class="el" href="_judge_job_8cpp_source.html">JudgeJob.cpp</a> 第 <a class="el" href="_judge_job_8cpp_source.html#l00591">591</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="_judge_job_8cpp_source.html">JudgeJob.cpp</a> 第 <a class="el" href="_judge_job_8cpp_source.html#l00683">683</a> 行定义.</p>
 <div class="dynheader">
 这是这个函数的调用关系图:</div>
 <div class="dyncontent">
@@ -687,7 +735,7 @@ Private 类型</h2></td></tr>
 <map name="class_judge_job_a6edac1fe8ebfc2a8b38c40e426030582_icgraph" id="class_judge_job_a6edac1fe8ebfc2a8b38c40e426030582_icgraph">
 <area shape="rect" id="node1" title="将评测失败的评测详情插入数据库、将评测失败的 job_item 插入评测失败队列" alt="" coords="203,35,349,76"/>
 <area shape="rect" id="node2" href="class_judge_job.html#adf10b6952dc5b83dfa7cb0ec66b3845b" title="将评测失败的评测详情插入数据库、将评测失败的 job_item 插入评测失败队列" alt="" coords="5,5,155,47"/>
-<area shape="rect" id="node3" href="slave_8cpp.html#ac0f2228420376f4db7e1274f2b41667c" title="slave端主程序循环 加载配置信息；连接数据库；取待评测任务信息，交由子进程并评测；创建并分离发送心跳线程" alt="" coords="55,71,105,98"/>
+<area shape="rect" id="node3" href="slave_8cpp.html#ac0f2228420376f4db7e1274f2b41667c" title="slave 端主程序循环 加载配置信息；连接 redis 数据库；取待评测任务信息，交由子进程并评测；创建并分离发送心跳线程" alt="" coords="55,71,105,98"/>
 </map>
 </div>
 
@@ -725,7 +773,7 @@ Private 类型</h2></td></tr>
 </dl>
 <dl class="section note"><dt>注解</dt><dd>该函数实际调用了 insert_into_failed 静态函数。是给 <a class="el" href="class_judge_job.html" title="JobBase 的子类，用于实现提交代码的判题功能。">JudgeJob</a> 对象创建成功后使用。若创建对象失败则不可使用此函数。 </dd></dl>
 
-<p class="definition">在文件 <a class="el" href="_judge_job_8cpp_source.html">JudgeJob.cpp</a> 第 <a class="el" href="_judge_job_8cpp_source.html#l00585">585</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="_judge_job_8cpp_source.html">JudgeJob.cpp</a> 第 <a class="el" href="_judge_job_8cpp_source.html#l00677">677</a> 行定义.</p>
 <div class="dynheader">
 函数调用图:</div>
 <div class="dyncontent">
@@ -770,7 +818,7 @@ Private 类型</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">在文件 <a class="el" href="_judge_job_8cpp_source.html">JudgeJob.cpp</a> 第 <a class="el" href="_judge_job_8cpp_source.html#l00093">93</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="_judge_job_8cpp_source.html">JudgeJob.cpp</a> 第 <a class="el" href="_judge_job_8cpp_source.html#l00185">185</a> 行定义.</p>
 <div class="dynheader">
 函数调用图:</div>
 <div class="dyncontent">
@@ -779,9 +827,11 @@ Private 类型</h2></td></tr>
 <area shape="rect" id="node1" title="进入当前 job 的执行流程，并返回执行结果。" alt="" coords="5,71,133,98"/>
 <area shape="rect" id="node2" href="class_job_base.html#aa7da8e91cd0ffddf9b1cf70995d2134b" title="将当前评测状态提交到 redis 数据库。" alt="" coords="181,5,379,47"/>
 <area shape="rect" id="node3" href="class_judge_job.html#a1e12c6a1d33861f95a053186ac3d3eb9" title="根据当前 config 配置的值，执行编译/运行程序。过程中会对必要的权限检查， 并且会启动一个线程来监控，防止运行超时。执行结束后返回执行结果。" alt="" coords="214,71,346,98"/>
-<area shape="rect" id="node5" href="compare_8cpp.html#a960c5c76653215ba60077e139ab6c000" title=" " alt="" coords="244,122,316,149"/>
-<area shape="rect" id="node4" href="struct_result.html#a8201d7586458dd80f361ab8c6cd93524" title=" " alt="" coords="427,71,572,98"/>
-<area shape="rect" id="node6" href="compare_8cpp.html#ae12d969be69c79ba2d8501fc5ab34eb7" title=" " alt="" coords="430,122,569,149"/>
+<area shape="rect" id="node7" href="compare_8cpp.html#a960c5c76653215ba60077e139ab6c000" title="根据用户答案路径和标准答案路径，提取相应文件并进行比对。比对结果作为判题结果，并返回。" alt="" coords="244,134,316,161"/>
+<area shape="rect" id="node4" href="struct_result.html#a8201d7586458dd80f361ab8c6cd93524" title="将本结构体的 RunnerError 置为 err， 并将评测结果标为 UnitedJudgeResult::SYSTEM_ERROR" alt="" coords="427,7,572,34"/>
+<area shape="rect" id="node5" href="classprocess.html#a217a9f72c54fb962f5c56cf0934901e5" title="Send signal SIG to the process." alt="" coords="453,58,545,85"/>
+<area shape="rect" id="node6" href="classprocess.html#a2a3c8b98c92999ffe95abf1de7ee17d2" title=" " alt="" coords="451,109,547,135"/>
+<area shape="rect" id="node8" href="compare_8cpp.html#ae12d969be69c79ba2d8501fc5ab34eb7" title=" " alt="" coords="430,159,569,186"/>
 </map>
 </div>
 <div class="dynheader">
@@ -828,7 +878,7 @@ Private 类型</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">在文件 <a class="el" href="_judge_job_8cpp_source.html">JudgeJob.cpp</a> 第 <a class="el" href="_judge_job_8cpp_source.html#l00165">165</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="_judge_job_8cpp_source.html">JudgeJob.cpp</a> 第 <a class="el" href="_judge_job_8cpp_source.html#l00257">257</a> 行定义.</p>
 <div class="dynheader">
 这是这个函数的调用关系图:</div>
 <div class="dyncontent">
@@ -864,6 +914,54 @@ Private 类型</h2></td></tr>
 <p class="">本 job 临时工作路径 </p>
 
 <p class="definition">在文件 <a class="el" href="_judge_job_8hpp_source.html">JudgeJob.hpp</a> 第 <a class="el" href="_judge_job_8hpp_source.html#l00026">26</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9e9dcff9179f50957e14ed61d2376372"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e9dcff9179f50957e14ed61d2376372">&#9670;&nbsp;</a></span>have_accepted</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int JudgeJob::have_accepted</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="_judge_job_8hpp_source.html">JudgeJob.hpp</a> 第 <a class="el" href="_judge_job_8hpp_source.html#l00028">28</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a94ce01ab0a2947ae53df798b4a969a53"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a94ce01ab0a2947ae53df798b4a969a53">&#9670;&nbsp;</a></span>no_store_ac_code</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int JudgeJob::no_store_ac_code</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="_judge_job_8hpp_source.html">JudgeJob.hpp</a> 第 <a class="el" href="_judge_job_8hpp_source.html#l00029">29</a> 行定义.</p>
 
 </div>
 </div>

@@ -1,4 +1,4 @@
 <map id="ContestUpdateJob::get_contest_user_problem_status" name="ContestUpdateJob::get_contest_user_problem_status">
 <area shape="rect" id="node1" title="取得此用户此题在此次提交以前 AC, TO_DO 或 ATTEMPT 的状态" alt="" coords="232,5,389,61"/>
-<area shape="rect" id="node2" href="$class_contest_update_job.html#a4ddf2505c8a467684c1f17cc2242306d" title="更新此用户此题的完成状态 &#160;用户所见到的每题 AC, TO_DO, ATTEMPT 三种状态即为user problem 表所提供的服务" alt="" coords="5,13,184,54"/>
+<area shape="rect" id="node2" href="$class_contest_update_job.html#ac08c8b6cb897930559970dc021c35ccd" title="更新此用户此题的完成状态 &#160;用户所见到的每题 AC, TO_DO, ATTEMPT 三种状态即为user problem 表所提供的服务" alt="" coords="5,13,184,54"/>
 </map>

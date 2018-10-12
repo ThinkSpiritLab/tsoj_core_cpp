@@ -5,7 +5,7 @@
 <area shape="rect" id="node4" href="$class_config.html#a3690235ffa6f8c58eb9aef15138b1744" title="检查是否有程序最大子进程数限制" alt="" coords="220,107,407,133"/>
 <area shape="rect" id="node5" href="$class_config.html#a92a02bf20ae7e9925f895e5ccd4b2c85" title="检查是否有最大输出字节长度限制" alt="" coords="248,157,379,184"/>
 <area shape="rect" id="node6" href="$class_config.html#a66bf8e1fc1fafffa3f0f119c4a6328db" title="根据本 config 设定的所允许的系统调用种类的标识，加载相应的限制" alt="" coords="237,209,389,250"/>
-<area shape="rect" id="node9" href="$class_execute_args.html#a9e61c65a4f7832a6c33c3c85203ba574" title=" " alt="" coords="238,275,389,301"/>
+<area shape="rect" id="node9" href="$class_execute_args.html#a9e61c65a4f7832a6c33c3c85203ba574" title="返回命令行参数列表" alt="" coords="238,275,389,301"/>
 <area shape="rect" id="node7" href="$class_config.html#abc5c2690ad9c6b7c15eb10800b724fa9" title="生产 c/c++ 对应的系统调用权限限制" alt="" coords="459,175,621,217"/>
 <area shape="rect" id="node8" href="$class_config.html#a1fb73bd5c89b879497891c46ad345b87" title="生产通用的系统调用权限限制" alt="" coords="455,241,625,282"/>
 </map>

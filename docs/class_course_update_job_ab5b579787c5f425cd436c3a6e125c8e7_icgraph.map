@@ -1,0 +1,4 @@
+<map id="CourseUpdateJob::update_problem_submit_and_accept_num_in_this_course" name="CourseUpdateJob::update_problem_submit_and_accept_num_in_this_course">
+<area shape="rect" id="node1" title="更新本 job 对应的 pid 的题目的提交数和通过数" alt="" coords="228,5,423,61"/>
+<area shape="rect" id="node2" href="$class_course_update_job.html#acdb8cfc94cfe73b2092c1e18a06be0a8" title="更新题目的提交数, 通过数, 用户的提交数, 通过数" alt="" coords="5,13,180,54"/>
+</map>

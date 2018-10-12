@@ -32,28 +32,14 @@ class CourseUpdateJob: public ExerciseUpdateJobBase
 		virtual void update_solution() override final;
 
 		/**
-		 * @brief 将本 job 本课程对应的 pid 的题目的提交数 + delta
-		 * @warning 本函数仅完成字段的更新操作, 不会检查操作的合法性!
+		 * @brief 更新本 job 对应的 pid 的题目的提交数和通过数
 		 */
-		void update_course_problem_submit(int delta);
+		void update_problem_submit_and_accept_num_in_this_course();
 
 		/**
-		 * @brief 将本 job 本课程对应的 pid 的题目的通过数 + delta
-		 * @warning 本函数仅完成字段的更新操作, 不会检查操作的合法性!
+		 * @brief 更新本 job 对应的 uid 的用户的提交数和通过数
 		 */
-		void update_course_problem_accept(int delta);
-
-		/**
-		 * @brief 将本 job 本课程对应的 uid 的题目的提交数 + delta
-		 * @warning 本函数仅完成字段的更新操作, 不会检查操作的合法性!
-		 */
-		void update_course_user_submit(int delta);
-
-		/**
-		 * @brief 将本 job 本课程对应的 uid 的题目的通过数 + delta
-		 * @warning 本函数仅完成字段的更新操作, 不会检查操作的合法性!
-		 */
-		void update_course_user_accept(int delta);
+		void update_user_submit_and_accept_num_in_this_course();
 
 		/**
 		 * @brief 更新题目的提交数, 通过数, 用户的提交数, 通过数
@@ -63,7 +49,7 @@ class CourseUpdateJob: public ExerciseUpdateJobBase
 
 		user_problem_status get_course_user_problem_status();
 
-		virtual void update_user_problem() override final;
+		virtual void update_user_problem_status() override final;
 
 		virtual ~CourseUpdateJob() noexcept = default;
 };

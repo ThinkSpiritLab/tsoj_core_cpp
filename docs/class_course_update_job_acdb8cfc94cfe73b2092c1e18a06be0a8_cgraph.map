@@ -1,14 +1,8 @@
 <map id="CourseUpdateJob::update_user_and_problem" name="CourseUpdateJob::update_user_and_problem">
-<area shape="rect" id="node1" title="更新题目的提交数, 通过数, 用户的提交数, 通过数" alt="" coords="5,350,180,391"/>
-<area shape="rect" id="node2" href="$class_exercise_update_job_base.html#a9405c9cf05a1de216d8dece91629af5c" title="更新题目的提交数, 通过数, 用户的提交数, 通过数" alt="" coords="228,173,411,214"/>
-<area shape="rect" id="node8" href="$class_course_update_job.html#a42a8e21d61d59f06a62355202ee06cf6" title=" " alt="" coords="243,237,396,293"/>
-<area shape="rect" id="node9" href="$class_course_update_job.html#a4b639ed7fc124730bec43e45d18f25c3" title="将本 job 本课程对应的 uid 的题目的提交数 + delta" alt="" coords="232,317,407,358"/>
-<area shape="rect" id="node10" href="$class_course_update_job.html#abe70ee76e59ea28577958608736476d0" title="将本 job 本课程对应的 pid 的题目的提交数 + delta" alt="" coords="232,382,407,423"/>
-<area shape="rect" id="node11" href="$class_course_update_job.html#a96b8b5b917c033014b34ede413a82d73" title="将本 job 本课程对应的 uid 的题目的通过数 + delta" alt="" coords="232,447,407,489"/>
-<area shape="rect" id="node12" href="$class_course_update_job.html#a7ed5da4d65e62c350635cfae969d1805" title="将本 job 本课程对应的 pid 的题目的通过数 + delta" alt="" coords="232,513,407,554"/>
-<area shape="rect" id="node3" href="$class_exercise_update_job_base.html#a9e7d46297cef3bbf492f108479d0079a" title="取得此用户此题在此次提交以前 AC, TO_DO 或 ATTEMPT 的状态" alt="" coords="459,5,648,61"/>
-<area shape="rect" id="node4" href="$class_exercise_update_job_base.html#a5a3974b7d168d0d4c8df086a842a1927" title="将本 job 对应的 uid 的题目的提交数 + delta" alt="" coords="470,85,637,141"/>
-<area shape="rect" id="node5" href="$class_exercise_update_job_base.html#a529de717b9f78056523a0a609208e8df" title="将本 job 对应的 pid 的题目的提交数 + delta" alt="" coords="464,165,643,221"/>
-<area shape="rect" id="node6" href="$class_exercise_update_job_base.html#a9dd4029ca0649fd8a970dad6c22f35c9" title="将本 job 对应的 uid 的题目的通过数 + delta" alt="" coords="470,245,637,301"/>
-<area shape="rect" id="node7" href="$class_exercise_update_job_base.html#a9054cda48a18e0dbddc2fed5c987e99c" title="将本 job 对应的 pid 的题目的通过数 + delta" alt="" coords="464,325,643,381"/>
+<area shape="rect" id="node1" title="更新题目的提交数, 通过数, 用户的提交数, 通过数" alt="" coords="5,93,180,134"/>
+<area shape="rect" id="node2" href="$class_course_update_job.html#af6db4114d2322013941c5e42c95b36f5" title="更新本 job 对应的 uid 的用户的提交数和通过数" alt="" coords="238,5,413,61"/>
+<area shape="rect" id="node3" href="$class_course_update_job.html#ab5b579787c5f425cd436c3a6e125c8e7" title="更新本 job 对应的 pid 的题目的提交数和通过数" alt="" coords="228,85,423,141"/>
+<area shape="rect" id="node4" href="$class_exercise_update_job_base.html#a9405c9cf05a1de216d8dece91629af5c" title="更新题目的提交数, 通过数, 用户的提交数, 通过数" alt="" coords="234,165,417,206"/>
+<area shape="rect" id="node5" href="$class_exercise_update_job_base.html#ae915992f5df113724cec45542e2582c3" title="更新本 job 对应的 uid 的用户的提交数和通过数" alt="" coords="471,117,672,173"/>
+<area shape="rect" id="node6" href="$class_exercise_update_job_base.html#a3af17ba746dd7b0776f371618672619f" title="更新本 job 对应的 pid 的题目的提交数和通过数" alt="" coords="471,197,672,253"/>
 </map>

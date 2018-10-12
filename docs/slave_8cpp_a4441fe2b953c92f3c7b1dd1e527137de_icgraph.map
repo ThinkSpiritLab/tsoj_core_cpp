@@ -1,4 +1,4 @@
 <map id="load_config" name="load_config">
 <area shape="rect" id="node1" title="加载 slave 工作的配置 根据 judge_server.conf 文档，读取工作配置信息。loadConfig 的工作原理详见其文档。" alt="" coords="104,5,192,32"/>
-<area shape="rect" id="node2" href="$slave_8cpp.html#ac0f2228420376f4db7e1274f2b41667c" title="slave端主程序循环 加载配置信息；连接数据库；取待评测任务信息，交由子进程并评测；创建并分离发送心跳线程" alt="" coords="5,5,56,32"/>
+<area shape="rect" id="node2" href="$slave_8cpp.html#ac0f2228420376f4db7e1274f2b41667c" title="slave 端主程序循环 加载配置信息；连接 redis 数据库；取待评测任务信息，交由子进程并评测；创建并分离发送心跳线程" alt="" coords="5,5,56,32"/>
 </map>

@@ -365,13 +365,13 @@ Result JudgeJob::execute(const Config & config) const noexcept
 		return result;
 	}
 
-	std::unique_ptr<Process> child_process = nullptr;
+	process child_process;
 
 	// 此处分离了一个运行子进程，稍后该进程内自我完成工作配置，然后替换为用户编写的程序，用于实际的编译/运行
 	try {
-		child_process.reset(new Process(true, [this, &config]() {
+		child_process = process([this, &config]() {
 			this->child_process(config);
-		}));
+		});
 	} catch (const std::exception & e) {
 		LOG_FATAL(jobType, sid, log_fp, "Fork failed. Error information: ", e.what());
 		result.setErrorCode(RunnerError::FORK_FAILED);
@@ -382,35 +382,35 @@ Result JudgeJob::execute(const Config & config) const noexcept
 	time_point<high_resolution_clock> start(high_resolution_clock::now());
 
 	if (config.limitRealTime()) {
-		std::unique_ptr<std::thread> timeout_killer_thread = nullptr;
+		std::thread timeout_killer_thread;
 		try {
-			timeout_killer_thread.reset(new std::thread([&child_process](milliseconds timeout) {
+			timeout_killer_thread = std::thread([&child_process](milliseconds timeout) {
 				std::this_thread::sleep_for(timeout + 1_s);
-				if (child_process->kill(SIGKILL) != 0) {
+				if (child_process.kill(SIGKILL) != 0) {
 					//TODO log
 				}
-			}, config.max_real_time));
+			}, config.max_real_time);
 		} catch (const std::system_error & e) {
-			child_process->kill(SIGKILL);
+			child_process.kill(SIGKILL);
 			EXCEPT_FATAL(jobType, sid, log_fp, "Thread construct failed.", e, " , error code: ", e.code().value());
 			result.setErrorCode(RunnerError::PTHREAD_FAILED);
 			return result;
 		} catch (...) {
-			child_process->kill(SIGKILL);
+			child_process.kill(SIGKILL);
 			UNKNOWN_EXCEPT_FATAL(jobType, sid, log_fp, "Thread construct failed.");
 			result.setErrorCode(RunnerError::PTHREAD_FAILED);
 			return result;
 		}
 
 		try {
-			timeout_killer_thread->detach();
+			timeout_killer_thread.detach();
 		} catch (const std::system_error & e) {
-			child_process->kill(SIGKILL);
+			child_process.kill(SIGKILL);
 			EXCEPT_FATAL(jobType, sid, log_fp, "Thread detach failed.", e, " , error code: ", e.code().value());
 			result.setErrorCode(RunnerError::PTHREAD_FAILED);
 			return result;
 		} catch (...) {
-			child_process->kill(SIGKILL);
+			child_process.kill(SIGKILL);
 			UNKNOWN_EXCEPT_FATAL(jobType, sid, log_fp, "Thread detach failed.");
 			result.setErrorCode(RunnerError::PTHREAD_FAILED);
 			return result;
@@ -424,8 +424,8 @@ Result JudgeJob::execute(const Config & config) const noexcept
 	// wait for child process to terminate
 	// on success, returns the process ID of the child whose state has changed;
 	// On error, -1 is returned.
-	if (child_process->wait4(&status, WSTOPPED, &resource_usage) == -1) {
-		child_process->kill(SIGKILL);
+	if (child_process.join(&status, WSTOPPED, &resource_usage) == -1) {
+		child_process.kill(SIGKILL);
 		LOG_FATAL(jobType, sid, log_fp, "WAIT_FAILED");
 		result.setErrorCode(RunnerError::WAIT_FAILED);
 		return result;

@@ -1,8 +1,7 @@
 var searchData=
 [
-  ['regist_5fsigterm_5fhandler',['regist_SIGTERM_handler',['../slave_8cpp.html#a8cb7d2d303a160e9662c31d2e1625c77',1,'regist_SIGTERM_handler(int signum) noexcept:&#160;slave.cpp'],['../master_8cpp.html#a8cb7d2d303a160e9662c31d2e1625c77',1,'regist_SIGTERM_handler(int signum) noexcept:&#160;master.cpp']]],
-  ['register_5fself',['register_self',['../slave_8cpp.html#ab85b27ea72fdfbc8ddc41b1e3078385c',1,'register_self() noexcept:&#160;slave.cpp'],['../master_8cpp.html#ab85b27ea72fdfbc8ddc41b1e3078385c',1,'register_self() noexcept:&#160;master.cpp']]],
-  ['result',['Result',['../struct_result.html#a90f44667e23d25ccdeac37f00a74657b',1,'Result']]],
-  ['running',['running',['../class_judge_job.html#a0d2e1e5cce842ef0daf71c95f98275f0',1,'JudgeJob']]],
-  ['runningconfig',['RunningConfig',['../class_running_config.html#a76d13e5b1a4c611ba709d57021916b3c',1,'RunningConfig']]]
+  ['parse_5fbuf',['parse_buf',['../load__helper_8cpp.html#a7aa49aa215539e705fe48842be5bef03',1,'load_helper.cpp']]],
+  ['parsejobitem',['parseJobItem',['../class_job_base.html#a45db2aacca3aa05d98aecaa560d54c8d',1,'JobBase']]],
+  ['process',['process',['../classprocess.html#a9a994dc07bc24e57ab2afd83b7e40477',1,'process::process() noexcept'],['../classprocess.html#addb07b7e292e8de3e4d4ef068a0fb61b',1,'process::process(Callable &amp;&amp;func, Args &amp;&amp;... args)'],['../classprocess.html#a7af8014ced3ecdb5492d5cf3c1d7da7e',1,'process::process(process &amp;&amp;src) noexcept']]],
+  ['push_5fback_5ffailed_5fjudge_5fjob',['push_back_failed_judge_job',['../class_judge_job.html#adf10b6952dc5b83dfa7cb0ec66b3845b',1,'JudgeJob']]]
 ];

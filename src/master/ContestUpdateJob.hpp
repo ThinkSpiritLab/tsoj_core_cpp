@@ -70,7 +70,7 @@ class ContestUpdateJob: public UpdateJobBase
 		 */
 		user_problem_status get_contest_user_problem_status();
 
-		virtual void update_user_problem() override final;
+		virtual void update_user_problem_status() override final;
 		virtual ~ContestUpdateJob() noexcept = default;
 };
 

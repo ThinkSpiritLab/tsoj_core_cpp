@@ -1,4 +1,4 @@
 <map id="getRunnerErrorName" name="getRunnerErrorName">
-<area shape="rect" id="node1" title=" " alt="" coords="139,5,284,32"/>
-<area shape="rect" id="node2" href="$united__resource_8hpp.html#a564757528957adef2670a3e4da67c5a9" title=" " alt="" coords="5,5,91,32"/>
+<area shape="rect" id="node1" title="根据传入的 RunnerError，返回其对应含义的 std::string 类型说明。" alt="" coords="139,5,284,32"/>
+<area shape="rect" id="node2" href="$united__resource_8hpp.html#a564757528957adef2670a3e4da67c5a9" title="重载 RunnerError 类的 &lt;&lt; 运算符，输出其对应含义的 std::string" alt="" coords="5,5,91,32"/>
 </map>

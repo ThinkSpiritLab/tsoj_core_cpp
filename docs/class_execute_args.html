@@ -73,20 +73,28 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p>执行 exec 族的命令行参数。在原本的 Unix 要求中，exec 族函数的命令行参数末尾必须以一个空指针结尾， 这显然十分丑陋不够优雅，也晦涩难读。基于此目的，本处使用了一个类将它封装了起来。  
+ <a href="class_execute_args.html#details">更多...</a></p>
+
 <p><code>#include &lt;<a class="el" href="_execute_args_8hpp_source.html">ExecuteArgs.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public 成员函数</h2></td></tr>
 <tr class="memitem:a299f1137640de283511d95820f19deb5"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_execute_args.html#a299f1137640de283511d95820f19deb5">ExecuteArgs</a> ()</td></tr>
+<tr class="memdesc:a299f1137640de283511d95820f19deb5"><td class="mdescLeft">&#160;</td><td class="mdescRight">普通构造函数，一个空列表  <a href="#a299f1137640de283511d95820f19deb5">更多...</a><br /></td></tr>
 <tr class="separator:a299f1137640de283511d95820f19deb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac49f3a5ab4b2180606980e14d616a8b5"><td class="memTemplParams" colspan="2">template&lt;typename ForwardInteger &gt; </td></tr>
 <tr class="memitem:ac49f3a5ab4b2180606980e14d616a8b5"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_execute_args.html#ac49f3a5ab4b2180606980e14d616a8b5">ExecuteArgs</a> (ForwardInteger begin, ForwardInteger end)</td></tr>
+<tr class="memdesc:ac49f3a5ab4b2180606980e14d616a8b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">模板式构造函数，根据参数类型生产对应的构造函数。如 vector 等。 将其内部内容复制到本类的 args 中作为参数  <a href="#ac49f3a5ab4b2180606980e14d616a8b5">更多...</a><br /></td></tr>
 <tr class="separator:ac49f3a5ab4b2180606980e14d616a8b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab26ca04e8e1a47f84430f53457f66657"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_execute_args.html#ab26ca04e8e1a47f84430f53457f66657">ExecuteArgs</a> (std::initializer_list&lt; std::string &gt; list)</td></tr>
+<tr class="memdesc:ab26ca04e8e1a47f84430f53457f66657"><td class="mdescLeft">&#160;</td><td class="mdescRight">适配初始化列表样式的构造函数  <a href="#ab26ca04e8e1a47f84430f53457f66657">更多...</a><br /></td></tr>
 <tr class="separator:ab26ca04e8e1a47f84430f53457f66657"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a61171df145c1f3d0484f8c1c72903d93"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_execute_args.html">ExecuteArgs</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_execute_args.html#a61171df145c1f3d0484f8c1c72903d93">operator=</a> (std::initializer_list&lt; std::string &gt; list)</td></tr>
+<tr class="memdesc:a61171df145c1f3d0484f8c1c72903d93"><td class="mdescLeft">&#160;</td><td class="mdescRight">重载 = 运算符，以赋值操作更新 args  <a href="#a61171df145c1f3d0484f8c1c72903d93">更多...</a><br /></td></tr>
 <tr class="separator:a61171df145c1f3d0484f8c1c72903d93"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9e61c65a4f7832a6c33c3c85203ba574"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; char *[]&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_execute_args.html#a9e61c65a4f7832a6c33c3c85203ba574">getArgs</a> () const</td></tr>
+<tr class="memdesc:a9e61c65a4f7832a6c33c3c85203ba574"><td class="mdescLeft">&#160;</td><td class="mdescRight">返回命令行参数列表  <a href="#a9e61c65a4f7832a6c33c3c85203ba574">更多...</a><br /></td></tr>
 <tr class="separator:a9e61c65a4f7832a6c33c3c85203ba574"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
@@ -95,8 +103,9 @@ Private 属性</h2></td></tr>
 <tr class="separator:a84a70b0a3478d1d0da567ed57a59ba78"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
-<div class="textblock">
-<p class="definition">在文件 <a class="el" href="_execute_args_8hpp_source.html">ExecuteArgs.hpp</a> 第 <a class="el" href="_execute_args_8hpp_source.html#l00015">15</a> 行定义.</p>
+<div class="textblock"><p class="">执行 exec 族的命令行参数。在原本的 Unix 要求中，exec 族函数的命令行参数末尾必须以一个空指针结尾， 这显然十分丑陋不够优雅，也晦涩难读。基于此目的，本处使用了一个类将它封装了起来。 </p>
+
+<p class="definition">在文件 <a class="el" href="_execute_args_8hpp_source.html">ExecuteArgs.hpp</a> 第 <a class="el" href="_execute_args_8hpp_source.html#l00019">19</a> 行定义.</p>
 </div><h2 class="groupheader">构造及析构函数说明</h2>
 <a id="a299f1137640de283511d95820f19deb5"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a299f1137640de283511d95820f19deb5">&#9670;&nbsp;</a></span>ExecuteArgs() <span class="overload">[1/3]</span></h2>
@@ -112,6 +121,8 @@ Private 属性</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>普通构造函数，一个空列表 </p>
 
 <p class="definition">在文件 <a class="el" href="_execute_args_8cpp_source.html">ExecuteArgs.cpp</a> 第 <a class="el" href="_execute_args_8cpp_source.html#l00010">10</a> 行定义.</p>
 
@@ -153,7 +164,9 @@ template&lt;typename ForwardInteger &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">在文件 <a class="el" href="_execute_args_8hpp_source.html">ExecuteArgs.hpp</a> 第 <a class="el" href="_execute_args_8hpp_source.html#l00024">24</a> 行定义.</p>
+<p>模板式构造函数，根据参数类型生产对应的构造函数。如 vector 等。 将其内部内容复制到本类的 args 中作为参数 </p>
+
+<p class="definition">在文件 <a class="el" href="_execute_args_8hpp_source.html">ExecuteArgs.hpp</a> 第 <a class="el" href="_execute_args_8hpp_source.html#l00035">35</a> 行定义.</p>
 
 </div>
 </div>
@@ -172,6 +185,8 @@ template&lt;typename ForwardInteger &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>适配初始化列表样式的构造函数 </p>
 
 <p class="definition">在文件 <a class="el" href="_execute_args_8cpp_source.html">ExecuteArgs.cpp</a> 第 <a class="el" href="_execute_args_8cpp_source.html#l00014">14</a> 行定义.</p>
 
@@ -193,13 +208,16 @@ template&lt;typename ForwardInteger &gt; </div>
       </table>
 </div><div class="memdoc">
 
+<p>返回命令行参数列表 </p>
+<dl class="section return"><dt>返回</dt><dd>指向 char * 数组的指针，符合 Unix 的 exec 族函数的参数规范 </dd></dl>
+
 <p class="definition">在文件 <a class="el" href="_execute_args_8cpp_source.html">ExecuteArgs.cpp</a> 第 <a class="el" href="_execute_args_8cpp_source.html#l00025">25</a> 行定义.</p>
 <div class="dynheader">
 这是这个函数的调用关系图:</div>
 <div class="dyncontent">
 <div class="center"><img src="class_execute_args_a9e61c65a4f7832a6c33c3c85203ba574_icgraph.png" border="0" usemap="#class_execute_args_a9e61c65a4f7832a6c33c3c85203ba574_icgraph" alt=""/></div>
 <map name="class_execute_args_a9e61c65a4f7832a6c33c3c85203ba574_icgraph" id="class_execute_args_a9e61c65a4f7832a6c33c3c85203ba574_icgraph">
-<area shape="rect" id="node1" title=" " alt="" coords="220,5,371,32"/>
+<area shape="rect" id="node1" title="返回命令行参数列表" alt="" coords="220,5,371,32"/>
 <area shape="rect" id="node2" href="class_judge_job.html#a45f3a298baec8013e313d506d5b764b5" title="启动 编译/执行 的实际工作。限制了资源信息，重定向流之后，启动实际工作进程。" alt="" coords="5,5,172,32"/>
 </map>
 </div>
@@ -221,6 +239,9 @@ template&lt;typename ForwardInteger &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>重载 = 运算符，以赋值操作更新 args </p>
+<dl class="section return"><dt>返回</dt><dd>新的 <a class="el" href="class_execute_args.html" title="执行 exec 族的命令行参数。在原本的 Unix 要求中，exec 族函数的命令行参数末尾必须以一个空指针结尾， 这显然十分丑陋不够优雅，也晦涩难读。基于此目的，本处使用了一个类将它封装了起来。">ExecuteArgs</a> 的引用 </dd></dl>
 
 <p class="definition">在文件 <a class="el" href="_execute_args_8cpp_source.html">ExecuteArgs.cpp</a> 第 <a class="el" href="_execute_args_8cpp_source.html#l00019">19</a> 行定义.</p>
 
@@ -247,7 +268,7 @@ template&lt;typename ForwardInteger &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">在文件 <a class="el" href="_execute_args_8hpp_source.html">ExecuteArgs.hpp</a> 第 <a class="el" href="_execute_args_8hpp_source.html#l00018">18</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="_execute_args_8hpp_source.html">ExecuteArgs.hpp</a> 第 <a class="el" href="_execute_args_8hpp_source.html#l00022">22</a> 行定义.</p>
 
 </div>
 </div>

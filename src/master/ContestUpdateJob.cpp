@@ -175,7 +175,7 @@ bool ContestUpdateJob::this_problem_has_not_accepted()
 }
 
 
-void ContestUpdateJob::update_user_problem()
+void ContestUpdateJob::update_user_problem_status()
 {
 	LOG_DEBUG(jobType, sid, log_fp, "ContestUpdateJob::update_user_problem");
 

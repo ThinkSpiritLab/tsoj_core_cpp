@@ -2,7 +2,6 @@ var searchData=
 [
   ['general',['general',['../_config_8hpp.html#a14b6d2c5ee1288f01d167a3ba7ef4328a958153f1b8b96ec4c4eb2147429105d9',1,'Config.hpp']]],
   ['general_5fseccomp_5frules',['general_seccomp_rules',['../class_config.html#a1fb73bd5c89b879497891c46ad345b87',1,'Config']]],
-  ['get_5fchild_5fid',['get_child_id',['../class_process.html#a1b6399a9f1f9bf603dbf4541788c04e1',1,'Process']]],
   ['get_5fcompile_5finfo',['get_compile_info',['../class_update_job_base.html#a58482b3c4fbc2c32f98614245d8a20c6',1,'UpdateJobBase']]],
   ['get_5fcontest_5fuser_5fproblem_5fstatus',['get_contest_user_problem_status',['../class_contest_update_job.html#ae28fd6df5e2ce9100552a7c7fd09b2aa',1,'ContestUpdateJob']]],
   ['get_5fcourse_5fuser_5fproblem_5fstatus',['get_course_user_problem_status',['../class_course_update_job.html#a42a8e21d61d59f06a62355202ee06cf6',1,'CourseUpdateJob']]],

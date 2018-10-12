@@ -1,6 +1,7 @@
 var searchData=
 [
   ['c_5fcpp_5fseccomp_5frules',['c_cpp_seccomp_rules',['../class_config.html#abc5c2690ad9c6b7c15eb10800b724fa9',1,'Config']]],
+  ['calculate_5fsimilarity',['calculate_similarity',['../class_judge_job.html#a1a9896ab3eaa3056757d2f7531193ea7',1,'JudgeJob']]],
   ['change_5fjob_5fdir',['change_job_dir',['../class_judge_job.html#a32a0d6b97470ddf01ab3f905f57615ec',1,'JudgeJob']]],
   ['check_5fis_5fvalid_5fconfig',['check_is_valid_config',['../class_config.html#a18b402cecc5c5dcad18d0c4c306b410b',1,'Config']]],
   ['child_5fprocess',['child_process',['../class_judge_job.html#a45f3a298baec8013e313d506d5b764b5',1,'JudgeJob']]],

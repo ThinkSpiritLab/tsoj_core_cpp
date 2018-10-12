@@ -157,7 +157,7 @@ void UpdateJobBase::handle()
 	std::exception_ptr update_user_problem_exception;
 	if(update_solution_exception == nullptr) { //如果 update solution 失败, 则跳过 update user problem
 		try {
-			this->update_user_problem();
+			this->update_user_problem_status();
 		} catch (const std::exception & e) {
 			update_user_problem_exception = std::current_exception();
 			EXCEPT_FATAL(jobType, sid, log_fp, "Update user problem failed!", e);

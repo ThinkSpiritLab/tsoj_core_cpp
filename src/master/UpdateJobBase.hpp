@@ -126,7 +126,7 @@ class UpdateJobBase: public JobBase
 		 * @detail 用户所见到的每题 AC, TO_DO, ATTEMPT 三种状态即为user problem 表所提供的服务
 		 * @warning 仅规定 update user problem 表的接口, 具体操作需由子类实现
 		 */
-		virtual void update_user_problem() = 0;
+		virtual void update_user_problem_status() = 0;
 
 	private:
 

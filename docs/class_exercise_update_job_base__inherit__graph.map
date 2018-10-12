@@ -1,7 +1,7 @@
 <map id="ExerciseUpdateJobBase" name="ExerciseUpdateJobBase">
-<area shape="rect" id="node1" title=" " alt="" coords="63,155,229,181"/>
-<area shape="rect" id="node4" href="$class_course_update_job.html" title=" " alt="" coords="5,229,132,256"/>
-<area shape="rect" id="node5" href="$class_exercise_update_job.html" title=" " alt="" coords="157,229,293,256"/>
-<area shape="rect" id="node2" href="$class_update_job_base.html" title=" " alt="" coords="89,80,203,107"/>
+<area shape="rect" id="node1" title="ExerciseUpdateJob 与 CourseUpdateJob 的虚基类，定义了解题状态查询与更新提交通过数等通用部分。" alt="" coords="63,155,229,181"/>
+<area shape="rect" id="node4" href="$class_course_update_job.html" title="课程练习类，定义了其独特的 update_solution 等操作。针对课程，此类还维护 user_problem 表中 cid 非空的数据。 该数据与普通的 user_problem 记录独立。即同一..." alt="" coords="5,229,132,256"/>
+<area shape="rect" id="node5" href="$class_exercise_update_job.html" title="普通练习类，定义了其独特的 update_solution 操作，即增加特有的 solution 记录。 而维护的 user 表、user_problem 表与 problem 表，均使用基类的定义完成..." alt="" coords="157,229,293,256"/>
+<area shape="rect" id="node2" href="$class_update_job_base.html" title="JobBase 的子类，同时是所有类型的 update 类的基类。" alt="" coords="89,80,203,107"/>
 <area shape="rect" id="node3" href="$class_job_base.html" title="JudgeJob 与 UpdateJob 的基类， 存有 Job的基本信息，并规定了所有 Job 必须遵循的函数接口。" alt="" coords="109,5,183,32"/>
 </map>

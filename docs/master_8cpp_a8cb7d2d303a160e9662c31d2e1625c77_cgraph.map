@@ -1,4 +1,4 @@
 <map id="regist_SIGTERM_handler" name="regist_SIGTERM_handler">
-<area shape="rect" id="node1" title="SIGTERM 信号的处理函数 当收到 SIGTERM 信号，在代评测队列末端加上 type = 0, id = &#45;1 的任务，用于标识结束 slave 工作的意愿。之后在 loop 循环中会据此判断是..." alt="" coords="5,5,176,32"/>
+<area shape="rect" id="node1" title="SIGTERM 信号的处理函数 当收到 SIGTERM 信号，在代评测队列末端加上 type = 0, id = &#45;1 的任务，用于标识结束 master 工作的意愿。之后在 loop 循环中会据此判断..." alt="" coords="5,5,176,32"/>
 <area shape="rect" id="node2" href="$class_job_base.html#a3d354b5691b71524e49514dfbcd41550" title="获取规定的停止工作标识" alt="" coords="224,5,393,32"/>
 </map>

@@ -37,81 +37,116 @@ void CourseUpdateJob::update_solution()
 	}
 }
 
-void CourseUpdateJob::update_course_problem_submit(int delta)
+void CourseUpdateJob::update_problem_submit_and_accept_num_in_this_course()
 {
-	//TODO 数据库未支持记录题目提交数的字段
-}
-
-void CourseUpdateJob::update_course_problem_accept(int delta)
-{
-	//TODO 数据库未支持记录题目通过数的字段
-}
-
-void CourseUpdateJob::update_course_user_submit(int delta)
-{
-	LOG_DEBUG(jobType, sid, log_fp, "CourseUpdateJob::update_course_user_submit");
-
-	mysqlpp::Query update = mysqlConn->query(
-			"update course_user set c_submit = c_submit + %0 where c_id = %1 and u_id = %2"
+	mysqlpp::Query query = mysqlConn->query(
+			"select u_id, s_result from solution where p_id = %0 and c_id = %1"
 	);
-	update.parse();
+	query.parse();
 
-	mysqlpp::SimpleResult res = update.execute(delta, cid, uid);
+	std::set<int> accepted_user;
+	int submit_num = 0;
+	{
+		mysqlpp::StoreQueryResult res = query.store(this->pid, this->cid);
 
-	if(!res) {
-		MysqlEmptyResException e(update.errnum(), update.error());
-		EXCEPT_FATAL(jobType, sid, log_fp, "Update user submit failed!", e);
-		throw e;
+		for (const auto & row : res) {
+			int u_id_in_this_row = row["u_id"];
+			// 此题已通过的用户的集合中无此条 solution 对应的用户
+			if (accepted_user.find(u_id_in_this_row) == accepted_user.end()) {
+				UnitedJudgeResult result = UnitedJudgeResult(int(row["s_result"]));
+				if (result == UnitedJudgeResult::ACCEPTED) {
+					accepted_user.insert(u_id_in_this_row);
+				}
+				++submit_num;
+			}
+		}
+
+		if (query.errnum() != 0) {
+			MysqlEmptyResException e(query.errnum(), query.error());
+			EXCEPT_FATAL(jobType, sid, log_fp, "Query problem's solutions failed!", e);
+			throw e;
+		}
 	}
-}
-
-void CourseUpdateJob::update_course_user_accept(int delta)
-{
-	LOG_DEBUG(jobType, sid, log_fp, "CourseUpdateJob::update_course_user_accept");
 
 	mysqlpp::Query update = mysqlConn->query(
-			"update course_user set c_accept = c_accept + %0 where c_id = %1 and u_id = %2"
+			"update course_problem set c_p_submit = %0, c_p_accept = %1 where p_id = %2 and c_id = %3"
 	);
 	update.parse();
-	mysqlpp::SimpleResult res = update.execute(delta, cid, uid);
+
+	mysqlpp::SimpleResult res = update.execute(submit_num, accepted_user.size(), this->pid, this->cid);
 	if (!res) {
-		MysqlEmptyResException e(update.errnum(), update.error());
-		EXCEPT_FATAL(jobType, sid, log_fp, "Update user u_accept failed!", e);
+		MysqlEmptyResException e(query.errnum(), query.error());
+		EXCEPT_FATAL(jobType, sid, log_fp, "Update problem's submit and accept number in this course failed!", e, ", course id: ", this->cid);
 		throw e;
 	}
 }
+
+void CourseUpdateJob::update_user_submit_and_accept_num_in_this_course()
+{
+	mysqlpp::Query query = mysqlConn->query(
+			"select p_id, s_result from solution where u_id = %0 and c_id = %1"
+	);
+	query.parse();
+
+	std::set<int> accepted_problems;
+	int submit_num = 0;
+	{
+		mysqlpp::StoreQueryResult res = query.store(this->pid, this->cid);
+
+		for (const auto & row : res) {
+			int p_id_in_this_row = row["p_id"];
+			if (accepted_problems.find(p_id_in_this_row) == accepted_problems.end()) {
+				// 此用户已通过的题的集合中无此条 solution 对应的题
+				UnitedJudgeResult result = UnitedJudgeResult(int(row["s_result"]));
+				if (result == UnitedJudgeResult::ACCEPTED) {
+					accepted_problems.insert(p_id_in_this_row);
+				}
+				++submit_num;
+			}
+		}
+
+		if (query.errnum() != 0) {
+			MysqlEmptyResException e(query.errnum(), query.error());
+			EXCEPT_FATAL(jobType, sid, log_fp, "Query user's solutions failed!", e);
+			throw e;
+		}
+	}
+
+	mysqlpp::Query update = mysqlConn->query(
+			"update user set c_submit = %0, c_accept = %1 where u_id = %2 and c_id = %3"
+	);
+	update.parse();
+
+	mysqlpp::SimpleResult res = update.execute(submit_num, accepted_problems.size(), this->uid, this->cid);
+	if (!res) {
+		MysqlEmptyResException e(query.errnum(), query.error());
+		EXCEPT_FATAL(jobType, sid, log_fp, "Update user's submit and accept number in this course failed!", e, ", course id: ", this->cid);
+		throw e;
+	}
+}
+
 
 void CourseUpdateJob::update_user_and_problem()
 {
 	LOG_DEBUG(jobType, sid, log_fp, "CourseUpdateJob::update_user_and_problem");
 
-	// 先更新练习视角用户的提交数和通过数
-	// 使 course_user 中某个 user 的提交数与通过数同步到 user 表中
-	// course problem 的统计因数据库不支持暂未实现
-	this->supper_t::update_user_and_problem();
-
-	bool already_AC = false;
 	try {
-		if(this->get_course_user_problem_status() == user_problem_status::ACCEPTED) {
-			already_AC = true;
-		} else {
-			already_AC = false;
-		}
+		this->update_user_submit_and_accept_num_in_this_course();
 	} catch (const std::exception & e) {
-		EXCEPT_WARNING(jobType, sid, log_fp, "Query already ac before failed!", e);
-		//DO NOT THROW
-		already_AC = false;
+		EXCEPT_FATAL(jobType, sid, log_fp, "Update user submit and accept number in this course failed!", e, ", course id: ", this->cid);
+		throw;
 	}
 
-	// AC后再提交不增加submit数
-	if (already_AC == false) {
-		this->update_course_user_submit(1);
-		this->update_course_problem_submit(1);
-		if (result.judge_result == UnitedJudgeResult::ACCEPTED) {
-			this->update_course_user_accept(1);
-			this->update_course_problem_accept(1);
-		}
+	try {
+		this->update_problem_submit_and_accept_num_in_this_course();
+	} catch (const std::exception & e) {
+		EXCEPT_FATAL(jobType, sid, log_fp, "Update problem submit and accept number in this course failed!", e, ", course id: ", this->cid);
+		throw;
 	}
+
+	// 更新练习视角用户的提交数和通过数
+	// 使 course_user 中某个 user 的提交数与通过数同步到 user 表中
+	this->supper_t::update_user_and_problem();
 }
 
 user_problem_status CourseUpdateJob::get_course_user_problem_status()
@@ -145,13 +180,13 @@ user_problem_status CourseUpdateJob::get_course_user_problem_status()
 	}
 }
 
-void CourseUpdateJob::update_user_problem()
+void CourseUpdateJob::update_user_problem_status()
 {
 	LOG_DEBUG(jobType, sid, log_fp, "CourseUpdateJob::update_user_problem");
 
 	// 先更新练习视角的用户通过情况表
 	// 使课程中（cid 非空） user_problem 中某个 user 对某题的状态同步到非课程的 user_problem 中（cid 为空）
-	this->supper_t::update_user_problem();
+	this->supper_t::update_user_problem_status();
 
 	user_problem_status old_status = this->get_course_user_problem_status();
 

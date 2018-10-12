@@ -31,7 +31,7 @@ class ExerciseUpdateJob: public ExerciseUpdateJobBase
 
 		virtual void update_user_and_problem() override final;
 
-		virtual void update_user_problem() override final;
+		virtual void update_user_problem_status() override final;
 
 		virtual ~ExerciseUpdateJob() noexcept = default;
 };

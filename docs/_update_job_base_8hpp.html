@@ -125,6 +125,7 @@ UpdateJobBase.hpp 的引用(Include)关系图:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 类</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_update_job_base.html">UpdateJobBase</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="class_job_base.html" title="JudgeJob 与 UpdateJob 的基类， 存有 Job的基本信息，并规定了所有 Job 必须遵循的函数接口。">JobBase</a> 的子类，同时是所有类型的 update 类的基类。  <a href="class_update_job_base.html#details">更多...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
@@ -138,6 +139,7 @@ UpdateJobBase.hpp 的引用(Include)关系图:</div>
 <a class="el" href="_update_job_base_8hpp.html#a43e6e31f40b2731ff3a1a6030b0b7cfdaa806f1d2c42338ef5fa6497b66153e79">user_problem_status::ACCEPTED</a> = 0, 
 <a class="el" href="_update_job_base_8hpp.html#a43e6e31f40b2731ff3a1a6030b0b7cfdab6a678459f4245faabe8a32e5d823abc">user_problem_status::ATTEMPTED</a> = 1
  }</td></tr>
+<tr class="memdesc:a43e6e31f40b2731ff3a1a6030b0b7cfd"><td class="mdescLeft">&#160;</td><td class="mdescRight">枚举类，标识每道题目对一个用户的状态  <a href="_update_job_base_8hpp.html#a43e6e31f40b2731ff3a1a6030b0b7cfd">更多...</a><br /></td></tr>
 <tr class="separator:a43e6e31f40b2731ff3a1a6030b0b7cfd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
@@ -183,13 +185,15 @@ UpdateJobBase.hpp 的引用(Include)关系图:</div>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>枚举类，标识每道题目对一个用户的状态 </p>
 <table class="fieldtable">
 <tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a43e6e31f40b2731ff3a1a6030b0b7cfdab7b1e314614cf326c6e2b6eba1540682"></a>TODO&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="a43e6e31f40b2731ff3a1a6030b0b7cfdaa806f1d2c42338ef5fa6497b66153e79"></a>ACCEPTED&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="a43e6e31f40b2731ff3a1a6030b0b7cfdab6a678459f4245faabe8a32e5d823abc"></a>ATTEMPTED&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
-<p class="definition">在文件 <a class="el" href="_update_job_base_8hpp_source.html">UpdateJobBase.hpp</a> 第 <a class="el" href="_update_job_base_8hpp_source.html#l00021">21</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="_update_job_base_8hpp_source.html">UpdateJobBase.hpp</a> 第 <a class="el" href="_update_job_base_8hpp_source.html#l00024">24</a> 行定义.</p>
 
 </div>
 </div>
@@ -233,8 +237,10 @@ UpdateJobBase.hpp 的引用(Include)关系图:</div>
 </div><div class="memdoc">
 
 <p>根据传入的 jobType, sid 构造一个具体的 UpdateJob 对象, 并返回指向所构造对象的智能指针 </p>
-<dl class="section return"><dt>返回</dt><dd>指向构造对象的智能指针. 如果 job 为练习, 则指针实际指向的是一个 <a class="el" href="class_exercise_update_job.html">ExerciseUpdateJob</a> 对象 如果 job 为课程, 则指针实际指向的是一个 <a class="el" href="class_course_update_job.html">CourseUpdateJob</a> 对象 如果 job 为竞赛, 则指针实际指向的是一个 <a class="el" href="class_contest_update_job.html">ContestUpdateJob</a> 对象 </dd></dl>
+<dl class="section return"><dt>返回</dt><dd>指向构造对象的智能指针. 如果 job 为练习, 则指针实际指向的是一个 <a class="el" href="class_exercise_update_job.html" title="普通练习类，定义了其独特的 update_solution 操作，即增加特有的 solution 记录。 而维护的 user 表、user_problem 表与 problem 表，均使用基类的定义完成...">ExerciseUpdateJob</a> 对象 如果 job 为课程, 则指针实际指向的是一个 <a class="el" href="class_course_update_job.html" title="课程练习类，定义了其独特的 update_solution 等操作。针对课程，此类还维护 user_problem 表中 cid 非空的数据。 该数据与普通的 user_problem 记录独立。即同一...">CourseUpdateJob</a> 对象 如果 job 为竞赛, 则指针实际指向的是一个 <a class="el" href="class_contest_update_job.html" title="竞赛类，定义了其独特的 update_solution 操作以及竞赛所需的统计非 AC 提交数等功能 同时，该类负责维护所有 contest 相关的 source,...">ContestUpdateJob</a> 对象 </dd></dl>
 <dl class="section warning"><dt>警告</dt><dd>返回的对象具有多态性, 请谨慎处理! </dd></dl>
+<p class="">course_id</p>
+<p class="">course_id </p>
 
 <p class="definition">在文件 <a class="el" href="_update_job_base_8cpp_source.html">UpdateJobBase.cpp</a> 第 <a class="el" href="_update_job_base_8cpp_source.html#l00024">24</a> 行定义.</p>
 <div class="dynheader">
@@ -243,7 +249,7 @@ UpdateJobBase.hpp 的引用(Include)关系图:</div>
 <div class="center"><img src="_update_job_base_8hpp_a74c7f1fc913fef9438efd06e462d5b13_icgraph.png" border="0" usemap="#_update_job_base_8hpp_a74c7f1fc913fef9438efd06e462d5b13_icgraph" alt=""/></div>
 <map name="_update_job_base_8hpp_a74c7f1fc913fef9438efd06e462d5b13_icgraph" id="_update_job_base_8hpp_a74c7f1fc913fef9438efd06e462d5b13_icgraph">
 <area shape="rect" id="node1" title="根据传入的 jobType, sid 构造一个具体的 UpdateJob 对象, 并返回指向所构造对象的智能指针" alt="" coords="104,5,228,32"/>
-<area shape="rect" id="node2" href="master_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4" title=" " alt="" coords="5,5,56,32"/>
+<area shape="rect" id="node2" href="master_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4" title="master 端主程序循环 加载配置信息；连接数据库；取待评测任务信息，交由子进程并评测；创建并分离发送心跳线程 // to be done" alt="" coords="5,5,56,32"/>
 </map>
 </div>
 

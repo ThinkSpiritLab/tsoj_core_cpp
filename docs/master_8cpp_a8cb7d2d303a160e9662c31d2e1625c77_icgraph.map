@@ -1,0 +1,4 @@
+<map id="regist_SIGTERM_handler" name="regist_SIGTERM_handler">
+<area shape="rect" id="node1" title="SIGTERM 信号的处理函数 当收到 SIGTERM 信号，在代评测队列末端加上 type = 0, id = &#45;1 的任务，用于标识结束 master 工作的意愿。之后在 loop 循环中会据此判断..." alt="" coords="104,5,275,32"/>
+<area shape="rect" id="node2" href="$master_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4" title="master 端主程序循环 加载配置信息；连接数据库；取待评测任务信息，交由子进程并评测；创建并分离发送心跳线程 // to be done" alt="" coords="5,5,56,32"/>
+</map>

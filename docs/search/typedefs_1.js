@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['pid_5ftype',['pid_type',['../class_process.html#af48f4b4b2702d5debffa74cd8a8c245d',1,'Process']]]
+  ['pid_5ftype',['pid_type',['../classprocess.html#a69c381eb325b023c46250df1e6313a72',1,'process']]]
 ];

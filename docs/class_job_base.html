@@ -85,11 +85,11 @@ $(function() {
 <map name="_job_base_inherit__map" id="_job_base_inherit__map">
 <area shape="rect" id="node1" title="JudgeJob 与 UpdateJob 的基类， 存有 Job的基本信息，并规定了所有 Job 必须遵循的函数接口。" alt="" coords="68,5,141,32"/>
 <area shape="rect" id="node2" href="class_judge_job.html" title="JobBase 的子类，用于实现提交代码的判题功能。" alt="" coords="5,80,84,107"/>
-<area shape="rect" id="node3" href="class_update_job_base.html" title=" " alt="" coords="109,80,223,107"/>
-<area shape="rect" id="node4" href="class_contest_update_job.html" title=" " alt="" coords="14,155,145,181"/>
-<area shape="rect" id="node5" href="class_exercise_update_job_base.html" title=" " alt="" coords="169,155,336,181"/>
-<area shape="rect" id="node6" href="class_course_update_job.html" title=" " alt="" coords="111,229,237,256"/>
-<area shape="rect" id="node7" href="class_exercise_update_job.html" title=" " alt="" coords="262,229,398,256"/>
+<area shape="rect" id="node3" href="class_update_job_base.html" title="JobBase 的子类，同时是所有类型的 update 类的基类。" alt="" coords="109,80,223,107"/>
+<area shape="rect" id="node4" href="class_contest_update_job.html" title="竞赛类，定义了其独特的 update_solution 操作以及竞赛所需的统计非 AC 提交数等功能 同时，该类负责维护所有 contest 相关的 source,..." alt="" coords="14,155,145,181"/>
+<area shape="rect" id="node5" href="class_exercise_update_job_base.html" title="ExerciseUpdateJob 与 CourseUpdateJob 的虚基类，定义了解题状态查询与更新提交通过数等通用部分。" alt="" coords="169,155,336,181"/>
+<area shape="rect" id="node6" href="class_course_update_job.html" title="课程练习类，定义了其独特的 update_solution 等操作。针对课程，此类还维护 user_problem 表中 cid 非空的数据。 该数据与普通的 user_problem 记录独立。即同一..." alt="" coords="111,229,237,256"/>
+<area shape="rect" id="node7" href="class_exercise_update_job.html" title="普通练习类，定义了其独特的 update_solution 操作，即增加特有的 solution 记录。 而维护的 user 表、user_problem 表与 problem 表，均使用基类的定义完成..." alt="" coords="262,229,398,256"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">图例</a>]</span></center></div>
 <div class="dynheader">
@@ -116,9 +116,9 @@ Public 成员函数</h2></td></tr>
 <tr class="memitem:acba3c7755afaaaf0e522bc53eec10828"><td class="memItemLeft" align="right" valign="top">kerbal::redis::RedisReply&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#acba3c7755afaaaf0e522bc53eec10828">get_source_code</a> () const</td></tr>
 <tr class="memdesc:acba3c7755afaaaf0e522bc53eec10828"><td class="mdescLeft">&#160;</td><td class="mdescRight">从 redis 中取得代码  <a href="#acba3c7755afaaaf0e522bc53eec10828">更多...</a><br /></td></tr>
 <tr class="separator:acba3c7755afaaaf0e522bc53eec10828"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a06b6dd6262e98277d929ccd68451a0b7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a06b6dd6262e98277d929ccd68451a0b7">storeSourceCode</a> () const</td></tr>
-<tr class="memdesc:a06b6dd6262e98277d929ccd68451a0b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">从 redis 数据库获取本 Job 的代码并存储到工作空间中，用于编译运行。  <a href="#a06b6dd6262e98277d929ccd68451a0b7">更多...</a><br /></td></tr>
-<tr class="separator:a06b6dd6262e98277d929ccd68451a0b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84501360b84b0716aa82b93f6958cb78"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a84501360b84b0716aa82b93f6958cb78">storeSourceCode</a> (const std::string &amp;parent_path=&quot;./&quot;, const std::string &amp;file_name=&quot;Main&quot;) const</td></tr>
+<tr class="memdesc:a84501360b84b0716aa82b93f6958cb78"><td class="mdescLeft">&#160;</td><td class="mdescRight">从 redis 数据库获取本 Job 的代码并存储到工作空间中，用于编译运行。  <a href="#a84501360b84b0716aa82b93f6958cb78">更多...</a><br /></td></tr>
+<tr class="separator:a84501360b84b0716aa82b93f6958cb78"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa7da8e91cd0ffddf9b1cf70995d2134b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#aa7da8e91cd0ffddf9b1cf70995d2134b">commitJudgeStatusToRedis</a> (<a class="el" href="united__resource_8hpp.html#a80b9d5506f136fd5cef4ccd153030f1a">JudgeStatus</a> value)</td></tr>
 <tr class="memdesc:aa7da8e91cd0ffddf9b1cf70995d2134b"><td class="mdescLeft">&#160;</td><td class="mdescRight">将当前评测状态提交到 redis 数据库。  <a href="#aa7da8e91cd0ffddf9b1cf70995d2134b">更多...</a><br /></td></tr>
 <tr class="separator:aa7da8e91cd0ffddf9b1cf70995d2134b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -275,7 +275,7 @@ Public 属性</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">在文件 <a class="el" href="_job_base_8cpp_source.html">JobBase.cpp</a> 第 <a class="el" href="_job_base_8cpp_source.html#l00128">128</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="_job_base_8cpp_source.html">JobBase.cpp</a> 第 <a class="el" href="_job_base_8cpp_source.html#l00130">130</a> 行定义.</p>
 <div class="dynheader">
 这是这个函数的调用关系图:</div>
 <div class="dyncontent">
@@ -323,7 +323,7 @@ Public 属性</h2></td></tr>
 <map name="class_job_base_acba3c7755afaaaf0e522bc53eec10828_icgraph" id="class_job_base_acba3c7755afaaaf0e522bc53eec10828_icgraph">
 <area shape="rect" id="node1" title="从 redis 中取得代码" alt="" coords="408,31,588,57"/>
 <area shape="rect" id="node2" href="class_update_job_base.html#a1f2173cec66f3453d4a87c91c2ac8e29" title="执行任务" alt="" coords="188,5,349,32"/>
-<area shape="rect" id="node3" href="class_job_base.html#a06b6dd6262e98277d929ccd68451a0b7" title="从 redis 数据库获取本 Job 的代码并存储到工作空间中，用于编译运行。" alt="" coords="177,56,360,83"/>
+<area shape="rect" id="node3" href="class_job_base.html#a84501360b84b0716aa82b93f6958cb78" title="从 redis 数据库获取本 Job 的代码并存储到工作空间中，用于编译运行。" alt="" coords="177,56,360,83"/>
 <area shape="rect" id="node4" href="class_judge_job.html#a6fe58f9fcacc9ba6461e97f1a3ac76a3" title="本 Job 的处理函数。整个 job 的工作入口，包括编译执行判题等内容" alt="" coords="5,56,129,83"/>
 </map>
 </div>
@@ -362,8 +362,9 @@ Public 属性</h2></td></tr>
 <div class="dyncontent">
 <div class="center"><img src="class_job_base_a3d354b5691b71524e49514dfbcd41550_icgraph.png" border="0" usemap="#class_job_base_a3d354b5691b71524e49514dfbcd41550_icgraph" alt=""/></div>
 <map name="class_job_base_a3d354b5691b71524e49514dfbcd41550_icgraph" id="class_job_base_a3d354b5691b71524e49514dfbcd41550_icgraph">
-<area shape="rect" id="node1" title="获取规定的停止工作标识" alt="" coords="224,5,393,32"/>
-<area shape="rect" id="node2" href="master_8cpp.html#a8cb7d2d303a160e9662c31d2e1625c77" title="SIGTERM 信号的处理函数 当收到 SIGTERM 信号，在代评测队列末端加上 type = 0, id = &#45;1 的任务，用于标识结束 slave 工作的意愿。之后在 loop 循环中会据此判断是..." alt="" coords="5,5,176,32"/>
+<area shape="rect" id="node1" title="获取规定的停止工作标识" alt="" coords="323,5,492,32"/>
+<area shape="rect" id="node2" href="master_8cpp.html#a8cb7d2d303a160e9662c31d2e1625c77" title="SIGTERM 信号的处理函数 当收到 SIGTERM 信号，在代评测队列末端加上 type = 0, id = &#45;1 的任务，用于标识结束 master 工作的意愿。之后在 loop 循环中会据此判断..." alt="" coords="104,5,275,32"/>
+<area shape="rect" id="node3" href="master_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4" title="master 端主程序循环 加载配置信息；连接数据库；取待评测任务信息，交由子进程并评测；创建并分离发送心跳线程 // to be done" alt="" coords="5,5,56,32"/>
 </map>
 </div>
 
@@ -439,7 +440,7 @@ Public 属性</h2></td></tr>
 <div class="center"><img src="class_job_base_a694f006cab5c06d8939ee7550d3a04ac_icgraph.png" border="0" usemap="#class_job_base_a694f006cab5c06d8939ee7550d3a04ac_icgraph" alt=""/></div>
 <map name="class_job_base_a694f006cab5c06d8939ee7550d3a04ac_icgraph" id="class_job_base_a694f006cab5c06d8939ee7550d3a04ac_icgraph">
 <area shape="rect" id="node1" title="判断是否终止服务 loop" alt="" coords="104,5,239,32"/>
-<area shape="rect" id="node2" href="master_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4" title=" " alt="" coords="5,5,56,32"/>
+<area shape="rect" id="node2" href="master_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4" title="master 端主程序循环 加载配置信息；连接数据库；取待评测任务信息，交由子进程并评测；创建并分离发送心跳线程 // to be done" alt="" coords="5,5,56,32"/>
 </map>
 </div>
 
@@ -491,14 +492,14 @@ Public 属性</h2></td></tr>
 <div class="center"><img src="class_job_base_a45db2aacca3aa05d98aecaa560d54c8d_icgraph.png" border="0" usemap="#class_job_base_a45db2aacca3aa05d98aecaa560d54c8d_icgraph" alt=""/></div>
 <map name="class_job_base_a45db2aacca3aa05d98aecaa560d54c8d_icgraph" id="class_job_base_a45db2aacca3aa05d98aecaa560d54c8d_icgraph">
 <area shape="rect" id="node1" title="将待处理 Job 信息分解，提取出 job_type 与 job_id" alt="" coords="104,5,264,32"/>
-<area shape="rect" id="node2" href="master_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4" title=" " alt="" coords="5,5,56,32"/>
+<area shape="rect" id="node2" href="master_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4" title="master 端主程序循环 加载配置信息；连接数据库；取待评测任务信息，交由子进程并评测；创建并分离发送心跳线程 // to be done" alt="" coords="5,5,56,32"/>
 </map>
 </div>
 
 </div>
 </div>
-<a id="a06b6dd6262e98277d929ccd68451a0b7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a06b6dd6262e98277d929ccd68451a0b7">&#9670;&nbsp;</a></span>storeSourceCode()</h2>
+<a id="a84501360b84b0716aa82b93f6958cb78"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a84501360b84b0716aa82b93f6958cb78">&#9670;&nbsp;</a></span>storeSourceCode()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -506,8 +507,19 @@ Public 属性</h2></td></tr>
         <tr>
           <td class="memname">void JobBase::storeSourceCode </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>parent_path</em> = <code>&quot;./&quot;</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>file_name</em> = <code>&quot;Main&quot;</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -525,17 +537,18 @@ Public 属性</h2></td></tr>
 <div class="dynheader">
 函数调用图:</div>
 <div class="dyncontent">
-<div class="center"><img src="class_job_base_a06b6dd6262e98277d929ccd68451a0b7_cgraph.png" border="0" usemap="#class_job_base_a06b6dd6262e98277d929ccd68451a0b7_cgraph" alt=""/></div>
-<map name="class_job_base_a06b6dd6262e98277d929ccd68451a0b7_cgraph" id="class_job_base_a06b6dd6262e98277d929ccd68451a0b7_cgraph">
-<area shape="rect" id="node1" title="从 redis 数据库获取本 Job 的代码并存储到工作空间中，用于编译运行。" alt="" coords="5,5,188,32"/>
+<div class="center"><img src="class_job_base_a84501360b84b0716aa82b93f6958cb78_cgraph.png" border="0" usemap="#class_job_base_a84501360b84b0716aa82b93f6958cb78_cgraph" alt=""/></div>
+<map name="class_job_base_a84501360b84b0716aa82b93f6958cb78_cgraph" id="class_job_base_a84501360b84b0716aa82b93f6958cb78_cgraph">
+<area shape="rect" id="node1" title="从 redis 数据库获取本 Job 的代码并存储到工作空间中，用于编译运行。" alt="" coords="5,31,188,57"/>
 <area shape="rect" id="node2" href="class_job_base.html#acba3c7755afaaaf0e522bc53eec10828" title="从 redis 中取得代码" alt="" coords="236,5,416,32"/>
+<area shape="rect" id="node3" href="united__resource_8hpp.html#a91baaf0c9418f69eaac1098cd545a78e" title=" " alt="" coords="264,56,388,83"/>
 </map>
 </div>
 <div class="dynheader">
 这是这个函数的调用关系图:</div>
 <div class="dyncontent">
-<div class="center"><img src="class_job_base_a06b6dd6262e98277d929ccd68451a0b7_icgraph.png" border="0" usemap="#class_job_base_a06b6dd6262e98277d929ccd68451a0b7_icgraph" alt=""/></div>
-<map name="class_job_base_a06b6dd6262e98277d929ccd68451a0b7_icgraph" id="class_job_base_a06b6dd6262e98277d929ccd68451a0b7_icgraph">
+<div class="center"><img src="class_job_base_a84501360b84b0716aa82b93f6958cb78_icgraph.png" border="0" usemap="#class_job_base_a84501360b84b0716aa82b93f6958cb78_icgraph" alt=""/></div>
+<map name="class_job_base_a84501360b84b0716aa82b93f6958cb78_icgraph" id="class_job_base_a84501360b84b0716aa82b93f6958cb78_icgraph">
 <area shape="rect" id="node1" title="从 redis 数据库获取本 Job 的代码并存储到工作空间中，用于编译运行。" alt="" coords="177,5,360,32"/>
 <area shape="rect" id="node2" href="class_judge_job.html#a6fe58f9fcacc9ba6461e97f1a3ac76a3" title="本 Job 的处理函数。整个 job 的工作入口，包括编译执行判题等内容" alt="" coords="5,5,129,32"/>
 </map>

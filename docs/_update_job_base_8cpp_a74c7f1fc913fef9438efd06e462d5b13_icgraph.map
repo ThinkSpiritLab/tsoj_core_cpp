@@ -1,4 +1,4 @@
 <map id="make_update_job" name="make_update_job">
 <area shape="rect" id="node1" title="根据传入的 jobType, sid 构造一个具体的 UpdateJob 对象, 并返回指向所构造对象的智能指针" alt="" coords="104,5,228,32"/>
-<area shape="rect" id="node2" href="$master_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4" title=" " alt="" coords="5,5,56,32"/>
+<area shape="rect" id="node2" href="$master_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4" title="master 端主程序循环 加载配置信息；连接数据库；取待评测任务信息，交由子进程并评测；创建并分离发送心跳线程 // to be done" alt="" coords="5,5,56,32"/>
 </map>

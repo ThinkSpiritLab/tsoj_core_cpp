@@ -1,7 +1,8 @@
 var searchData=
 [
-  ['set_5fcompile_5finfo',['set_compile_info',['../class_judge_job.html#a82369eaa1b47b2106c45832bdda85e43',1,'JudgeJob']]],
-  ['seterrorcode',['setErrorCode',['../struct_result.html#a8201d7586458dd80f361ab8c6cd93524',1,'Result']]],
-  ['solutiondetails',['SolutionDetails',['../struct_solution_details.html#afc27c452979f93c0a40d57717c6a27a3',1,'SolutionDetails']]],
-  ['storesourcecode',['storeSourceCode',['../class_job_base.html#a06b6dd6262e98277d929ccd68451a0b7',1,'JobBase']]]
+  ['regist_5fsigterm_5fhandler',['regist_SIGTERM_handler',['../slave_8cpp.html#a8cb7d2d303a160e9662c31d2e1625c77',1,'regist_SIGTERM_handler(int signum) noexcept:&#160;slave.cpp'],['../master_8cpp.html#a8cb7d2d303a160e9662c31d2e1625c77',1,'regist_SIGTERM_handler(int signum) noexcept:&#160;master.cpp']]],
+  ['register_5fself',['register_self',['../slave_8cpp.html#a0ff1cbc90e06d23b925d2046ece0b71d',1,'register_self(RedisContext &amp;&amp;regist_self_conn) noexcept:&#160;slave.cpp'],['../master_8cpp.html#ab85b27ea72fdfbc8ddc41b1e3078385c',1,'register_self() noexcept:&#160;master.cpp']]],
+  ['result',['Result',['../struct_result.html#a90f44667e23d25ccdeac37f00a74657b',1,'Result']]],
+  ['running',['running',['../class_judge_job.html#a0d2e1e5cce842ef0daf71c95f98275f0',1,'JudgeJob']]],
+  ['runningconfig',['RunningConfig',['../class_running_config.html#a76d13e5b1a4c611ba709d57021916b3c',1,'RunningConfig']]]
 ];

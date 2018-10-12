@@ -2,5 +2,5 @@
 <area shape="rect" id="node1" title=" " alt="" coords="265,23,420,65"/>
 <area shape="rect" id="node2" href="$master_8cpp.html#ab85b27ea72fdfbc8ddc41b1e3078385c" title="发送心跳进程 每隔一段时间，将本机信息提交到数据库中表示当前在线的评测机集合中，表明自身正常工作，可以处理评测任务。" alt="" coords="114,5,207,32"/>
 <area shape="rect" id="node4" href="$namespacelog.html#a56e55cb82d069384add2e27fe089b7c8" title=" " alt="" coords="104,56,217,83"/>
-<area shape="rect" id="node3" href="$master_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4" title=" " alt="" coords="5,5,56,32"/>
+<area shape="rect" id="node3" href="$master_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4" title="master 端主程序循环 加载配置信息；连接数据库；取待评测任务信息，交由子进程并评测；创建并分离发送心跳线程 // to be done" alt="" coords="5,5,56,32"/>
 </map>

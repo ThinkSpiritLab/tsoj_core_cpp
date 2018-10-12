@@ -1,6 +1,0 @@
-<map id="ExerciseUpdateJobBase::update_exercise_user_accept" name="ExerciseUpdateJobBase::update_exercise_user_accept">
-<area shape="rect" id="node1" title="将本 job 对应的 uid 的题目的通过数 + delta" alt="" coords="459,31,625,87"/>
-<area shape="rect" id="node2" href="$class_exercise_update_job_base.html#a9405c9cf05a1de216d8dece91629af5c" title="更新题目的提交数, 通过数, 用户的提交数, 通过数" alt="" coords="228,39,411,80"/>
-<area shape="rect" id="node3" href="$class_course_update_job.html#acdb8cfc94cfe73b2092c1e18a06be0a8" title="更新题目的提交数, 通过数, 用户的提交数, 通过数" alt="" coords="5,5,180,47"/>
-<area shape="rect" id="node4" href="$class_exercise_update_job.html#a5d23fe341214e8c3adaf6bc80d7b11f6" title="更新题目的提交数, 通过数, 用户的提交数, 通过数" alt="" coords="5,71,180,112"/>
-</map>

@@ -2,7 +2,9 @@
 <area shape="rect" id="node1" title="进入当前 job 的执行流程，并返回执行结果。" alt="" coords="5,71,133,98"/>
 <area shape="rect" id="node2" href="$class_job_base.html#aa7da8e91cd0ffddf9b1cf70995d2134b" title="将当前评测状态提交到 redis 数据库。" alt="" coords="181,5,379,47"/>
 <area shape="rect" id="node3" href="$class_judge_job.html#a1e12c6a1d33861f95a053186ac3d3eb9" title="根据当前 config 配置的值，执行编译/运行程序。过程中会对必要的权限检查， 并且会启动一个线程来监控，防止运行超时。执行结束后返回执行结果。" alt="" coords="214,71,346,98"/>
-<area shape="rect" id="node5" href="$compare_8cpp.html#a960c5c76653215ba60077e139ab6c000" title=" " alt="" coords="244,122,316,149"/>
-<area shape="rect" id="node4" href="$struct_result.html#a8201d7586458dd80f361ab8c6cd93524" title=" " alt="" coords="427,71,572,98"/>
-<area shape="rect" id="node6" href="$compare_8cpp.html#ae12d969be69c79ba2d8501fc5ab34eb7" title=" " alt="" coords="430,122,569,149"/>
+<area shape="rect" id="node7" href="$compare_8cpp.html#a960c5c76653215ba60077e139ab6c000" title="根据用户答案路径和标准答案路径，提取相应文件并进行比对。比对结果作为判题结果，并返回。" alt="" coords="244,134,316,161"/>
+<area shape="rect" id="node4" href="$struct_result.html#a8201d7586458dd80f361ab8c6cd93524" title="将本结构体的 RunnerError 置为 err， 并将评测结果标为 UnitedJudgeResult::SYSTEM_ERROR" alt="" coords="427,7,572,34"/>
+<area shape="rect" id="node5" href="$classprocess.html#a217a9f72c54fb962f5c56cf0934901e5" title="Send signal SIG to the process." alt="" coords="453,58,545,85"/>
+<area shape="rect" id="node6" href="$classprocess.html#a2a3c8b98c92999ffe95abf1de7ee17d2" title=" " alt="" coords="451,109,547,135"/>
+<area shape="rect" id="node8" href="$compare_8cpp.html#ae12d969be69c79ba2d8501fc5ab34eb7" title=" " alt="" coords="430,159,569,186"/>
 </map>

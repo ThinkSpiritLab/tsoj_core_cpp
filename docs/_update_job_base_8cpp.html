@@ -167,8 +167,9 @@ UpdateJobBase.cpp 的引用(Include)关系图:</div>
 </div><div class="memdoc">
 
 <p>根据传入的 jobType, sid 构造一个具体的 UpdateJob 对象, 并返回指向所构造对象的智能指针 </p>
-<dl class="section return"><dt>返回</dt><dd>指向构造对象的智能指针. 如果 job 为练习, 则指针实际指向的是一个 <a class="el" href="class_exercise_update_job.html">ExerciseUpdateJob</a> 对象 如果 job 为课程, 则指针实际指向的是一个 <a class="el" href="class_course_update_job.html">CourseUpdateJob</a> 对象 如果 job 为竞赛, 则指针实际指向的是一个 <a class="el" href="class_contest_update_job.html">ContestUpdateJob</a> 对象 </dd></dl>
+<dl class="section return"><dt>返回</dt><dd>指向构造对象的智能指针. 如果 job 为练习, 则指针实际指向的是一个 <a class="el" href="class_exercise_update_job.html" title="普通练习类，定义了其独特的 update_solution 操作，即增加特有的 solution 记录。 而维护的 user 表、user_problem 表与 problem 表，均使用基类的定义完成...">ExerciseUpdateJob</a> 对象 如果 job 为课程, 则指针实际指向的是一个 <a class="el" href="class_course_update_job.html" title="课程练习类，定义了其独特的 update_solution 等操作。针对课程，此类还维护 user_problem 表中 cid 非空的数据。 该数据与普通的 user_problem 记录独立。即同一...">CourseUpdateJob</a> 对象 如果 job 为竞赛, 则指针实际指向的是一个 <a class="el" href="class_contest_update_job.html" title="竞赛类，定义了其独特的 update_solution 操作以及竞赛所需的统计非 AC 提交数等功能 同时，该类负责维护所有 contest 相关的 source,...">ContestUpdateJob</a> 对象 </dd></dl>
 <dl class="section warning"><dt>警告</dt><dd>返回的对象具有多态性, 请谨慎处理! </dd></dl>
+<p class="">course_id </p>
 
 <p class="definition">在文件 <a class="el" href="_update_job_base_8cpp_source.html">UpdateJobBase.cpp</a> 第 <a class="el" href="_update_job_base_8cpp_source.html#l00024">24</a> 行定义.</p>
 <div class="dynheader">
@@ -177,7 +178,7 @@ UpdateJobBase.cpp 的引用(Include)关系图:</div>
 <div class="center"><img src="_update_job_base_8cpp_a74c7f1fc913fef9438efd06e462d5b13_icgraph.png" border="0" usemap="#_update_job_base_8cpp_a74c7f1fc913fef9438efd06e462d5b13_icgraph" alt=""/></div>
 <map name="_update_job_base_8cpp_a74c7f1fc913fef9438efd06e462d5b13_icgraph" id="_update_job_base_8cpp_a74c7f1fc913fef9438efd06e462d5b13_icgraph">
 <area shape="rect" id="node1" title="根据传入的 jobType, sid 构造一个具体的 UpdateJob 对象, 并返回指向所构造对象的智能指针" alt="" coords="104,5,228,32"/>
-<area shape="rect" id="node2" href="master_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4" title=" " alt="" coords="5,5,56,32"/>
+<area shape="rect" id="node2" href="master_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4" title="master 端主程序循环 加载配置信息；连接数据库；取待评测任务信息，交由子进程并评测；创建并分离发送心跳线程 // to be done" alt="" coords="5,5,56,32"/>
 </map>
 </div>
 
@@ -197,7 +198,7 @@ UpdateJobBase.cpp 的引用(Include)关系图:</div>
 </div><div class="memdoc">
 <p class="">日志文件的文件流 </p>
 
-<p class="definition">在文件 <a class="el" href="slave_8cpp_source.html">slave.cpp</a> 第 <a class="el" href="slave_8cpp_source.html#l00057">57</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="slave_8cpp_source.html">slave.cpp</a> 第 <a class="el" href="slave_8cpp_source.html#l00049">49</a> 行定义.</p>
 
 </div>
 </div>

@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['insert_5finto_5ffailed',['insert_into_failed',['../class_judge_job.html#a6edac1fe8ebfc2a8b38c40e426030582',1,'JudgeJob']]],
-  ['isexitjob',['isExitJob',['../class_job_base.html#a694f006cab5c06d8939ee7550d3a04ac',1,'JobBase']]]
+  ['handle',['handle',['../class_judge_job.html#a6fe58f9fcacc9ba6461e97f1a3ac76a3',1,'JudgeJob::handle()'],['../class_update_job_base.html#a1f2173cec66f3453d4a87c91c2ac8e29',1,'UpdateJobBase::handle()'],['../class_job_base.html#aea684b77a3d8e913b87d8f3deb18c8fe',1,'JobBase::handle()']]]
 ];

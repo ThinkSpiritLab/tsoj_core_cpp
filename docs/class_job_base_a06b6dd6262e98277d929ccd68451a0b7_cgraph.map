@@ -1,4 +1,0 @@
-<map id="JobBase::storeSourceCode" name="JobBase::storeSourceCode">
-<area shape="rect" id="node1" title="从 redis 数据库获取本 Job 的代码并存储到工作空间中，用于编译运行。" alt="" coords="5,5,188,32"/>
-<area shape="rect" id="node2" href="$class_job_base.html#acba3c7755afaaaf0e522bc53eec10828" title="从 redis 中取得代码" alt="" coords="236,5,416,32"/>
-</map>

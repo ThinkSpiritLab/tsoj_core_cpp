@@ -54,30 +54,15 @@ class ExerciseUpdateJobBase : public UpdateJobBase
 		virtual void update_user_and_problem() override = 0;
 
 	private:
+		/**
+		 * @brief 更新本 job 对应的 pid 的题目的提交数和通过数
+		 */
+		void update_problem_submit_and_accept_num_in_exercise();
 
 		/**
-		 * @brief 将本 job 对应的 pid 的题目的提交数 + delta
-		 * @warning 本函数仅完成字段的更新操作, 不会检查操作的合法性!
+		 * @brief 更新本 job 对应的 uid 的用户的提交数和通过数
 		 */
-		void update_exercise_problem_submit(int delta);
-
-		/**
-		 * @brief 将本 job 对应的 pid 的题目的通过数 + delta
-		 * @warning 本函数仅完成字段的更新操作, 不会检查操作的合法性!
-		 */
-		void update_exercise_problem_accept(int delta);
-
-		/**
-		 * @brief 将本 job 对应的 uid 的题目的提交数 + delta
-		 * @warning 本函数仅完成字段的更新操作, 不会检查操作的合法性!
-		 */
-		void update_exercise_user_submit(int delta);
-
-		/**
-		 * @brief 将本 job 对应的 uid 的题目的通过数 + delta
-		 * @warning 本函数仅完成字段的更新操作, 不会检查操作的合法性!
-		 */
-		void update_exercise_user_accept(int delta);
+		void update_user_submit_and_accept_num_in_exercise();
 
 		/**
 		 * @brief 取得此用户此题在此次提交以前 AC, TO_DO 或 ATTEMPT 的状态
@@ -87,7 +72,7 @@ class ExerciseUpdateJobBase : public UpdateJobBase
 
 	protected:
 
-		virtual void update_user_problem() override = 0;
+		virtual void update_user_problem_status() override = 0;
 
 		virtual ~ExerciseUpdateJobBase() noexcept = default;
 };

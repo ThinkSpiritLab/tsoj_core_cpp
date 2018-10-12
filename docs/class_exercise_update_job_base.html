@@ -75,16 +75,19 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p><a class="el" href="class_exercise_update_job.html" title="普通练习类，定义了其独特的 update_solution 操作，即增加特有的 solution 记录。 而维护的 user 表、user_problem 表与 problem 表，均使用基类的定义完成...">ExerciseUpdateJob</a> 与 <a class="el" href="class_course_update_job.html" title="课程练习类，定义了其独特的 update_solution 等操作。针对课程，此类还维护 user_problem 表中 cid 非空的数据。 该数据与普通的 user_problem 记录独立。即同一...">CourseUpdateJob</a> 的虚基类，定义了解题状态查询与更新提交通过数等通用部分。  
+ <a href="class_exercise_update_job_base.html#details">更多...</a></p>
+
 <p><code>#include &lt;<a class="el" href="_exercise_update_job_base_8hpp_source.html">ExerciseUpdateJobBase.hpp</a>&gt;</code></p>
 <div class="dynheader">
 类 ExerciseUpdateJobBase 继承关系图:</div>
 <div class="dyncontent">
 <div class="center"><img src="class_exercise_update_job_base__inherit__graph.png" border="0" usemap="#_exercise_update_job_base_inherit__map" alt="Inheritance graph"/></div>
 <map name="_exercise_update_job_base_inherit__map" id="_exercise_update_job_base_inherit__map">
-<area shape="rect" id="node1" title=" " alt="" coords="63,155,229,181"/>
-<area shape="rect" id="node4" href="class_course_update_job.html" title=" " alt="" coords="5,229,132,256"/>
-<area shape="rect" id="node5" href="class_exercise_update_job.html" title=" " alt="" coords="157,229,293,256"/>
-<area shape="rect" id="node2" href="class_update_job_base.html" title=" " alt="" coords="89,80,203,107"/>
+<area shape="rect" id="node1" title="ExerciseUpdateJob 与 CourseUpdateJob 的虚基类，定义了解题状态查询与更新提交通过数等通用部分。" alt="" coords="63,155,229,181"/>
+<area shape="rect" id="node4" href="class_course_update_job.html" title="课程练习类，定义了其独特的 update_solution 等操作。针对课程，此类还维护 user_problem 表中 cid 非空的数据。 该数据与普通的 user_problem 记录独立。即同一..." alt="" coords="5,229,132,256"/>
+<area shape="rect" id="node5" href="class_exercise_update_job.html" title="普通练习类，定义了其独特的 update_solution 操作，即增加特有的 solution 记录。 而维护的 user 表、user_problem 表与 problem 表，均使用基类的定义完成..." alt="" coords="157,229,293,256"/>
+<area shape="rect" id="node2" href="class_update_job_base.html" title="JobBase 的子类，同时是所有类型的 update 类的基类。" alt="" coords="89,80,203,107"/>
 <area shape="rect" id="node3" href="class_job_base.html" title="JudgeJob 与 UpdateJob 的基类， 存有 Job的基本信息，并规定了所有 Job 必须遵循的函数接口。" alt="" coords="109,5,183,32"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">图例</a>]</span></center></div>
@@ -93,8 +96,8 @@ ExerciseUpdateJobBase 的协作图:</div>
 <div class="dyncontent">
 <div class="center"><img src="class_exercise_update_job_base__coll__graph.png" border="0" usemap="#_exercise_update_job_base_coll__map" alt="Collaboration graph"/></div>
 <map name="_exercise_update_job_base_coll__map" id="_exercise_update_job_base_coll__map">
-<area shape="rect" id="node1" title=" " alt="" coords="60,260,227,287"/>
-<area shape="rect" id="node2" href="class_update_job_base.html" title=" " alt="" coords="86,184,201,211"/>
+<area shape="rect" id="node1" title="ExerciseUpdateJob 与 CourseUpdateJob 的虚基类，定义了解题状态查询与更新提交通过数等通用部分。" alt="" coords="60,260,227,287"/>
+<area shape="rect" id="node2" href="class_update_job_base.html" title="JobBase 的子类，同时是所有类型的 update 类的基类。" alt="" coords="86,184,201,211"/>
 <area shape="rect" id="node3" href="class_job_base.html" title="JudgeJob 与 UpdateJob 的基类， 存有 Job的基本信息，并规定了所有 Job 必须遵循的函数接口。" alt="" coords="20,95,93,121"/>
 <area shape="rect" id="node4" title=" " alt="" coords="5,5,108,32"/>
 <area shape="rect" id="node5" href="struct_solution_details.html" title=" " alt="" coords="117,95,228,121"/>
@@ -111,13 +114,14 @@ Protected 成员函数</h2></td></tr>
 <tr class="memitem:a9405c9cf05a1de216d8dece91629af5c"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_exercise_update_job_base.html#a9405c9cf05a1de216d8dece91629af5c">update_user_and_problem</a> () override=0</td></tr>
 <tr class="memdesc:a9405c9cf05a1de216d8dece91629af5c"><td class="mdescLeft">&#160;</td><td class="mdescRight">更新题目的提交数, 通过数, 用户的提交数, 通过数  <a href="#a9405c9cf05a1de216d8dece91629af5c">更多...</a><br /></td></tr>
 <tr class="separator:a9405c9cf05a1de216d8dece91629af5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a09d6e54f3da0de277e9a8d6d0abadf69"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_exercise_update_job_base.html#a09d6e54f3da0de277e9a8d6d0abadf69">update_user_problem</a> () override=0</td></tr>
-<tr class="memdesc:a09d6e54f3da0de277e9a8d6d0abadf69"><td class="mdescLeft">&#160;</td><td class="mdescRight">更新此用户此题的完成状态  用户所见到的每题 AC, TO_DO, ATTEMPT 三种状态即为user problem 表所提供的服务  <a href="#a09d6e54f3da0de277e9a8d6d0abadf69">更多...</a><br /></td></tr>
-<tr class="separator:a09d6e54f3da0de277e9a8d6d0abadf69"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a768900d69fbffafac0227c64fd8f089e"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_exercise_update_job_base.html#a768900d69fbffafac0227c64fd8f089e">update_user_problem_status</a> () override=0</td></tr>
+<tr class="memdesc:a768900d69fbffafac0227c64fd8f089e"><td class="mdescLeft">&#160;</td><td class="mdescRight">更新此用户此题的完成状态  用户所见到的每题 AC, TO_DO, ATTEMPT 三种状态即为user problem 表所提供的服务  <a href="#a768900d69fbffafac0227c64fd8f089e">更多...</a><br /></td></tr>
+<tr class="separator:a768900d69fbffafac0227c64fd8f089e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0e6c015d7eaa37341348015a1b570acc"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_exercise_update_job_base.html#a0e6c015d7eaa37341348015a1b570acc">~ExerciseUpdateJobBase</a> () noexcept=default</td></tr>
 <tr class="separator:a0e6c015d7eaa37341348015a1b570acc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_methods_class_update_job_base"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_class_update_job_base')"><img src="closed.png" alt="-"/>&#160;Protected 成员函数 继承自 <a class="el" href="class_update_job_base.html">UpdateJobBase</a></td></tr>
 <tr class="memitem:aaeee903bfb8a86a7ea32ede6507559da inherit pro_methods_class_update_job_base"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_update_job_base.html#aaeee903bfb8a86a7ea32ede6507559da">UpdateJobBase</a> (int <a class="el" href="class_job_base.html#a895e989e70dde5842a9838c67e4e1e91">jobType</a>, int <a class="el" href="class_job_base.html#a1b5f881d50165db4ba63372469026c17">sid</a>, const <a class="el" href="class_update_job_base.html#a4dae0fce7e364370c039cbc003eb8395">RedisContext</a> &amp;<a class="el" href="class_job_base.html#a985b11d128f3b38ddd6f7dea662519e2">redisConn</a>, std::unique_ptr&lt; mysqlpp::Connection &gt; &amp;&amp;<a class="el" href="class_update_job_base.html#a4c9aff7e119a5ab78198fa8d093b0bae">mysqlConn</a>)</td></tr>
+<tr class="memdesc:aaeee903bfb8a86a7ea32ede6507559da inherit pro_methods_class_update_job_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">通用基类的构造函数，除父类 <a class="el" href="class_job_base.html" title="JudgeJob 与 UpdateJob 的基类， 存有 Job的基本信息，并规定了所有 Job 必须遵循的函数接口。">JobBase</a> 构造函数获得的信息除外，还额外获取更新类别任务的额外信息如 uid, cid, postTime等信息。  <a href="class_update_job_base.html#aaeee903bfb8a86a7ea32ede6507559da">更多...</a><br /></td></tr>
 <tr class="separator:aaeee903bfb8a86a7ea32ede6507559da inherit pro_methods_class_update_job_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-types"></a>
@@ -133,18 +137,12 @@ Private 成员函数</h2></td></tr>
 <tr class="memitem:a1c3733a28199be61b8e6d1b926ac61b4"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_exercise_update_job_base.html#a1c3733a28199be61b8e6d1b926ac61b4">update_compile_info</a> (const char *compile_info) override final</td></tr>
 <tr class="memdesc:a1c3733a28199be61b8e6d1b926ac61b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">将编译错误信息更新至 mysql  <a href="#a1c3733a28199be61b8e6d1b926ac61b4">更多...</a><br /></td></tr>
 <tr class="separator:a1c3733a28199be61b8e6d1b926ac61b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a529de717b9f78056523a0a609208e8df"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_exercise_update_job_base.html#a529de717b9f78056523a0a609208e8df">update_exercise_problem_submit</a> (int delta)</td></tr>
-<tr class="memdesc:a529de717b9f78056523a0a609208e8df"><td class="mdescLeft">&#160;</td><td class="mdescRight">将本 job 对应的 pid 的题目的提交数 + delta  <a href="#a529de717b9f78056523a0a609208e8df">更多...</a><br /></td></tr>
-<tr class="separator:a529de717b9f78056523a0a609208e8df"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9054cda48a18e0dbddc2fed5c987e99c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_exercise_update_job_base.html#a9054cda48a18e0dbddc2fed5c987e99c">update_exercise_problem_accept</a> (int delta)</td></tr>
-<tr class="memdesc:a9054cda48a18e0dbddc2fed5c987e99c"><td class="mdescLeft">&#160;</td><td class="mdescRight">将本 job 对应的 pid 的题目的通过数 + delta  <a href="#a9054cda48a18e0dbddc2fed5c987e99c">更多...</a><br /></td></tr>
-<tr class="separator:a9054cda48a18e0dbddc2fed5c987e99c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5a3974b7d168d0d4c8df086a842a1927"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_exercise_update_job_base.html#a5a3974b7d168d0d4c8df086a842a1927">update_exercise_user_submit</a> (int delta)</td></tr>
-<tr class="memdesc:a5a3974b7d168d0d4c8df086a842a1927"><td class="mdescLeft">&#160;</td><td class="mdescRight">将本 job 对应的 uid 的题目的提交数 + delta  <a href="#a5a3974b7d168d0d4c8df086a842a1927">更多...</a><br /></td></tr>
-<tr class="separator:a5a3974b7d168d0d4c8df086a842a1927"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9dd4029ca0649fd8a970dad6c22f35c9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_exercise_update_job_base.html#a9dd4029ca0649fd8a970dad6c22f35c9">update_exercise_user_accept</a> (int delta)</td></tr>
-<tr class="memdesc:a9dd4029ca0649fd8a970dad6c22f35c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">将本 job 对应的 uid 的题目的通过数 + delta  <a href="#a9dd4029ca0649fd8a970dad6c22f35c9">更多...</a><br /></td></tr>
-<tr class="separator:a9dd4029ca0649fd8a970dad6c22f35c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3af17ba746dd7b0776f371618672619f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_exercise_update_job_base.html#a3af17ba746dd7b0776f371618672619f">update_problem_submit_and_accept_num_in_exercise</a> ()</td></tr>
+<tr class="memdesc:a3af17ba746dd7b0776f371618672619f"><td class="mdescLeft">&#160;</td><td class="mdescRight">更新本 job 对应的 pid 的题目的提交数和通过数  <a href="#a3af17ba746dd7b0776f371618672619f">更多...</a><br /></td></tr>
+<tr class="separator:a3af17ba746dd7b0776f371618672619f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae915992f5df113724cec45542e2582c3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_exercise_update_job_base.html#ae915992f5df113724cec45542e2582c3">update_user_submit_and_accept_num_in_exercise</a> ()</td></tr>
+<tr class="memdesc:ae915992f5df113724cec45542e2582c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">更新本 job 对应的 uid 的用户的提交数和通过数  <a href="#ae915992f5df113724cec45542e2582c3">更多...</a><br /></td></tr>
+<tr class="separator:ae915992f5df113724cec45542e2582c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9e7d46297cef3bbf492f108479d0079a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_update_job_base_8hpp.html#a43e6e31f40b2731ff3a1a6030b0b7cfd">user_problem_status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_exercise_update_job_base.html#a9e7d46297cef3bbf492f108479d0079a">get_exercise_user_problem_status</a> ()</td></tr>
 <tr class="memdesc:a9e7d46297cef3bbf492f108479d0079a"><td class="mdescLeft">&#160;</td><td class="mdescRight">取得此用户此题在此次提交以前 AC, TO_DO 或 ATTEMPT 的状态  <a href="#a9e7d46297cef3bbf492f108479d0079a">更多...</a><br /></td></tr>
 <tr class="separator:a9e7d46297cef3bbf492f108479d0079a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -172,9 +170,9 @@ Private 成员函数</h2></td></tr>
 <tr class="memitem:acba3c7755afaaaf0e522bc53eec10828 inherit pub_methods_class_job_base"><td class="memItemLeft" align="right" valign="top">kerbal::redis::RedisReply&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#acba3c7755afaaaf0e522bc53eec10828">get_source_code</a> () const</td></tr>
 <tr class="memdesc:acba3c7755afaaaf0e522bc53eec10828 inherit pub_methods_class_job_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">从 redis 中取得代码  <a href="class_job_base.html#acba3c7755afaaaf0e522bc53eec10828">更多...</a><br /></td></tr>
 <tr class="separator:acba3c7755afaaaf0e522bc53eec10828 inherit pub_methods_class_job_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a06b6dd6262e98277d929ccd68451a0b7 inherit pub_methods_class_job_base"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a06b6dd6262e98277d929ccd68451a0b7">storeSourceCode</a> () const</td></tr>
-<tr class="memdesc:a06b6dd6262e98277d929ccd68451a0b7 inherit pub_methods_class_job_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">从 redis 数据库获取本 Job 的代码并存储到工作空间中，用于编译运行。  <a href="class_job_base.html#a06b6dd6262e98277d929ccd68451a0b7">更多...</a><br /></td></tr>
-<tr class="separator:a06b6dd6262e98277d929ccd68451a0b7 inherit pub_methods_class_job_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84501360b84b0716aa82b93f6958cb78 inherit pub_methods_class_job_base"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a84501360b84b0716aa82b93f6958cb78">storeSourceCode</a> (const std::string &amp;parent_path=&quot;./&quot;, const std::string &amp;file_name=&quot;Main&quot;) const</td></tr>
+<tr class="memdesc:a84501360b84b0716aa82b93f6958cb78 inherit pub_methods_class_job_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">从 redis 数据库获取本 Job 的代码并存储到工作空间中，用于编译运行。  <a href="class_job_base.html#a84501360b84b0716aa82b93f6958cb78">更多...</a><br /></td></tr>
+<tr class="separator:a84501360b84b0716aa82b93f6958cb78 inherit pub_methods_class_job_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa7da8e91cd0ffddf9b1cf70995d2134b inherit pub_methods_class_job_base"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#aa7da8e91cd0ffddf9b1cf70995d2134b">commitJudgeStatusToRedis</a> (<a class="el" href="united__resource_8hpp.html#a80b9d5506f136fd5cef4ccd153030f1a">JudgeStatus</a> value)</td></tr>
 <tr class="memdesc:aa7da8e91cd0ffddf9b1cf70995d2134b inherit pub_methods_class_job_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">将当前评测状态提交到 redis 数据库。  <a href="class_job_base.html#aa7da8e91cd0ffddf9b1cf70995d2134b">更多...</a><br /></td></tr>
 <tr class="separator:aa7da8e91cd0ffddf9b1cf70995d2134b inherit pub_methods_class_job_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -241,8 +239,9 @@ Private 成员函数</h2></td></tr>
 <tr class="separator:a30801615bcfa6444b5933d558fca93eb inherit pro_attribs_class_update_job_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
-<div class="textblock">
-<p class="definition">在文件 <a class="el" href="_exercise_update_job_base_8hpp_source.html">ExerciseUpdateJobBase.hpp</a> 第 <a class="el" href="_exercise_update_job_base_8hpp_source.html#l00013">13</a> 行定义.</p>
+<div class="textblock"><p class=""><a class="el" href="class_exercise_update_job.html" title="普通练习类，定义了其独特的 update_solution 操作，即增加特有的 solution 记录。 而维护的 user 表、user_problem 表与 problem 表，均使用基类的定义完成...">ExerciseUpdateJob</a> 与 <a class="el" href="class_course_update_job.html" title="课程练习类，定义了其独特的 update_solution 等操作。针对课程，此类还维护 user_problem 表中 cid 非空的数据。 该数据与普通的 user_problem 记录独立。即同一...">CourseUpdateJob</a> 的虚基类，定义了解题状态查询与更新提交通过数等通用部分。 </p>
+
+<p class="definition">在文件 <a class="el" href="_exercise_update_job_base_8hpp_source.html">ExerciseUpdateJobBase.hpp</a> 第 <a class="el" href="_exercise_update_job_base_8hpp_source.html#l00016">16</a> 行定义.</p>
 </div><h2 class="groupheader">成员类型定义说明</h2>
 <a id="a446f2c2ad60ad5f039f7f7ec4627a590"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a446f2c2ad60ad5f039f7f7ec4627a590">&#9670;&nbsp;</a></span>supper_t</h2>
@@ -264,7 +263,7 @@ Private 成员函数</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">在文件 <a class="el" href="_exercise_update_job_base_8hpp_source.html">ExerciseUpdateJobBase.hpp</a> 第 <a class="el" href="_exercise_update_job_base_8hpp_source.html#l00016">16</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="_exercise_update_job_base_8hpp_source.html">ExerciseUpdateJobBase.hpp</a> 第 <a class="el" href="_exercise_update_job_base_8hpp_source.html#l00019">19</a> 行定义.</p>
 
 </div>
 </div>
@@ -371,19 +370,16 @@ Private 成员函数</h2></td></tr>
 <p>取得此用户此题在此次提交以前 AC, TO_DO 或 ATTEMPT 的状态 </p>
 <dl class="section warning"><dt>警告</dt><dd>虽给了默认的实现, 但仍是纯虚函数, 需由子类实现具体操作 </dd></dl>
 
-<p class="definition">在文件 <a class="el" href="_exercise_update_job_base_8cpp_source.html">ExerciseUpdateJobBase.cpp</a> 第 <a class="el" href="_exercise_update_job_base_8cpp_source.html#l00151">151</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="_exercise_update_job_base_8cpp_source.html">ExerciseUpdateJobBase.cpp</a> 第 <a class="el" href="_exercise_update_job_base_8cpp_source.html#l00168">168</a> 行定义.</p>
 <div class="dynheader">
 这是这个函数的调用关系图:</div>
 <div class="dyncontent">
 <div class="center"><img src="class_exercise_update_job_base_a9e7d46297cef3bbf492f108479d0079a_icgraph.png" border="0" usemap="#class_exercise_update_job_base_a9e7d46297cef3bbf492f108479d0079a_icgraph" alt=""/></div>
 <map name="class_exercise_update_job_base_a9e7d46297cef3bbf492f108479d0079a_icgraph" id="class_exercise_update_job_base_a9e7d46297cef3bbf492f108479d0079a_icgraph">
-<area shape="rect" id="node1" title="取得此用户此题在此次提交以前 AC, TO_DO 或 ATTEMPT 的状态" alt="" coords="459,97,648,153"/>
-<area shape="rect" id="node2" href="class_exercise_update_job_base.html#a9405c9cf05a1de216d8dece91629af5c" title="更新题目的提交数, 通过数, 用户的提交数, 通过数" alt="" coords="228,71,411,112"/>
-<area shape="rect" id="node5" href="class_exercise_update_job_base.html#a09d6e54f3da0de277e9a8d6d0abadf69" title="更新此用户此题的完成状态 &#160;用户所见到的每题 AC, TO_DO, ATTEMPT 三种状态即为user problem 表所提供的服务" alt="" coords="236,136,403,177"/>
-<area shape="rect" id="node3" href="class_course_update_job.html#acdb8cfc94cfe73b2092c1e18a06be0a8" title="更新题目的提交数, 通过数, 用户的提交数, 通过数" alt="" coords="5,5,180,47"/>
-<area shape="rect" id="node4" href="class_exercise_update_job.html#a5d23fe341214e8c3adaf6bc80d7b11f6" title="更新题目的提交数, 通过数, 用户的提交数, 通过数" alt="" coords="5,71,180,112"/>
-<area shape="rect" id="node6" href="class_course_update_job.html#ae5db69f67a4841f33872af2b29f350df" title="更新此用户此题的完成状态 &#160;用户所见到的每题 AC, TO_DO, ATTEMPT 三种状态即为user problem 表所提供的服务" alt="" coords="5,136,180,177"/>
-<area shape="rect" id="node7" href="class_exercise_update_job.html#ae8669a380090ac1bd45d89d6d0d20387" title="更新此用户此题的完成状态 &#160;用户所见到的每题 AC, TO_DO, ATTEMPT 三种状态即为user problem 表所提供的服务" alt="" coords="19,201,166,243"/>
+<area shape="rect" id="node1" title="取得此用户此题在此次提交以前 AC, TO_DO 或 ATTEMPT 的状态" alt="" coords="443,34,632,90"/>
+<area shape="rect" id="node2" href="class_exercise_update_job_base.html#a768900d69fbffafac0227c64fd8f089e" title="更新此用户此题的完成状态 &#160;用户所见到的每题 AC, TO_DO, ATTEMPT 三种状态即为user problem 表所提供的服务" alt="" coords="228,34,395,90"/>
+<area shape="rect" id="node3" href="class_course_update_job.html#a234460a5300b20558518110f9236a55b" title="更新此用户此题的完成状态 &#160;用户所见到的每题 AC, TO_DO, ATTEMPT 三种状态即为user problem 表所提供的服务" alt="" coords="5,5,180,47"/>
+<area shape="rect" id="node4" href="class_exercise_update_job.html#acbd8549fd852cb90924ea5f0ef1e654e" title="更新此用户此题的完成状态 &#160;用户所见到的每题 AC, TO_DO, ATTEMPT 三种状态即为user problem 表所提供的服务" alt="" coords="19,70,166,126"/>
 </map>
 </div>
 
@@ -427,8 +423,8 @@ Private 成员函数</h2></td></tr>
 
 </div>
 </div>
-<a id="a9054cda48a18e0dbddc2fed5c987e99c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9054cda48a18e0dbddc2fed5c987e99c">&#9670;&nbsp;</a></span>update_exercise_problem_accept()</h2>
+<a id="a3af17ba746dd7b0776f371618672619f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3af17ba746dd7b0776f371618672619f">&#9670;&nbsp;</a></span>update_problem_submit_and_accept_num_in_exercise()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -437,10 +433,9 @@ Private 成员函数</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void ExerciseUpdateJobBase::update_exercise_problem_accept </td>
+          <td class="memname">void ExerciseUpdateJobBase::update_problem_submit_and_accept_num_in_exercise </td>
           <td>(</td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>delta</em></td><td>)</td>
+          <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -451,142 +446,15 @@ Private 成员函数</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>将本 job 对应的 pid 的题目的通过数 + delta </p>
-<dl class="section warning"><dt>警告</dt><dd>本函数仅完成字段的更新操作, 不会检查操作的合法性! </dd></dl>
-
-<p class="definition">在文件 <a class="el" href="_exercise_update_job_base_8cpp_source.html">ExerciseUpdateJobBase.cpp</a> 第 <a class="el" href="_exercise_update_job_base_8cpp_source.html#l00075">75</a> 行定义.</p>
-<div class="dynheader">
-这是这个函数的调用关系图:</div>
-<div class="dyncontent">
-<div class="center"><img src="class_exercise_update_job_base_a9054cda48a18e0dbddc2fed5c987e99c_icgraph.png" border="0" usemap="#class_exercise_update_job_base_a9054cda48a18e0dbddc2fed5c987e99c_icgraph" alt=""/></div>
-<map name="class_exercise_update_job_base_a9054cda48a18e0dbddc2fed5c987e99c_icgraph" id="class_exercise_update_job_base_a9054cda48a18e0dbddc2fed5c987e99c_icgraph">
-<area shape="rect" id="node1" title="将本 job 对应的 pid 的题目的通过数 + delta" alt="" coords="459,31,637,87"/>
-<area shape="rect" id="node2" href="class_exercise_update_job_base.html#a9405c9cf05a1de216d8dece91629af5c" title="更新题目的提交数, 通过数, 用户的提交数, 通过数" alt="" coords="228,39,411,80"/>
-<area shape="rect" id="node3" href="class_course_update_job.html#acdb8cfc94cfe73b2092c1e18a06be0a8" title="更新题目的提交数, 通过数, 用户的提交数, 通过数" alt="" coords="5,5,180,47"/>
-<area shape="rect" id="node4" href="class_exercise_update_job.html#a5d23fe341214e8c3adaf6bc80d7b11f6" title="更新题目的提交数, 通过数, 用户的提交数, 通过数" alt="" coords="5,71,180,112"/>
-</map>
-</div>
-
-</div>
-</div>
-<a id="a529de717b9f78056523a0a609208e8df"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a529de717b9f78056523a0a609208e8df">&#9670;&nbsp;</a></span>update_exercise_problem_submit()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void ExerciseUpdateJobBase::update_exercise_problem_submit </td>
-          <td>(</td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>delta</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>将本 job 对应的 pid 的题目的提交数 + delta </p>
-<dl class="section warning"><dt>警告</dt><dd>本函数仅完成字段的更新操作, 不会检查操作的合法性! </dd></dl>
+<p>更新本 job 对应的 pid 的题目的提交数和通过数 </p>
 
 <p class="definition">在文件 <a class="el" href="_exercise_update_job_base_8cpp_source.html">ExerciseUpdateJobBase.cpp</a> 第 <a class="el" href="_exercise_update_job_base_8cpp_source.html#l00059">59</a> 行定义.</p>
 <div class="dynheader">
 这是这个函数的调用关系图:</div>
 <div class="dyncontent">
-<div class="center"><img src="class_exercise_update_job_base_a529de717b9f78056523a0a609208e8df_icgraph.png" border="0" usemap="#class_exercise_update_job_base_a529de717b9f78056523a0a609208e8df_icgraph" alt=""/></div>
-<map name="class_exercise_update_job_base_a529de717b9f78056523a0a609208e8df_icgraph" id="class_exercise_update_job_base_a529de717b9f78056523a0a609208e8df_icgraph">
-<area shape="rect" id="node1" title="将本 job 对应的 pid 的题目的提交数 + delta" alt="" coords="459,31,637,87"/>
-<area shape="rect" id="node2" href="class_exercise_update_job_base.html#a9405c9cf05a1de216d8dece91629af5c" title="更新题目的提交数, 通过数, 用户的提交数, 通过数" alt="" coords="228,39,411,80"/>
-<area shape="rect" id="node3" href="class_course_update_job.html#acdb8cfc94cfe73b2092c1e18a06be0a8" title="更新题目的提交数, 通过数, 用户的提交数, 通过数" alt="" coords="5,5,180,47"/>
-<area shape="rect" id="node4" href="class_exercise_update_job.html#a5d23fe341214e8c3adaf6bc80d7b11f6" title="更新题目的提交数, 通过数, 用户的提交数, 通过数" alt="" coords="5,71,180,112"/>
-</map>
-</div>
-
-</div>
-</div>
-<a id="a9dd4029ca0649fd8a970dad6c22f35c9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9dd4029ca0649fd8a970dad6c22f35c9">&#9670;&nbsp;</a></span>update_exercise_user_accept()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void ExerciseUpdateJobBase::update_exercise_user_accept </td>
-          <td>(</td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>delta</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>将本 job 对应的 uid 的题目的通过数 + delta </p>
-<dl class="section warning"><dt>警告</dt><dd>本函数仅完成字段的更新操作, 不会检查操作的合法性! </dd></dl>
-
-<p class="definition">在文件 <a class="el" href="_exercise_update_job_base_8cpp_source.html">ExerciseUpdateJobBase.cpp</a> 第 <a class="el" href="_exercise_update_job_base_8cpp_source.html#l00107">107</a> 行定义.</p>
-<div class="dynheader">
-这是这个函数的调用关系图:</div>
-<div class="dyncontent">
-<div class="center"><img src="class_exercise_update_job_base_a9dd4029ca0649fd8a970dad6c22f35c9_icgraph.png" border="0" usemap="#class_exercise_update_job_base_a9dd4029ca0649fd8a970dad6c22f35c9_icgraph" alt=""/></div>
-<map name="class_exercise_update_job_base_a9dd4029ca0649fd8a970dad6c22f35c9_icgraph" id="class_exercise_update_job_base_a9dd4029ca0649fd8a970dad6c22f35c9_icgraph">
-<area shape="rect" id="node1" title="将本 job 对应的 uid 的题目的通过数 + delta" alt="" coords="459,31,625,87"/>
-<area shape="rect" id="node2" href="class_exercise_update_job_base.html#a9405c9cf05a1de216d8dece91629af5c" title="更新题目的提交数, 通过数, 用户的提交数, 通过数" alt="" coords="228,39,411,80"/>
-<area shape="rect" id="node3" href="class_course_update_job.html#acdb8cfc94cfe73b2092c1e18a06be0a8" title="更新题目的提交数, 通过数, 用户的提交数, 通过数" alt="" coords="5,5,180,47"/>
-<area shape="rect" id="node4" href="class_exercise_update_job.html#a5d23fe341214e8c3adaf6bc80d7b11f6" title="更新题目的提交数, 通过数, 用户的提交数, 通过数" alt="" coords="5,71,180,112"/>
-</map>
-</div>
-
-</div>
-</div>
-<a id="a5a3974b7d168d0d4c8df086a842a1927"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5a3974b7d168d0d4c8df086a842a1927">&#9670;&nbsp;</a></span>update_exercise_user_submit()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void ExerciseUpdateJobBase::update_exercise_user_submit </td>
-          <td>(</td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>delta</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>将本 job 对应的 uid 的题目的提交数 + delta </p>
-<dl class="section warning"><dt>警告</dt><dd>本函数仅完成字段的更新操作, 不会检查操作的合法性! </dd></dl>
-
-<p class="definition">在文件 <a class="el" href="_exercise_update_job_base_8cpp_source.html">ExerciseUpdateJobBase.cpp</a> 第 <a class="el" href="_exercise_update_job_base_8cpp_source.html#l00091">91</a> 行定义.</p>
-<div class="dynheader">
-这是这个函数的调用关系图:</div>
-<div class="dyncontent">
-<div class="center"><img src="class_exercise_update_job_base_a5a3974b7d168d0d4c8df086a842a1927_icgraph.png" border="0" usemap="#class_exercise_update_job_base_a5a3974b7d168d0d4c8df086a842a1927_icgraph" alt=""/></div>
-<map name="class_exercise_update_job_base_a5a3974b7d168d0d4c8df086a842a1927_icgraph" id="class_exercise_update_job_base_a5a3974b7d168d0d4c8df086a842a1927_icgraph">
-<area shape="rect" id="node1" title="将本 job 对应的 uid 的题目的提交数 + delta" alt="" coords="459,31,625,87"/>
+<div class="center"><img src="class_exercise_update_job_base_a3af17ba746dd7b0776f371618672619f_icgraph.png" border="0" usemap="#class_exercise_update_job_base_a3af17ba746dd7b0776f371618672619f_icgraph" alt=""/></div>
+<map name="class_exercise_update_job_base_a3af17ba746dd7b0776f371618672619f_icgraph" id="class_exercise_update_job_base_a3af17ba746dd7b0776f371618672619f_icgraph">
+<area shape="rect" id="node1" title="更新本 job 对应的 pid 的题目的提交数和通过数" alt="" coords="459,31,660,87"/>
 <area shape="rect" id="node2" href="class_exercise_update_job_base.html#a9405c9cf05a1de216d8dece91629af5c" title="更新题目的提交数, 通过数, 用户的提交数, 通过数" alt="" coords="228,39,411,80"/>
 <area shape="rect" id="node3" href="class_course_update_job.html#acdb8cfc94cfe73b2092c1e18a06be0a8" title="更新题目的提交数, 通过数, 用户的提交数, 通过数" alt="" coords="5,5,180,47"/>
 <area shape="rect" id="node4" href="class_exercise_update_job.html#a5d23fe341214e8c3adaf6bc80d7b11f6" title="更新题目的提交数, 通过数, 用户的提交数, 通过数" alt="" coords="5,71,180,112"/>
@@ -695,18 +563,15 @@ Private 成员函数</h2></td></tr>
 
 <p>在 <a class="el" href="class_course_update_job.html#acdb8cfc94cfe73b2092c1e18a06be0a8">CourseUpdateJob</a> , 以及 <a class="el" href="class_exercise_update_job.html#a5d23fe341214e8c3adaf6bc80d7b11f6">ExerciseUpdateJob</a> 内被实现.</p>
 
-<p class="definition">在文件 <a class="el" href="_exercise_update_job_base_8cpp_source.html">ExerciseUpdateJobBase.cpp</a> 第 <a class="el" href="_exercise_update_job_base_8cpp_source.html#l00123">123</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="_exercise_update_job_base_8cpp_source.html">ExerciseUpdateJobBase.cpp</a> 第 <a class="el" href="_exercise_update_job_base_8cpp_source.html#l00149">149</a> 行定义.</p>
 <div class="dynheader">
 函数调用图:</div>
 <div class="dyncontent">
 <div class="center"><img src="class_exercise_update_job_base_a9405c9cf05a1de216d8dece91629af5c_cgraph.png" border="0" usemap="#class_exercise_update_job_base_a9405c9cf05a1de216d8dece91629af5c_cgraph" alt=""/></div>
 <map name="class_exercise_update_job_base_a9405c9cf05a1de216d8dece91629af5c_cgraph" id="class_exercise_update_job_base_a9405c9cf05a1de216d8dece91629af5c_cgraph">
-<area shape="rect" id="node1" title="更新题目的提交数, 通过数, 用户的提交数, 通过数" alt="" coords="5,173,188,214"/>
-<area shape="rect" id="node2" href="class_exercise_update_job_base.html#a9e7d46297cef3bbf492f108479d0079a" title="取得此用户此题在此次提交以前 AC, TO_DO 或 ATTEMPT 的状态" alt="" coords="236,5,425,61"/>
-<area shape="rect" id="node3" href="class_exercise_update_job_base.html#a5a3974b7d168d0d4c8df086a842a1927" title="将本 job 对应的 uid 的题目的提交数 + delta" alt="" coords="247,85,414,141"/>
-<area shape="rect" id="node4" href="class_exercise_update_job_base.html#a529de717b9f78056523a0a609208e8df" title="将本 job 对应的 pid 的题目的提交数 + delta" alt="" coords="241,165,420,221"/>
-<area shape="rect" id="node5" href="class_exercise_update_job_base.html#a9dd4029ca0649fd8a970dad6c22f35c9" title="将本 job 对应的 uid 的题目的通过数 + delta" alt="" coords="247,245,414,301"/>
-<area shape="rect" id="node6" href="class_exercise_update_job_base.html#a9054cda48a18e0dbddc2fed5c987e99c" title="将本 job 对应的 pid 的题目的通过数 + delta" alt="" coords="241,325,420,381"/>
+<area shape="rect" id="node1" title="更新题目的提交数, 通过数, 用户的提交数, 通过数" alt="" coords="5,53,188,94"/>
+<area shape="rect" id="node2" href="class_exercise_update_job_base.html#ae915992f5df113724cec45542e2582c3" title="更新本 job 对应的 uid 的用户的提交数和通过数" alt="" coords="236,5,437,61"/>
+<area shape="rect" id="node3" href="class_exercise_update_job_base.html#a3af17ba746dd7b0776f371618672619f" title="更新本 job 对应的 pid 的题目的提交数和通过数" alt="" coords="236,85,437,141"/>
 </map>
 </div>
 <div class="dynheader">
@@ -722,8 +587,8 @@ Private 成员函数</h2></td></tr>
 
 </div>
 </div>
-<a id="a09d6e54f3da0de277e9a8d6d0abadf69"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a09d6e54f3da0de277e9a8d6d0abadf69">&#9670;&nbsp;</a></span>update_user_problem()</h2>
+<a id="a768900d69fbffafac0227c64fd8f089e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a768900d69fbffafac0227c64fd8f089e">&#9670;&nbsp;</a></span>update_user_problem_status()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -732,7 +597,7 @@ Private 成员函数</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void ExerciseUpdateJobBase::update_user_problem </td>
+          <td class="memname">void ExerciseUpdateJobBase::update_user_problem_status </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -748,28 +613,68 @@ Private 成员函数</h2></td></tr>
 <p>更新此用户此题的完成状态  用户所见到的每题 AC, TO_DO, ATTEMPT 三种状态即为user problem 表所提供的服务 </p>
 <dl class="section warning"><dt>警告</dt><dd>仅规定 update user problem 表的接口, 具体操作需由子类实现 </dd></dl>
 
-<p>实现了 <a class="el" href="class_update_job_base.html#a5f9c939aca4766afe525e63db2ec2841">UpdateJobBase</a>.</p>
+<p>实现了 <a class="el" href="class_update_job_base.html#a8d7444cd56ceaf7c206a58483c6cb075">UpdateJobBase</a>.</p>
 
-<p>在 <a class="el" href="class_course_update_job.html#ae5db69f67a4841f33872af2b29f350df">CourseUpdateJob</a> , 以及 <a class="el" href="class_exercise_update_job.html#ae8669a380090ac1bd45d89d6d0d20387">ExerciseUpdateJob</a> 内被实现.</p>
+<p>在 <a class="el" href="class_course_update_job.html#a234460a5300b20558518110f9236a55b">CourseUpdateJob</a> , 以及 <a class="el" href="class_exercise_update_job.html#acbd8549fd852cb90924ea5f0ef1e654e">ExerciseUpdateJob</a> 内被实现.</p>
 
-<p class="definition">在文件 <a class="el" href="_exercise_update_job_base_8cpp_source.html">ExerciseUpdateJobBase.cpp</a> 第 <a class="el" href="_exercise_update_job_base_8cpp_source.html#l00183">183</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="_exercise_update_job_base_8cpp_source.html">ExerciseUpdateJobBase.cpp</a> 第 <a class="el" href="_exercise_update_job_base_8cpp_source.html#l00200">200</a> 行定义.</p>
 <div class="dynheader">
 函数调用图:</div>
 <div class="dyncontent">
-<div class="center"><img src="class_exercise_update_job_base_a09d6e54f3da0de277e9a8d6d0abadf69_cgraph.png" border="0" usemap="#class_exercise_update_job_base_a09d6e54f3da0de277e9a8d6d0abadf69_cgraph" alt=""/></div>
-<map name="class_exercise_update_job_base_a09d6e54f3da0de277e9a8d6d0abadf69_cgraph" id="class_exercise_update_job_base_a09d6e54f3da0de277e9a8d6d0abadf69_cgraph">
-<area shape="rect" id="node1" title="更新此用户此题的完成状态 &#160;用户所见到的每题 AC, TO_DO, ATTEMPT 三种状态即为user problem 表所提供的服务" alt="" coords="5,13,172,54"/>
+<div class="center"><img src="class_exercise_update_job_base_a768900d69fbffafac0227c64fd8f089e_cgraph.png" border="0" usemap="#class_exercise_update_job_base_a768900d69fbffafac0227c64fd8f089e_cgraph" alt=""/></div>
+<map name="class_exercise_update_job_base_a768900d69fbffafac0227c64fd8f089e_cgraph" id="class_exercise_update_job_base_a768900d69fbffafac0227c64fd8f089e_cgraph">
+<area shape="rect" id="node1" title="更新此用户此题的完成状态 &#160;用户所见到的每题 AC, TO_DO, ATTEMPT 三种状态即为user problem 表所提供的服务" alt="" coords="5,5,172,61"/>
 <area shape="rect" id="node2" href="class_exercise_update_job_base.html#a9e7d46297cef3bbf492f108479d0079a" title="取得此用户此题在此次提交以前 AC, TO_DO 或 ATTEMPT 的状态" alt="" coords="220,5,409,61"/>
 </map>
 </div>
 <div class="dynheader">
 这是这个函数的调用关系图:</div>
 <div class="dyncontent">
-<div class="center"><img src="class_exercise_update_job_base_a09d6e54f3da0de277e9a8d6d0abadf69_icgraph.png" border="0" usemap="#class_exercise_update_job_base_a09d6e54f3da0de277e9a8d6d0abadf69_icgraph" alt=""/></div>
-<map name="class_exercise_update_job_base_a09d6e54f3da0de277e9a8d6d0abadf69_icgraph" id="class_exercise_update_job_base_a09d6e54f3da0de277e9a8d6d0abadf69_icgraph">
-<area shape="rect" id="node1" title="更新此用户此题的完成状态 &#160;用户所见到的每题 AC, TO_DO, ATTEMPT 三种状态即为user problem 表所提供的服务" alt="" coords="228,39,395,80"/>
-<area shape="rect" id="node2" href="class_course_update_job.html#ae5db69f67a4841f33872af2b29f350df" title="更新此用户此题的完成状态 &#160;用户所见到的每题 AC, TO_DO, ATTEMPT 三种状态即为user problem 表所提供的服务" alt="" coords="5,5,180,47"/>
-<area shape="rect" id="node3" href="class_exercise_update_job.html#ae8669a380090ac1bd45d89d6d0d20387" title="更新此用户此题的完成状态 &#160;用户所见到的每题 AC, TO_DO, ATTEMPT 三种状态即为user problem 表所提供的服务" alt="" coords="19,71,166,112"/>
+<div class="center"><img src="class_exercise_update_job_base_a768900d69fbffafac0227c64fd8f089e_icgraph.png" border="0" usemap="#class_exercise_update_job_base_a768900d69fbffafac0227c64fd8f089e_icgraph" alt=""/></div>
+<map name="class_exercise_update_job_base_a768900d69fbffafac0227c64fd8f089e_icgraph" id="class_exercise_update_job_base_a768900d69fbffafac0227c64fd8f089e_icgraph">
+<area shape="rect" id="node1" title="更新此用户此题的完成状态 &#160;用户所见到的每题 AC, TO_DO, ATTEMPT 三种状态即为user problem 表所提供的服务" alt="" coords="228,34,395,90"/>
+<area shape="rect" id="node2" href="class_course_update_job.html#a234460a5300b20558518110f9236a55b" title="更新此用户此题的完成状态 &#160;用户所见到的每题 AC, TO_DO, ATTEMPT 三种状态即为user problem 表所提供的服务" alt="" coords="5,5,180,47"/>
+<area shape="rect" id="node3" href="class_exercise_update_job.html#acbd8549fd852cb90924ea5f0ef1e654e" title="更新此用户此题的完成状态 &#160;用户所见到的每题 AC, TO_DO, ATTEMPT 三种状态即为user problem 表所提供的服务" alt="" coords="19,70,166,126"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="ae915992f5df113724cec45542e2582c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae915992f5df113724cec45542e2582c3">&#9670;&nbsp;</a></span>update_user_submit_and_accept_num_in_exercise()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ExerciseUpdateJobBase::update_user_submit_and_accept_num_in_exercise </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>更新本 job 对应的 uid 的用户的提交数和通过数 </p>
+
+<p class="definition">在文件 <a class="el" href="_exercise_update_job_base_8cpp_source.html">ExerciseUpdateJobBase.cpp</a> 第 <a class="el" href="_exercise_update_job_base_8cpp_source.html#l00104">104</a> 行定义.</p>
+<div class="dynheader">
+这是这个函数的调用关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_exercise_update_job_base_ae915992f5df113724cec45542e2582c3_icgraph.png" border="0" usemap="#class_exercise_update_job_base_ae915992f5df113724cec45542e2582c3_icgraph" alt=""/></div>
+<map name="class_exercise_update_job_base_ae915992f5df113724cec45542e2582c3_icgraph" id="class_exercise_update_job_base_ae915992f5df113724cec45542e2582c3_icgraph">
+<area shape="rect" id="node1" title="更新本 job 对应的 uid 的用户的提交数和通过数" alt="" coords="459,31,660,87"/>
+<area shape="rect" id="node2" href="class_exercise_update_job_base.html#a9405c9cf05a1de216d8dece91629af5c" title="更新题目的提交数, 通过数, 用户的提交数, 通过数" alt="" coords="228,39,411,80"/>
+<area shape="rect" id="node3" href="class_course_update_job.html#acdb8cfc94cfe73b2092c1e18a06be0a8" title="更新题目的提交数, 通过数, 用户的提交数, 通过数" alt="" coords="5,5,180,47"/>
+<area shape="rect" id="node4" href="class_exercise_update_job.html#a5d23fe341214e8c3adaf6bc80d7b11f6" title="更新题目的提交数, 通过数, 用户的提交数, 通过数" alt="" coords="5,71,180,112"/>
 </map>
 </div>
 

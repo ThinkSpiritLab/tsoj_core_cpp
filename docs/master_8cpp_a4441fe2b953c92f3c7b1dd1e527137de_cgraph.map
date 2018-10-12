@@ -1,4 +1,4 @@
 <map id="load_config" name="load_config">
-<area shape="rect" id="node1" title=" " alt="" coords="5,5,93,32"/>
+<area shape="rect" id="node1" title="加载 master 工作的配置 根据 updater.conf 文档，读取工作配置信息。loadConfig 的工作原理详见其文档。" alt="" coords="5,5,93,32"/>
 <area shape="rect" id="node2" href="$load__helper_8cpp.html#a7aa49aa215539e705fe48842be5bef03" title=" " alt="" coords="141,5,220,32"/>
 </map>

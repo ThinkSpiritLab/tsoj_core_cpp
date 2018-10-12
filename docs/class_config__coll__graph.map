@@ -1,4 +1,4 @@
 <map id="Config" name="Config">
 <area shape="rect" id="node1" title="运行配置类，根据具体运行需求提供所需的子进程运行限制条件与子进程运行环境 &#160;例如：运行时间限制，运行空间限制，子进程调用系统函数的权限等" alt="" coords="24,109,84,136"/>
-<area shape="rect" id="node2" href="$class_execute_args.html" title=" " alt="" coords="5,5,103,32"/>
+<area shape="rect" id="node2" href="$class_execute_args.html" title="执行 exec 族的命令行参数。在原本的 Unix 要求中，exec 族函数的命令行参数末尾必须以一个空指针结尾， 这显然十分丑陋不够优雅，也晦涩难读。基于此目的，本处使用了一个类将它封装了起来。" alt="" coords="5,5,103,32"/>
 </map>

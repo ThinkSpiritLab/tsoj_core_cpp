@@ -1,4 +1,4 @@
 <map id="compare" name="compare">
-<area shape="rect" id="node1" title=" " alt="" coords="5,5,77,32"/>
+<area shape="rect" id="node1" title="根据用户答案路径和标准答案路径，提取相应文件并进行比对。比对结果作为判题结果，并返回。" alt="" coords="5,5,77,32"/>
 <area shape="rect" id="node2" href="$compare_8cpp.html#ae12d969be69c79ba2d8501fc5ab34eb7" title=" " alt="" coords="125,5,264,32"/>
 </map>

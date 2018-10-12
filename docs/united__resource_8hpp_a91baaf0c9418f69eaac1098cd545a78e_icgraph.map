@@ -1,0 +1,5 @@
+<map id="source_file_suffix" name="source_file_suffix">
+<area shape="rect" id="node1" title=" " alt="" coords="408,5,532,32"/>
+<area shape="rect" id="node2" href="$class_job_base.html#a84501360b84b0716aa82b93f6958cb78" title="从 redis 数据库获取本 Job 的代码并存储到工作空间中，用于编译运行。" alt="" coords="177,5,360,32"/>
+<area shape="rect" id="node3" href="$class_judge_job.html#a6fe58f9fcacc9ba6461e97f1a3ac76a3" title="本 Job 的处理函数。整个 job 的工作入口，包括编译执行判题等内容" alt="" coords="5,5,129,32"/>
+</map>

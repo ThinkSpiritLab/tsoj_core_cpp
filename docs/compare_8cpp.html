@@ -99,6 +99,7 @@ compare.cpp 的引用(Include)关系图:</div>
 <tr class="memitem:ae12d969be69c79ba2d8501fc5ab34eb7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="compare_8cpp.html#ae12d969be69c79ba2d8501fc5ab34eb7">find_next_nonspace</a> (int &amp;c1, int &amp;c2, std::unique_ptr&lt; FILE, int(*)(FILE *)&gt; &amp;f1, std::unique_ptr&lt; FILE, int(*)(FILE *)&gt; &amp;f2, <a class="el" href="united__resource_8hpp.html#a4633701595b7c3914a34eee8ba1b505e">UnitedJudgeResult</a> &amp;ret)</td></tr>
 <tr class="separator:ae12d969be69c79ba2d8501fc5ab34eb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a960c5c76653215ba60077e139ab6c000"><td class="memItemLeft" align="right" valign="top"><a class="el" href="united__resource_8hpp.html#a4633701595b7c3914a34eee8ba1b505e">UnitedJudgeResult</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="compare_8cpp.html#a960c5c76653215ba60077e139ab6c000">compare</a> (const char *file1, const char *file2)</td></tr>
+<tr class="memdesc:a960c5c76653215ba60077e139ab6c000"><td class="mdescLeft">&#160;</td><td class="mdescRight">根据用户答案路径和标准答案路径，提取相应文件并进行比对。比对结果作为判题结果，并返回。  <a href="#a960c5c76653215ba60077e139ab6c000">更多...</a><br /></td></tr>
 <tr class="separator:a960c5c76653215ba60077e139ab6c000"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">函数说明</h2>
@@ -128,13 +129,23 @@ compare.cpp 的引用(Include)关系图:</div>
       </table>
 </div><div class="memdoc">
 
+<p>根据用户答案路径和标准答案路径，提取相应文件并进行比对。比对结果作为判题结果，并返回。 </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">file1</td><td>用户答案路径 </td></tr>
+    <tr><td class="paramname">file2</td><td>标准答案路径 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>表示比对结果的 UnitedJudgeResult 枚举类。 </dd></dl>
+
 <p class="definition">在文件 <a class="el" href="compare_8cpp_source.html">compare.cpp</a> 第 <a class="el" href="compare_8cpp_source.html#l00048">48</a> 行定义.</p>
 <div class="dynheader">
 函数调用图:</div>
 <div class="dyncontent">
 <div class="center"><img src="compare_8cpp_a960c5c76653215ba60077e139ab6c000_cgraph.png" border="0" usemap="#compare_8cpp_a960c5c76653215ba60077e139ab6c000_cgraph" alt=""/></div>
 <map name="compare_8cpp_a960c5c76653215ba60077e139ab6c000_cgraph" id="compare_8cpp_a960c5c76653215ba60077e139ab6c000_cgraph">
-<area shape="rect" id="node1" title=" " alt="" coords="5,5,77,32"/>
+<area shape="rect" id="node1" title="根据用户答案路径和标准答案路径，提取相应文件并进行比对。比对结果作为判题结果，并返回。" alt="" coords="5,5,77,32"/>
 <area shape="rect" id="node2" href="compare_8cpp.html#ae12d969be69c79ba2d8501fc5ab34eb7" title=" " alt="" coords="125,5,264,32"/>
 </map>
 </div>
@@ -143,7 +154,7 @@ compare.cpp 的引用(Include)关系图:</div>
 <div class="dyncontent">
 <div class="center"><img src="compare_8cpp_a960c5c76653215ba60077e139ab6c000_icgraph.png" border="0" usemap="#compare_8cpp_a960c5c76653215ba60077e139ab6c000_icgraph" alt=""/></div>
 <map name="compare_8cpp_a960c5c76653215ba60077e139ab6c000_icgraph" id="compare_8cpp_a960c5c76653215ba60077e139ab6c000_icgraph">
-<area shape="rect" id="node1" title=" " alt="" coords="353,5,425,32"/>
+<area shape="rect" id="node1" title="根据用户答案路径和标准答案路径，提取相应文件并进行比对。比对结果作为判题结果，并返回。" alt="" coords="353,5,425,32"/>
 <area shape="rect" id="node2" href="class_judge_job.html#a0d2e1e5cce842ef0daf71c95f98275f0" title="进入当前 job 的执行流程，并返回执行结果。" alt="" coords="177,5,305,32"/>
 <area shape="rect" id="node3" href="class_judge_job.html#a6fe58f9fcacc9ba6461e97f1a3ac76a3" title="本 Job 的处理函数。整个 job 的工作入口，包括编译执行判题等内容" alt="" coords="5,5,129,32"/>
 </map>
@@ -202,7 +213,7 @@ compare.cpp 的引用(Include)关系图:</div>
 <div class="center"><img src="compare_8cpp_ae12d969be69c79ba2d8501fc5ab34eb7_icgraph.png" border="0" usemap="#compare_8cpp_ae12d969be69c79ba2d8501fc5ab34eb7_icgraph" alt=""/></div>
 <map name="compare_8cpp_ae12d969be69c79ba2d8501fc5ab34eb7_icgraph" id="compare_8cpp_ae12d969be69c79ba2d8501fc5ab34eb7_icgraph">
 <area shape="rect" id="node1" title=" " alt="" coords="473,5,612,32"/>
-<area shape="rect" id="node2" href="compare_8hpp.html#a960c5c76653215ba60077e139ab6c000" title=" " alt="" coords="353,5,425,32"/>
+<area shape="rect" id="node2" href="compare_8hpp.html#a960c5c76653215ba60077e139ab6c000" title="根据用户答案路径和标准答案路径，提取相应文件并进行比对。比对结果作为判题结果，并返回。" alt="" coords="353,5,425,32"/>
 <area shape="rect" id="node3" href="class_judge_job.html#a0d2e1e5cce842ef0daf71c95f98275f0" title="进入当前 job 的执行流程，并返回执行结果。" alt="" coords="177,5,305,32"/>
 <area shape="rect" id="node4" href="class_judge_job.html#a6fe58f9fcacc9ba6461e97f1a3ac76a3" title="本 Job 的处理函数。整个 job 的工作入口，包括编译执行判题等内容" alt="" coords="5,5,129,32"/>
 </map>

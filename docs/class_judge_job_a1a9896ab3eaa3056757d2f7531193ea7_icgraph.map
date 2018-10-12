@@ -1,0 +1,4 @@
+<map id="JudgeJob::calculate_similarity" name="JudgeJob::calculate_similarity">
+<area shape="rect" id="node1" title=" " alt="" coords="177,5,316,47"/>
+<area shape="rect" id="node2" href="$class_judge_job.html#a6fe58f9fcacc9ba6461e97f1a3ac76a3" title="本 Job 的处理函数。整个 job 的工作入口，包括编译执行判题等内容" alt="" coords="5,13,129,39"/>
+</map>

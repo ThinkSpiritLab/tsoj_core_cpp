@@ -1,6 +1,6 @@
 <map id="ExerciseUpdateJobBase" name="ExerciseUpdateJobBase">
-<area shape="rect" id="node1" title=" " alt="" coords="60,260,227,287"/>
-<area shape="rect" id="node2" href="$class_update_job_base.html" title=" " alt="" coords="86,184,201,211"/>
+<area shape="rect" id="node1" title="ExerciseUpdateJob 与 CourseUpdateJob 的虚基类，定义了解题状态查询与更新提交通过数等通用部分。" alt="" coords="60,260,227,287"/>
+<area shape="rect" id="node2" href="$class_update_job_base.html" title="JobBase 的子类，同时是所有类型的 update 类的基类。" alt="" coords="86,184,201,211"/>
 <area shape="rect" id="node3" href="$class_job_base.html" title="JudgeJob 与 UpdateJob 的基类， 存有 Job的基本信息，并规定了所有 Job 必须遵循的函数接口。" alt="" coords="20,95,93,121"/>
 <area shape="rect" id="node4" title=" " alt="" coords="5,5,108,32"/>
 <area shape="rect" id="node5" href="$struct_solution_details.html" title=" " alt="" coords="117,95,228,121"/>

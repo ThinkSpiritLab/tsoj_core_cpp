@@ -24,70 +24,51 @@ using namespace kerbal::redis;
 #include <cctype>
 #include <chrono>
 #include <csignal>
+#include <thread>
 
 using std::cout;
 using std::cerr;
 using std::endl;
 
-/** 本机主机名 */
-std::string host_name;
+std::string host_name; /**< 本机主机名 */
 
-/** 本机 IP */
-std::string ip;
+std::string ip; /**< 本机 IP */
 
-/** 本机当前用户名 */
-std::string user_name;
+std::string user_name; /**< 本机当前用户名 */
 
-/** 本机监听进程号 */
-int listening_pid;
+int listening_pid; /**< 本机监听进程号 */
 
-/** 评测服务器id，定义为 host_name:ip */
-std::string judge_server_id;
+std::string judge_server_id; /**< 评测服务器id，定义为 host_name:ip */
 
-/** 程序的运行目录，用于存放临时文件等 */
-std::string init_dir;
+std::string init_dir; /**< 程序的运行目录，用于存放临时文件等 */
 
-/** 测试数据和答案的存放目录 */
-std::string input_dir;
+std::string input_dir; /**< 测试数据和答案的存放目录 */
 
-/** 日志文件名 */
-std::string log_file_name;
+std::string log_file_name; /**< 日志文件名 */
 
-/** 日志文件的文件流 */
-std::ofstream log_fp;
+std::ofstream log_fp; /**< 日志文件的文件流 */
 
-/** lock_file,用于保证一次只能有一个 judge_server 守护进程在运行 */
-std::string lock_file;
+std::string lock_file; /**< lock_file,用于保证一次只能有一个 judge_server 守护进程在运行 */
 
-/** Linux 中运行评测进程的 user id。 默认为 1666*/
-int judger_uid;
+int judger_uid; /**< Linux 中运行评测进程的 user id。 默认为 1666 */
 
-/** Linux 中运行评测进程的 group id。 默认为 1666*/
-int judger_gid;
+int judger_gid; /**< Linux 中运行评测进程的 group id。 默认为 1666 */
 
-/** redis 端口号 */
-int redis_port;
+int redis_port; /**< redis 端口号 */
 
-/** redis 主机名 */
-std::string redis_hostname;
+std::string redis_hostname; /**< redis 主机名 */
 
-/** redis 最大连接数 */
-int max_redis_conn;
+int max_redis_conn; /**< redis 最大连接数 */
 
-/** java 策略 */
-std::string java_policy_path;
+std::string java_policy_path; /**< java 策略 */
 
-/** java 额外运行时间值 */
-int java_time_bonus;
+int java_time_bonus; /**< java 额外运行时间值 */
 
-/** java 额外运行空间值 */
-kerbal::utility::MB java_memory_bonus;
+kerbal::utility::MB java_memory_bonus; /**< java 额外运行空间值 */
 
-/** 已经 AC 代码保存路径，用于查重 */
-std::string accepted_solutions_dir;
+std::string accepted_solutions_dir; /**< 已经 AC 代码保存路径，用于查重 */
 
-/** 已经 AC 代码数量 */
-int stored_ac_code_max_num;
+int stored_ac_code_max_num; /**< 已经 AC 代码数量 */
 
 /**
  * 匿名空间避免其他文件访问。
@@ -101,7 +82,6 @@ namespace
 	bool loop = true;
 	int cur_running = 0;
 	int max_running;
-	std::unique_ptr<RedisContextPool> context_pool;
 }
 
 /**
@@ -109,13 +89,10 @@ namespace
  * 每隔一段时间，将本机信息提交到数据库中表示当前在线的评测机集合中，表明自身正常工作，可以处理评测任务。
  * @throw 该函数保证不抛出任何异常
  */
-void register_self() noexcept try
+void register_self(RedisContext&& regist_self_conn) noexcept try
 {
 	using namespace std::chrono;
 	using namespace kerbal::compatibility::chrono_suffix;
-
-	static auto regist_self_conn = context_pool->apply(getpid());
-	LOG_INFO(0, 0, log_fp, "Regist_self service get context: ", regist_self_conn.get_id());
 
 	static Operation opt(regist_self_conn);
 	while (true) {
@@ -131,10 +108,9 @@ void register_self() noexcept try
 			opt.set("judge_server_confirm:" + judge_server_id, confirm_time);
 			opt.expire("judge_server_confirm:" + judge_server_id, 30_s);
 
-			static Set<std::string> s(regist_self_conn, "online_judger");
+			static kerbal::redis::Set<std::string> s(regist_self_conn, "online_judger");
 			s.insert(judge_server_id);
 
-			LOG_DEBUG(0, 0, log_fp, "Register self success");
 			std::this_thread::sleep_for(10_s);
 		} catch (const RedisException & e) {
 			EXCEPT_FATAL(0, 0, log_fp, "Register self failed.", e);
@@ -163,6 +139,7 @@ void regist_SIGTERM_handler(int signum) noexcept
 					"Judge server has received the SIGTERM signal and will exit soon after the jobs are all finished!");
 	}
 }
+
 /**
  * @brief 加载 slave 工作的配置
  * 根据 judge_server.conf 文档，读取工作配置信息。loadConfig 的工作原理详见其文档。
@@ -182,31 +159,32 @@ void load_config()
 
 	LoadConfig<std::string, int, kerbal::utility::MB> loadConfig;
 
-	auto castToInt = [](const std::string & src) {
+	auto int_assign = [](const std::string & src) {
 		return std::stoi(src);
 	};
 
-	auto stringAssign = [](const std::string & src) {
+	auto string_assign = [](const std::string & src) {
 		return src;
 	};
 
-	loadConfig.add_rules(max_running, "max_running", castToInt);
-	loadConfig.add_rules(judger_uid, "judger_uid", castToInt);
-	loadConfig.add_rules(judger_gid, "judger_gid", castToInt);
-	loadConfig.add_rules(init_dir, "init_dir", stringAssign);
-	loadConfig.add_rules(input_dir, "input_dir", stringAssign);
-	loadConfig.add_rules(log_file_name, "log_file", stringAssign);
-	loadConfig.add_rules(lock_file, "lock_file", stringAssign);
-	loadConfig.add_rules(redis_port, "redis_port", castToInt);
-	loadConfig.add_rules(redis_hostname, "redis_hostname", stringAssign);
-	loadConfig.add_rules(java_policy_path, "java_policy_path", stringAssign);
-	loadConfig.add_rules(java_time_bonus, "java_time_bonus", castToInt);
-	loadConfig.add_rules(java_memory_bonus, "java_memory_bonus", [](const std::string & src) {
+	auto MB_assign = [](const std::string & src) {
 		return kerbal::utility::MB{stoull(src)};
-	});
+	};
 
-	loadConfig.add_rules(accepted_solutions_dir, "accepted_solutions_dir", stringAssign);
-	loadConfig.add_rules(stored_ac_code_max_num, "stored_ac_code_max_num", castToInt);
+	loadConfig.add_rules(max_running, "max_running", int_assign);
+	loadConfig.add_rules(judger_uid, "judger_uid", int_assign);
+	loadConfig.add_rules(judger_gid, "judger_gid", int_assign);
+	loadConfig.add_rules(init_dir, "init_dir", string_assign);
+	loadConfig.add_rules(input_dir, "input_dir", string_assign);
+	loadConfig.add_rules(log_file_name, "log_file", string_assign);
+	loadConfig.add_rules(lock_file, "lock_file", string_assign);
+	loadConfig.add_rules(redis_port, "redis_port", int_assign);
+	loadConfig.add_rules(redis_hostname, "redis_hostname", string_assign);
+	loadConfig.add_rules(java_policy_path, "java_policy_path", string_assign);
+	loadConfig.add_rules(java_time_bonus, "java_time_bonus", int_assign);
+	loadConfig.add_rules(java_memory_bonus, "java_memory_bonus", MB_assign);
+	loadConfig.add_rules(accepted_solutions_dir, "accepted_solutions_dir", string_assign);
+	loadConfig.add_rules(stored_ac_code_max_num, "stored_ac_code_max_num", int_assign);
 
 	string buf;
 	while (getline(fp, buf)) {
@@ -248,6 +226,8 @@ void load_config()
  */
 int main(int argc, const char * argv[]) try
 {
+	using namespace kerbal::utility::costream;
+	const auto & ccerr = costream<cerr>(LIGHT_RED);
 	using namespace kerbal::compatibility::chrono_suffix;
 
 	if (argc > 1 && argv[1] == std::string("--version")) {
@@ -257,27 +237,25 @@ int main(int argc, const char * argv[]) try
 	cout << std::boolalpha;
 	load_config();
 
-	try {
-		// +2 : 除了四个评测进程需要 redis 连接以外, 监听队列, 发送心跳进程也各需要一个
-		// 当前版本中连接池并未启用
-		context_pool.reset(new RedisContextPool(max_running + 2, redis_hostname.c_str(), redis_port, 1500_ms));
-	} catch (const std::exception & e) {
-		EXCEPT_FATAL(0, 0, log_fp, "Redis connect failed!", e);
-		exit(-2);
+	RedisContext main_conn(redis_hostname.c_str(), redis_port, 1500_ms);
+	if (!main_conn) {
+		LOG_FATAL(0, 0, log_fp, "Main conn connect failed!");
+		exit(0);
 	}
 
-	auto main_conn = context_pool->apply(getpid());
-	LOG_INFO(0, 0, log_fp, "main_conn: ", main_conn.get_id());
+	RedisContext register_self_conn(redis_hostname.c_str(), redis_port, 1500_ms);
+	if (!main_conn) {
+		LOG_FATAL(0, 0, log_fp, "register_self_conn connect failed!");
+		exit(0);
+	}
 
 	try {
-		/**
-		 * 创建并分离发送心跳线程
-		 */
-		std::thread regist(register_self);
+		/// 创建并分离发送心跳线程
+		std::thread regist(register_self, std::move(register_self_conn));
 		regist.detach();
 	} catch (const std::exception & e) {
 		LOG_FATAL(0, 0, log_fp, "Register self service process fork failed.");
-		exit(-3);
+		exit(0);
 	}
 
 	signal(SIGTERM, regist_SIGTERM_handler);
@@ -333,7 +311,7 @@ int main(int argc, const char * argv[]) try
 		}
 
 		try {
-			Process judge_process(false, [](int job_type, int job_id) {
+			process judge_process([](int job_type, int job_id) {
 				RedisContext child_conn(redis_hostname.c_str(), redis_port, 1500_ms);
 				if (!child_conn) {
 					LOG_FATAL(job_type, job_id, log_fp, "Child context connect failed.");
@@ -366,6 +344,7 @@ int main(int argc, const char * argv[]) try
 					return;
 				}
 			}, job_type, job_id);
+			judge_process.detach();
 			LOG_DEBUG(job_type, job_id, log_fp, "Judge process fork success. Child_pid: ", judge_process.get_child_id());
 			++cur_running;
 		} catch (const std::exception & e) {

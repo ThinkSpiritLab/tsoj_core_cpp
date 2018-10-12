@@ -1,5 +1,0 @@
-<map id="ExerciseUpdateJob::update_user_problem" name="ExerciseUpdateJob::update_user_problem">
-<area shape="rect" id="node1" title="更新此用户此题的完成状态 &#160;用户所见到的每题 AC, TO_DO, ATTEMPT 三种状态即为user problem 表所提供的服务" alt="" coords="5,13,152,54"/>
-<area shape="rect" id="node2" href="$class_exercise_update_job_base.html#a09d6e54f3da0de277e9a8d6d0abadf69" title="更新此用户此题的完成状态 &#160;用户所见到的每题 AC, TO_DO, ATTEMPT 三种状态即为user problem 表所提供的服务" alt="" coords="200,13,367,54"/>
-<area shape="rect" id="node3" href="$class_exercise_update_job_base.html#a9e7d46297cef3bbf492f108479d0079a" title="取得此用户此题在此次提交以前 AC, TO_DO 或 ATTEMPT 的状态" alt="" coords="415,5,604,61"/>
-</map>
