@@ -59,7 +59,7 @@ void ExerciseUpdateJobBase::update_compile_info(const char * compile_info)
 void ExerciseUpdateJobBase::update_problem_submit_and_accept_num_in_exercise()
 {
 	mysqlpp::Query query = mysqlConn->query(
-			"select u_id, s_result from solution where p_id = %0"
+			"select u_id, s_result from solution where p_id = %0 order by s_id"
 			// 这里无需添加 c_id is null 的条件, 因为用户在课程中的一条提交也是被当作一条在练习中的提交处理的
 	);
 	query.parse();
@@ -104,7 +104,7 @@ void ExerciseUpdateJobBase::update_problem_submit_and_accept_num_in_exercise()
 void ExerciseUpdateJobBase::update_user_submit_and_accept_num_in_exercise()
 {
 	mysqlpp::Query query = mysqlConn->query(
-			"select p_id, s_result from solution where u_id = %0"
+			"select p_id, s_result from solution where u_id = %0 order by s_id"
 			// 这里无需添加 c_id is null 的条件, 因为用户在课程中的一条提交也是被当作一条在练习中的提交处理的
 	);
 	query.parse();

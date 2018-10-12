@@ -40,7 +40,7 @@ void CourseUpdateJob::update_solution()
 void CourseUpdateJob::update_problem_submit_and_accept_num_in_this_course()
 {
 	mysqlpp::Query query = mysqlConn->query(
-			"select u_id, s_result from solution where p_id = %0 and c_id = %1"
+			"select u_id, s_result from solution where p_id = %0 and c_id = %1 order by s_id"
 	);
 	query.parse();
 
@@ -84,7 +84,7 @@ void CourseUpdateJob::update_problem_submit_and_accept_num_in_this_course()
 void CourseUpdateJob::update_user_submit_and_accept_num_in_this_course()
 {
 	mysqlpp::Query query = mysqlConn->query(
-			"select p_id, s_result from solution where u_id = %0 and c_id = %1"
+			"select p_id, s_result from solution where u_id = %0 and c_id = %1 order by s_id"
 	);
 	query.parse();
 
@@ -113,7 +113,7 @@ void CourseUpdateJob::update_user_submit_and_accept_num_in_this_course()
 	}
 
 	mysqlpp::Query update = mysqlConn->query(
-			"update user set c_submit = %0, c_accept = %1 where u_id = %2 and c_id = %3"
+			"update course_user set c_submit = %0, c_accept = %1 where u_id = %2 and c_id = %3"
 	);
 	update.parse();
 
