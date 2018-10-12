@@ -112,7 +112,7 @@ void ExerciseUpdateJobBase::update_user_submit_and_accept_num_in_exercise()
 	std::set<int> accepted_problems;
 	int submit_num = 0;
 	{
-		mysqlpp::StoreQueryResult res = query.store(this->pid);
+		mysqlpp::StoreQueryResult res = query.store(this->uid);
 
 		for (const auto & row : res) {
 			int p_id_in_this_row = row["p_id"];
