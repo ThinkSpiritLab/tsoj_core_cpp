@@ -102,6 +102,11 @@ class JudgeJob: public JobBase
 		 */		
 		void commitJudgeResultToRedis(const SolutionDetails & result);
 
+		/**
+		 * @brief 将查重结果提交到 redis 数据库。
+		 */	
+		void commit_simtxt_to_redis();
+
 	public:
 		/**
 		 * @brief 将评测失败的评测详情插入数据库、将评测失败的 job_item 插入评测失败队列

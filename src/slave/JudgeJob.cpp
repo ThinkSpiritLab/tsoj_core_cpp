@@ -70,6 +70,7 @@ void JudgeJob::handle()
 	if (this->similarity_threshold != 0 && !this->have_accepted &&
 			judgeResult.similarity_percentage > this->similarity_threshold) {
 		judgeResult.judge_result = UnitedJudgeResult::SIMILAR_CODE;
+		this->commit_simtxt_to_redis();
 	} else {
 
 		// compile
@@ -252,6 +253,56 @@ namespace
 void JudgeJob::commitJudgeResultToRedis(const SolutionDetails & result)
 {
 	staticCommitJudgeResultToRedis(jobType, sid, redisConn, result);
+}
+
+void JudgeJob::commit_simtxt_to_redis() try{
+	// open sim.txt
+	std::ifstream fp("sim.txt", std::ios::in);
+	if (!fp) {
+		throw JobHandleException("sim.txt open failed");
+	}
+
+	// get length of file:
+	fin.seekg(0, fin.end);
+	int length = fin.tellg();
+	fin.seekg(0, fin.beg);
+
+	/* 
+	* read
+	* Tips: redis 的 string 类型的值最大能存储 512 MB， 显然如果不加以限制，一下占用这么大的资源,
+	* 是不合理的。考虑到以后可能需要 update 到 mysql， 此处与 mysql text 的最大长度保持一致。
+	* 中间有些与 set_compile_info() 相同的部分，可以考虑再抽一个函数出来?
+	*/
+	constexpr int MAX_SIZE = 65535;
+	char buffer[MAX_SIZE + 10];
+	fin.read(buffer, MAX_SIZE);
+
+	if (fin.bad()) {
+		LOG_FATAL(jobType, sid, log_fp, "Read sim.txt error, only ", fin.gcount(), " could be read");
+		LOG_FATAL(jobType, sid, log_fp, "The read buffer: ", buffer);
+		throw JobHandleException("sim.txt read failed");
+	}
+
+	if (MAX_SIZE >= 3 && length > MAX_SIZE) {
+		char * end = buffer + MAX_SIZE - 3;
+		for (int i = 0; i < 3; ++i) {
+			*end = '.';
+			++end;
+		}
+	}
+
+	// commit
+	try {
+		static boost::format simtxt_name_tmpl("job_info:%d:%d");
+		Operation opt(redisConn);
+		opt.hset((simtxt_name_tmpl % jobType % sid).str(), "simtxt"_cptr, buffer);
+	} catch (const std::exception & e) {
+		EXCEPT_FATAL(jobType, sid, log_fp, "Set sim.txt failed.", e);
+		throw;
+	}
+} catch (const std::exception & e) {
+	EXCEPT_FATAL(jobType, sid, log_fp, "An error occurred while commit sim.txt to redis.", e);
+	// 查重失败并非致命错误， 若是查重出差，不应当影响正常判题结果。
 }
 
 bool JudgeJob::set_compile_info() noexcept
