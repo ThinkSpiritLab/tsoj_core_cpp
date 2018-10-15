@@ -293,9 +293,9 @@ void JudgeJob::commit_simtxt_to_redis() try{
 
 	// commit
 	try {
-		static boost::format simtxt_name_tmpl("job_info:%d:%d");
+		static boost::format simtxt_name_tmpl("simtxt_data:%d:%d");
 		Operation opt(redisConn);
-		opt.hset((simtxt_name_tmpl % jobType % sid).str(), "simtxt"_cptr, buffer);
+		opt.set((simtxt_name_tmpl % jobType % sid).str(), buffer);
 	} catch (const std::exception & e) {
 		EXCEPT_FATAL(jobType, sid, log_fp, "Set sim.txt failed.", e);
 		throw;
