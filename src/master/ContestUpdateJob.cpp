@@ -9,6 +9,8 @@
 #include "boost_format_suffix.hpp"
 #include "logger.hpp"
 
+#include <kerbal/redis/redis_data_struct/list.hpp>
+
 extern std::ostream log_fp;
 
 
@@ -209,6 +211,14 @@ void ContestUpdateJob::update_user_problem_status()
 		}
 		case user_problem_status::ACCEPTED:
 			return;
+	}
+
+	try {
+		kerbal::redis::List<int> update_contest_scoreboard_queue(this->redisConn, "update_contest_scoreboard_queue");
+		update_contest_scoreboard_queue.push_back(jobType);
+	} catch (const std::exception & e) {
+		EXCEPT_FATAL(jobType, sid, log_fp, "Insert update scoreboard job failed!", e);
+		return;
 	}
 	return;
 }

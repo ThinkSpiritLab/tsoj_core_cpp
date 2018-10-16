@@ -226,14 +226,23 @@ void load_config()
  */
 int main(int argc, const char * argv[]) try
 {
-	using namespace kerbal::utility::costream;
-	const auto & ccerr = costream<cerr>(LIGHT_RED);
 	using namespace kerbal::compatibility::chrono_suffix;
 
 	if (argc > 1 && argv[1] == std::string("--version")) {
 		cout << "version: " __DATE__ " " __TIME__ << endl;
 		exit(0);
 	}
+
+	using namespace kerbal::utility::costream;
+	const auto & ccerr = costream<cerr>(LIGHT_RED);
+
+	// 运行必须具有 root 权限
+	uid_t uid = getuid();
+	if (uid != 0) {
+		ccerr << "root required!" << endl;
+		exit(-1);
+	}
+
 	cout << std::boolalpha;
 	load_config();
 

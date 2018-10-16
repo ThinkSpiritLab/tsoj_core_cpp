@@ -257,8 +257,8 @@ void JudgeJob::commitJudgeResultToRedis(const SolutionDetails & result)
 
 void JudgeJob::commit_simtxt_to_redis() try{
 	// open sim.txt
-	std::ifstream fp("sim.txt", std::ios::in);
-	if (!fp) {
+	std::ifstream fin("sim.txt", std::ios::in);
+	if (!fin) {
 		throw JobHandleException("sim.txt open failed");
 	}
 

@@ -24,33 +24,24 @@
 class JobBase
 {
 	public:
-		/// Job 类型，如：竞赛、课程等
-		int jobType;
+		int jobType; ///< Job 类型，如：竞赛、课程等
 
-		/// solution id
-		int sid;
+		int sid; ///< solution id
 
-		/// redis 连接
-		kerbal::redis::RedisContext redisConn;
+		kerbal::redis::RedisContext redisConn; ///< redis 连接
 
 	public:
-		/// problem id
-		int pid;
+		int pid; ///< problem id
 
-		/// 语言
-		Language lang;
+		Language lang; ///< 语言
 
-		/// 测试用例数量
-		int cases; 
+		int cases; ///< 测试用例数量
 
-		/// 时间限制
-		std::chrono::milliseconds timeLimit;
+		std::chrono::milliseconds timeLimit; ///< 时间限制
 
-		/// 空间限制
-		kerbal::utility::MB memoryLimit;
+		kerbal::utility::MB memoryLimit; ///< 空间限制
 
-		/// 重复率限制
-		int similarity_threshold;
+		int similarity_threshold; ///< 重复率限制
 
 		/**
 		 * @brief 将待处理 Job 信息分解，提取出 job_type 与 job_id

@@ -18,6 +18,8 @@
 #include <kerbal/system/system.hpp>
 #include <kerbal/compatibility/chrono_suffix.hpp>
 
+#include "UpdateContestScoreboard.hpp"
+
 using namespace kerbal::compatibility::chrono_suffix;
 using namespace std;
 
@@ -28,50 +30,35 @@ constexpr int REDIS_SOLUTION_MAX_NUM = 600;
 
 namespace
 {
-	/** 本机主机名 */
-	std::string host_name;
+	std::string host_name; ///< 本机主机名
 
-	/** 本机 IP */
-	std::string ip;
+	std::string ip; ///< 本机 IP
 
-	/** 本机当前用户名 */
-	std::string user_name;
+	std::string user_name; ///< 本机当前用户名
 
-	/** 本机监听进程号 */
-	int listening_pid;
+	int listening_pid; ///< 本机监听进程号
 
-	/** 评测服务器id，定义为 host_name:ip */
-	std::string judge_server_id;
+	std::string judge_server_id; ///< 评测服务器id，定义为 host_name:ip
 
-	/** 主工作循环 */
-	bool loop = true;
+	bool loop = true; ///< 主工作循环
 
-	/** updater 的临时工作路径 */
-	std::string updater_init_dir;
+	std::string updater_init_dir; ///< updater 的临时工作路径
 
-	/** 日志文件名 */
-	std::string log_file_name;
+	std::string log_file_name; ///< 日志文件名
 
-	/** lock_file,用于保证一次只能有一个 updater 守护进程在运行 */
-	std::string updater_lock_file;
+	std::string updater_lock_file; ///< lock_file,用于保证一次只能有一个 updater 守护进程在运行
 
-	/** mysql 主机名 */
-	std::string mysql_hostname;
+	std::string mysql_hostname; ///< mysql 主机名
 
-	/** mysql 用户名 */
-	std::string mysql_username;
+	std::string mysql_username; ///< mysql 用户名
 
-	/** mysql 密码 */
-	std::string mysql_passwd;
+	std::string mysql_passwd; ///< mysql 密码
 
-	/** mysql 端口号 */
-	std::string mysql_database;
+	std::string mysql_database; ///< mysql 端口号
 
-	/** redis 端口号 */
-	int redis_port;
+	int redis_port; ///< redis 端口号
 
-	/** redis 主机名 */
-	std::string redis_hostname;
+	std::string redis_hostname; ///< redis 主机名
 }
 
 
@@ -109,7 +96,6 @@ void register_self() noexcept try
 			static kerbal::redis::Set<std::string> s(regist_self_conn, "online_judger");
 			s.insert(judge_server_id);
 
-			LOG_DEBUG(0, 0, log_fp, "Register self success");
 			std::this_thread::sleep_for(10_s);
 		} catch (const kerbal::redis::RedisException & e) {
 			EXCEPT_FATAL(0, 0, log_fp, "Register self failed.", e);
@@ -210,6 +196,45 @@ void load_config()
 	LOG_INFO(0, 0, log_fp, "listening pid: ", listening_pid);
 }
 
+void update_contest_scoreboard_handler()
+{
+	// 本次更新任务的 redis 连接
+	kerbal::redis::RedisContext redisConn(redis_hostname.c_str(), redis_port, 100_ms);
+	if (!redisConn) {
+		LOG_FATAL(0, 0, log_fp, "Redis connection connect failed!");
+		loop = false;
+		exit(0);
+	}
+
+	kerbal::redis::List<int> update_queue(redisConn, "update_contest_scoreboard_queue");
+
+	while(loop) {
+		update_queue.block_pop_front(0_s);
+
+		auto start = std::chrono::steady_clock::now();
+		int ct_id = 0;
+
+		try {
+			ct_id = update_queue.block_pop_front(0_s);
+			std::unique_ptr <mysqlpp::Connection> mysqlConn(new mysqlpp::Connection(false));
+			mysqlConn->set_option(new mysqlpp::SetCharsetNameOption("utf8"));
+			if (!mysqlConn->connect(mysql_database.c_str(), mysql_hostname.c_str(), mysql_username.c_str(), mysql_passwd.c_str())) {
+				LOG_FATAL(ct_id, 0, log_fp, "Mysql connection connect failed!");
+				continue;
+			}
+			update_contest_scoreboard(ct_id, redisConn, std::move(mysqlConn));
+		} catch (const std::exception & e) {
+			EXCEPT_FATAL(ct_id, 0, log_fp, "Fail to fetch job.", e);
+			continue;
+		} catch (...) {
+			LOG_FATAL(ct_id, 0, log_fp, "Fail to fetch job. Error info: ", "unknown exception");
+			continue;
+		}
+		auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start);
+		LOG_INFO(0, 0,log_fp, "Update contest scoreboard success, time consume: ", ms.count(), " ms, ct_id: ", ct_id);
+	}
+}
+
 /**
  * @brief master 端主程序循环
  * 加载配置信息；连接数据库；取待评测任务信息，交由子进程并评测；创建并分离发送心跳线程 // to be done
@@ -217,15 +242,19 @@ void load_config()
  */
 int main() try
 {
-	// master 端运行必须具有 root 权限
+	using namespace kerbal::utility::costream;
+	const auto & ccerr = costream<cerr>(LIGHT_RED);
+
+	// 运行必须具有 root 权限
 	uid_t uid = getuid();
 	if (uid != 0) {
-		cerr << "root required!" << endl;
+		ccerr << "root required!" << endl;
 		exit(-1);
 	}
-	LOG_INFO(0, 0, log_fp, "Loading finished...");
+
+	LOG_INFO(0, 0, log_fp, "Loading configuration...");
 	load_config();
-	LOG_INFO(0, 0, log_fp, "Configure load finished!");
+	LOG_INFO(0, 0, log_fp, "Configuration load finished!");
 
 	// 连接 mysql
 	LOG_INFO(0, 0, log_fp, "Connecting main MYSQL connection...");
@@ -255,7 +284,7 @@ int main() try
 	#endif //DEBUG
 
 	try {
-		// 创建并分离发送心跳线程
+		// 创建并分离发送更新竞赛榜单线程
 		std::thread regist(register_self);
 		regist.detach();
 	} catch (const std::exception & e) {
@@ -264,6 +293,14 @@ int main() try
 	}
 
 	LOG_INFO(0, 0, log_fp, "updater starting ...");
+
+	try {
+		std::thread update_contest_scoreboard_thread(update_contest_scoreboard_handler);
+		update_contest_scoreboard_thread.detach();
+	} catch(const std::exception & e) {
+		EXCEPT_FATAL(0, 0, log_fp, "Register self service process fork failed.", e);
+		exit(-3);
+	}
 
 	signal(SIGTERM, regist_SIGTERM_handler);
 

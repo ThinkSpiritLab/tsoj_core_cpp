@@ -24,6 +24,7 @@ SRCS += \
 ./ExerciseUpdateJob.cpp \
 ./ExerciseUpdateJobBase.cpp \
 ./master.cpp \
+./UpdateContestScoreboard.cpp \
 ./UpdateJobBase.cpp
 
 
@@ -33,6 +34,7 @@ $(obj_folder)/CourseUpdateJob.o \
 $(obj_folder)/ExerciseUpdateJob.o \
 $(obj_folder)/ExerciseUpdateJobBase.o \
 $(obj_folder)/master.o \
+$(obj_folder)/UpdateContestScoreboard.o \
 $(obj_folder)/UpdateJobBase.o
 
 DEPS += \
@@ -41,6 +43,7 @@ $(obj_folder)/CourseUpdateJob.d \
 $(obj_folder)/ExerciseUpdateJob.d \
 $(obj_folder)/ExerciseUpdateJobBase.d \
 $(obj_folder)/master.d \
+$(obj_folder)/UpdateContestScoreboard.d \
 $(obj_folder)/UpdateJobBase.d
 
 include_path += \
