@@ -10,14 +10,16 @@
 #include <algorithm>
 #include <chrono>
 
-using namespace std;
-
 #include <boost/format.hpp>
 using boost::format;
 
 #include <kerbal/redis/operation.hpp>
 
 #include "UpdateContestScoreboard.hpp"
+#include "united_resource.hpp"
+#include "logger.hpp"
+
+extern std::ostream log_fp;
 
 class contest
 {
@@ -29,7 +31,9 @@ class contest
 
 				enum
 				{
-					solved, tried_incorrect_or_never_tried, tried_pending
+					solved, ///< 已 A
+					tried_incorrect_or_never_tried, ///< 封榜前没 A
+					tried_pending ///< 封榜前没 A 且在封榜后又尝试了
 				} status;
 
 				user_problem() :
@@ -42,61 +46,81 @@ class contest
 		class contest_user
 		{
 			public:
-				int u_id;
-				std::string u_name;
-				std::string u_realname;
-				mutable int u_accept;
-				mutable std::chrono::seconds total_time;
+				const int u_id;
+				const std::string u_name;
+				const std::string u_realname;
+
+			private:
 				mutable std::vector<user_problem> list;
+				friend class contest;
 
+			public:
 				contest_user(int u_id, const std::string & u_name, const std::string & u_realname, int problem_num) :
-						u_id(u_id), u_name(u_name), u_realname(u_realname), u_accept(0), total_time(0)
+						u_id(u_id), u_name(u_name), u_realname(u_realname), list(problem_num)
 				{
-					list.resize(problem_num);
 				}
 
-				int get_u_id() const
+				int get_solved_num() const
 				{
-					return this->u_id;
+					int solved = 0;
+					for (const auto & ele : list) {
+						if (ele.status == user_problem::solved) {
+							++solved;
+						}
+					}
+					return solved;
 				}
 
-				int get_u_accept() const
+				std::chrono::seconds get_total_time(std::chrono::seconds time_plus) const
 				{
-					return this->u_accept;
+					std::chrono::seconds total_time(0);
+					for (const auto & ele : list) {
+						if (ele.status == user_problem::solved) {
+							total_time += time_plus * (ele.tried_times - 1);
+							total_time += ele.first_ac_time_since_ct_start;
+						}
+					}
+					return total_time;
 				}
 
-				std::chrono::seconds get_total_time() const
+				void add_solution(char logic_pid, UnitedJudgeResult result, std::chrono::seconds posttime_since_ct_start,
+						bool is_submit_during_scoreboard_closed) const
 				{
-					return this->total_time;
-				}
-
-				void add_solution(unsigned int logic_pid, int result, std::chrono::seconds posttime_since_ct_start, bool is_submit_during_scoreboard_closed, std::chrono::seconds time_plus) const
-				{
-					if (logic_pid >= list.size()) {
+					unsigned int this_logic_pid = logic_pid - 'A';
+					if (this_logic_pid >= list.size()) {
 						return;
 					}
-					user_problem & user_problem = list[logic_pid];
+					user_problem & user_problem = list[this_logic_pid];
 
 					switch (user_problem.status) {
-						case user_problem::solved:
+						case user_problem::solved: // 之前已 A 则忽略
 							break;
-						case user_problem::tried_incorrect_or_never_tried: {
-							if (is_submit_during_scoreboard_closed == true) {
+						case user_problem::tried_incorrect_or_never_tried: { // 封榜前没 A
+							if (is_submit_during_scoreboard_closed == true) { // 如果是在封榜时间段提交的, 无论对不对, 都做模糊处理, 即通过数始终 + 1
 								user_problem.status = user_problem::tried_pending;
 								++user_problem.tried_times;
 							} else {
-								if (result == 0) {
-									user_problem.status = user_problem::solved;
-									++this->u_accept;
-									this->total_time += (user_problem.tried_times) * time_plus + posttime_since_ct_start;
-									user_problem.first_ac_time_since_ct_start = posttime_since_ct_start;
+								switch (result) {
+									case UnitedJudgeResult::SYSTEM_ERROR: { // *** 忽略掉 system error 的情况
+										break;
+									}
+									case UnitedJudgeResult::ACCEPTED: {
+										user_problem.status = user_problem::solved;
+										user_problem.first_ac_time_since_ct_start = posttime_since_ct_start;
+										++user_problem.tried_times;
+										break;
+									}
+									default:
+										++user_problem.tried_times;
+										break;
 								}
-								++user_problem.tried_times;
 							}
 							break;
 						}
 						case user_problem::tried_pending: {
-							++user_problem.tried_times;
+							if (result != UnitedJudgeResult::SYSTEM_ERROR) { // *** 忽略掉 system error 的情况
+								++user_problem.tried_times;
+							}
 							break;
 						}
 					}
@@ -112,83 +136,39 @@ class contest
 
 				struct sort_by_acm_rank_rules
 				{
+					private:
+						std::chrono::seconds time_plus;
+
+					public:
+						sort_by_acm_rank_rules(std::chrono::seconds time_plus) :
+								time_plus(time_plus)
+						{
+						}
+
 						bool operator()(const contest_user & a, const contest_user & b) const
 						{
-							int a_ac_num = a.get_u_accept();
-							int b_ac_num = b.get_u_accept();
+							int a_ac_num = a.get_solved_num();
+							int b_ac_num = b.get_solved_num();
 							if (a_ac_num == b_ac_num) {
-								return a.get_total_time() < b.get_total_time();
+//								if(a_ac_num == 0) {
+//									return a.
+//								}
+								return a.get_total_time(time_plus) < b.get_total_time(time_plus);
 							}
 							return a_ac_num > b_ac_num;
 						}
 				};
 
-				static std::string format_seconds(std::chrono::seconds second)
-				{
-					int seconds = second.count();
-					int minutes = seconds / 60;
-					seconds %= 60;
-					int hours = minutes / 60;
-					minutes %= 60;
-
-					auto to_2_di_string = [](int x) {
-						if(x < 10) {
-							std::string res = "00";
-							res[1] = char(x + '0');
-							return res;
-						} else {
-							return std::to_string(x);
-						}
-					};
-
-					return to_2_di_string(hours) + ':' + to_2_di_string(minutes) + ':' + to_2_di_string(seconds);
-				}
-
-				std::string get_row(int rank) const
-				{
-					std::string list = "";
-					for (const user_problem & user_problem : this->list) {
-						switch (user_problem.status) {
-							case user_problem::solved: {
-								boost::format templ_if_solved(R"------([0,%d,%d])------");
-								templ_if_solved % user_problem.tried_times % user_problem.first_ac_time_since_ct_start.count();
-								list += templ_if_solved.str();
-								list += ',';
-								break;
-							}
-							case user_problem::tried_incorrect_or_never_tried: {
-								boost::format templ_if_incorrect(R"------([1,%d])------");
-								templ_if_incorrect % user_problem.tried_times;
-								list += templ_if_incorrect.str();
-								list += ',';
-								break;
-							}
-							case user_problem::tried_pending: {
-								boost::format templ_if_pending(R"------([2,%d])------");
-								templ_if_pending % user_problem.tried_times;
-								list += templ_if_pending.str();
-								list += ',';
-								break;
-							}
-						}
-					}
-					list.pop_back();
-					boost::format row_templ(
-							R"------([%d,%d,"%s","%s",%d,%d,[%s]])------"
-					);
-					row_templ % rank % this->u_id % this->u_name % this->u_realname % this->get_u_accept() % this->get_total_time().count() % list;
-
-					return row_templ.str();
-				}
 		};
 
 
-		int ct_id;
+		const int ct_id;
 		std::unique_ptr<mysqlpp::Connection> mysqlConn;
 		int problem_num;
 		std::chrono::system_clock::time_point ct_starttime;
 		std::chrono::system_clock::time_point ct_endtime;
 		std::chrono::seconds ct_timeplus;
+		std::chrono::seconds ct_lockrankbefore;
 		std::set<contest_user, contest_user::sort_by_u_id> user_set;
 
 		static std::chrono::system_clock::time_point mysqlpp_datetime_to_std_timepoint(const mysqlpp::DateTime & src)
@@ -196,13 +176,13 @@ class contest
 			return std::chrono::system_clock::from_time_t((time_t)(src));
 		}
 
-		int get_problem_num(int cid)
+		int get_problem_num(int ct_id)
 		{
 			mysqlpp::Query query_solution = mysqlConn->query(
 					"select count(p_id) "
 					"from contest_problem where ct_id = %0");
 			query_solution.parse();
-			mysqlpp::StoreQueryResult res = query_solution.store(cid);
+			mysqlpp::StoreQueryResult res = query_solution.store(ct_id);
 
 			return (int) (res[0][0]);
 		}
@@ -240,7 +220,7 @@ class contest
 				if (('A' <= p_logic && p_logic <= 'Z') == false) {
 					continue;
 				}
-				int s_result = row["s_result"];
+				UnitedJudgeResult s_result = (UnitedJudgeResult)(int(row["s_result"]));
 				auto s_posttime = mysqlpp_datetime_to_std_timepoint(row["s_posttime"]);
 
 				auto duration_since_ct_start = duration_cast<seconds>(s_posttime - this->ct_starttime);
@@ -249,31 +229,41 @@ class contest
 				if (now > this->ct_endtime) {
 					is_submit_during_scoreboard_closed = false;
 				} else {
-					auto closed_scoreboard_time = this->ct_endtime - hours(1);
+					auto closed_scoreboard_time = this->ct_endtime - this->ct_lockrankbefore;
 					is_submit_during_scoreboard_closed = closed_scoreboard_time < s_posttime && s_posttime < this->ct_endtime;
 				}
 
 				auto it = std::lower_bound(user_set.begin(), user_set.end(), u_id, [](const contest_user & user, int u_id) {
-					return user.get_u_id() < u_id;
+					return user.u_id < u_id;
 				});
-				it->add_solution((unsigned int)(p_logic - 'A'), s_result, duration_since_ct_start, is_submit_during_scoreboard_closed, this->ct_timeplus);
+				if(it != user_set.end()) {
+					it->add_solution(p_logic, s_result, duration_since_ct_start, is_submit_during_scoreboard_closed);
+				}
 			}
 		}
 
 	public:
-		contest(int ct_id, std::unique_ptr<mysqlpp::Connection> mysqlConn) : ct_id(ct_id), mysqlConn(std::move(mysqlConn)), problem_num(get_problem_num(ct_id))
+		contest(int ct_id, std::unique_ptr<mysqlpp::Connection> && mysqlConn) :
+				ct_id(ct_id), mysqlConn(std::move(mysqlConn)), problem_num(get_problem_num(ct_id))
 		{
 			make_user_set(this->problem_num);
 			mysqlpp::Query query_contest_info = this->mysqlConn->query(
-					"select ct_starttime, ct_endtime, ct_timeplus "
+					"select ct_starttime, ct_endtime, ct_timeplus, ct_lockrankbefore "
 					"from contest "
 					"where ct_id = %0 "
 			);
 			query_contest_info.parse();
 			mysqlpp::StoreQueryResult res = query_contest_info.store(this->ct_id);
-			if(query_contest_info.errnum() != 0) {
-				cerr << query_contest_info.error() << endl;
-				throw std::exception();
+			if (query_contest_info.errnum() != 0) {
+				std::runtime_error e(query_contest_info.error());
+				EXCEPT_FATAL(ct_id, 0, log_fp, "Error occurred while getting contest details.", e);
+				throw e;
+			}
+			if (res.size() == 0) {
+				std::runtime_error e("A contest id doesn't exist");
+				EXCEPT_FATAL(ct_id, 0, log_fp, "Error occurred while getting contest details.", e);
+				throw e;
+
 			}
 			this->ct_starttime = mysqlpp_datetime_to_std_timepoint(res[0]["ct_starttime"]);
 			this->ct_endtime = mysqlpp_datetime_to_std_timepoint(res[0]["ct_endtime"]);
@@ -282,16 +272,65 @@ class contest
 			} else {
 				this->ct_timeplus = std::chrono::seconds((int) (res[0]["ct_timeplus"]));
 			}
+			if (res[0]["ct_lockrankbefore"] == mysqlpp::null) {
+				this->ct_lockrankbefore = std::chrono::seconds(3600);
+			} else {
+				this->ct_lockrankbefore = std::chrono::seconds((int) (res[0]["ct_lockrankbefore"]));
+			}
 			make_solution();
 		}
 
+	private:
+		static std::string get_users_scoreboard_details(const contest_user & user, int rank, std::chrono::seconds time_plus)
+		{
+			if (user.list.size() == 0) {
+				return "[]";
+			}
+			std::string list = "";
+			for (const user_problem & user_problem : user.list) {
+				switch (user_problem.status) {
+					case user_problem::solved: {
+						boost::format templ_if_solved(R"------([0,%d,%d])------");
+						templ_if_solved % user_problem.tried_times % user_problem.first_ac_time_since_ct_start.count();
+						list += templ_if_solved.str();
+						list += ',';
+						break;
+					}
+					case user_problem::tried_incorrect_or_never_tried: {
+						boost::format templ_if_incorrect(R"------([1,%d])------");
+						templ_if_incorrect % user_problem.tried_times;
+						list += templ_if_incorrect.str();
+						list += ',';
+						break;
+					}
+					case user_problem::tried_pending: {
+						boost::format templ_if_pending(R"------([2,%d])------");
+						templ_if_pending % user_problem.tried_times;
+						list += templ_if_pending.str();
+						list += ',';
+						break;
+					}
+				}
+			}
+			list.pop_back(); // 去掉末尾的逗号
+			boost::format row_templ(R"------([%d,%d,"%s","%s",%d,%d,[%s]])------");
+			row_templ % rank % user.u_id % user.u_name % user.u_realname % user.get_solved_num() % user.get_total_time(time_plus).count() % list;
+
+			return row_templ.str();
+		}
+
+	public:
 		std::string get_json_score_board() const
 		{
-			std::multiset<contest_user, contest_user::sort_by_acm_rank_rules> user_rank(user_set.cbegin(), user_set.cend());
+			if (user_set.size() == 0) {
+				return "[]";
+			}
+			contest_user::sort_by_acm_rank_rules rules(this->ct_timeplus);
+			std::multiset<contest_user, contest_user::sort_by_acm_rank_rules> user_rank(user_set.cbegin(), user_set.cend(), rules);
 			std::string ranklist = "[";
 			int i = 1;
 			for (const auto & user : user_rank) {
-				ranklist += user.get_row(i);
+				ranklist += get_users_scoreboard_details(user, i, this->ct_timeplus);
 				ranklist += ',';
 				++i;
 			}

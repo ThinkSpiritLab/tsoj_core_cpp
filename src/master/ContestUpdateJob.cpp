@@ -210,7 +210,7 @@ void ContestUpdateJob::update_user_problem_status()
 			break;
 		}
 		case user_problem_status::ACCEPTED:
-			return;
+			break;
 	}
 
 	try {

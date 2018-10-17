@@ -208,30 +208,37 @@ void update_contest_scoreboard_handler()
 
 	kerbal::redis::List<int> update_queue(redisConn, "update_contest_scoreboard_queue");
 
-	while(loop) {
-		update_queue.block_pop_front(0_s);
-
-		auto start = std::chrono::steady_clock::now();
+	while (loop) {
 		int ct_id = 0;
 
 		try {
 			ct_id = update_queue.block_pop_front(0_s);
-			std::unique_ptr <mysqlpp::Connection> mysqlConn(new mysqlpp::Connection(false));
+		} catch (const std::exception & e) {
+			EXCEPT_FATAL(ct_id, 0, log_fp, "Fail to fetch job.", e);
+			continue;
+		} catch (...) {
+			UNKNOWN_EXCEPT_FATAL(ct_id, 0, log_fp, "Fail to fetch job.");
+			continue;
+		}
+
+		try {
+			auto start = std::chrono::steady_clock::now();
+			std::unique_ptr<mysqlpp::Connection> mysqlConn(new mysqlpp::Connection(false));
 			mysqlConn->set_option(new mysqlpp::SetCharsetNameOption("utf8"));
 			if (!mysqlConn->connect(mysql_database.c_str(), mysql_hostname.c_str(), mysql_username.c_str(), mysql_passwd.c_str())) {
 				LOG_FATAL(ct_id, 0, log_fp, "Mysql connection connect failed!");
 				continue;
 			}
 			update_contest_scoreboard(ct_id, redisConn, std::move(mysqlConn));
+			auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start);
+			LOG_INFO(0, 0, log_fp, "Update contest scoreboard success, time consume: ", ms.count(), " ms, ct_id: ", ct_id);
 		} catch (const std::exception & e) {
-			EXCEPT_FATAL(ct_id, 0, log_fp, "Fail to fetch job.", e);
+			EXCEPT_FATAL(ct_id, 0, log_fp, "Error occurred while updating scoreboard.", e);
 			continue;
 		} catch (...) {
-			LOG_FATAL(ct_id, 0, log_fp, "Fail to fetch job. Error info: ", "unknown exception");
+			UNKNOWN_EXCEPT_FATAL(ct_id, 0, log_fp, "Error occurred while updating scoreboard.");
 			continue;
 		}
-		auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start);
-		LOG_INFO(0, 0,log_fp, "Update contest scoreboard success, time consume: ", ms.count(), " ms, ct_id: ", ct_id);
 	}
 }
 
