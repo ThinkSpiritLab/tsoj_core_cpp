@@ -160,15 +160,15 @@ void ContestUpdateJob::update_user_problem_status()
 	// get_contest_user_problem_status 有可能出错而抛出异常，因此用 try-catch 语句块。这导致了 user_problem_status
 	// 需定义在 try-catch 语句块之外，否则因为可见性的缘故，本函数的后续部分无法访问到它。其余部分同理。
 	// user_problem_status 为不考虑本次 solution 的之前状态。
-	user_problem_status user_problem_status = user_problem_status::TODO;
+	user_problem_status this_user_problem_status = user_problem_status::TODO;
 	try {
-		user_problem_status = this->get_contest_user_problem_status();
+		this_user_problem_status = this->get_contest_user_problem_status();
 	} catch (const std::exception & e) {
 		EXCEPT_FATAL(jobType, sid, log_fp, "Get user problem status failed!", e);
 		throw;
 	}
 
-	switch (user_problem_status) {
+	switch (this_user_problem_status) {
 		case user_problem_status::TODO: {
 			int error_count = 0;
 			if (is_ac == false) {
