@@ -79,14 +79,14 @@ void JudgeJob::handle()
 		// compile
 		this->commitJudgeStatusToRedis(JudgeStatus::COMPILING);
 		LOG_DEBUG(jobType, sid, log_fp, "compile start");
-		judgeResult = static_cast<SolutionDetails&>(this->compile());
+		judgeResult = static_cast<SolutionDetails>(this->compile());
 		LOG_DEBUG(jobType, sid, log_fp, "compile finished. compile result: ", judgeResult);
 
 		switch (judgeResult.judge_result) {
 			case UnitedJudgeResult::ACCEPTED: {
 				LOG_DEBUG(jobType, sid, log_fp, "compile success");
 				// 编译成功则 run
-				judgeResult = static_cast<SolutionDetails&>(this->running());
+				judgeResult = static_cast<SolutionDetails>(this->running());
 				LOG_DEBUG(jobType, sid, log_fp, "judge finished");
 
 				// 如果用户 AC 且要求留存代码, 则将代码保存至留存目录

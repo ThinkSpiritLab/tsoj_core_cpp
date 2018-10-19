@@ -76,67 +76,72 @@ void multi_args_write(std::ostream & log_fp, Tp && arg0, Up&& ...args)
 	multi_args_write(log_fp, args...);
 }
 
-namespace log
+namespace ts_judger
 {
-	static boost::format templ("[%s] %s job:%d:%d [%s:%d]");
-	/*           datetime logLevelStr type id srcFileName line */
-
-	template <typename Type>
-	Type & cptr_cast(Type & src) noexcept
+	namespace log
 	{
-		return src;
-	}
+		static boost::format templ("[%s] %s job:%d:%d [%s:%d]");
+		/*           datetime logLevelStr type id srcFileName line */
 
-	template <typename Type>
-	const Type & cptr_cast(const Type & src) noexcept
-	{
-		return src;
-	}
-
-	template <typename Type>
-	Type && cptr_cast(Type && src) noexcept
-	{
-		return src;
-	}
-
-	template <size_t N>
-	constexpr const char* cptr_cast(const char (&src)[N]) noexcept
-	{
-		return src;
-	}
-
-	template <LogLevel level, typename ...T>
-	void __log_write(int type, int job_id, const char source_filename[], int line, std::ostream & log_file, T&& ... args) noexcept
-	{
-		try {
-			if (!log_file) {
-				std::cerr << "log file is not open!" << std::endl;
-				return;
-			}
-
-			const time_t now = time(NULL);
-			const std::string datetime = get_ymd_hms_in_local_time_zone(now);
-
-			std::ostringstream buffer;
-
-			multi_args_write(buffer, log::templ % datetime % (const char *) Log_level_traits<level>::str % type % job_id % source_filename % line, std::forward<T>(args)...);
-
-			Log_level_traits<level>::outstream << buffer.str() << std::endl;
-			log_file << buffer.str() << std::endl;
-
-			if (log_file.fail()) { //http://www.cplusplus.com/reference/ios/ios/fail/
-				std::cerr << "write error!" << std::endl;
-				return;
-			}
-		} catch (...) {
+		template <typename Type>
+		Type & cptr_cast(Type & src) noexcept
+		{
+			return src;
 		}
-	}
-}
+
+		template <typename Type>
+		const Type & cptr_cast(const Type & src) noexcept
+		{
+			return src;
+		}
+
+		template <typename Type>
+		Type && cptr_cast(Type && src) noexcept
+		{
+			return src;
+		}
+
+		template <size_t N>
+		constexpr const char* cptr_cast(const char (&src)[N]) noexcept
+		{
+			return src;
+		}
+
+		template <LogLevel level, typename ...T>
+		void __log_write(int type, int job_id, const char source_filename[], int line, std::ostream & log_file, T&& ... args) noexcept
+		{
+			try {
+				if (!log_file) {
+					std::cerr << "log file is not open!" << std::endl;
+					return;
+				}
+
+				const time_t now = time(NULL);
+				const std::string datetime = get_ymd_hms_in_local_time_zone(now);
+
+				std::ostringstream buffer;
+
+				multi_args_write(buffer, log::templ % datetime % (const char *) Log_level_traits<level>::str % type % job_id % source_filename % line, std::forward<T>(args)...);
+
+				Log_level_traits<level>::outstream << buffer.str() << std::endl;
+				log_file << buffer.str() << std::endl;
+
+				if (log_file.fail()) { //http://www.cplusplus.com/reference/ios/ios/fail/
+					std::cerr << "write error!" << std::endl;
+					return;
+				}
+			} catch (...) {
+			}
+		}
+
+	} /* namespace log */
+
+} /* namespace ts_judger */
 
 template <LogLevel level, typename ...T>
 void log_write(int type, int job_id, const char source_filename[], int line, std::ostream & log_file, T&& ... args) noexcept
 {
-	log::__log_write<level>(type, job_id, source_filename, line, log_file, log::cptr_cast(args)...);
+	ts_judger::log::__log_write<level>(type, job_id, source_filename, line, log_file, ts_judger::log::cptr_cast(args)...);
 }
 
 #define UNKNOWN_EXCEPTION_WHAT (const char*)("unknown exception")
