@@ -271,6 +271,16 @@ void UpdateJobBase::clear_previous_jobs_info_in_redis() noexcept try
 			}
 
 			try {
+				static boost::format similarity_details("similarity_details:%d:%d");
+				if (opt.del((similarity_details % jobType % prev_sid).str()) == false) {
+					LOG_WARNING(jobType, sid, log_fp, "Doesn't delete similarity_details actually!");
+				}
+			} catch (const std::exception & e) {
+				LOG_WARNING(jobType, sid, log_fp, "Exception occurred while deleting similarity_details!");
+				//DO NOT THROW
+			}
+
+			try {
 				static boost::format job_info("job_info:%d:%d");
 				if (opt.del((job_info % jobType % prev_sid).str()) == false) {
 					LOG_WARNING(jobType, sid, log_fp, "Doesn't delete job_info actually!");
@@ -279,6 +289,7 @@ void UpdateJobBase::clear_previous_jobs_info_in_redis() noexcept try
 				LOG_WARNING(jobType, sid, log_fp, "Exception occurred while deleting job_info!");
 				//DO NOT THROW
 			}
+
 		}
 	}
 } catch(...) {

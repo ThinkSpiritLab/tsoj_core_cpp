@@ -67,7 +67,7 @@ void JudgeJob::handle()
 
 	LOG_DEBUG(jobType, sid, log_fp, "similarity: ", judgeResult.similarity_percentage);
 
-	if(this->commit_simtxt_to_redis() == false) {
+	if(this->commit_similarity_details_to_redis() == false) {
 		LOG_FATAL(jobType, sid, log_fp, "An error occurred while commit sim.txt to redis.");
 	}
 
@@ -258,7 +258,7 @@ void JudgeJob::commitJudgeResultToRedis(const SolutionDetails & result)
 	staticCommitJudgeResultToRedis(jobType, sid, redisConn, result);
 }
 
-bool JudgeJob::commit_simtxt_to_redis() noexcept try{
+bool JudgeJob::commit_similarity_details_to_redis() noexcept try{
 	// open sim.txt
 	std::ifstream fin("sim.txt", std::ios::in);
 	if (!fin) {
@@ -296,17 +296,17 @@ bool JudgeJob::commit_simtxt_to_redis() noexcept try{
 
 	// commit
 	try {
-		static boost::format simtxt_name_tmpl("simtxt_data:%d:%d");
+		static boost::format simtxt_name_tmpl("similarity_details:%d:%d");
 		Operation opt(redisConn);
 		opt.set((simtxt_name_tmpl % jobType % sid).str(), buffer);
 	} catch (const std::exception & e) {
-		EXCEPT_FATAL(jobType, sid, log_fp, "Set sim.txt failed.", e);
+		EXCEPT_FATAL(jobType, sid, log_fp, "Set similarity details failed.", e);
 		throw;
 	}
 
 	return true;
 } catch (const std::exception & e) {
-	EXCEPT_FATAL(jobType, sid, log_fp, "An error occurred while commit sim.txt to redis.", e);
+	EXCEPT_FATAL(jobType, sid, log_fp, "An error occurred while commit similarity details to redis.", e);
 	// 查重失败并非致命错误， 若是查重出差，不应当影响正常判题结果。
 	return false;
 }

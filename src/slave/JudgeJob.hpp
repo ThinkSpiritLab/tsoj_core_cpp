@@ -105,7 +105,7 @@ class JudgeJob: public JobBase
 		/**
 		 * @brief 将查重结果提交到 redis 数据库。
 		 */	
-		bool commit_simtxt_to_redis() noexcept;
+		bool commit_similarity_details_to_redis() noexcept;
 
 	public:
 		/**
