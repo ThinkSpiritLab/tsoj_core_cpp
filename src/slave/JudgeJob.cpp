@@ -737,21 +737,35 @@ bool JudgeJob::push_back_failed_judge_job() noexcept
 }
 
 
-bool JudgeJob::insert_into_failed(const kerbal::redis::RedisContext & conn, int jobType, int sid) noexcept
+bool JudgeJob::insert_into_failed(const kerbal::redis::RedisContext & conn, int jobType, int sid) noexcept try
 {
+	LOG_WARNING(jobType, sid, log_fp, "push back to judge failed list");
+
 	try {
-		LOG_WARNING(jobType, sid, log_fp, "push back to judge failed list");
 		Result result;
 		result.judge_result = UnitedJudgeResult::SYSTEM_ERROR;
 		staticCommitJudgeResultToRedis(jobType, sid, conn, result);
 
-		List<std::string> judge_failure_list(conn, "judge_failure_list");
-		judge_failure_list.push_back("%d:%d"_fmt(jobType, sid).str());
-		return true;
+		/*
+		 * update update_queue
+		 * 当 judge result 更新到 redis 失败时, 千万不可以将 update 任务添加到 update 队列!
+		 * 否则 master 会因取不到评测结果导致 update 失败!
+		 */
+		static RedisCommand update_queue("rpush update_queue %d,%d");
+		update_queue.execute(conn, jobType, sid);
 	} catch (const std::exception & e) {
-		EXCEPT_FATAL(jobType, sid, log_fp, "Failed to push back failed judge job.", e);
-	} catch (...) {
-		UNKNOWN_EXCEPT_FATAL(jobType, sid, log_fp, "Failed to push back failed judge job.");
+		EXCEPT_FATAL(jobType, sid, log_fp, "Commit judge result to redis failed.", e);
 	}
+
+	try {
+		static RedisCommand update_queue("rpush judge_failure_list %d:%d");
+		update_queue.execute(conn, jobType, sid);
+	} catch (const std::exception & e) {
+		EXCEPT_FATAL(jobType, sid, log_fp, "Insert judge failed job into judge failure list failed.", e);
+	}
+
+	return true;
+} catch (...) {
+	UNKNOWN_EXCEPT_FATAL(jobType, sid, log_fp, "Insert judge failed job into judge failure list failed.");
 	return false;
 }
