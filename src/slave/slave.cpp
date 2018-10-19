@@ -153,7 +153,6 @@ void load_config()
 	std::ifstream fp("/etc/ts_judger/judge_server.conf", std::ios::in); //BUG "re"
 	if (!fp) {
 		ccerr << "can't not open judge_server.conf" << endl;
-		fp.close();
 		exit(0);
 	}
 

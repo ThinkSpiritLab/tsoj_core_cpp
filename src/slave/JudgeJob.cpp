@@ -67,23 +67,26 @@ void JudgeJob::handle()
 
 	LOG_DEBUG(jobType, sid, log_fp, "similarity: ", judgeResult.similarity_percentage);
 
+	if(this->commit_simtxt_to_redis() == false) {
+		LOG_FATAL(jobType, sid, log_fp, "An error occurred while commit sim.txt to redis.");
+	}
+
 	if (this->similarity_threshold != 0 && !this->have_accepted &&
 			judgeResult.similarity_percentage > this->similarity_threshold) {
 		judgeResult.judge_result = UnitedJudgeResult::SIMILAR_CODE;
-		this->commit_simtxt_to_redis();
 	} else {
 
 		// compile
 		this->commitJudgeStatusToRedis(JudgeStatus::COMPILING);
 		LOG_DEBUG(jobType, sid, log_fp, "compile start");
-		judgeResult = static_cast<SolutionDetails&&>(this->compile());
+		judgeResult = static_cast<SolutionDetails&>(this->compile());
 		LOG_DEBUG(jobType, sid, log_fp, "compile finished. compile result: ", judgeResult);
 
 		switch (judgeResult.judge_result) {
 			case UnitedJudgeResult::ACCEPTED: {
 				LOG_DEBUG(jobType, sid, log_fp, "compile success");
 				// 编译成功则 run
-				judgeResult = static_cast<SolutionDetails&&>(this->running());
+				judgeResult = static_cast<SolutionDetails&>(this->running());
 				LOG_DEBUG(jobType, sid, log_fp, "judge finished");
 
 				// 如果用户 AC 且要求留存代码, 则将代码保存至留存目录
@@ -97,7 +100,7 @@ void JudgeJob::handle()
 				LOG_WARNING(jobType, sid, log_fp, "compile resource limit exceed");
 				break;
 			case UnitedJudgeResult::SYSTEM_ERROR:
-				LOG_DEBUG(jobType, sid, log_fp, "system error");
+				LOG_FATAL(jobType, sid, log_fp, "system error");
 				break;
 			case UnitedJudgeResult::COMPILE_ERROR:
 			default:
@@ -255,7 +258,7 @@ void JudgeJob::commitJudgeResultToRedis(const SolutionDetails & result)
 	staticCommitJudgeResultToRedis(jobType, sid, redisConn, result);
 }
 
-void JudgeJob::commit_simtxt_to_redis() try{
+bool JudgeJob::commit_simtxt_to_redis() noexcept try{
 	// open sim.txt
 	std::ifstream fin("sim.txt", std::ios::in);
 	if (!fin) {
@@ -300,9 +303,12 @@ void JudgeJob::commit_simtxt_to_redis() try{
 		EXCEPT_FATAL(jobType, sid, log_fp, "Set sim.txt failed.", e);
 		throw;
 	}
+
+	return true;
 } catch (const std::exception & e) {
 	EXCEPT_FATAL(jobType, sid, log_fp, "An error occurred while commit sim.txt to redis.", e);
 	// 查重失败并非致命错误， 若是查重出差，不应当影响正常判题结果。
+	return false;
 }
 
 bool JudgeJob::set_compile_info() noexcept

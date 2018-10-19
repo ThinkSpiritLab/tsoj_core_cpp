@@ -259,8 +259,7 @@ int main() try
 		exit(-1);
 	}
 
-	LOG_INFO(0, 0, log_fp, "Loading configuration...");
-	load_config();
+	load_config(); // 提醒: 此函数运行结束以后才可以使用 log 系列宏, 否则 log_fp 没打开
 	LOG_INFO(0, 0, log_fp, "Configuration load finished!");
 
 	// 连接 mysql
