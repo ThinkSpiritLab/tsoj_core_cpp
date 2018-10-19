@@ -175,7 +175,7 @@ void log_write(int type, int job_id, const char source_filename[], int line, std
 #	undef EXCEPT_WARNING
 #endif
 #define EXCEPT_WARNING(type, job_id, log_fp, events, exception, x...)	LOG_WARNING(type, job_id, log_fp, events, \
-																		" Error information: ", exception.what(), " , Exception type: ", typeid(exception).name(), ##x)
+																		" Error information: ", exception.what(), "  Exception type: ", typeid(exception).name(), ##x)
 #ifdef UNKNOWN_EXCEPT_WARNING
 #	undef UNKNOWN_EXCEPT_WARNING
 #endif
@@ -186,7 +186,7 @@ void log_write(int type, int job_id, const char source_filename[], int line, std
 #	undef EXCEPT_FATAL
 #endif
 #define EXCEPT_FATAL(type, job_id, log_fp, events, exception, x...)	    LOG_FATAL(type, job_id, log_fp, events, \
-																		" Error information: ", exception.what(), " , Exception type: ", typeid(exception).name(), ##x)
+																		" Error information: ", exception.what(), "  Exception type: ", typeid(exception).name(), ##x)
 #ifdef UNKNOWN_EXCEPT_FATAL
 #	undef UNKNOWN_EXCEPT_FATAL
 #endif

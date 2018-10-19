@@ -48,6 +48,11 @@ class ContestUpdateJob: public UpdateJobBase
 		virtual void update_compile_info(const char * compile_info) override final;
 
 		/**
+		 * @brief 更新本 job 对应的 pid 的题目的提交数和通过数
+		 */
+		void update_problem_submit_and_accept_num_in_this_contest();
+
+		/**
 		 * @brief 更新题目的提交数, 通过数, 用户的提交数, 通过数
 		 * @warning 仅规定 update user and problem 表的接口, 具体操作需由子类实现
 		 */

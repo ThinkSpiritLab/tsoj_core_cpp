@@ -80,9 +80,71 @@ void ContestUpdateJob::update_compile_info(const char * compile_info)
 	}
 }
 
+void ContestUpdateJob::update_problem_submit_and_accept_num_in_this_contest()
+{
+	std::set<int> accepted_users;
+	int submit_num = 0;
+	{
+		mysqlpp::Query query = mysqlConn->query(
+				"select u_id, s_result from contest_solution%0 where p_id = %1 order by s_id"
+		);
+		query.parse();
+
+		mysqlpp::StoreQueryResult res = query.store(this->jobType, this->pid);
+
+		if (query.errnum() != 0) {
+			MysqlEmptyResException e(query.errnum(), query.error());
+			EXCEPT_FATAL(jobType, sid, log_fp, "Query problem's solutions failed!", e);
+			throw e;
+		}
+
+		for (const auto & row : res) {
+			int u_id_in_this_row = row["u_id"];
+			// 此题已通过的用户的集合中无此条 solution 对应的用户
+			if (accepted_users.find(u_id_in_this_row) == accepted_users.end()) {
+				UnitedJudgeResult result = UnitedJudgeResult(int(row["s_result"]));
+				switch(result) {
+					case UnitedJudgeResult::ACCEPTED:
+						accepted_users.insert(u_id_in_this_row);
+						++submit_num;
+						break;
+					case UnitedJudgeResult::SYSTEM_ERROR: // ignore system error
+						break;
+					default:
+						++submit_num;
+						break;
+				}
+			}
+		}
+	}
+
+	{
+		mysqlpp::Query update = mysqlConn->query(
+				"update contest_problem set ct_p_submit = %0, ct_p_accept = %1 where p_id = %2 and ct_id = %3"
+		);
+		update.parse();
+
+		mysqlpp::SimpleResult update_res = update.execute(submit_num, accepted_users.size(), this->pid, this->jobType);
+		if (!update_res) {
+			MysqlEmptyResException e(update.errnum(), update.error());
+			EXCEPT_FATAL(jobType, sid, log_fp, "Update problem's submit and accept number in this contest failed!", e, ", contest id: ", this->jobType);
+			throw e;
+		}
+	}
+}
+
 void ContestUpdateJob::update_user_and_problem()
 {
-	//TODO SQL 里没有对应的表结构, 先设为空函数体
+	LOG_DEBUG(jobType, sid, log_fp, "ContestUpdateJob::update_user_and_problem");
+
+	try {
+		this->update_problem_submit_and_accept_num_in_this_contest();
+	} catch (const std::exception & e) {
+		EXCEPT_FATAL(jobType, sid, log_fp, "Update problem submit and accept number in this contest failed!", e, ", contest id: ", this->jobType);
+		throw;
+	}
+
+	// 竞赛不需更新用户提交数通过数
 }
 
 int ContestUpdateJob::get_error_count()

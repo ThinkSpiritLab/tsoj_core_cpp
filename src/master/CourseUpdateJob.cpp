@@ -39,89 +39,109 @@ void CourseUpdateJob::update_solution()
 
 void CourseUpdateJob::update_problem_submit_and_accept_num_in_this_course()
 {
-	mysqlpp::Query query = mysqlConn->query(
-			"select u_id, s_result from solution where p_id = %0 and c_id = %1 order by s_id"
-	);
-	query.parse();
-
-	std::set<int> accepted_user;
+	std::set<int> accepted_users;
 	int submit_num = 0;
-	{
-		mysqlpp::StoreQueryResult res = query.store(this->pid, this->cid);
 
-		for (const auto & row : res) {
-			int u_id_in_this_row = row["u_id"];
-			// 此题已通过的用户的集合中无此条 solution 对应的用户
-			if (accepted_user.find(u_id_in_this_row) == accepted_user.end()) {
-				UnitedJudgeResult result = UnitedJudgeResult(int(row["s_result"]));
-				if (result == UnitedJudgeResult::ACCEPTED) {
-					accepted_user.insert(u_id_in_this_row);
-				}
-				++submit_num;
-			}
-		}
+	{
+		mysqlpp::Query query = mysqlConn->query(
+				"select u_id, s_result from solution where p_id = %0 and c_id = %1 order by s_id"
+		);
+		query.parse();
+
+		mysqlpp::StoreQueryResult res = query.store(this->pid, this->cid);
 
 		if (query.errnum() != 0) {
 			MysqlEmptyResException e(query.errnum(), query.error());
 			EXCEPT_FATAL(jobType, sid, log_fp, "Query problem's solutions failed!", e);
 			throw e;
 		}
+
+		for (const auto & row : res) {
+			int u_id_in_this_row = row["u_id"];
+			// 此题已通过的用户的集合中无此条 solution 对应的用户
+			if (accepted_users.find(u_id_in_this_row) == accepted_users.end()) {
+				UnitedJudgeResult result = UnitedJudgeResult(int(row["s_result"]));
+				switch(result) {
+					case UnitedJudgeResult::ACCEPTED:
+						accepted_users.insert(u_id_in_this_row);
+						++submit_num;
+						break;
+					case UnitedJudgeResult::SYSTEM_ERROR: // ignore system error
+						break;
+					default:
+						++submit_num;
+						break;
+				}
+			}
+		}
 	}
 
-	mysqlpp::Query update = mysqlConn->query(
-			"update course_problem set c_p_submit = %0, c_p_accept = %1 where p_id = %2 and c_id = %3"
-	);
-	update.parse();
+	{
+		mysqlpp::Query update = mysqlConn->query(
+				"update course_problem set c_p_submit = %0, c_p_accept = %1 where p_id = %2 and c_id = %3"
+		);
+		update.parse();
 
-	mysqlpp::SimpleResult res = update.execute(submit_num, accepted_user.size(), this->pid, this->cid);
-	if (!res) {
-		MysqlEmptyResException e(query.errnum(), query.error());
-		EXCEPT_FATAL(jobType, sid, log_fp, "Update problem's submit and accept number in this course failed!", e, ", course id: ", this->cid);
-		throw e;
+		mysqlpp::SimpleResult update_res = update.execute(submit_num, accepted_users.size(), this->pid, this->cid);
+		if (!update_res) {
+			MysqlEmptyResException e(update.errnum(), update.error());
+			EXCEPT_FATAL(jobType, sid, log_fp, "Update problem's submit and accept number in this course failed!", e, ", course id: ", this->cid);
+			throw e;
+		}
 	}
 }
 
 void CourseUpdateJob::update_user_submit_and_accept_num_in_this_course()
 {
-	mysqlpp::Query query = mysqlConn->query(
-			"select p_id, s_result from solution where u_id = %0 and c_id = %1 order by s_id"
-	);
-	query.parse();
-
 	std::set<int> accepted_problems;
 	int submit_num = 0;
-	{
-		mysqlpp::StoreQueryResult res = query.store(this->uid, this->cid);
 
-		for (const auto & row : res) {
-			int p_id_in_this_row = row["p_id"];
-			if (accepted_problems.find(p_id_in_this_row) == accepted_problems.end()) {
-				// 此用户已通过的题的集合中无此条 solution 对应的题
-				UnitedJudgeResult result = UnitedJudgeResult(int(row["s_result"]));
-				if (result == UnitedJudgeResult::ACCEPTED) {
-					accepted_problems.insert(p_id_in_this_row);
-				}
-				++submit_num;
-			}
-		}
+	{
+		mysqlpp::Query query = mysqlConn->query(
+				"select p_id, s_result from solution where u_id = %0 and c_id = %1 order by s_id"
+		);
+		query.parse();
+
+		mysqlpp::StoreQueryResult res = query.store(this->uid, this->cid);
 
 		if (query.errnum() != 0) {
 			MysqlEmptyResException e(query.errnum(), query.error());
 			EXCEPT_FATAL(jobType, sid, log_fp, "Query user's solutions failed!", e);
 			throw e;
 		}
+
+		for (const auto & row : res) {
+			int p_id_in_this_row = row["p_id"];
+			if (accepted_problems.find(p_id_in_this_row) == accepted_problems.end()) {
+				// 此用户已通过的题的集合中无此条 solution 对应的题
+				UnitedJudgeResult result = UnitedJudgeResult(int(row["s_result"]));
+				switch(result) {
+					case UnitedJudgeResult::ACCEPTED:
+						accepted_problems.insert(p_id_in_this_row);
+						++submit_num;
+						break;
+					case UnitedJudgeResult::SYSTEM_ERROR: // ignore system error
+						break;
+					default:
+						++submit_num;
+						break;
+				}
+			}
+		}
 	}
 
-	mysqlpp::Query update = mysqlConn->query(
-			"update course_user set c_submit = %0, c_accept = %1 where u_id = %2 and c_id = %3"
-	);
-	update.parse();
+	{
+		mysqlpp::Query update = mysqlConn->query(
+				"update course_user set c_submit = %0, c_accept = %1 where u_id = %2 and c_id = %3"
+		);
+		update.parse();
 
-	mysqlpp::SimpleResult res = update.execute(submit_num, accepted_problems.size(), this->uid, this->cid);
-	if (!res) {
-		MysqlEmptyResException e(query.errnum(), query.error());
-		EXCEPT_FATAL(jobType, sid, log_fp, "Update user's submit and accept number in this course failed!", e, ", course id: ", this->cid);
-		throw e;
+		mysqlpp::SimpleResult update_res = update.execute(submit_num, accepted_problems.size(), this->uid, this->cid);
+		if (!update_res) {
+			MysqlEmptyResException e(update.errnum(), update.error());
+			EXCEPT_FATAL(jobType, sid, log_fp, "Update user's submit and accept number in this course failed!", e, ", course id: ", this->cid);
+			throw e;
+		}
 	}
 }
 
