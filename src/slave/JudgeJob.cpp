@@ -265,11 +265,6 @@ bool JudgeJob::commit_similarity_details_to_redis() noexcept try{
 		throw JobHandleException("sim.txt open failed");
 	}
 
-	// get length of file:
-	fin.seekg(0, fin.end);
-	int length = fin.tellg();
-	fin.seekg(0, fin.beg);
-
 	/* 
 	* read
 	* Tips: redis 的 string 类型的值最大能存储 512 MB， 显然如果不加以限制，一下占用这么大的资源,
@@ -277,8 +272,8 @@ bool JudgeJob::commit_similarity_details_to_redis() noexcept try{
 	* 中间有些与 set_compile_info() 相同的部分，可以考虑再抽一个函数出来?
 	*/
 	constexpr int MAX_SIZE = 65535;
-	char buffer[MAX_SIZE + 10];
-	fin.read(buffer, MAX_SIZE);
+	char buffer[MAX_SIZE  - 1+ 10];
+	fin.read(buffer, MAX_SIZE - 1);
 
 	if (fin.bad()) {
 		LOG_FATAL(jobType, sid, log_fp, "Read sim.txt error, only ", fin.gcount(), " could be read");
@@ -286,13 +281,18 @@ bool JudgeJob::commit_similarity_details_to_redis() noexcept try{
 		throw JobHandleException("sim.txt read failed");
 	}
 
-	if (MAX_SIZE >= 3 && length > MAX_SIZE) {
-		char * end = buffer + MAX_SIZE - 3;
-		for (int i = 0; i < 3; ++i) {
-			*end = '.';
-			++end;
-		}
-	}
+	int length_read = fin.gcount();
+	buffer[length_read] = '\0';
+
+	//TODO 2018-10-20 trouble maker!
+	// Mysql 中存储字符长度有限，此处似乎超出长度可能导致的乱码问题未解决
+//	if (MAX_SIZE >= 3 && length > MAX_SIZE) {
+//		char * end = buffer + MAX_SIZE - 3;
+//		for (int i = 0; i < 3; ++i) {
+//			*end = '.';
+//			++end;
+//		}
+//	}
 
 	// commit
 	try {
@@ -319,14 +319,9 @@ bool JudgeJob::set_compile_info() noexcept
 		return false;
 	}
 
-	// get length of file:
-	fin.seekg(0, fin.end);
-	int length = fin.tellg();
-	fin.seekg(0, fin.beg);
-
 	constexpr int MYSQL_TEXT_MAX_SIZE = 65535;
-	char buffer[MYSQL_TEXT_MAX_SIZE + 10];
-	fin.read(buffer, MYSQL_TEXT_MAX_SIZE);
+	char buffer[MYSQL_TEXT_MAX_SIZE - 1 + 10];
+	fin.read(buffer, MYSQL_TEXT_MAX_SIZE - 1);
 
 	if (fin.bad()) {
 		LOG_FATAL(jobType, sid, log_fp, "Read compile info error, only ", fin.gcount(), " could be read");
@@ -334,14 +329,18 @@ bool JudgeJob::set_compile_info() noexcept
 		return false;
 	}
 
+	int length_read = fin.gcount();
+	buffer[length_read] = '\0';
+
+	//TODO 2018-10-20 trouble maker!
 	// Mysql 中存储字符长度有限，此处似乎超出长度可能导致的乱码问题未解决
-	if (MYSQL_TEXT_MAX_SIZE >= 3 && length > MYSQL_TEXT_MAX_SIZE) {
-		char * end = buffer + MYSQL_TEXT_MAX_SIZE - 3;
-		for (int i = 0; i < 3; ++i) {
-			*end = '.';
-			++end;
-		}
-	}
+//	if (MYSQL_TEXT_MAX_SIZE >= 3 && length_read > MYSQL_TEXT_MAX_SIZE) {
+//		char * end = buffer + MYSQL_TEXT_MAX_SIZE - 3;
+//		for (int i = 0; i < 3; ++i) {
+//			*end = '.';
+//			++end;
+//		}
+//	}
 
 	try {
 		static boost::format compile_info("compile_info:%d:%d");
