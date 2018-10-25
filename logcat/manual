@@ -1,0 +1,14 @@
+Usage: ./logcat <tools> | <file {options}>
+
+<tools>:
+  --help or -H            show help manual.
+  --version or -V         show logcat version.
+
+file:                     log file name.
+
+{options}:
+  -n                      number all output lines
+  -a                      show all lines. 
+			  (the default setting is to show last 50 lines)
+  -h num                  show num lines in head.
+  -t num                  show num lines in tail.
