@@ -22,11 +22,11 @@ class JudgeJob: public JobBase
 		typedef JobBase supper_t;
 
 	protected:
-		/** 本 job 临时工作路径 */
-		const std::string dir;
+		const std::string dir; ///< 本 job 的工作路径
+		
+		bool have_accepted;
 
-		int have_accepted;
-		int no_store_ac_code;
+		bool no_store_ac_code; ///< whether store the user's code if this solution is accepted
 
 	public:
 

@@ -52,12 +52,6 @@ class UpdateJobBase: public JobBase
 		///@brief post time
 		std::string postTime;
 
-		///@brief whether the user has pass the problem before
-		//bool haveAccepted;
-
-		///@brief whether store the user's code if this solution is accepted
-		bool no_store_ac_code;
-
 		///@brief is rejudge job
 		bool is_rejudge;
 

@@ -208,9 +208,19 @@ void CourseUpdateJob::update_user_problem_status()
 	// 使课程中（cid 非空） user_problem 中某个 user 对某题的状态同步到非课程的 user_problem 中（cid 为空）
 	this->supper_t::update_user_problem_status();
 
-	user_problem_status old_status = this->get_course_user_problem_status();
+	if (this->result.judge_result == UnitedJudgeResult::SYSTEM_ERROR) { // ignore system error
+		return;
+	}
 
 	bool is_ac = this->result.judge_result == UnitedJudgeResult::ACCEPTED ;
+
+	user_problem_status old_status = user_problem_status::TODO;
+	try {
+		old_status = this->get_course_user_problem_status();
+	} catch (const std::exception & e) {
+		EXCEPT_FATAL(jobType, sid, log_fp, "Get user problem status failed!", e);
+		throw;
+	}
 
 	switch(old_status) {
 		case user_problem_status::TODO: {

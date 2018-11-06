@@ -83,8 +83,6 @@ UpdateJobBase::UpdateJobBase(int jobType, int sid, const RedisContext & redisCon
 		this->uid = opt.hget<int>(key_name, "uid");
 		this->cid = opt.hget<int>(key_name, "cid");
 		this->postTime = opt.hget(key_name, "post_time");
-		//this->haveAccepted = (bool) opt.hget<int>(key_name, "have_accepted");
-		this->no_store_ac_code = (bool) opt.hget<int>(key_name, "no_store_ac_code");
 		this->is_rejudge = (bool) opt.hget<int>(key_name, "is_rejudge");
 	} catch (const RedisNilException & e) {
 		EXCEPT_FATAL(jobType, sid, log_fp, "job details lost.", e);
@@ -263,7 +261,7 @@ void UpdateJobBase::clear_previous_jobs_info_in_redis() noexcept try
 		if (judge_status == JudgeStatus::UPDATED) {
 			try {
 				if (opt.del((judge_status_templ % jobType % prev_sid).str()) == false) {
-					LOG_WARNING(jobType, sid, log_fp, "Doesn't delete judge_status actually!");
+//					LOG_WARNING(jobType, sid, log_fp, "Doesn't delete judge_status actually!");
 				}
 			} catch (const std::exception & e) {
 				LOG_WARNING(jobType, sid, log_fp, "Exception occurred while deleting judge_status!");
@@ -273,7 +271,7 @@ void UpdateJobBase::clear_previous_jobs_info_in_redis() noexcept try
 			try {
 				static boost::format similarity_details("similarity_details:%d:%d");
 				if (opt.del((similarity_details % jobType % prev_sid).str()) == false) {
-					LOG_WARNING(jobType, sid, log_fp, "Doesn't delete similarity_details actually!");
+//					LOG_WARNING(jobType, sid, log_fp, "Doesn't delete similarity_details actually!");
 				}
 			} catch (const std::exception & e) {
 				LOG_WARNING(jobType, sid, log_fp, "Exception occurred while deleting similarity_details!");
@@ -283,7 +281,7 @@ void UpdateJobBase::clear_previous_jobs_info_in_redis() noexcept try
 			try {
 				static boost::format job_info("job_info:%d:%d");
 				if (opt.del((job_info % jobType % prev_sid).str()) == false) {
-					LOG_WARNING(jobType, sid, log_fp, "Doesn't delete job_info actually!");
+//					LOG_WARNING(jobType, sid, log_fp, "Doesn't delete job_info actually!");
 				}
 			} catch (const std::exception & e) {
 				LOG_WARNING(jobType, sid, log_fp, "Exception occurred while deleting job_info!");
@@ -293,7 +291,7 @@ void UpdateJobBase::clear_previous_jobs_info_in_redis() noexcept try
 		}
 	}
 } catch(...) {
-	LOG_FATAL(jobType, sid, log_fp, "Clear previous jobs info in redis failed! Error information: ", UNKNOWN_EXCEPTION_WHAT);
+	UNKNOWN_EXCEPT_FATAL(jobType, sid, log_fp, "Clear previous jobs info in redis failed!");
 }
 
 void UpdateJobBase::clear_this_jobs_info_in_redis() noexcept try
@@ -325,29 +323,29 @@ void UpdateJobBase::core_update_failed_table(const RedisReply & source_code, con
 {
 	LOG_WARNING(jobType, sid, log_fp, "Enter core update failed handler");
 
-	mysqlpp::Query insert = mysqlConn->query(
-			"insert into core_update_failed "
-			"(type, job_id, pid, uid, lang, "
-			"post_time, cid, cases, time_limit, memory_limit, "
-			"sim_threshold, result, cpu_time, memory, sim_percentage, source_code, compile_error_info) "
-			"values (%0, %1, %2, %3, %4, "
-			"%5q, %6, %7, %8, %9, "
-			"%10, %11, %12, %13, %14, %15q, %16q)"
-	);
-	insert.parse();
-
-	mysqlpp::SimpleResult res = insert.execute(
-		jobType, sid, pid, uid, (int) lang,
-		postTime, cid, cases, (int)timeLimit.count(), (int)memoryLimit.count(),
-		similarity_threshold, (int) result.judge_result, (int)result.cpu_time.count(),
-		(int)result.memory.count(), result.similarity_percentage, source_code->str, compile_error_info->str
-	);
-
-	if (!res) {
-		throw MysqlEmptyResException(insert.errnum(), insert.error());
-	}
+//	mysqlpp::Query insert = mysqlConn->query(
+//			"insert into core_update_failed "
+//			"(type, job_id, pid, uid, lang, "
+//			"post_time, cid, cases, time_limit, memory_limit, "
+//			"sim_threshold, result, cpu_time, memory, sim_percentage, source_code, compile_error_info) "
+//			"values (%0, %1, %2, %3, %4, "
+//			"%5q, %6, %7, %8, %9, "
+//			"%10, %11, %12, %13, %14, %15q, %16q)"
+//	);
+//	insert.parse();
+//
+//	mysqlpp::SimpleResult res = insert.execute(
+//		jobType, sid, pid, uid, (int) lang,
+//		postTime, cid, cases, (int)timeLimit.count(), (int)memoryLimit.count(),
+//		similarity_threshold, (int) result.judge_result, (int)result.cpu_time.count(),
+//		(int)result.memory.count(), result.similarity_percentage, source_code->str, compile_error_info->str
+//	);
+//
+//	if (!res) {
+//		throw MysqlEmptyResException(insert.errnum(), insert.error());
+//	}
 } catch(const std::exception & e) {
 	EXCEPT_FATAL(jobType, sid, log_fp, "Update failed table failed!", e);
 } catch(...) {
-	LOG_FATAL(jobType, sid, log_fp, "Update failed table failed! Error information: ", UNKNOWN_EXCEPTION_WHAT);
+	UNKNOWN_EXCEPT_FATAL(jobType, sid, log_fp, "Update failed table failed!");
 }

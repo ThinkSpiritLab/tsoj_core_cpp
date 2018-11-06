@@ -221,8 +221,20 @@ void ExerciseUpdateJobBase::update_user_problem_status()
 {
 	LOG_DEBUG(jobType, sid, log_fp, "ExerciseUpdateJobBase::update_user_problem");
 
+	if (this->result.judge_result == UnitedJudgeResult::SYSTEM_ERROR) { // ignore system error
+		return;
+	}
+
 	bool is_ac = this->result.judge_result == UnitedJudgeResult::ACCEPTED ? true : false;
-	user_problem_status old_status = this->ExerciseUpdateJobBase::get_exercise_user_problem_status();
+
+	user_problem_status old_status = user_problem_status::TODO;
+	try {
+		old_status = this->get_exercise_user_problem_status();
+	} catch (const std::exception & e) {
+		EXCEPT_FATAL(jobType, sid, log_fp, "Get user problem status failed!", e);
+		throw;
+	}
+
 	switch (old_status) {
 		case user_problem_status::TODO: {
 			// 未做过此题时，user_problem 表中无记录，使用 insert
