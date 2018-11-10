@@ -10,6 +10,7 @@
 #include <thread>
 #include <algorithm>
 #include <cstring>
+#include <functional>
 
 #include <dirent.h>
 #include <grp.h>
@@ -49,30 +50,30 @@ JudgeJob::JudgeJob(int jobType, int sid, const kerbal::redis::RedisContext & con
 
 void JudgeJob::handle()
 {
-	LOG_DEBUG(jobType, sid, log_fp, "judge start");
+	LOG_DEBUG(jobType, sid, log_fp, "JudgeJob::handle");
 
 	this->change_job_dir();
 	this->storeSourceCode();
 
 	LOG_DEBUG(jobType, sid, log_fp, "store source code finished");
 
-	SolutionDetails judgeResult;
-	judgeResult.similarity_percentage = -1;
+	int similarity_percentage = -1;
 	try {
-		judgeResult.similarity_percentage = this->calculate_similarity();
+		similarity_percentage = this->calculate_similarity();
 	} catch (const std::exception & e) {
 		EXCEPT_FATAL(jobType, sid, log_fp, "An error occurred while calculate similarity.", e);
 		//DO NOT THROW
 	}
 
-	LOG_DEBUG(jobType, sid, log_fp, "similarity: ", judgeResult.similarity_percentage);
+	LOG_DEBUG(jobType, sid, log_fp, "similarity: ", similarity_percentage);
 
-	if(this->commit_similarity_details_to_redis() == false) {
-		LOG_FATAL(jobType, sid, log_fp, "An error occurred while commit sim.txt to redis.");
+	if (this->commit_similarity_details_to_redis() == false) {
+		LOG_FATAL(jobType, sid, log_fp, "An error occurred while commit similarity details to redis.");
 	}
 
+	SolutionDetails judgeResult;
 	if (this->similarity_threshold != 0 && !this->have_accepted &&
-			judgeResult.similarity_percentage > this->similarity_threshold) {
+			similarity_percentage > this->similarity_threshold) {
 		judgeResult.judge_result = UnitedJudgeResult::SIMILAR_CODE;
 	} else {
 
@@ -91,8 +92,7 @@ void JudgeJob::handle()
 
 				// 如果用户 AC 且要求留存代码, 则将代码保存至留存目录
 				if (judgeResult.judge_result == UnitedJudgeResult::ACCEPTED  && this->no_store_ac_code != true) {
-					this->storeSourceCode("%s/%d/%d/"_fmt(accepted_solutions_dir, pid,
-							lang == Language::Java ? 2 : 0).str(), std::to_string(sid));
+					this->storeSourceCode("%s/%d/%d/"_fmt(accepted_solutions_dir, pid, lang == Language::Java ? 2 : 0).str(), std::to_string(sid));
 				}
 				break;
 			}
@@ -114,10 +114,10 @@ void JudgeJob::handle()
 	}
 
 	LOG_DEBUG(jobType, sid, log_fp, "judge result: ", judgeResult);
-	this->commitJudgeResultToRedis(judgeResult);
+	this->commitJudgeResultToRedis(judgeResult, similarity_percentage);
 
 	//update update_queue
-	static RedisCommand update_queue("rpush update_queue %d,%d");
+	RedisCommand update_queue("rpush update_queue %d,%d");
 	update_queue.execute(redisConn, jobType, sid);
 
 #ifndef DEBUG
@@ -235,27 +235,27 @@ Result JudgeJob::running()
 namespace
 {
 	void
-	staticCommitJudgeResultToRedis(int jobType, int sid, const kerbal::redis::RedisContext redisConn, const SolutionDetails & result) try
+	staticCommitJudgeResultToRedis(int jobType, int sid, const kerbal::redis::RedisContext redisConn, const SolutionDetails & result, int similarity_percentage) try
 	{
 		static boost::format judge_status_name_tmpl("judge_status:%d:%d");
 		Operation opt(redisConn);
 			opt.hmset((judge_status_name_tmpl % jobType % sid).str(),
-					  "status"_cptr, (int) JudgeStatus::FINISHED,
-					  "result"_cptr, (int) result.judge_result,
-					  "cpu_time"_cptr, result.cpu_time.count(),
-					  "real_time"_cptr, result.real_time.count(),
-					  "memory"_cptr, (kerbal::utility::Byte(result.memory)).count(),
-					  "similarity_percentage"_cptr, result.similarity_percentage,
-					  "judge_server_id"_cptr, judge_server_id);
+					  "status", (int) JudgeStatus::FINISHED,
+					  "result", (int) result.judge_result,
+					  "cpu_time", result.cpu_time.count(),
+					  "real_time", result.real_time.count(),
+					  "memory", (kerbal::utility::Byte(result.memory)).count(),
+					  "similarity_percentage", similarity_percentage,
+					  "judge_server_id", judge_server_id);
 	} catch (const std::exception & e) {
 		EXCEPT_FATAL(jobType, sid, log_fp, "Commit judge result failed.", e, "; solution details: ", result);
 		throw;
 	}
 }
 
-void JudgeJob::commitJudgeResultToRedis(const SolutionDetails & result)
+void JudgeJob::commitJudgeResultToRedis(const SolutionDetails & result, int similarity_percentage)
 {
-	staticCommitJudgeResultToRedis(jobType, sid, redisConn, result);
+	staticCommitJudgeResultToRedis(jobType, sid, redisConn, result, similarity_percentage);
 }
 
 bool JudgeJob::commit_similarity_details_to_redis() noexcept try{
@@ -425,9 +425,7 @@ Result JudgeJob::execute(const Config & config) const noexcept
 
 	// 此处分离了一个运行子进程，稍后该进程内自我完成工作配置，然后替换为用户编写的程序，用于实际的编译/运行
 	try {
-		child_process = process([this, &config]() {
-			this->child_process(config);
-		});
+		child_process = process(std::bind(&JudgeJob::child_process, this, std::cref(config))); // equals to: this->child_process(config);
 	} catch (const std::exception & e) {
 		LOG_FATAL(jobType, sid, log_fp, "Fork failed. Error information: ", e.what());
 		result.setErrorCode(RunnerError::FORK_FAILED);
@@ -560,7 +558,7 @@ Result JudgeJob::compile() const noexcept
 bool JudgeJob::child_process(const Config & config) const
 {
 	struct rlimit max_stack;
-	max_stack.rlim_cur = max_stack.rlim_max = (rlim_t) (config.max_stack.count());
+	max_stack.rlim_cur = max_stack.rlim_max = static_cast<rlim_t>(config.max_stack.count());
 	if (setrlimit(RLIMIT_STACK, &max_stack) != 0) {
 		LOG_FATAL(jobType, sid, log_fp, RunnerError::SETRLIMIT_FAILED);
 		raise(SIGUSR1);
@@ -570,7 +568,7 @@ bool JudgeJob::child_process(const Config & config) const
 	// set memory limit
 	if (config.limitMemory()) {
 		struct rlimit max_memory;
-		max_memory.rlim_cur = max_memory.rlim_max = (rlim_t) (config.max_memory.count()) * 2;
+		max_memory.rlim_cur = max_memory.rlim_max = static_cast<rlim_t>(kerbal::utility::Byte { config.max_memory }.count() * 2);
 		if (setrlimit(RLIMIT_AS, &max_memory) != 0) {
 			LOG_FATAL(jobType, sid, log_fp, RunnerError::SETRLIMIT_FAILED);
 			raise(SIGUSR1);
@@ -581,7 +579,7 @@ bool JudgeJob::child_process(const Config & config) const
 	// set cpu time limit (in seconds)
 	if (config.limitCPUTime()) {
 		struct rlimit max_cpu_time;
-		max_cpu_time.rlim_cur = max_cpu_time.rlim_max = (rlim_t) ((config.max_cpu_time.count() + 1000) / 1000);
+		max_cpu_time.rlim_cur = max_cpu_time.rlim_max = static_cast<rlim_t>((std::chrono::milliseconds { config.max_cpu_time }.count() + 1000) / 1000);
 		if (setrlimit(RLIMIT_CPU, &max_cpu_time) != 0) {
 			LOG_FATAL(jobType, sid, log_fp, RunnerError::SETRLIMIT_FAILED);
 			raise(SIGUSR1);
@@ -592,7 +590,7 @@ bool JudgeJob::child_process(const Config & config) const
 	// set max process number limit
 	if (config.limitProcessNumber()) {
 		struct rlimit max_process_number;
-		max_process_number.rlim_cur = max_process_number.rlim_max = (rlim_t) config.max_process_number;
+		max_process_number.rlim_cur = max_process_number.rlim_max = static_cast<rlim_t>(config.max_process_number);
 		if (setrlimit(RLIMIT_NPROC, &max_process_number) != 0) {
 			LOG_FATAL(jobType, sid, log_fp, RunnerError::SETRLIMIT_FAILED);
 			raise(SIGUSR1);
@@ -603,7 +601,7 @@ bool JudgeJob::child_process(const Config & config) const
 	// set max output size limit
 	if (config.limitOutput()) {
 		struct rlimit max_output_size;
-		max_output_size.rlim_cur = max_output_size.rlim_max = (rlim_t) config.max_output_size.count();
+		max_output_size.rlim_cur = max_output_size.rlim_max = static_cast<rlim_t>(kerbal::utility::Byte { config.max_output_size }.count());
 		if (setrlimit(RLIMIT_FSIZE, &max_output_size) != 0) {
 			LOG_FATAL(jobType, sid, log_fp, RunnerError::SETRLIMIT_FAILED);
 			raise(SIGUSR1);
@@ -743,7 +741,7 @@ bool JudgeJob::insert_into_failed(const kerbal::redis::RedisContext & conn, int 
 	try {
 		Result result;
 		result.judge_result = UnitedJudgeResult::SYSTEM_ERROR;
-		staticCommitJudgeResultToRedis(jobType, sid, conn, result);
+		staticCommitJudgeResultToRedis(jobType, sid, conn, result, -1);
 
 		/*
 		 * update update_queue

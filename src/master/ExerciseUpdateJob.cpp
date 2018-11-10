@@ -29,7 +29,7 @@ void ExerciseUpdateJob::update_solution()
 	insert.parse();
 	mysqlpp::SimpleResult res = insert.execute(sid, uid, pid, (int) lang, (int) result.judge_result,
 												(int)result.cpu_time.count(), (int)result.memory.count(), postTime,
-												result.similarity_percentage);
+												similarity_percentage);
 	if (!res) {
 		MysqlEmptyResException e(insert.errnum(), insert.error());
 		EXCEPT_FATAL(jobType, sid, log_fp, "Update solution failed!", e);
@@ -37,10 +37,16 @@ void ExerciseUpdateJob::update_solution()
 	}
 }
 
-void ExerciseUpdateJob::update_user_and_problem()
+void ExerciseUpdateJob::update_user()
 {
-	LOG_DEBUG(jobType, sid, log_fp, "ExerciseUpdateJob::update_user_and_problem");
-	this->supper_t::update_user_and_problem();
+	LOG_DEBUG(jobType, sid, log_fp, "ExerciseUpdateJob::update_user");
+	this->supper_t::update_user();
+}
+
+void ExerciseUpdateJob::update_problem()
+{
+	LOG_DEBUG(jobType, sid, log_fp, "ExerciseUpdateJob::update_problem");
+	this->supper_t::update_problem();
 }
 
 void ExerciseUpdateJob::update_user_problem_status()

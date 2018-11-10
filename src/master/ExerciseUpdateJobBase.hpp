@@ -48,27 +48,24 @@ class ExerciseUpdateJobBase : public UpdateJobBase
 
 	protected:
 		/**
-		 * @brief 更新题目的提交数, 通过数, 用户的提交数, 通过数
-		 * @warning 仅规定 update user and problem 表的接口, 具体操作需由子类实现
+		 * @brief 更新用户的提交数, 通过数
+		 * @warning 仅规定 update user 表的接口, 具体操作需由子类实现
 		 */
-		virtual void update_user_and_problem() override = 0;
+		virtual void update_user() override = 0;
+
+		/**
+		 * @brief 更新题目的提交数, 通过数
+		 * @warning 仅规定 update problem 表的接口, 具体操作需由子类实现
+		 */
+		virtual void update_problem() override = 0;
 
 	private:
-		/**
-		 * @brief 更新本 job 对应的 pid 的题目的提交数和通过数
-		 */
-		void update_problem_submit_and_accept_num_in_exercise();
-
-		/**
-		 * @brief 更新本 job 对应的 uid 的用户的提交数和通过数
-		 */
-		void update_user_submit_and_accept_num_in_exercise();
 
 		/**
 		 * @brief 取得此用户此题在此次提交以前 AC, TO_DO 或 ATTEMPT 的状态
 		 * @warning 虽给了默认的实现, 但仍是纯虚函数, 需由子类实现具体操作
 		 */
-		user_problem_status get_exercise_user_problem_status();
+		user_problem_status get_user_problem_status_in_exercise();
 
 	protected:
 

@@ -10,6 +10,7 @@
 
 #include "JobBase.hpp"
 #include "Result.hpp"
+#include "ojv4_db_type.hpp"
 #include "mysql_empty_res_exception.hpp"
 
 #ifndef MYSQLPP_MYSQL_HEADERS_BURIED
@@ -43,19 +44,15 @@ class UpdateJobBase: public JobBase
 
 		std::unique_ptr<mysqlpp::Connection> mysqlConn;
 
-		///@brief user id
-		int uid;
+		int uid; ///< @brief user id
 
-		///@brief course_id
-		int cid;
+		std::string postTime; ///< @brief post time
 
-		///@brief post time
-		std::string postTime;
-
-		///@brief is rejudge job
-		bool is_rejudge;
+		bool is_rejudge; ///< @brief is rejudge job
 
 		SolutionDetails result;
+
+		int similarity_percentage;
 
 	protected:
 		// make_update_job 为一个全局函数，用于根据提供的信息生成一个具体的 UpdateJobBase 信息，
@@ -110,10 +107,16 @@ class UpdateJobBase: public JobBase
 
 	protected:
 		/**
-		 * @brief 更新题目的提交数, 通过数, 用户的提交数, 通过数
-		 * @warning 仅规定 update user and problem 表的接口, 具体操作需由子类实现
+		 * @brief 更新用户的提交数, 通过数
+		 * @warning 仅规定 update user 表的接口, 具体操作需由子类实现
 		 */
-		virtual void update_user_and_problem() = 0;
+		virtual void update_user() = 0;
+
+		/**
+		 * @brief 更新题目的提交数, 通过数
+		 * @warning 仅规定 update problem 表的接口, 具体操作需由子类实现
+		 */
+		virtual void update_problem() = 0;
 
 		/**
 		 * @brief 更新此用户此题的完成状态

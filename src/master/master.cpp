@@ -21,43 +21,27 @@
 #include "UpdateContestScoreboard.hpp"
 
 using namespace kerbal::compatibility::chrono_suffix;
-using namespace std;
 
 std::ofstream log_fp;
 
 constexpr std::chrono::minutes EXPIRE_TIME = 2_min;
-constexpr int REDIS_SOLUTION_MAX_NUM = 600;
 
 namespace
 {
 	std::string host_name; ///< 本机主机名
-
 	std::string ip; ///< 本机 IP
-
 	std::string user_name; ///< 本机当前用户名
-
 	int listening_pid; ///< 本机监听进程号
-
 	std::string judge_server_id; ///< 评测服务器id，定义为 host_name:ip
-
 	bool loop = true; ///< 主工作循环
-
 	std::string updater_init_dir; ///< updater 的临时工作路径
-
 	std::string log_file_name; ///< 日志文件名
-
 	std::string updater_lock_file; ///< lock_file,用于保证一次只能有一个 updater 守护进程在运行
-
 	std::string mysql_hostname; ///< mysql 主机名
-
 	std::string mysql_username; ///< mysql 用户名
-
 	std::string mysql_passwd; ///< mysql 密码
-
-	std::string mysql_database; ///< mysql 端口号
-
+	std::string mysql_database; ///< mysql 数据库名称
 	int redis_port; ///< redis 端口号
-
 	std::string redis_hostname; ///< redis 主机名
 }
 
@@ -85,11 +69,11 @@ void register_self() noexcept try
 			const time_t now = time(NULL);
 			const std::string confirm_time = get_ymd_hms_in_local_time_zone(now);
 			opt.hmset("judge_server:" + judge_server_id,
-					  "host_name"_cptr, host_name,
-					  "ip"_cptr, ip,
-					  "user_name"_cptr, user_name,
-					  "listening_pid"_cptr, listening_pid,
-					  "last_confirm"_cptr, confirm_time);
+					  "host_name", host_name,
+					  "ip", ip,
+					  "user_name", user_name,
+					  "listening_pid", listening_pid,
+					  "last_confirm", confirm_time);
 			opt.set("judge_server_confirm:" + judge_server_id, confirm_time);
 			opt.expire("judge_server_confirm:" + judge_server_id, 30_s);
 
@@ -132,11 +116,11 @@ void regist_SIGTERM_handler(int signum) noexcept
 void load_config()
 {
 	using namespace kerbal::utility::costream;
-	const auto & ccerr = costream<cerr>(LIGHT_RED);
+	const auto & ccerr = costream<std::cerr>(LIGHT_RED);
 
 	std::ifstream fp("/etc/ts_judger/updater.conf", std::ios::in); //BUG "re"
 	if (!fp) {
-		ccerr << "can't not open updater.conf" << endl;
+		ccerr << "can't not open updater.conf" << std::endl;
 		exit(0);
 	}
 
@@ -160,29 +144,29 @@ void load_config()
 	loadConfig.add_rules(redis_port, "redis_port", castToInt);
 	loadConfig.add_rules(redis_hostname, "redis_hostname", stringAssign);
 
-	string buf;
+	std::string buf;
 	while (getline(fp, buf)) {
-		string key, value;
+		std::string key, value;
 
 		std::tie(key, value) = parse_buf(buf);
 		if (key != "" && value != "") {
 			if (loadConfig.parse(key, value) == false) {
-				ccerr << "unexpected key name" << endl;
+				ccerr << "unexpected key name" << std::endl;
 			}
-			cout << key << " = " << value << endl;
+			std::cout << key << " = " << value << std::endl;
 		}
 	}
 
 	fp.close();
 
 	if (log_file_name.empty()) {
-		ccerr << "empty log file name!" << endl;
+		ccerr << "empty log file name!" << std::endl;
 		exit(0);
 	}
 
 	log_fp.open(log_file_name, std::ios::app);
 	if (!log_fp) {
-		ccerr << "log file open failed" << endl;
+		ccerr << "log file open failed" << std::endl;
 		exit(0);
 	}
 
@@ -250,12 +234,12 @@ void update_contest_scoreboard_handler()
 int main() try
 {
 	using namespace kerbal::utility::costream;
-	const auto & ccerr = costream<cerr>(LIGHT_RED);
+	const auto & ccerr = costream<std::cerr>(LIGHT_RED);
 
 	// 运行必须具有 root 权限
 	uid_t uid = getuid();
 	if (uid != 0) {
-		ccerr << "root required!" << endl;
+		ccerr << "root required!" << std::endl;
 		exit(-1);
 	}
 
@@ -332,6 +316,7 @@ int main() try
 				continue;
 			}
 			std::tie(jobType, sid) = JobBase::parseJobItem(job_item);
+			LOG_DEBUG(jobType, sid, log_fp, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
 			LOG_DEBUG(jobType, sid, log_fp, "Master get update job: ", job_item);
 		} catch (const std::exception & e) {
 			EXCEPT_FATAL(0, 0, log_fp, "Fail to fetch job.", e, "job_item: ", job_item);
@@ -393,6 +378,7 @@ int main() try
 		// 本次更新耗时
 		auto time_consume = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 		LOG_DEBUG(jobType, sid, log_fp, "Update consume: ", time_consume.count());
+		LOG_DEBUG(jobType, sid, log_fp, ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 	}
 	return 0;
 } catch (const std::exception & e) {

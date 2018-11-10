@@ -11,8 +11,10 @@
 extern std::ostream log_fp;
 
 
-CourseUpdateJob::CourseUpdateJob(int jobType, int sid, const kerbal::redis::RedisContext & redisConn,
-		std::unique_ptr<mysqlpp::Connection> && mysqlConn) : supper_t(jobType, sid, redisConn, std::move(mysqlConn))
+CourseUpdateJob::CourseUpdateJob(int jobType, int sid, int cid, const kerbal::redis::RedisContext & redisConn,
+		std::unique_ptr<mysqlpp::Connection> && mysqlConn) :
+				supper_t(jobType, sid, redisConn, std::move(mysqlConn)),
+				cid(cid)
 {
 	LOG_DEBUG(jobType, sid, log_fp, "CourseUpdateJob::CourseUpdateJob");
 }
@@ -29,10 +31,10 @@ void CourseUpdateJob::update_solution()
 	insert.parse();
 	mysqlpp::SimpleResult res = insert.execute(sid, uid, pid, (int) lang, (int) result.judge_result,
 											(int)result.cpu_time.count(), (int)result.memory.count(), postTime, cid,
-												result.similarity_percentage);
+												similarity_percentage);
 	if (!res) {
 		MysqlEmptyResException e(insert.errnum(), insert.error());
-		EXCEPT_FATAL(jobType, sid, log_fp, "Select status from user_problem failed!", e);
+		EXCEPT_FATAL(jobType, sid, log_fp, "Update solution failed!", e);
 		throw e;
 	}
 }
@@ -146,9 +148,9 @@ void CourseUpdateJob::update_user_submit_and_accept_num_in_this_course()
 }
 
 
-void CourseUpdateJob::update_user_and_problem()
+void CourseUpdateJob::update_user()
 {
-	LOG_DEBUG(jobType, sid, log_fp, "CourseUpdateJob::update_user_and_problem");
+	LOG_DEBUG(jobType, sid, log_fp, "CourseUpdateJob::update_user");
 
 	try {
 		this->update_user_submit_and_accept_num_in_this_course();
@@ -157,6 +159,15 @@ void CourseUpdateJob::update_user_and_problem()
 		throw;
 	}
 
+	// 更新练习视角用户的提交数和通过数
+	// 使课程中某个 user 的提交数与通过数同步到 user 表中
+	this->supper_t::update_user();
+}
+
+void CourseUpdateJob::update_problem()
+{
+	LOG_DEBUG(jobType, sid, log_fp, "CourseUpdateJob::update_problem");
+
 	try {
 		this->update_problem_submit_and_accept_num_in_this_course();
 	} catch (const std::exception & e) {
@@ -164,14 +175,14 @@ void CourseUpdateJob::update_user_and_problem()
 		throw;
 	}
 
-	// 更新练习视角用户的提交数和通过数
-	// 使 course_user 中某个 user 的提交数与通过数同步到 user 表中
-	this->supper_t::update_user_and_problem();
+	// 更新练习视角题目的提交数和通过数
+	// 使课程中某个 problem 的提交数与通过数同步到 problem 表中
+	this->supper_t::update_problem();
 }
 
-user_problem_status CourseUpdateJob::get_course_user_problem_status()
+user_problem_status CourseUpdateJob::get_user_problem_status_in_course()
 {
-	LOG_DEBUG(jobType, sid, log_fp, "CourseUpdateJob::get_course_user_problem_status");
+	LOG_DEBUG(jobType, sid, log_fp, "CourseUpdateJob::get_user_problem_status_in_course");
 
 	mysqlpp::Query query = mysqlConn->query(
 			"select status from user_problem "
@@ -216,7 +227,7 @@ void CourseUpdateJob::update_user_problem_status()
 
 	user_problem_status old_status = user_problem_status::TODO;
 	try {
-		old_status = this->get_course_user_problem_status();
+		old_status = this->get_user_problem_status_in_course();
 	} catch (const std::exception & e) {
 		EXCEPT_FATAL(jobType, sid, log_fp, "Get user problem status failed!", e);
 		throw;
@@ -224,8 +235,10 @@ void CourseUpdateJob::update_user_problem_status()
 
 	switch(old_status) {
 		case user_problem_status::TODO: {
-			mysqlpp::Query insert = mysqlConn->query("insert into user_problem (u_id, p_id, c_id, status) "
-					"values (%0, %1, %2, %3)");
+			mysqlpp::Query insert = mysqlConn->query(
+					"insert into user_problem (u_id, p_id, c_id, status) "
+					"values (%0, %1, %2, %3)"
+			);
 			insert.parse();
 			mysqlpp::SimpleResult ret = insert.execute(uid, pid, cid, is_ac ? 0 : 1);
 			if (!ret) {
@@ -251,9 +264,6 @@ void CourseUpdateJob::update_user_problem_status()
 		}
 		case user_problem_status::ACCEPTED:
 			return;
-		default:
-			LOG_FATAL(jobType, sid, log_fp, "Undefined user's problem status!");
-			throw std::logic_error("Undefined user's problem status!");
 	}
 }
 

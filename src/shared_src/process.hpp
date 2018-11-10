@@ -69,6 +69,16 @@ class process : virtual kerbal::utility::noncopyable, kerbal::utility::nonassign
 			}
 		}
 
+		pid_type get_father_id() const noexcept
+		{
+			return this->father_id;
+		}
+
+		pid_type get_child_id() const noexcept
+		{
+			return this->child_id;
+		}
+
 		process(process && src) noexcept :
 				father_id(src.father_id), child_id(src.child_id), status(src.status)
 		{

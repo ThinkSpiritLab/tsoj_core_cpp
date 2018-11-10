@@ -1,0 +1,36 @@
+/*
+ * ContestManagement.hpp
+ *
+ *  Created on: 2018年11月9日
+ *      Author: peter
+ */
+
+#ifndef SRC_MASTER_CONTESTMANAGEMENT_HPP_
+#define SRC_MASTER_CONTESTMANAGEMENT_HPP_
+
+#include "ojv4_db_type.hpp"
+
+#ifndef MYSQLPP_MYSQL_HEADERS_BURIED
+#	define MYSQLPP_MYSQL_HEADERS_BURIED
+#endif
+
+#include <mysql++/mysql++.h>
+
+class ContestManagement
+{
+	public:
+		ContestManagement() = delete;
+
+		static void update_problem_submit_and_accept_num(
+				mysqlpp::Connection & mysql_conn,
+				ojv4::ct_id_type ct_id,
+				ojv4::p_id_type p_id);
+
+		static void update_user_problem_status(
+				mysqlpp::Connection & mysql_conn,
+				ojv4::ct_id_type ct_id,
+				ojv4::u_id_type u_id,
+				ojv4::p_id_type p_id);
+};
+
+#endif /* SRC_MASTER_CONTESTMANAGEMENT_HPP_ */

@@ -33,7 +33,7 @@ void ContestUpdateJob::update_solution()
 	insert.parse();
 	mysqlpp::SimpleResult res = insert.execute(jobType, sid, uid, pid, (int) lang, (int) result.judge_result,
 												(int)result.cpu_time.count(), (int)result.memory.count(), postTime,
-												result.similarity_percentage);
+												similarity_percentage);
 	if (!res) {
 		MysqlEmptyResException e(insert.errnum(), insert.error());
 		EXCEPT_FATAL(jobType, sid, log_fp, "Update solution failed!", e);
@@ -133,9 +133,16 @@ void ContestUpdateJob::update_problem_submit_and_accept_num_in_this_contest()
 	}
 }
 
-void ContestUpdateJob::update_user_and_problem()
+void ContestUpdateJob::update_user()
 {
-	LOG_DEBUG(jobType, sid, log_fp, "ContestUpdateJob::update_user_and_problem");
+	LOG_DEBUG(jobType, sid, log_fp, "ContestUpdateJob::update_user");
+
+	// 竞赛不需更新用户提交数通过数
+}
+
+void ContestUpdateJob::update_problem()
+{
+	LOG_DEBUG(jobType, sid, log_fp, "ContestUpdateJob::update_problem");
 
 	try {
 		this->update_problem_submit_and_accept_num_in_this_contest();
@@ -143,8 +150,6 @@ void ContestUpdateJob::update_user_and_problem()
 		EXCEPT_FATAL(jobType, sid, log_fp, "Update problem submit and accept number in this contest failed!", e, ", contest id: ", this->jobType);
 		throw;
 	}
-
-	// 竞赛不需更新用户提交数通过数
 }
 
 int ContestUpdateJob::get_error_count()
@@ -182,7 +187,8 @@ user_problem_status ContestUpdateJob::get_contest_user_problem_status()
 	LOG_DEBUG(jobType, sid, log_fp, "ContestUpdateJob::get_contest_user_problem_status");
 
 	mysqlpp::Query query = mysqlConn->query(
-			"select is_ac from contest_user_problem%0 where u_id = %1 and p_id = %2"
+			"select is_ac from contest_user_problem%0 "
+			"where u_id = %1 and p_id = %2"
 	);
 	query.parse();
 
@@ -207,9 +213,11 @@ user_problem_status ContestUpdateJob::get_contest_user_problem_status()
 			return user_problem_status::ATTEMPTED;
 		case 1: // is_ac 字段为 1 表示已 AC
 			return user_problem_status::ACCEPTED;
-		default:
-			LOG_FATAL(jobType, sid, log_fp, "Undefined user's problem status!");
-			throw std::logic_error("Undefined user's problem status!");
+		default: {
+			std::logic_error e("Undefined user's problem status.");
+			EXCEPT_FATAL(jobType, sid, log_fp, "Query user's problem status failed!", e);
+			throw e;
+		}
 	}
 }
 

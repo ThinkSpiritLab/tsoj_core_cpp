@@ -29,7 +29,9 @@ class ExerciseUpdateJob: public ExerciseUpdateJobBase
 						std::unique_ptr<mysqlpp::Connection> && mysqlConn);
 		virtual void update_solution() override final;
 
-		virtual void update_user_and_problem() override final;
+		virtual void update_user() override final;
+
+		virtual void update_problem() override final;
 
 		virtual void update_user_problem_status() override final;
 

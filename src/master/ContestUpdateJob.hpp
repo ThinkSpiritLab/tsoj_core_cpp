@@ -53,10 +53,16 @@ class ContestUpdateJob: public UpdateJobBase
 		void update_problem_submit_and_accept_num_in_this_contest();
 
 		/**
-		 * @brief 更新题目的提交数, 通过数, 用户的提交数, 通过数
-		 * @warning 仅规定 update user and problem 表的接口, 具体操作需由子类实现
+		 * @brief 更新用户的提交数, 通过数
+		 * @warning 仅规定 update user 表的接口, 具体操作需由子类实现
 		 */
-		virtual void update_user_and_problem() override final;
+		virtual void update_user() override final;
+
+		/**
+		 * @brief 更新题目的提交数, 通过数
+		 * @warning 仅规定 update problem 表的接口, 具体操作需由子类实现
+		 */
+		virtual void update_problem() override final;
 
 		/**
 		 * @brief 查询该 job 对应的 user 在 pid 问题下错误的次数

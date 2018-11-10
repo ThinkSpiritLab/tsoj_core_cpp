@@ -100,7 +100,7 @@ class JudgeJob: public JobBase
 		/**
 		 * @brief 将评测结果提交到 redis 数据库。
 		 */		
-		void commitJudgeResultToRedis(const SolutionDetails & result);
+		void commitJudgeResultToRedis(const SolutionDetails & result, int similarity_percentage);
 
 		/**
 		 * @brief 将查重结果提交到 redis 数据库。

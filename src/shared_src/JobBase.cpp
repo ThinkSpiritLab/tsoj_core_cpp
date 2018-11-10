@@ -8,6 +8,7 @@
 
 #include "JobBase.hpp"
 #include "logger.hpp"
+#include "mkdir_p.hpp"
 
 #include <fstream>
 #include <algorithm>
@@ -17,7 +18,6 @@
 
 #include <boost/format.hpp>
 
-using namespace kerbal::redis;
 
 extern std::ostream log_fp;
 
@@ -48,6 +48,7 @@ std::pair<int, int> JobBase::parseJobItem(const std::string & args)
 JobBase::JobBase(int jobType, int sid, const kerbal::redis::RedisContext & redisConn) :
 		jobType(jobType), sid(sid), redisConn(redisConn)
 {
+	using namespace kerbal::redis;
 	using std::chrono::milliseconds;
 	using kerbal::utility::MB;
 	static boost::format key_name_tmpl("job_info:%d:%d");
@@ -79,6 +80,8 @@ JobBase::JobBase(int jobType, int sid, const kerbal::redis::RedisContext & redis
 
 kerbal::redis::RedisReply JobBase::get_source_code() const
 {
+	using namespace kerbal::redis;
+
 	static RedisCommand get_src_code_templ("hget source_code:%d:%d source");
 	RedisReply reply;
 	try {
@@ -97,22 +100,21 @@ kerbal::redis::RedisReply JobBase::get_source_code() const
 
 void JobBase::storeSourceCode(const std::string & parent_path_args, const std::string & file_name) const
 {
+	using namespace kerbal::redis;
+
 	RedisReply reply = this->get_source_code();
 
 	std::string parent_path = parent_path_args;
+	while(!parent_path.empty() && std::isblank(parent_path.back())) {
+		parent_path.pop_back();
+	}
 	if (parent_path.size() == 0) {
 		parent_path = "./";
 	} else {
 		if (parent_path.back() != '/') {
 			parent_path += '/';
 		}
-		int make_parent_path_return_value = system(("mkdir -p " + parent_path).c_str());
-		if (-1 == make_parent_path_return_value) {
-			throw JobHandleException("make path failed");
-		}
-		if (!WIFEXITED(make_parent_path_return_value) || WEXITSTATUS(make_parent_path_return_value)) {
-			throw JobHandleException("make path failed, exit status: " + std::to_string(WEXITSTATUS(make_parent_path_return_value)));
-		}
+		mkdir_p(parent_path);
 	}
 
 	std::ofstream fout(parent_path + file_name + '.' + source_file_suffix(lang), std::ios::out);
@@ -129,12 +131,12 @@ void JobBase::storeSourceCode(const std::string & parent_path_args, const std::s
 
 void JobBase::commitJudgeStatusToRedis(JudgeStatus status) try
 {
+	using namespace kerbal::redis;
+
 	static RedisCommand cmd("hset judge_status:%d:%d status %d");
 	// status为枚举类，在 redis 存储时用其对应的序号表示
 	cmd.execute(redisConn, jobType, sid, (int) status);
 } catch (const std::exception & e) {
-	LOG_FATAL(jobType, sid, log_fp, "Commit judge status failed. ",
-			"Error information: ", e.what(), ", ",
-			"judge status: ", (int)status);
+	EXCEPT_FATAL(jobType, sid, log_fp, "Commit judge status failed.", e, ", judge status: ", (int)status);
 	throw;
 }

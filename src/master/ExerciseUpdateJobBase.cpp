@@ -56,63 +56,10 @@ void ExerciseUpdateJobBase::update_compile_info(const char * compile_info)
 	}
 }
 
-void ExerciseUpdateJobBase::update_problem_submit_and_accept_num_in_exercise()
+void ExerciseUpdateJobBase::update_user()
 {
-	std::set<int> accepted_users;
-	int submit_num = 0;
+	LOG_DEBUG(jobType, sid, log_fp, "ExerciseUpdateJobBase::update_user");
 
-	{
-		mysqlpp::Query query = mysqlConn->query(
-				"select u_id, s_result from solution where p_id = %0 order by s_id"
-				// 这里无需添加 c_id is null 的条件, 因为用户在课程中的一条提交也是被当作一条在练习中的提交处理的
-		);
-		query.parse();
-
-		mysqlpp::StoreQueryResult res = query.store(this->pid);
-
-		if (query.errnum() != 0) {
-			MysqlEmptyResException e(query.errnum(), query.error());
-			EXCEPT_FATAL(jobType, sid, log_fp, "Query problem's solutions failed!", e);
-			throw e;
-		}
-
-		for (const auto & row : res) {
-			int u_id_in_this_row = row["u_id"];
-			// 此题已通过的用户的集合中无此条 solution 对应的用户
-			if (accepted_users.find(u_id_in_this_row) == accepted_users.end()) {
-				UnitedJudgeResult result = UnitedJudgeResult(int(row["s_result"]));
-				switch(result) {
-					case UnitedJudgeResult::ACCEPTED:
-						accepted_users.insert(u_id_in_this_row);
-						++submit_num;
-						break;
-					case UnitedJudgeResult::SYSTEM_ERROR: // ignore system error
-						break;
-					default:
-						++submit_num;
-						break;
-				}
-			}
-		}
-	}
-
-	{
-		mysqlpp::Query update = mysqlConn->query(
-				"update problem set p_submit = %0, p_accept = %1 where p_id = %2"
-		);
-		update.parse();
-
-		mysqlpp::SimpleResult update_res = update.execute(submit_num, accepted_users.size(), this->pid);
-		if (!update_res) {
-			MysqlEmptyResException e(update.errnum(), update.error());
-			EXCEPT_FATAL(jobType, sid, log_fp, "Update problem's submit and accept number in exercise failed!", e);
-			throw e;
-		}
-	}
-}
-
-void ExerciseUpdateJobBase::update_user_submit_and_accept_num_in_exercise()
-{
 	std::set<int> accepted_problems;
 	int submit_num = 0;
 
@@ -166,28 +113,66 @@ void ExerciseUpdateJobBase::update_user_submit_and_accept_num_in_exercise()
 	}
 }
 
-void ExerciseUpdateJobBase::update_user_and_problem()
+void ExerciseUpdateJobBase::update_problem()
 {
-	LOG_DEBUG(jobType, sid, log_fp, "ExerciseUpdateJobBase::update_user_and_problem");
+	LOG_DEBUG(jobType, sid, log_fp, "ExerciseUpdateJobBase::update_problem");
 
-	try {
-		this->update_user_submit_and_accept_num_in_exercise();
-	} catch (const std::exception & e) {
-		EXCEPT_FATAL(jobType, sid, log_fp, "Update user submit and accept number in exercise failed!", e);
-		throw;
+	std::set<int> accepted_users;
+	int submit_num = 0;
+
+	{
+		mysqlpp::Query query = mysqlConn->query(
+				"select u_id, s_result from solution where p_id = %0 order by s_id"
+				// 这里无需添加 c_id is null 的条件, 因为用户在课程中的一条提交也是被当作一条在练习中的提交处理的
+		);
+		query.parse();
+
+		mysqlpp::StoreQueryResult res = query.store(this->pid);
+
+		if (query.errnum() != 0) {
+			MysqlEmptyResException e(query.errnum(), query.error());
+			EXCEPT_FATAL(jobType, sid, log_fp, "Query problem's solutions failed!", e);
+			throw e;
+		}
+
+		for (const auto & row : res) {
+			int u_id_in_this_row = row["u_id"];
+			// 此题已通过的用户的集合中无此条 solution 对应的用户
+			if (accepted_users.find(u_id_in_this_row) == accepted_users.end()) {
+				UnitedJudgeResult result = UnitedJudgeResult(int(row["s_result"]));
+				switch(result) {
+					case UnitedJudgeResult::ACCEPTED:
+						accepted_users.insert(u_id_in_this_row);
+						++submit_num;
+						break;
+					case UnitedJudgeResult::SYSTEM_ERROR: // ignore system error
+						break;
+					default:
+						++submit_num;
+						break;
+				}
+			}
+		}
 	}
 
-	try {
-		this->update_problem_submit_and_accept_num_in_exercise();
-	} catch (const std::exception & e) {
-		EXCEPT_FATAL(jobType, sid, log_fp, "Update problem submit and accept number in exercise failed!", e);
-		throw;
+	{
+		mysqlpp::Query update = mysqlConn->query(
+				"update problem set p_submit = %0, p_accept = %1 where p_id = %2"
+		);
+		update.parse();
+
+		mysqlpp::SimpleResult update_res = update.execute(submit_num, accepted_users.size(), this->pid);
+		if (!update_res) {
+			MysqlEmptyResException e(update.errnum(), update.error());
+			EXCEPT_FATAL(jobType, sid, log_fp, "Update problem's submit and accept number in exercise failed!", e);
+			throw e;
+		}
 	}
 }
 
-user_problem_status ExerciseUpdateJobBase::get_exercise_user_problem_status()
+user_problem_status ExerciseUpdateJobBase::get_user_problem_status_in_exercise()
 {
-	LOG_DEBUG(jobType, sid, log_fp, "ExerciseUpdateJobBase::get_exercise_user_problem_status");
+	LOG_DEBUG(jobType, sid, log_fp, "ExerciseUpdateJobBase::get_user_problem_status_in_exercise");
 
 	mysqlpp::Query query = mysqlConn->query(
 		"select status from user_problem "
@@ -229,7 +214,7 @@ void ExerciseUpdateJobBase::update_user_problem_status()
 
 	user_problem_status old_status = user_problem_status::TODO;
 	try {
-		old_status = this->get_exercise_user_problem_status();
+		old_status = this->get_user_problem_status_in_exercise();
 	} catch (const std::exception & e) {
 		EXCEPT_FATAL(jobType, sid, log_fp, "Get user problem status failed!", e);
 		throw;
@@ -268,9 +253,6 @@ void ExerciseUpdateJobBase::update_user_problem_status()
 		}
 		case user_problem_status::ACCEPTED:
 			return;
-		default:
-			LOG_FATAL(jobType, sid, log_fp, "Undefined user's problem status!");
-			throw std::logic_error("Undefined user's problem status!");
 	}
 }
 

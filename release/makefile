@@ -6,23 +6,46 @@ all: slave master
 
 .PHONY: slave
 slave:
-	+@cd $(src)/slave && make slave configuration=release
+	+@cd $(src)/slave && make slave configuration=release \
+									compiler=g++ \
+									compiler_name="GCC C++ Compiler" \
+									compile_options="-std=c++11 -O2 -Wall -c -fmessage-length=0 -MMD -MP" \
+									linker=g++ \
+									linker_name="GCC C++ Linker" \
+									link_options="-lseccomp -lhiredis -pthread" \
+									obj_folder=../../release/obj \
+									slave_bin_name=../../release/ts_judger_slave
+
 
 .PHONY: master
 master:
-	+@cd $(src)/master && make master configuration=release
+	+@cd $(src)/master && make master configuration=release \
+									compiler=g++ \
+									compiler_name="GCC C++ Compiler" \
+									compile_options="-std=c++11 -O2 -Wall -c -fmessage-length=0 -MMD -MP" \
+									linker=g++ \
+									linker_name="GCC C++ Linker" \
+									link_options="-lseccomp -lhiredis -lmysqlpp -pthread" \
+									obj_folder=../../release/obj \
+									master_bin_name=../../release/ts_judger_master
+	
 
 .PHONY: clean_shared
 clean_shared:
-	-@cd $(src)/shared_src && make clean configuration=release
+	-@cd $(src)/shared_src && make clean configuration=release \
+										obj_folder=../../release/obj
 
 .PHONY: clean_slave
 clean_slave:
-	-@cd $(src)/slave && make clean configuration=release
+	-@cd $(src)/slave && make clean configuration=release \
+										obj_folder=../../release/obj \
+										slave_bin_name=../../release/ts_judger_slave
 
 .PHONY: clean_master
 clean_master:
-	-@cd $(src)/master && make clean configuration=release
+	-@cd $(src)/master && make clean configuration=release \
+										obj_folder=../../release/obj \
+										master_bin_name=../../release/ts_judger_master
 
 .PHONY: clean
 clean: clean_shared clean_slave clean_master

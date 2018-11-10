@@ -1,15 +1,3 @@
-compiler := g++
-compiler_name := GCC C++ Compiler
-
-ifeq ($(configuration), release)
-	obj_folder := ../../release/obj
-	compile_options := -std=c++11 -O2 -Wall -c -fmessage-length=0 -MMD -MP
-else ifeq ($(configuration), debug)
-	obj_folder := ../../debug/obj
-	compile_options := -std=c++11 -DTRACK_RESOURCE_FREE=false -DDEBUG -O2 -g3 -Wall -c -fmessage-length=0 -MMD -MP
-else
-$(error undefined configuration)
-endif
 
 SRCS += \
 ./JobBase.cpp \

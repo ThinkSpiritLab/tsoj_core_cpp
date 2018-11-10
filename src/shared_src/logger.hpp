@@ -1,7 +1,6 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
-#include "cptr.hpp"
 #include <iostream>
 #include <sstream>
 
@@ -73,7 +72,7 @@ template <typename Tp, typename ...Up>
 void multi_args_write(std::ostream & log_fp, Tp && arg0, Up&& ...args)
 {
 	log_fp << arg0;
-	multi_args_write(log_fp, args...);
+	multi_args_write(log_fp, std::forward<Up>(args)...);
 }
 
 namespace ts_judger
@@ -98,7 +97,7 @@ namespace ts_judger
 		template <typename Type>
 		Type && cptr_cast(Type && src) noexcept
 		{
-			return src;
+			return std::move(src);
 		}
 
 		template <size_t N>
@@ -128,6 +127,7 @@ namespace ts_judger
 
 				if (log_file.fail()) { //http://www.cplusplus.com/reference/ios/ios/fail/
 					std::cerr << "write error!" << std::endl;
+					log_file.clear();
 					return;
 				}
 			} catch (...) {
@@ -141,7 +141,7 @@ namespace ts_judger
 template <LogLevel level, typename ...T>
 void log_write(int type, int job_id, const char source_filename[], int line, std::ostream & log_file, T&& ... args) noexcept
 {
-	ts_judger::log::__log_write<level>(type, job_id, source_filename, line, log_file, ts_judger::log::cptr_cast(args)...);
+	ts_judger::log::__log_write<level>(type, job_id, source_filename, line, log_file, ts_judger::log::cptr_cast(std::forward<T>(args))...);
 }
 
 #define UNKNOWN_EXCEPTION_WHAT (const char*)("unknown exception")
