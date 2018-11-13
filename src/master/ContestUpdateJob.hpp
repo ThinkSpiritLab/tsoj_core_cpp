@@ -48,11 +48,6 @@ class ContestUpdateJob: public UpdateJobBase
 		virtual void update_compile_info(const char * compile_info) override final;
 
 		/**
-		 * @brief 更新本 job 对应的 pid 的题目的提交数和通过数
-		 */
-		void update_problem_submit_and_accept_num_in_this_contest();
-
-		/**
 		 * @brief 更新用户的提交数, 通过数
 		 * @warning 仅规定 update user 表的接口, 具体操作需由子类实现
 		 */
@@ -64,18 +59,10 @@ class ContestUpdateJob: public UpdateJobBase
 		 */
 		virtual void update_problem() override final;
 
-		/**
-		 * @brief 查询该 job 对应的 user 在 pid 问题下错误的次数
-		 */
-		int get_error_count();
-
-		/**
-		 * @brief 取得此用户此题在此次提交以前 AC, TO_DO 或 ATTEMPT 的状态
-		 * @warning 该方法已被标记为 final, 禁止子类覆盖本方法
-		 */
-		user_problem_status get_contest_user_problem_status();
+		virtual void update_user_problem() override final;
 
 		virtual void update_user_problem_status() override final;
+
 		virtual ~ContestUpdateJob() noexcept = default;
 };
 

@@ -19,7 +19,7 @@ using boost::format;
 #include "united_resource.hpp"
 #include "logger.hpp"
 
-extern std::ostream log_fp;
+extern std::ofstream log_fp;
 
 class contest
 {

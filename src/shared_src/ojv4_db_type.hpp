@@ -29,6 +29,17 @@ struct ojv4
 		using s_mem_in_byte = kerbal::utility::storage<s_mem_in_db_type, std::ratio<1, 1> >;
 		using s_mem_in_MB = kerbal::utility::storage<s_mem_in_db_type, std::ratio<1024 * 1024, 1> >;
 
+		/**
+		 * @brief 枚举类，标识每道题目对一个用户的状态
+		 */
+		enum class u_p_status_enum
+		{
+			TODO = -1,
+			ACCEPTED = 0,
+			ATTEMPTED = 1,
+		};
+
+		using u_p_status_type = std::int8_t;
 };
 
 

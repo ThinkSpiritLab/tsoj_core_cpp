@@ -70,9 +70,16 @@ class sync_instance_pool final : kerbal::utility::noncopyable, kerbal::utility::
 
 			public:
 
+				auto_revert_t(auto_revert_t && src) : ptr_to_conn(src.ptr_to_conn)
+				{
+//					cout << "move: " << ptr_to_conn << " from: " << &src << " to: " << this << endl;
+					src.ptr_to_conn = nullptr;
+				}
+
 				~auto_revert_t()
 				{
-					if(ptr_to_conn != nullptr) {
+//					cout << "~auto_revert_t:  p: " << this->ptr_to_conn << " this: " << this << endl;
+					if(this->ptr_to_conn != nullptr) {
 						sync_instance_pool::revert(*this);
 					}
 				}
@@ -118,21 +125,25 @@ class sync_instance_pool final : kerbal::utility::noncopyable, kerbal::utility::
 		static auto_revert_t block_fetch()
 		{
 			while(true) {
-				std::lock_guard<std::mutex> lck (get_mutex());
-				while(!get_pool().empty()) {
-					InstanceType* p = get_pool().front();
-					get_pool().pop_front();
-					if(p != nullptr) {
-						return auto_revert_t(p);
+				{
+					std::lock_guard<std::mutex> lck (get_mutex());
+					while(!get_pool().empty()) {
+						InstanceType* p = get_pool().front();
+						get_pool().pop_front();
+						if(p != nullptr) {
+							return auto_revert_t(p);
+						}
 					}
 				}
-				std::this_thread::yield();
+				std::this_thread::sleep_for(std::chrono::milliseconds(5));
 			}
 		}
 
 		static void revert(auto_revert_t & conn)
 		{
+//			cout << "trying revert" << endl;
 			std::lock_guard<std::mutex> lck (get_mutex());
+//			cout << "revert" << endl;
 			get_pool().push_back(conn.ptr_to_conn);
 			conn.ptr_to_conn = nullptr;
 		}

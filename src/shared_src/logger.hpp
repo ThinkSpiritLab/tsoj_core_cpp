@@ -144,6 +144,12 @@ void log_write(int type, int job_id, const char source_filename[], int line, std
 	ts_judger::log::__log_write<level>(type, job_id, source_filename, line, log_file, ts_judger::log::cptr_cast(std::forward<T>(args))...);
 }
 
+template <LogLevel level, typename ...T>
+void log_write(int type, int job_id, const char source_filename[], int line, std::ofstream & log_file, T&& ... args) noexcept
+{
+	ts_judger::log::__log_write<level>(type, job_id, source_filename, line, (std::ostream&)(log_file), ts_judger::log::cptr_cast(std::forward<T>(args))...);
+}
+
 #define UNKNOWN_EXCEPTION_WHAT (const char*)("unknown exception")
 
 #ifdef LOG_DEBUG

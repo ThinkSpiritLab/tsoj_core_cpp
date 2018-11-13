@@ -7,14 +7,16 @@
 
 #include "CourseUpdateJob.hpp"
 #include "logger.hpp"
+#include "CourseManagement.hpp"
+#include "ExerciseManagement.hpp"
 
-extern std::ostream log_fp;
+extern std::ofstream log_fp;
 
 
-CourseUpdateJob::CourseUpdateJob(int jobType, int sid, int cid, const kerbal::redis::RedisContext & redisConn,
+CourseUpdateJob::CourseUpdateJob(int jobType, int sid, ojv4::c_id_type c_id, const kerbal::redis::RedisContext & redisConn,
 		std::unique_ptr<mysqlpp::Connection> && mysqlConn) :
 				supper_t(jobType, sid, redisConn, std::move(mysqlConn)),
-				cid(cid)
+				c_id(c_id)
 {
 	LOG_DEBUG(jobType, sid, log_fp, "CourseUpdateJob::CourseUpdateJob");
 }
@@ -29,8 +31,8 @@ void CourseUpdateJob::update_solution()
 			"values (%0, %1, %2, %3, %4, %5, %6, %7q, %8, %9)"
 	);
 	insert.parse();
-	mysqlpp::SimpleResult res = insert.execute(sid, uid, pid, (int) lang, (int) result.judge_result,
-											(int)result.cpu_time.count(), (int)result.memory.count(), postTime, cid,
+	mysqlpp::SimpleResult res = insert.execute(sid, u_id, pid, (int) lang, (int) result.judge_result,
+											(int)result.cpu_time.count(), (int)result.memory.count(), s_posttime, c_id,
 												similarity_percentage);
 	if (!res) {
 		MysqlEmptyResException e(insert.errnum(), insert.error());
@@ -50,7 +52,7 @@ void CourseUpdateJob::update_problem_submit_and_accept_num_in_this_course()
 		);
 		query.parse();
 
-		mysqlpp::StoreQueryResult res = query.store(this->pid, this->cid);
+		mysqlpp::StoreQueryResult res = query.store(this->pid, this->c_id);
 
 		if (query.errnum() != 0) {
 			MysqlEmptyResException e(query.errnum(), query.error());
@@ -84,10 +86,10 @@ void CourseUpdateJob::update_problem_submit_and_accept_num_in_this_course()
 		);
 		update.parse();
 
-		mysqlpp::SimpleResult update_res = update.execute(submit_num, accepted_users.size(), this->pid, this->cid);
+		mysqlpp::SimpleResult update_res = update.execute(submit_num, accepted_users.size(), this->pid, this->c_id);
 		if (!update_res) {
 			MysqlEmptyResException e(update.errnum(), update.error());
-			EXCEPT_FATAL(jobType, sid, log_fp, "Update problem's submit and accept number in this course failed!", e, ", course id: ", this->cid);
+			EXCEPT_FATAL(jobType, sid, log_fp, "Update problem's submit and accept number in this course failed!", e, ", course id: ", this->c_id);
 			throw e;
 		}
 	}
@@ -104,7 +106,7 @@ void CourseUpdateJob::update_user_submit_and_accept_num_in_this_course()
 		);
 		query.parse();
 
-		mysqlpp::StoreQueryResult res = query.store(this->uid, this->cid);
+		mysqlpp::StoreQueryResult res = query.store(this->uid, this->c_id);
 
 		if (query.errnum() != 0) {
 			MysqlEmptyResException e(query.errnum(), query.error());
@@ -138,10 +140,10 @@ void CourseUpdateJob::update_user_submit_and_accept_num_in_this_course()
 		);
 		update.parse();
 
-		mysqlpp::SimpleResult update_res = update.execute(submit_num, accepted_problems.size(), this->uid, this->cid);
+		mysqlpp::SimpleResult update_res = update.execute(submit_num, accepted_problems.size(), this->uid, this->c_id);
 		if (!update_res) {
 			MysqlEmptyResException e(update.errnum(), update.error());
-			EXCEPT_FATAL(jobType, sid, log_fp, "Update user's submit and accept number in this course failed!", e, ", course id: ", this->cid);
+			EXCEPT_FATAL(jobType, sid, log_fp, "Update user's submit and accept number in this course failed!", e, ", course id: ", this->c_id);
 			throw e;
 		}
 	}
@@ -153,15 +155,20 @@ void CourseUpdateJob::update_user()
 	LOG_DEBUG(jobType, sid, log_fp, "CourseUpdateJob::update_user");
 
 	try {
-		this->update_user_submit_and_accept_num_in_this_course();
+		CourseManagement::update_user_s_submit_and_accept_num(*this->mysqlConn, this->c_id, this->u_id);
 	} catch (const std::exception & e) {
-		EXCEPT_FATAL(jobType, sid, log_fp, "Update user submit and accept number in this course failed!", e, ", course id: ", this->cid);
+		EXCEPT_FATAL(jobType, sid, log_fp, "Update course-user's submit and accept number failed!", e, ", c_id: ", this->c_id);
 		throw;
 	}
 
 	// 更新练习视角用户的提交数和通过数
 	// 使课程中某个 user 的提交数与通过数同步到 user 表中
-	this->supper_t::update_user();
+	try {
+		ExerciseManagement::update_user_s_submit_and_accept_num(*this->mysqlConn, this->u_id);
+	} catch (const std::exception & e) {
+		EXCEPT_FATAL(jobType, sid, log_fp, "Update course-user's submit and accept number in exercise view failed!", e, ", c_id: ", this->c_id);
+		throw;
+	}
 }
 
 void CourseUpdateJob::update_problem()
@@ -169,101 +176,61 @@ void CourseUpdateJob::update_problem()
 	LOG_DEBUG(jobType, sid, log_fp, "CourseUpdateJob::update_problem");
 
 	try {
-		this->update_problem_submit_and_accept_num_in_this_course();
+		CourseManagement::update_problem_s_submit_and_accept_num(*this->mysqlConn, this->c_id, this->u_id);
 	} catch (const std::exception & e) {
-		EXCEPT_FATAL(jobType, sid, log_fp, "Update problem submit and accept number in this course failed!", e, ", course id: ", this->cid);
+		EXCEPT_FATAL(jobType, sid, log_fp, "Update course-problem's submit and accept number failed!", e, ", c_id: ", this->c_id);
 		throw;
 	}
 
 	// 更新练习视角题目的提交数和通过数
 	// 使课程中某个 problem 的提交数与通过数同步到 problem 表中
-	this->supper_t::update_problem();
+	try {
+		ExerciseManagement::update_problem_s_submit_and_accept_num(*this->mysqlConn, this->u_id);
+	} catch (const std::exception & e) {
+		EXCEPT_FATAL(jobType, sid, log_fp, "Update course-problem's submit and accept number in exercise view failed!", e, ", c_id: ", this->c_id);
+		throw;
+	}
 }
 
-user_problem_status CourseUpdateJob::get_user_problem_status_in_course()
+
+void CourseUpdateJob::update_user_problem()
 {
-	LOG_DEBUG(jobType, sid, log_fp, "CourseUpdateJob::get_user_problem_status_in_course");
+	LOG_DEBUG(jobType, sid, log_fp, "CourseUpdateJob::update_user_problem");
 
-	mysqlpp::Query query = mysqlConn->query(
-			"select status from user_problem "
-			"where u_id = %0 and p_id = %1 and c_id = %2"
-	);
-	query.parse();
-
-	mysqlpp::StoreQueryResult res = query.store(uid, pid, cid);
-
-	if (res.empty()) {
-		if (query.errnum() != 0) {
-			MysqlEmptyResException e(query.errnum(), query.error());
-			EXCEPT_FATAL(jobType, sid, log_fp, "Select status from user_problem failed!", e);
-			throw e;
-		}
-		return user_problem_status::TODO;
+	try {
+		CourseManagement::update_user_problem(*this->mysqlConn, this->c_id, this->u_id, this->pid);
+	} catch (const std::exception & e) {
+		EXCEPT_FATAL(jobType, sid, log_fp, "Update user-problem failed!", e, "c_id: ", this->c_id);
+		throw;
 	}
-	switch((int) res[0][0]) {
-		case 0:
-			return user_problem_status::ACCEPTED;
-		case 1:
-			return user_problem_status::ATTEMPTED;
-		default:
-			LOG_FATAL(jobType, sid, log_fp, "Undefined user's problem status!");
-			throw std::logic_error("Undefined user's problem status!");
+
+	// 更新练习视角的用户通过情况表
+	try {
+//		ExerciseManagement::up
+	} catch (const std::exception & e) {
+		EXCEPT_FATAL(jobType, sid, log_fp, "Update user-problem in exercise view failed!", e, "c_id: ", this->c_id);
+		throw;
 	}
 }
 
 void CourseUpdateJob::update_user_problem_status()
 {
-	LOG_DEBUG(jobType, sid, log_fp, "CourseUpdateJob::update_user_problem");
+	LOG_DEBUG(jobType, sid, log_fp, "CourseUpdateJob::update_user_problem_status");
 
-	// 先更新练习视角的用户通过情况表
-	// 使课程中（cid 非空） user_problem 中某个 user 对某题的状态同步到非课程的 user_problem 中（cid 为空）
-	this->supper_t::update_user_problem_status();
-
-	if (this->result.judge_result == UnitedJudgeResult::SYSTEM_ERROR) { // ignore system error
-		return;
-	}
-
-	bool is_ac = this->result.judge_result == UnitedJudgeResult::ACCEPTED ;
-
-	user_problem_status old_status = user_problem_status::TODO;
 	try {
-		old_status = this->get_user_problem_status_in_course();
+		CourseManagement::update_user_problem_status(*this->mysqlConn, this->c_id, this->u_id, this->pid);
 	} catch (const std::exception & e) {
-		EXCEPT_FATAL(jobType, sid, log_fp, "Get user problem status failed!", e);
+		EXCEPT_FATAL(jobType, sid, log_fp, "Update course-user's problem status failed!", e, "c_id: ", this->c_id);
 		throw;
 	}
 
-	switch(old_status) {
-		case user_problem_status::TODO: {
-			mysqlpp::Query insert = mysqlConn->query(
-					"insert into user_problem (u_id, p_id, c_id, status) "
-					"values (%0, %1, %2, %3)"
-			);
-			insert.parse();
-			mysqlpp::SimpleResult ret = insert.execute(uid, pid, cid, is_ac ? 0 : 1);
-			if (!ret) {
-				MysqlEmptyResException e(insert.errnum(), insert.error());
-				EXCEPT_FATAL(jobType, sid, log_fp, "Update user_problem failed!", e);
-				throw e;
-			}
-			break;
-		}
-		case user_problem_status::ATTEMPTED: {
-			mysqlpp::Query update = mysqlConn->query(
-					"update user_problem set status = %0 "
-					"where u_id = %1 and p_id = %2 and c_id = %3"
-			);
-			update.parse();
-			mysqlpp::SimpleResult ret = update.execute(is_ac ? 0 : 1, uid, pid, cid);
-			if (!ret) {
-				MysqlEmptyResException e(update.errnum(), update.error());
-				EXCEPT_FATAL(jobType, sid, log_fp, "Update user_problem failed!", e);
-				throw e;
-			}
-			break;
-		}
-		case user_problem_status::ACCEPTED:
-			return;
+	// 更新练习视角的用户通过情况表
+	try {
+//		ExerciseManagement::up
+	} catch (const std::exception & e) {
+		EXCEPT_FATAL(jobType, sid, log_fp, "Update course-user's problem status in exercise view failed!", e, "c_id: ", this->c_id);
+		throw;
 	}
+
 }
 

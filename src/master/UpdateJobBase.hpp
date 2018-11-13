@@ -20,16 +20,6 @@
 #include <mysql++/mysql++.h>
 
 /**
- * @brief 枚举类，标识每道题目对一个用户的状态
- */
-enum class user_problem_status
-{
-	TODO = -1,
-	ACCEPTED = 0,
-	ATTEMPTED = 1,
-};
-
-/**
  * @brief JobBase 的子类，同时是所有类型的 update 类的基类。
  * @note 此类为虚基类，update_solution 等函数需要由子类实现，此类不可实例化
  */
@@ -44,15 +34,15 @@ class UpdateJobBase: public JobBase
 
 		std::unique_ptr<mysqlpp::Connection> mysqlConn;
 
-		int uid; ///< @brief user id
+		ojv4::u_id_type u_id; ///< @brief user id
 
-		std::string postTime; ///< @brief post time
+		std::string s_posttime; ///< @brief post time
 
 		bool is_rejudge; ///< @brief is rejudge job
 
 		SolutionDetails result;
 
-		int similarity_percentage;
+		ojv4::s_similarity_type similarity_percentage;
 
 	protected:
 		// make_update_job 为一个全局函数，用于根据提供的信息生成一个具体的 UpdateJobBase 信息，
@@ -60,13 +50,13 @@ class UpdateJobBase: public JobBase
 		// 因此构造函数定义为 protected，只能由 make_update_job 来生成，故 make_update_job 也需要成为友元函数。
 		friend
 		std::unique_ptr<UpdateJobBase>
-		make_update_job(int jobType, int sid, const RedisContext & redisConn,
+		make_update_job(int jobType, ojv4::s_id_type sid, const RedisContext & redisConn,
 						std::unique_ptr<mysqlpp::Connection> && mysqlConn);
 		/**
-		 * @brief 通用基类的构造函数，除父类 JobBase 构造函数获得的信息除外，还额外获取更新类别任务的额外信息如 uid,
+		 * @brief 通用基类的构造函数，除父类 JobBase 构造函数获得的信息除外，还额外获取更新类别任务的额外信息如 u_id,
 		 * cid, postTime等信息。
 		 */
-		UpdateJobBase(int jobType, int sid, const RedisContext & redisConn,
+		UpdateJobBase(int jobType, ojv4::s_id_type sid, const RedisContext & redisConn,
 						std::unique_ptr<mysqlpp::Connection> && mysqlConn);
 	public:
 		/**
@@ -123,6 +113,13 @@ class UpdateJobBase: public JobBase
 		 * @detail 用户所见到的每题 AC, TO_DO, ATTEMPT 三种状态即为user problem 表所提供的服务
 		 * @warning 仅规定 update user problem 表的接口, 具体操作需由子类实现
 		 */
+		virtual void update_user_problem() = 0;
+
+		/**
+		 * @brief 更新此用户此题的完成状态 [新]
+		 * @detail 用户所见到的每题 AC, TO_DO, ATTEMPT 三种状态即为user problem 表所提供的服务
+		 * @warning 仅规定 update user problem 表的接口, 具体操作需由子类实现
+		 */
 		virtual void update_user_problem_status() = 0;
 
 	private:
@@ -157,7 +154,7 @@ class UpdateJobBase: public JobBase
  * @warning 返回的对象具有多态性, 请谨慎处理!
  */
 std::unique_ptr<UpdateJobBase>
-make_update_job(int jobType, int sid, const kerbal::redis::RedisContext & redisConn,
+make_update_job(int jobType, ojv4::s_id_type sid, const kerbal::redis::RedisContext & redisConn,
 				std::unique_ptr<mysqlpp::Connection> && mysqlConn);
 
 #endif /* SRC_MASTER_UPDATEJOBBASE_HPP_ */

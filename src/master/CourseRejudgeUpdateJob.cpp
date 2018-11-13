@@ -8,7 +8,7 @@
 #include "CourseRejudgeUpdateJob.hpp"
 #include "logger.hpp"
 
-extern std::ostream log_fp;
+extern std::ofstream log_fp;
 
 CourseRejudgeUpdateJob::CourseRejudgeUpdateJob(int jobType, int sid, int cid, const kerbal::redis::RedisContext & redisConn,
 		std::unique_ptr<mysqlpp::Connection> && mysqlConn) :

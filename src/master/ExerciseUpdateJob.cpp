@@ -8,7 +8,7 @@
 #include "ExerciseUpdateJob.hpp"
 #include "logger.hpp"
 
-extern std::ostream log_fp;
+extern std::ofstream log_fp;
 
 
 ExerciseUpdateJob::ExerciseUpdateJob(int jobType, int sid, const kerbal::redis::RedisContext & redisConn, std::unique_ptr<mysqlpp::Connection> && mysqlConn) :

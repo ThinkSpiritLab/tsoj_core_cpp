@@ -1,30 +1,39 @@
 
 SRCS += \
+./ContestManagement.cpp \
+./ContestScoreboardUpdate.cpp \
 ./ContestUpdateJob.cpp \
+./CourseManagement.cpp \
 ./CourseUpdateJob.cpp \
+./ExerciseManagement.cpp \
 ./ExerciseUpdateJob.cpp \
 ./ExerciseUpdateJobBase.cpp \
 ./master.cpp \
-./ContestScoreboardUpdate.cpp \
 ./UpdateJobBase.cpp
 
 
 OBJS += \
+$(obj_folder)/ContestManagement.o \
+$(obj_folder)/ContestScoreboardUpdate.o \
 $(obj_folder)/ContestUpdateJob.o \
+$(obj_folder)/CourseManagement.o \
 $(obj_folder)/CourseUpdateJob.o \
+$(obj_folder)/ExerciseManagement.o \
 $(obj_folder)/ExerciseUpdateJob.o \
 $(obj_folder)/ExerciseUpdateJobBase.o \
 $(obj_folder)/master.o \
-$(obj_folder)/ContestScoreboardUpdate.o \
 $(obj_folder)/UpdateJobBase.o
 
 DEPS += \
+$(obj_folder)/ContestManagement.d \
 $(obj_folder)/ContestUpdateJob.d \
+$(obj_folder)/ContestScoreboardUpdate.d \
+$(obj_folder)/CourseManagement.d \
 $(obj_folder)/CourseUpdateJob.d \
+$(obj_folder)/ExerciseManagement.d \
 $(obj_folder)/ExerciseUpdateJob.d \
 $(obj_folder)/ExerciseUpdateJobBase.d \
 $(obj_folder)/master.d \
-$(obj_folder)/ContestScoreboardUpdate.d \
 $(obj_folder)/UpdateJobBase.d
 
 include_path += \

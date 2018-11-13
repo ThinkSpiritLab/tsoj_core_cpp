@@ -9,6 +9,7 @@
 #define SRC_MASTER_COURSEUPDATEJOB_HPP_
 
 #include "ExerciseUpdateJobBase.hpp"
+#include "ojv4_db_type.hpp"
 
 /**
  * @brief 课程练习类，定义了其独特的 update_solution 等操作。针对课程，此类还维护 user_problem 表中 cid 非空的数据。
@@ -26,22 +27,12 @@ class CourseUpdateJob: public ExerciseUpdateJobBase
 						std::unique_ptr<mysqlpp::Connection> && mysqlConn);
 
 	protected:
-		int cid; ///< @brief course_id
+		ojv4::c_id_type c_id; ///< @brief course_id
 
-		CourseUpdateJob(int jobType, int sid, int cid, const kerbal::redis::RedisContext & redisConn,
+		CourseUpdateJob(int jobType, int sid, ojv4::c_id_type c_id, const kerbal::redis::RedisContext & redisConn,
 						std::unique_ptr<mysqlpp::Connection> && mysqlConn);
 	private:
 		virtual void update_solution() override;
-
-		/**
-		 * @brief 更新本 job 对应的 pid 的题目的提交数和通过数
-		 */
-		void update_problem_submit_and_accept_num_in_this_course();
-
-		/**
-		 * @brief 更新本 job 对应的 uid 的用户的提交数和通过数
-		 */
-		void update_user_submit_and_accept_num_in_this_course();
 
 		/**
 		 * @brief 更新用户的提交数, 通过数
@@ -55,7 +46,7 @@ class CourseUpdateJob: public ExerciseUpdateJobBase
 		 */
 		virtual void update_problem() override final;
 
-		user_problem_status get_user_problem_status_in_course();
+		virtual void update_user_problem() override final;
 
 		virtual void update_user_problem_status() override final;
 

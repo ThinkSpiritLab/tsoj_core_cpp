@@ -8,7 +8,7 @@
 #include "ExerciseUpdateJobBase.hpp"
 #include "logger.hpp"
 
-extern std::ostream log_fp;
+extern std::ofstream log_fp;
 
 
 ExerciseUpdateJobBase::ExerciseUpdateJobBase(int jobType, int sid, const RedisContext & redisConn,

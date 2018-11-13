@@ -12,11 +12,11 @@
 #include "logger.hpp"
 #include "boost_format_suffix.hpp"
 
-extern std::ostream log_fp;
+extern std::ofstream log_fp;
 
 
 std::unique_ptr<UpdateJobBase>
-make_update_job(int jobType, int sid, const kerbal::redis::RedisContext & redisConn,
+make_update_job(int jobType, ojv4::s_id_type sid, const kerbal::redis::RedisContext & redisConn,
 				std::unique_ptr<mysqlpp::Connection> && mysqlConn)
 {
 	try {
@@ -28,14 +28,14 @@ make_update_job(int jobType, int sid, const kerbal::redis::RedisContext & redisC
 		*  !0       |  0 or !0 |  Contest
 		*/
 		if (jobType == 0) {
-			int cid = 0;
+			ojv4::c_id_type c_id = 0;
 			static boost::format key_name_tmpl("job_info:0:%d");
 			kerbal::redis::Operation opt(redisConn);
 
 			try {
-				cid = opt.hget<int>((key_name_tmpl % sid).str(), "cid");
+				c_id = opt.hget<int>((key_name_tmpl % sid).str(), "cid");
 			} catch (const kerbal::redis::RedisNilException &) {
-				cid = 0;
+				c_id = 0;
 				//NO NOT THROW
 			}  catch (const std::exception & e) {
 				EXCEPT_FATAL(jobType, sid, log_fp, "Get cid failed!", e);
@@ -44,8 +44,8 @@ make_update_job(int jobType, int sid, const kerbal::redis::RedisContext & redisC
 				LOG_FATAL(jobType, sid, log_fp, "Get cid failed! Error information: ", UNKNOWN_EXCEPTION_WHAT);
 				throw;
 			}
-			if (cid != 0) {
-				return std::unique_ptr<UpdateJobBase>(new CourseUpdateJob(jobType, sid, cid, redisConn, std::move(mysqlConn)));
+			if (c_id != 0) {
+				return std::unique_ptr<UpdateJobBase>(new CourseUpdateJob(jobType, sid, c_id, redisConn, std::move(mysqlConn)));
 			} else {
 				return std::unique_ptr<UpdateJobBase>(new ExerciseUpdateJob(jobType, sid, redisConn, std::move(mysqlConn)));
 			}
@@ -58,7 +58,7 @@ make_update_job(int jobType, int sid, const kerbal::redis::RedisContext & redisC
 	}
 }
 
-UpdateJobBase::UpdateJobBase(int jobType, int sid, const RedisContext & redisConn,
+UpdateJobBase::UpdateJobBase(int jobType, ojv4::s_id_type sid, const RedisContext & redisConn,
 								std::unique_ptr<mysqlpp::Connection> && mysqlConn) :
 			supper_t(jobType, sid, redisConn), mysqlConn(std::move(mysqlConn))
 {
@@ -72,8 +72,8 @@ UpdateJobBase::UpdateJobBase(int jobType, int sid, const RedisContext & redisCon
 
 	// 取 job 信息
 	try {
-		this->uid = opt.hget<int>(key_name, "uid");
-		this->postTime = opt.hget(key_name, "post_time");
+		this->u_id = opt.hget<ojv4::u_id_type>(key_name, "uid");
+		this->s_posttime = opt.hget(key_name, "post_time");
 		this->is_rejudge = (bool) opt.hget<int>(key_name, "is_rejudge");
 	} catch (const RedisNilException & e) {
 		EXCEPT_FATAL(jobType, sid, log_fp, "job details lost.", e);
@@ -131,6 +131,7 @@ void UpdateJobBase::handle()
 	std::exception_ptr update_user_exception;
 	std::exception_ptr update_problem_exception;
 	std::exception_ptr update_user_problem_exception;
+	std::exception_ptr update_user_problem_status_exception;
 	std::exception_ptr update_source_code_exception;
 	std::exception_ptr update_compile_info_exception;
 	if (update_solution_exception == nullptr) {
@@ -158,10 +159,19 @@ void UpdateJobBase::handle()
 
 			// Step 4: 更新/插入 user_problem 表中该用户对应该题目的解题状态
 			try {
-				this->update_user_problem_status();
+				this->update_user_problem();
 			} catch (const std::exception & e) {
 				update_user_problem_exception = std::current_exception();
 				EXCEPT_FATAL(jobType, sid, log_fp, "Update user problem failed!", e);
+				//DO NOT THROW
+			}
+
+			// Step 4.2: 更新/插入 user_problem 表中该用户对应该题目的解题状态
+			try {
+				this->update_user_problem_status();
+			} catch (const std::exception & e) {
+				update_user_problem_status_exception = std::current_exception();
+				EXCEPT_FATAL(jobType, sid, log_fp, "Update user problem status failed!", e);
 				//DO NOT THROW
 			}
 		}
@@ -194,6 +204,8 @@ void UpdateJobBase::handle()
 		LOG_WARNING(jobType, sid, log_fp, "Escape update problem because update solution failed!");
 		//如果 update solution 失败, 则跳过 update user problem
 		LOG_WARNING(jobType, sid, log_fp, "Escape update user problem because update solution failed!");
+		//如果 update solution 失败, 则跳过 update user problem status
+		LOG_WARNING(jobType, sid, log_fp, "Escape update user problem status because update solution failed!");
 		//如果 update solution 失败, 则跳过 update source code
 		LOG_WARNING(jobType, sid, log_fp, "Escape update source code because update solution failed!");
 		//如果 update solution 失败, 则跳过 update compile info
@@ -206,6 +218,7 @@ void UpdateJobBase::handle()
 			&& update_user_exception == nullptr
 			&& update_problem_exception == nullptr
 			&& update_user_problem_exception == nullptr
+			&& update_user_problem_status_exception == nullptr
 			&& update_source_code_exception == nullptr
 			&& update_compile_info_exception == nullptr) {
 

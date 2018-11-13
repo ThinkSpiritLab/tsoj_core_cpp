@@ -2,3 +2,6 @@
 /release/
 /cmake-build-debug/
 /test_srcipt/
+/ContestManagementTest/
+/CourseManagementTest/
+/ExerciseManagementTest/
