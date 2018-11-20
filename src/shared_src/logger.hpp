@@ -8,6 +8,8 @@
 
 #include <boost/format.hpp>
 
+#include "ojv4_db_type.hpp"
+
 namespace costream_ns = kerbal::utility::costream;
 
 extern costream_ns::costream<std::cerr> ccerr;
@@ -137,6 +139,18 @@ namespace ts_judger
 	} /* namespace log */
 
 } /* namespace ts_judger */
+
+template <LogLevel level, typename ...T>
+void log_write(int type, ojv4::s_id_type job_id, const char source_filename[], int line, std::ostream & log_file, T&& ... args) noexcept
+{
+	ts_judger::log::__log_write<level>(type, job_id.to_literal(), source_filename, line, log_file, ts_judger::log::cptr_cast(std::forward<T>(args))...);
+}
+
+template <LogLevel level, typename ...T>
+void log_write(int type, ojv4::s_id_type job_id, const char source_filename[], int line, std::ofstream & log_file, T&& ... args) noexcept
+{
+	ts_judger::log::__log_write<level>(type, job_id.to_literal(), source_filename, line, (std::ostream&)(log_file), ts_judger::log::cptr_cast(std::forward<T>(args))...);
+}
 
 template <LogLevel level, typename ...T>
 void log_write(int type, int job_id, const char source_filename[], int line, std::ostream & log_file, T&& ... args) noexcept

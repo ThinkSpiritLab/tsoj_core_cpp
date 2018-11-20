@@ -14,7 +14,7 @@
 #	define MYSQLPP_MYSQL_HEADERS_BURIED
 #endif
 
-#include <mysql++/mysql++.h>
+#include <mysql++/connection.h>
 
 
 class CourseManagement

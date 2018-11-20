@@ -17,7 +17,7 @@ class MysqlEmptyResException : public std::logic_error
 
 	public:
 		MysqlEmptyResException(int errnum, const char * errstr) :
-			base("Error code: " + std::to_string(errnum) + ", Error information: "  +  errstr),
+			base("(" + std::to_string(errnum) + "): "  +  errstr),
 			_errnum(errnum)
 		{
 		}

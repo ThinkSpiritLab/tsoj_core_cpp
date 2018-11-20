@@ -13,11 +13,13 @@
 #include "ojv4_db_type.hpp"
 #include "mysql_empty_res_exception.hpp"
 
+#include <boost/current_function.hpp>
+
 #ifndef MYSQLPP_MYSQL_HEADERS_BURIED
 #	define MYSQLPP_MYSQL_HEADERS_BURIED
 #endif
 
-#include <mysql++/mysql++.h>
+#include <mysql++/connection.h>
 
 /**
  * @brief JobBase 的子类，同时是所有类型的 update 类的基类。
@@ -25,9 +27,6 @@
  */
 class UpdateJobBase: public JobBase
 {
-	private:
-		typedef JobBase supper_t;
-
 	protected:
 
 		using RedisContext = kerbal::redis::RedisContext;
@@ -37,8 +36,6 @@ class UpdateJobBase: public JobBase
 		ojv4::u_id_type u_id; ///< @brief user id
 
 		std::string s_posttime; ///< @brief post time
-
-		bool is_rejudge; ///< @brief is rejudge job
 
 		SolutionDetails result;
 
@@ -50,20 +47,20 @@ class UpdateJobBase: public JobBase
 		// 因此构造函数定义为 protected，只能由 make_update_job 来生成，故 make_update_job 也需要成为友元函数。
 		friend
 		std::unique_ptr<UpdateJobBase>
-		make_update_job(int jobType, ojv4::s_id_type sid, const RedisContext & redisConn,
+		make_update_job(int jobType, ojv4::s_id_type s_id, const RedisContext & redisConn,
 						std::unique_ptr<mysqlpp::Connection> && mysqlConn);
 		/**
 		 * @brief 通用基类的构造函数，除父类 JobBase 构造函数获得的信息除外，还额外获取更新类别任务的额外信息如 u_id,
 		 * cid, postTime等信息。
 		 */
-		UpdateJobBase(int jobType, ojv4::s_id_type sid, const RedisContext & redisConn,
+		UpdateJobBase(int jobType, ojv4::s_id_type s_id, const RedisContext & redisConn,
 						std::unique_ptr<mysqlpp::Connection> && mysqlConn);
 	public:
 		/**
 		 * @brief 执行任务
 		 * @warning 本方法实现了基类中规定的 void handle() 接口, 且子类不可再覆盖
 		 */
-		virtual void handle() override final;
+		virtual void handle() override;
 
 	protected:
 		/**
@@ -86,7 +83,6 @@ class UpdateJobBase: public JobBase
 		 */
 		virtual void update_compile_info(const char * compile_info) = 0;
 
-	private:
 		/**
 		 * @brief 从 redis 中取得编译错误信息
 		 * @return Redis 返回集. 注意! 返回集的类型只可能为字符串类型, 否则该方法会通过抛出异常报告错误
@@ -95,7 +91,6 @@ class UpdateJobBase: public JobBase
 		 */
 		kerbal::redis::RedisReply get_compile_info() const;
 
-	protected:
 		/**
 		 * @brief 更新用户的提交数, 通过数
 		 * @warning 仅规定 update user 表的接口, 具体操作需由子类实现
@@ -154,7 +149,7 @@ class UpdateJobBase: public JobBase
  * @warning 返回的对象具有多态性, 请谨慎处理!
  */
 std::unique_ptr<UpdateJobBase>
-make_update_job(int jobType, ojv4::s_id_type sid, const kerbal::redis::RedisContext & redisConn,
+make_update_job(int jobType, ojv4::s_id_type s_id, const kerbal::redis::RedisContext & redisConn,
 				std::unique_ptr<mysqlpp::Connection> && mysqlConn);
 
 #endif /* SRC_MASTER_UPDATEJOBBASE_HPP_ */

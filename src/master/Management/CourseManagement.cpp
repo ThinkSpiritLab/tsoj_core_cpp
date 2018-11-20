@@ -11,10 +11,17 @@
 #include "sync_instance_pool.hpp"
 #include "SARecorder.hpp"
 
-#include <set>
-#include <map>
+#include <unordered_set>
+#include <unordered_map>
 #include <future>
 #include <mutex>
+
+#ifndef MYSQLPP_MYSQL_HEADERS_BURIED
+#	define MYSQLPP_MYSQL_HEADERS_BURIED
+#endif
+
+#include <mysql++/query.h>
+
 
 extern std::ofstream log_fp;
 
@@ -22,12 +29,12 @@ extern std::ofstream log_fp;
 void CourseManagement::refresh_all_users_submit_and_accept_num_in_course(ojv4::c_id_type c_id)
 {
 	// 以下课程/考试的成绩较为敏感, 其中用户的提交数通过数不应当再刷新. 故使用硬编码的方式予以保护
-	static const std::set<ojv4::c_id_type> protected_course = {
+	static const std::unordered_set<ojv4::c_id_type, id_type_hash<ojv4::c_id_type>> protected_course = {
 
-		16, // 2017级程序设计实验/实训
-		17, // 2018研究生复试
-		22, // 2017级程序设计实验/实训期末考试
-		23, // 2017级程序设计实验/实训补考
+		16_c_id, // 2017级程序设计实验/实训
+		17_c_id, // 2018研究生复试
+		22_c_id, // 2017级程序设计实验/实训期末考试
+		23_c_id, // 2017级程序设计实验/实训补考
 	};
 
 	if(protected_course.find(c_id) != protected_course.cend()) {
@@ -48,13 +55,13 @@ void CourseManagement::refresh_all_users_submit_and_accept_num_in_course(ojv4::c
 	);
 	query.parse();
 
-	std::map<ojv4::u_id_type, UserSARecorder> m;
+	std::unordered_map<ojv4::u_id_type, UserSARecorder, id_type_hash<ojv4::u_id_type>> m;
 	{
 		mysqlpp::StoreQueryResult solutions = query.store(c_id, c_id);
 		for (const auto & row : solutions) {
 			ojv4::u_id_type u_id = row["u_id"];
 			ojv4::p_id_type p_id = row["p_id"];
-			ojv4::s_result_enum_type s_result = ojv4::s_result_enum_type(ojv4::s_result_in_db_type(row["s_result"]));
+			ojv4::s_result_enum s_result = ojv4::s_result_enum(ojv4::s_result_in_db_type(row["s_result"]));
 			m[u_id].add_solution(p_id, s_result);
 		}
 	}
@@ -67,7 +74,7 @@ void CourseManagement::refresh_all_users_submit_and_accept_num_in_course(ojv4::c
 		int submit = u_info.submit_num();
 		int accept = u_info.accept_num();
 
-		auto as = [](conn_pool::auto_revert_t conn, ojv4::ct_id_type c_id, ojv4::p_id_type u_id, int submit, int accept) -> mysqlpp::SimpleResult
+		auto as = [](conn_pool::auto_revert_t conn, ojv4::c_id_type c_id, ojv4::u_id_type u_id, int submit, int accept) -> mysqlpp::SimpleResult
 		{
 			mysqlpp::Query update = conn->query(
 					"update course_user set c_submit = %2, c_accept = %3 "
@@ -89,6 +96,7 @@ void CourseManagement::refresh_all_users_submit_and_accept_num_in_course(ojv4::c
 			return res;
 		};
 		conn_pool::auto_revert_t conn = conn_pool::block_fetch();
+
 		future_group.emplace_back(u_id, std::async(std::launch::async, as, std::move(conn), c_id, u_id, submit, accept));
 	}
 
@@ -124,7 +132,7 @@ void CourseManagement::refresh_all_problems_submit_and_accept_num_in_course(ojv4
 	);
 	query.parse();
 
-	std::map<ojv4::p_id_type, ProblemSARecorder> m;
+	std::unordered_map<ojv4::p_id_type, ProblemSARecorder, id_type_hash<ojv4::p_id_type>> m;
 	{
 		mysqlpp::StoreQueryResult solutions = query.store(c_id, c_id);
 
@@ -137,7 +145,7 @@ void CourseManagement::refresh_all_problems_submit_and_accept_num_in_course(ojv4
 		for (const auto & row : solutions) {
 			ojv4::u_id_type u_id = row["u_id"];
 			ojv4::p_id_type p_id = row["p_id"];
-			ojv4::s_result_enum_type s_result = ojv4::s_result_enum_type(ojv4::s_result_in_db_type(row["s_result"]));
+			ojv4::s_result_enum s_result = ojv4::s_result_enum(ojv4::s_result_in_db_type(row["s_result"]));
 			m[p_id].add_solution(u_id, s_result);
 		}
 	}
@@ -150,7 +158,7 @@ void CourseManagement::refresh_all_problems_submit_and_accept_num_in_course(ojv4
 		int submit = p_info.submit_num();
 		int accept = p_info.accept_num();
 
-		auto as = [](conn_pool::auto_revert_t conn, ojv4::ct_id_type c_id, ojv4::p_id_type p_id, int submit, int accept) -> mysqlpp::SimpleResult
+		auto as = [](conn_pool::auto_revert_t conn, ojv4::c_id_type c_id, ojv4::p_id_type p_id, int submit, int accept) -> mysqlpp::SimpleResult
 		{
 			mysqlpp::Query update = conn->query(
 					"update course_problem set c_p_submit = %2, c_p_accept = %3 "
@@ -208,7 +216,7 @@ void CourseManagement::update_user_s_submit_and_accept_num(mysqlpp::Connection &
 
 		for (const auto & row : solutions) {
 			ojv4::p_id_type p_id = row["p_id"];
-			ojv4::s_result_enum_type s_result = ojv4::s_result_enum_type(ojv4::s_result_in_db_type(row["s_result"]));
+			ojv4::s_result_enum s_result = ojv4::s_result_enum(ojv4::s_result_in_db_type(row["s_result"]));
 			u_info.add_solution(p_id, s_result);
 		}
 	}
@@ -263,7 +271,7 @@ void CourseManagement::update_problem_s_submit_and_accept_num(mysqlpp::Connectio
 
 		for (const auto & row : solutions) {
 			ojv4::u_id_type u_id = row["u_id"];
-			ojv4::s_result_enum_type s_result = ojv4::s_result_enum_type(ojv4::s_result_in_db_type(row["s_result"]));
+			ojv4::s_result_enum s_result = ojv4::s_result_enum(ojv4::s_result_in_db_type(row["s_result"]));
 			p_info.add_solution(u_id, s_result);
 		}
 	}
@@ -291,8 +299,8 @@ void CourseManagement::update_problem_s_submit_and_accept_num(mysqlpp::Connectio
 
 ojv4::u_p_status_enum query_course_user_s_problem_status_from_solution(mysqlpp::Connection & conn, ojv4::c_id_type c_id, ojv4::u_id_type u_id, ojv4::p_id_type p_id)
 {
-	constexpr ojv4::s_result_in_db_type ACCEPTED = ojv4::s_result_in_db_type(ojv4::s_result_enum_type::ACCEPTED);
-	constexpr ojv4::s_result_in_db_type SYSTEM_ERROR = ojv4::s_result_in_db_type(ojv4::s_result_enum_type::SYSTEM_ERROR);
+	constexpr ojv4::s_result_in_db_type ACCEPTED = ojv4::s_result_in_db_type(ojv4::s_result_enum::ACCEPTED);
+	constexpr ojv4::s_result_in_db_type SYSTEM_ERROR = ojv4::s_result_in_db_type(ojv4::s_result_enum::SYSTEM_ERROR);
 
 	mysqlpp::Query query_status = conn.query(
 			"select ("
@@ -305,9 +313,9 @@ ojv4::u_p_status_enum query_course_user_s_problem_status_from_solution(mysqlpp::
 
 	mysqlpp::StoreQueryResult res = query_status.store(u_id, p_id, ACCEPTED, SYSTEM_ERROR, c_id);
 
-	if(res[0]["has_accepted"] == true) {
+	if(bool(res[0]["has_accepted"]) == true) {
 		return ojv4::u_p_status_enum::ACCEPTED;
-	} else if(res[0]["has_submit"] == true) {
+	} else if(bool(res[0]["has_submit"]) == true) {
 		return ojv4::u_p_status_enum::ATTEMPTED;
 	} else {
 		return ojv4::u_p_status_enum::TODO;
@@ -316,39 +324,39 @@ ojv4::u_p_status_enum query_course_user_s_problem_status_from_solution(mysqlpp::
 
 void CourseManagement::update_user_problem_status(mysqlpp::Connection & conn, ojv4::c_id_type c_id, ojv4::u_id_type u_id, ojv4::p_id_type p_id)
 {
-	ojv4::u_p_status_enum status = ojv4::u_p_status_enum::TODO;
-
-	try {
-		status = query_course_user_s_problem_status_from_solution(conn, c_id, u_id, p_id);
-	} catch (const std::exception & e) {
-		EXCEPT_FATAL(0, 0, log_fp, "Query course-user's problem status failed!", e);
-		throw;
-	}
-
-	if (status == ojv4::u_p_status_enum::TODO) {
-		return;
-	}
-
-	/*
-	 insert into course_user_problem_status(c_id, u_id, p_id, status)
-	 values(1, 1, 1001, 0)
-	 on duplicate key update status = 0
-	 */
-
-	mysqlpp::Query on_duplicate_insert = conn.query(
-			"insert into course_user_problem_status(u_id, p_id, status, c_id) "
-			"values(%0, %1, %2, %3) "
-			"on duplicate key update status = %2"
-	);
-	on_duplicate_insert.parse();
-
-	mysqlpp::SimpleResult res = on_duplicate_insert.execute(u_id, p_id, ojv4::u_p_status_type(status), c_id);
-
-	if(!res) {
-		MysqlEmptyResException e(on_duplicate_insert.errnum(), on_duplicate_insert.error());
-		EXCEPT_FATAL(0, 0, log_fp, "Update course-user's problem status failed!", e);
-		throw e;
-	}
+//	ojv4::u_p_status_enum status = ojv4::u_p_status_enum::TODO;
+//
+//	try {
+//		status = query_course_user_s_problem_status_from_solution(conn, c_id, u_id, p_id);
+//	} catch (const std::exception & e) {
+//		EXCEPT_FATAL(0, 0, log_fp, "Query course-user's problem status failed!", e);
+//		throw;
+//	}
+//
+//	if (status == ojv4::u_p_status_enum::TODO) {
+//		return;
+//	}
+//
+//	/*
+//	 insert into course_user_problem_status(c_id, u_id, p_id, status)
+//	 values(1, 1, 1001, 0)
+//	 on duplicate key update status = 0
+//	 */
+//
+//	mysqlpp::Query on_duplicate_insert = conn.query(
+//			"insert into course_user_problem_status(u_id, p_id, status, c_id) "
+//			"values(%0, %1, %2, %3) "
+//			"on duplicate key update status = %2"
+//	);
+//	on_duplicate_insert.parse();
+//
+//	mysqlpp::SimpleResult res = on_duplicate_insert.execute(u_id, p_id, ojv4::u_p_status_type(status), c_id);
+//
+//	if(!res) {
+//		MysqlEmptyResException e(on_duplicate_insert.errnum(), on_duplicate_insert.error());
+//		EXCEPT_FATAL(0, 0, log_fp, "Update course-user's problem status failed!", e);
+//		throw e;
+//	}
 }
 
 void CourseManagement::update_user_problem(mysqlpp::Connection & conn, ojv4::c_id_type c_id, ojv4::u_id_type u_id, ojv4::p_id_type p_id)
@@ -405,7 +413,7 @@ void CourseManagement::update_user_problem(mysqlpp::Connection & conn, ojv4::c_i
 	} else {
 		mysqlpp::Query update = conn.query(
 				"update user_problem set "
-				"status = %0, "
+				"status = %0 "
 				"where u_id = %1 and p_id = %2 and c_id = %3"
 		);
 		update.parse();

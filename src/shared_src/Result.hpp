@@ -8,22 +8,20 @@
 #ifndef SRC_RESULT_HPP_
 #define SRC_RESULT_HPP_
 
-#include <kerbal/utility/storage.hpp>
-
-#include "united_resource.hpp"
+#include "ojv4_db_type.hpp"
 
 #include <iostream>
 #include <chrono>
 
 struct SolutionDetails
 {
-		UnitedJudgeResult judge_result;
-		std::chrono::milliseconds cpu_time;
-		std::chrono::milliseconds real_time;
-		kerbal::utility::Byte memory;
+		ojv4::s_result_enum judge_result;
+		ojv4::s_time_in_milliseconds cpu_time;
+		ojv4::s_time_in_milliseconds real_time;
+		ojv4::s_mem_in_byte memory;
 
 		SolutionDetails() :
-				judge_result(UnitedJudgeResult::ACCEPTED),
+				judge_result(ojv4::s_result_enum::ACCEPTED),
 				cpu_time(0),
 				real_time(0),
 				memory(0)
@@ -33,9 +31,9 @@ struct SolutionDetails
 		friend std::ostream& operator<<(std::ostream& out, const SolutionDetails & src)
 		{
 			return out << "result: " << src.judge_result
-						<< " cpu_time: " << std::chrono::microseconds(src.cpu_time).count() << " ms"
-						<< " real_time: " << std::chrono::microseconds(src.real_time).count() << " ms"
-						<< " memory: " << kerbal::utility::Byte(src.memory).count() << " Byte";
+						<< " cpu_time: " << src.cpu_time.count() << " ms"
+						<< " real_time: " << src.real_time.count() << " ms"
+						<< " memory: " << src.memory.count() << " Byte";
 		}
 
 };

@@ -14,7 +14,7 @@
 #	define MYSQLPP_MYSQL_HEADERS_BURIED
 #endif
 
-#include <mysql++/mysql++.h>
+#include <mysql++/connection.h>
 
 
 class ExerciseManagement
@@ -25,6 +25,8 @@ class ExerciseManagement
 		static void refresh_all_users_submit_and_accept_num();
 
 		static void refresh_all_problems_submit_and_accept_num();
+
+		static void refresh_all_user_problem();
 
 		static void update_user_s_submit_and_accept_num(mysqlpp::Connection & mysql_conn, ojv4::u_id_type u_id);
 

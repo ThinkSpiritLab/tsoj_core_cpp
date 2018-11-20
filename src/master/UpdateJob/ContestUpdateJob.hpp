@@ -17,15 +17,14 @@
 class ContestUpdateJob: public UpdateJobBase
 {
 	private:
-		typedef UpdateJobBase supper_t;
 
 		friend
 		std::unique_ptr<UpdateJobBase>
-		make_update_job(int jobType, int sid, const RedisContext & redisConn,
+		make_update_job(int jobType, ojv4::s_id_type s_id, const RedisContext & redisConn,
 						std::unique_ptr<mysqlpp::Connection> && mysqlConn);
 
 	protected:
-		ContestUpdateJob(int jobType, int sid, const kerbal::redis::RedisContext & redisConn,
+		ContestUpdateJob(int jobType, ojv4::s_id_type s_id, const kerbal::redis::RedisContext & redisConn,
 						std::unique_ptr <mysqlpp::Connection> && mysqlConn);
 
 	private:

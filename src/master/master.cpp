@@ -301,7 +301,7 @@ int main() try
 
 		std::string job_item = "-1,-1";
 		int jobType = -1;
-		int sid = -1;
+		ojv4::s_id_type s_id(-1);
 
 		/*
 		 * 当收到 SIGTERM 信号时，会在评测队列末端加一个特殊的评测任务用于标识停止测评。此处若检测到停止
@@ -315,9 +315,9 @@ int main() try
 				LOG_INFO(0, 0, log_fp, "Get exit job.");
 				continue;
 			}
-			std::tie(jobType, sid) = JobBase::parseJobItem(job_item);
-			LOG_DEBUG(jobType, sid, log_fp, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
-			LOG_DEBUG(jobType, sid, log_fp, "Master get update job: ", job_item);
+			std::tie(jobType, s_id) = JobBase::parseJobItem(job_item);
+			LOG_DEBUG(jobType, s_id, log_fp, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+			LOG_DEBUG(jobType, s_id, log_fp, "Master get update job: ", job_item);
 		} catch (const std::exception & e) {
 			EXCEPT_FATAL(0, 0, log_fp, "Fail to fetch job.", e, "job_item: ", job_item);
 			continue;
@@ -328,12 +328,12 @@ int main() try
 
 		// 本次更新开始时间
 		auto start(std::chrono::steady_clock::now());
-		LOG_DEBUG(jobType, sid, log_fp, "Update job start");
+		LOG_DEBUG(jobType, s_id, log_fp, "Update job start");
 
 		// 本次更新任务的 redis 连接
 		kerbal::redis::RedisContext redisConn(redis_hostname.c_str(), redis_port, 100_ms);
 		if (!redisConn) {
-			LOG_FATAL(jobType, sid, log_fp, "Redis connection connect failed!");
+			LOG_FATAL(jobType, s_id, log_fp, "Redis connection connect failed!");
 			continue;
 		}
 
@@ -341,7 +341,7 @@ int main() try
 		std::unique_ptr <mysqlpp::Connection> mysqlConn(new mysqlpp::Connection(false));
 		mysqlConn->set_option(new mysqlpp::SetCharsetNameOption("utf8"));
 		if (!mysqlConn->connect(mysql_database.c_str(), mysql_hostname.c_str(), mysql_username.c_str(), mysql_passwd.c_str())) {
-			LOG_FATAL(jobType, sid, log_fp, "Mysql connection connect failed!");
+			LOG_FATAL(jobType, s_id, log_fp, "Mysql connection connect failed!");
 			continue;
 		}
 
@@ -353,12 +353,12 @@ int main() try
 			// 避免了无效操作的消耗与可能导致的其他逻辑混乱
 			// 此外，unique_ptr 的特性决定了其不应该使用值传递的方式。
 			// 而使用 std::move 将其强制转换为右值引用，是为了使用移动构造函数来优化性能（吗？这个不确定）
-			job = make_update_job(jobType, sid, redisConn, std::move(mysqlConn));
+			job = make_update_job(jobType, s_id, redisConn, std::move(mysqlConn));
 		} catch (const std::exception & e) {
-			EXCEPT_FATAL(jobType, sid, log_fp, "Job construct failed!", e);
+			EXCEPT_FATAL(jobType, s_id, log_fp, "Job construct failed!", e);
 			continue;
 		} catch (...) {
-			LOG_FATAL(jobType, sid, log_fp, "Job construct failed! Error information: ", UNKNOWN_EXCEPTION_WHAT);
+			LOG_FATAL(jobType, s_id, log_fp, "Job construct failed! Error information: ", UNKNOWN_EXCEPTION_WHAT);
 			continue;
 		}
 
@@ -366,10 +366,10 @@ int main() try
 			// 执行本次 update job
 			job->handle();
 		} catch (const std::exception & e) {
-			EXCEPT_FATAL(jobType, sid, log_fp, "Job handle failed!", e);
+			EXCEPT_FATAL(jobType, s_id, log_fp, "Job handle failed!", e);
 			continue;
 		} catch (...) {
-			LOG_FATAL(jobType, sid, log_fp, "Job handle failed! Error information: ", UNKNOWN_EXCEPTION_WHAT);
+			LOG_FATAL(jobType, s_id, log_fp, "Job handle failed! Error information: ", UNKNOWN_EXCEPTION_WHAT);
 			continue;
 		}
 
@@ -377,8 +377,8 @@ int main() try
 		auto end(std::chrono::steady_clock::now());
 		// 本次更新耗时
 		auto time_consume = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-		LOG_DEBUG(jobType, sid, log_fp, "Update consume: ", time_consume.count());
-		LOG_DEBUG(jobType, sid, log_fp, ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+		LOG_DEBUG(jobType, s_id, log_fp, "Update consume: ", time_consume.count());
+		LOG_DEBUG(jobType, s_id, log_fp, ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 	}
 	return 0;
 } catch (const std::exception & e) {

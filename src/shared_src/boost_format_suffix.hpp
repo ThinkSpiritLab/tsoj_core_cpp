@@ -9,6 +9,7 @@
 #define SRC_SHARED_SRC_BOOST_FORMAT_SUFFIX_HPP_
 
 #include <boost/format.hpp>
+#include <boost/core/ignore_unused.hpp>
 
 struct format_helper
 {
@@ -21,7 +22,8 @@ struct format_helper
 		template <typename ... Args>
 		boost::format& operator()(Args && ... args)
 		{
-			std::initializer_list<int> {(templ % args, 0)...};
+			std::initializer_list<int> l {(templ % args, 0)...};
+			boost::ignore_unused(l);
 			return templ;
 		}
 };

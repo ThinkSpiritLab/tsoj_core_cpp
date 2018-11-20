@@ -42,6 +42,13 @@ inline const char* getJudgeStatusName(JudgeStatus status)
 	return "Unknown JudgeStatus";
 }
 
+
+inline std::ostream& operator<<(std::ostream& out, JudgeStatus status)
+{
+	return out << getJudgeStatusName(status);
+}
+
+
 /**
  * @brief 枚举类，标识用户所用的语言
  */

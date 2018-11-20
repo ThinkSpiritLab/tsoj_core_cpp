@@ -174,7 +174,7 @@ int main()
 				switch (reply2.replyType())  //取到则说明该用户在同一时间内ac两题
 				{
 					case RedisReplyType::STRING: {
-						if (job.pid != std::stoi(reply2->str)) {
+						if (job.p_id != std::stoi(reply2->str)) {
 							kerbal::redis::List<int> cheat_list(redis_conn, "cheat_list");
 							cheat_list.push_back(update_id);
 						}

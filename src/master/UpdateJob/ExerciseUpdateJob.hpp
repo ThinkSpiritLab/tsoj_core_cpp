@@ -17,21 +17,23 @@
 class ExerciseUpdateJob: public ExerciseUpdateJobBase
 {
 	private:
-		typedef ExerciseUpdateJobBase supper_t;
 
 		friend
 		std::unique_ptr<UpdateJobBase>
-		make_update_job(int jobType, int sid, const RedisContext & redisConn,
+		make_update_job(int jobType, ojv4::s_id_type s_id, const RedisContext & redisConn,
 						std::unique_ptr<mysqlpp::Connection> && mysqlConn);
 
 	private:
-		ExerciseUpdateJob(int jobType, int sid, const kerbal::redis::RedisContext & redisConn,
+		ExerciseUpdateJob(int jobType, ojv4::s_id_type s_id, const kerbal::redis::RedisContext & redisConn,
 						std::unique_ptr<mysqlpp::Connection> && mysqlConn);
+
 		virtual void update_solution() override final;
 
 		virtual void update_user() override final;
 
 		virtual void update_problem() override final;
+
+		virtual void update_user_problem() override final;
 
 		virtual void update_user_problem_status() override final;
 

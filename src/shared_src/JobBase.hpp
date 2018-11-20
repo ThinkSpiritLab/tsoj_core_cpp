@@ -14,6 +14,7 @@
 #include <string>
 #include <chrono>
 
+#include "ojv4_db_type.hpp"
 #include "united_resource.hpp"
 
 /**
@@ -25,12 +26,12 @@ class JobBase
 	public:
 		int jobType; ///< Job 类型，如：竞赛、课程等
 
-		int sid; ///< solution id
+		ojv4::s_id_type s_id; ///< solution id
 
 		kerbal::redis::RedisContext redisConn; ///< redis 连接
 
 	public:
-		int pid; ///< problem id
+		ojv4::p_id_type p_id; ///< problem id
 
 		Language lang; ///< 语言
 
@@ -40,7 +41,7 @@ class JobBase
 
 		kerbal::utility::MB memoryLimit; ///< 空间限制
 
-		int similarity_threshold; ///< 重复率限制
+		ojv4::s_similarity_type similarity_threshold; ///< 重复率限制
 
 		/**
 		 * @brief 将待处理 Job 信息分解，提取出 job_type 与 job_id
@@ -48,7 +49,7 @@ class JobBase
 		 * @return <job_type, job_id>
 		 * @exception std::invalid_argument
 		 */
-		static std::pair<int, int> parseJobItem(const std::string & jobItem);
+		static std::pair<int, ojv4::s_id_type> parseJobItem(const std::string & jobItem);
 
 		/**
 		 * @brief 判断是否终止服务 loop
@@ -70,13 +71,13 @@ class JobBase
 		}
 
 		/**
-		 * @brief 初始化 jobType, sid, redisConn
+		 * @brief 初始化 jobType, s_id, redisConn
 		 * @param jobType Job 类型，如：竞赛、课程等
-		 * @param sid student id
+		 * @param s_id student id
 		 * @param redisConn Redis连接
 		 * @exception 该构造函数保证不抛出任何异常
 		 */
-		JobBase(int jobType, int sid, const kerbal::redis::RedisContext & redisConn);
+		JobBase(int jobType, ojv4::s_id_type s_id, const kerbal::redis::RedisContext & redisConn);
 
 		/**
 		 * @brief 析构函数使用默认析构函数
@@ -99,7 +100,7 @@ class JobBase
 
 		/**
 		 * @brief 从 redis 数据库获取本 Job 的代码并存储到工作空间中，用于编译运行。
-		 * @warning 本函数为纯虚函数，但是有实现。实际上，其子类的部分相同信息可由此函数取得。这部分有：pid, lang, cases, timeLimit, memoryLimit
+		 * @warning 本函数为纯虚函数，但是有实现。实际上，其子类的部分相同信息可由此函数取得。这部分有：p_id, lang, cases, timeLimit, memoryLimit
 		 * @exception JobHandleException
 		 */
 		void storeSourceCode(const std::string & parent_path = "./", const std::string & file_name = "Main") const;

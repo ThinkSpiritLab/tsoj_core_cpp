@@ -8,14 +8,14 @@
 #ifndef SRC_MASTER_SARECORDER_HPP_
 #define SRC_MASTER_SARECORDER_HPP_
 
-#include <set>
+#include <unordered_set>
 
 #include "ojv4_db_type.hpp"
 
 class ProblemSARecorder
 {
 		int __submit_num;
-		std::set<ojv4::u_id_type> accepted_users;
+		std::unordered_set<ojv4::u_id_type, id_type_hash<ojv4::u_id_type>> accepted_users;
 
 	public:
 		ProblemSARecorder() :
@@ -33,7 +33,7 @@ class ProblemSARecorder
 			return this->accepted_users.size();
 		}
 
-		void add_solution(ojv4::u_id_type u_id, ojv4::s_result_enum_type s_result)
+		void add_solution(ojv4::u_id_type u_id, ojv4::s_result_enum s_result)
 		{
 			// 此题已通过的用户的集合中无此条 solution 对应的用户
 			if (accepted_users.find(u_id) == accepted_users.end()) {
@@ -55,7 +55,7 @@ class ProblemSARecorder
 class UserSARecorder
 {
 		int __submit_num;
-		std::set<ojv4::p_id_type> accepted_problems;
+		std::unordered_set<ojv4::p_id_type, id_type_hash<ojv4::p_id_type>> accepted_problems;
 
 	public:
 		UserSARecorder() :
@@ -73,7 +73,7 @@ class UserSARecorder
 			return this->accepted_problems.size();
 		}
 
-		void add_solution(ojv4::p_id_type p_id, ojv4::s_result_enum_type s_result)
+		void add_solution(ojv4::p_id_type p_id, ojv4::s_result_enum s_result)
 		{
 			// 此用户已通过的题目编号的集合中无此条 solution 对应的题目编号
 			if (accepted_problems.find(p_id) == accepted_problems.end()) {

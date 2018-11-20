@@ -8,11 +8,13 @@
 #include "process.hpp"
 #include "logger.hpp"
 #include "load_helper.hpp"
+#include "JudgeJob.hpp"
+#include "mkdir_p.hpp"
+
 #include <kerbal/redis/redis_context_pool.hpp>
 #include <kerbal/redis/operation.hpp>
 #include <kerbal/redis/redis_data_struct/list.hpp>
 #include <kerbal/redis/redis_data_struct/set.hpp>
-#include "JudgeJob.hpp"
 
 using namespace kerbal::redis;
 
@@ -125,13 +127,13 @@ void regist_SIGTERM_handler(int signum) noexcept
  * @brief 加载 slave 工作的配置
  * 根据 judge_server.conf 文档，读取工作配置信息。loadConfig 的工作原理详见其文档。
  */
-void load_config()
+void load_config(const char * config_file_path)
 {
 	using std::string;
 	using namespace kerbal::utility::costream;
 	const auto & ccerr = costream<cerr>(LIGHT_RED);
 
-	std::ifstream fp("/etc/ts_judger/judge_server.conf", std::ios::in); //BUG "re"
+	std::ifstream fp(config_file_path, std::ios::in); //BUG "re"
 	if (!fp) {
 		ccerr << "can't not open judge_server.conf" << endl;
 		exit(0);
@@ -224,7 +226,14 @@ int main(int argc, const char * argv[]) try
 	}
 
 	cout << std::boolalpha;
-	load_config();
+	load_config("/etc/ts_judger/judge_server.conf");
+
+	try {
+		mkdir_p(init_dir);
+	} catch (const std::exception & e) {
+		EXCEPT_FATAL(0, 0, log_fp, "Make init dir failed.", e);
+		exit(0);
+	}
 
 	RedisContext main_conn(redis_hostname.c_str(), redis_port, 1500_ms);
 	if (!main_conn) {
@@ -240,8 +249,7 @@ int main(int argc, const char * argv[]) try
 
 	try {
 		/// 创建并分离发送心跳线程
-		std::thread regist(register_self, std::move(register_self_conn));
-		regist.detach();
+		std::thread(register_self, std::move(register_self_conn)).detach();
 	} catch (const std::exception & e) {
 		LOG_FATAL(0, 0, log_fp, "Register self service process fork failed.");
 		exit(0);
@@ -256,7 +264,7 @@ int main(int argc, const char * argv[]) try
 		// Step 1: Pop job item and parser job_type and job_id.
 		std::string job_item = "0,0";
 		int job_type = 0;
-		int job_id = 0;
+		ojv4::s_id_type job_id(0);
 		/*
 		 * 当收到 SIGTERM 信号时，会在评测队列末端加一个特殊的评测任务用于标识停止测评。此处若检测到停止
 		 * 工作的信号，则结束工作loop
@@ -272,13 +280,13 @@ int main(int argc, const char * argv[]) try
 			std::tie(job_type, job_id) = JudgeJob::parseJobItem(job_item);
 			LOG_DEBUG(job_type, job_id, log_fp, "Judge server ", judge_server_id, " get job: ", job_item);
 		} catch (const RedisNilException & e) {
-			EXCEPT_FATAL(0, 0, log_fp, "Fail to fetch job.", e, ", job_item: ", job_item);
+			EXCEPT_FATAL(0, 0, log_fp, "Fail to fetch job.", e, "job_item: ", job_item);
 			continue;
 		} catch (const std::exception & e) {
-			EXCEPT_FATAL(0, 0, log_fp, "Fail to fetch job.", e, ", job_item: ", job_item);
+			EXCEPT_FATAL(0, 0, log_fp, "Fail to fetch job.", e, "job_item: ", job_item);
 			continue;
 		} catch (...) {
-			UNKNOWN_EXCEPT_FATAL(0, 0, log_fp, "Fail to fetch job.", ", job_item: ", job_item);
+			UNKNOWN_EXCEPT_FATAL(0, 0, log_fp, "Fail to fetch job.", "job_item: ", job_item);
 			continue;
 		}
 
@@ -300,7 +308,7 @@ int main(int argc, const char * argv[]) try
 		}
 
 		try {
-			process judge_process([](int job_type, int job_id) {
+			process judge_process([](int job_type, ojv4::s_id_type job_id) {
 				RedisContext child_conn(redis_hostname.c_str(), redis_port, 1500_ms);
 				if (!child_conn) {
 					LOG_FATAL(job_type, job_id, log_fp, "Child context connect failed.");

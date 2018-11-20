@@ -123,8 +123,8 @@ CompileConfig::CompileConfig(const JudgeJob & job) :
 			break;
 		}
 	}
-	this->max_cpu_time = 5_s;
-	this->max_real_time = 5_s;
+	this->max_cpu_time = 15_s;
+	this->max_real_time = 15_s;
 	this->max_stack = 1024_MB;
 	this->max_process_number = Config::UNLIMITED; //TODO
 	this->max_output_size = 128_MB;

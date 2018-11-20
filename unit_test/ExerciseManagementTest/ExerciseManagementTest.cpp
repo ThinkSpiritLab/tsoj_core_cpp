@@ -41,10 +41,11 @@ int test_main(int argc, char *argv[])
 			conn_pool::construct(1, std::move(conn));
 		}
 
-		ExerciseManagement::refresh_all_users_submit_and_accept_num();
 		ExerciseManagement::refresh_all_problems_submit_and_accept_num();
+		LOG_INFO(0, 0, log_fp, "refresh_all_user_problem finished!");
 
 	} catch (const std::exception & e) {
+		EXCEPT_FATAL(0, 0, log_fp, "refresh_all_user_problem falied!", e);
 		BOOST_FAIL(e.what());            // 给出一个错误信息，终止执行
 	} catch (...) {
 		BOOST_FAIL("致命错误，测试终止");            // 给出一个错误信息，终止执行

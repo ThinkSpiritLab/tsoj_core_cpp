@@ -1,4 +1,4 @@
-/*
+ /*
  * CourseUpdateJob.hpp
  *
  *  Created on: 2018年9月4日
@@ -19,17 +19,16 @@
 class CourseUpdateJob: public ExerciseUpdateJobBase
 {
 	private:
-		typedef ExerciseUpdateJobBase supper_t;
 
 		friend
 		std::unique_ptr<UpdateJobBase>
-		make_update_job(int jobType, int sid, const RedisContext & redisConn,
+		make_update_job(int jobType, ojv4::s_id_type s_id, const RedisContext & redisConn,
 						std::unique_ptr<mysqlpp::Connection> && mysqlConn);
 
 	protected:
 		ojv4::c_id_type c_id; ///< @brief course_id
 
-		CourseUpdateJob(int jobType, int sid, ojv4::c_id_type c_id, const kerbal::redis::RedisContext & redisConn,
+		CourseUpdateJob(int jobType, ojv4::s_id_type s_id, ojv4::c_id_type c_id, const kerbal::redis::RedisContext & redisConn,
 						std::unique_ptr<mysqlpp::Connection> && mysqlConn);
 	private:
 		virtual void update_solution() override;

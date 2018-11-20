@@ -14,7 +14,7 @@
 #	define MYSQLPP_MYSQL_HEADERS_BURIED
 #endif
 
-#include <mysql++/mysql++.h>
+#include <mysql++/connection.h>
 
 class ContestManagement
 {
@@ -23,7 +23,7 @@ class ContestManagement
 
 		static void refresh_all_problems_submit_and_accept_num_in_contest(ojv4::ct_id_type ct_id);
 
-		static void update_problem_submit_and_accept_num(
+		static void update_problem_s_submit_and_accept_num(
 				mysqlpp::Connection & mysql_conn,
 				ojv4::ct_id_type ct_id,
 				ojv4::p_id_type p_id);

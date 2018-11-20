@@ -38,21 +38,21 @@ void UpdatorJob::rejudge(const Result & result)
 
     mysqlpp::StoreQueryResult res;
     try {
-        res = query.store(solution_table, sid);
+        res = query.store(solution_table, s_id);
     } catch (const mysqlpp::BadParamCount & e) {
-        LOG_FATAL(jobType, sid, log_fp, "Fetch row from result set failed! Error information: ", e.what());
+        LOG_FATAL(jobType, s_id, log_fp, "Fetch row from result set failed! Error information: ", e.what());
         throw;
     } catch (const mysqlpp::BadQuery & e) {
-        LOG_FATAL(jobType, sid, log_fp, "Fetch row from result set failed! Error information: ", e.what());
+        LOG_FATAL(jobType, s_id, log_fp, "Fetch row from result set failed! Error information: ", e.what());
         throw;
     }
 
     if (res.empty()) {
         if (query.errnum() == 0) {
-            LOG_FATAL(jobType, sid, log_fp, "Fetch row from result set failed! Error information: ", "empty set");
+            LOG_FATAL(jobType, s_id, log_fp, "Fetch row from result set failed! Error information: ", "empty set");
             throw std::logic_error("empty set");
         } else {
-            LOG_FATAL(jobType, sid, log_fp, "Fetch row from result set failed! Error code: ", query.errnum(),
+            LOG_FATAL(jobType, s_id, log_fp, "Fetch row from result set failed! Error code: ", query.errnum(),
                       ", Error information: ", query.error());
             throw std::logic_error(query.error());
         }
@@ -85,16 +85,16 @@ void UpdatorJob::rejudge(const Result & result)
         del_ce_info_templ.parse();
         mysqlpp::SimpleResult res;
         try {
-            del_ce_info_templ.execute(compile_info_table, sid);
+            del_ce_info_templ.execute(compile_info_table, s_id);
         } catch (const mysqlpp::BadParamCount & e) {
-            LOG_FATAL(jobType, sid, log_fp, "Delete compile info failed! Error information: ", e.what());
+            LOG_FATAL(jobType, s_id, log_fp, "Delete compile info failed! Error information: ", e.what());
             throw;
         } catch (const mysqlpp::BadQuery & e) {
-        	LOG_FATAL(jobType, sid, log_fp, "Delete compile info failed! Error information: ", e.what());
+        	LOG_FATAL(jobType, s_id, log_fp, "Delete compile info failed! Error information: ", e.what());
             throw;
         }
         if (!res) {
-            LOG_FATAL(jobType, sid, log_fp, "Delete compile info failed! ",
+            LOG_FATAL(jobType, s_id, log_fp, "Delete compile info failed! ",
                       "Error code: ", del_ce_info_templ.errnum(),
                       ", Error information: ", del_ce_info_templ.error());
             throw std::logic_error(del_ce_info_templ.error());
@@ -110,18 +110,18 @@ void UpdatorJob::rejudge(const Result & result)
         mysqlpp::SimpleResult res;
         insert_rejudge_solution_templ.parse();
         try {
-            res = insert_rejudge_solution_templ.execute(jobType, sid, orig_result, std::stoi(row[1]),
+            res = insert_rejudge_solution_templ.execute(jobType, s_id, orig_result, std::stoi(row[1]),
                                                         std::stoll(row[2]),
                                                         std::stoi(row[3]));
         } catch (const mysqlpp::BadParamCount & e) {
-            LOG_FATAL(jobType, sid, log_fp, "Insert into rejudge_solution failed! Error information: ", e.what());
+            LOG_FATAL(jobType, s_id, log_fp, "Insert into rejudge_solution failed! Error information: ", e.what());
             throw;
         } catch (const mysqlpp::BadQuery & e) {
-            LOG_FATAL(jobType, sid, log_fp, "Insert into rejudge_solution failed! Error information: ", e.what());
+            LOG_FATAL(jobType, s_id, log_fp, "Insert into rejudge_solution failed! Error information: ", e.what());
             throw;
         }
         if (!res) {
-            LOG_FATAL(jobType, sid, log_fp, "Insert into rejudge_solution failed! ",
+            LOG_FATAL(jobType, s_id, log_fp, "Insert into rejudge_solution failed! ",
                       "Error code: ", insert_rejudge_solution_templ.errnum(),
                       ", Error information: ", insert_rejudge_solution_templ.error());
             throw std::logic_error(insert_rejudge_solution_templ.error());
@@ -137,16 +137,16 @@ void UpdatorJob::rejudge(const Result & result)
         insert_into_message_templ.parse();
         mysqlpp::SimpleResult res;
         try {
-            res = insert_into_message_templ.execute(uid, postTime, pid);
+            res = insert_into_message_templ.execute(uid, postTime, p_id);
         } catch (const mysqlpp::BadParamCount & e) {
-            LOG_FATAL(jobType, sid, log_fp, "Insert into message failed! Error information: ", e.what());
+            LOG_FATAL(jobType, s_id, log_fp, "Insert into message failed! Error information: ", e.what());
             throw;
         } catch (const mysqlpp::BadQuery & e) {
-            LOG_FATAL(jobType, sid, log_fp, "Insert into message failed! Error information: ", e.what());
+            LOG_FATAL(jobType, s_id, log_fp, "Insert into message failed! Error information: ", e.what());
             throw;
         }
         if (!res) {
-            LOG_FATAL(jobType, sid, log_fp, "Insert into message failed! ",
+            LOG_FATAL(jobType, s_id, log_fp, "Insert into message failed! ",
                       "Error code: ", insert_into_message_templ.errnum(),
                       ", Error information: ", insert_into_message_templ.error());
             throw std::logic_error(insert_into_message_templ.error());
@@ -171,16 +171,16 @@ void UpdatorJob::rejudge_solution(const Result & result)
     mysqlpp::SimpleResult res;
     try {
         res = update.execute(solution_table, (int) result.judge_result, result.cpu_time.count(),
-                             result.memory.count(), result.similarity_percentage, sid);
+                             result.memory.count(), result.similarity_percentage, s_id);
     } catch (const mysqlpp::BadParamCount & e) {
-        LOG_FATAL(jobType, sid, log_fp, "Update solution after rejudge failed! Error information: ", e.what());
+        LOG_FATAL(jobType, s_id, log_fp, "Update solution after rejudge failed! Error information: ", e.what());
         throw;
     } catch (const mysqlpp::BadQuery & e) {
-        LOG_FATAL(jobType, sid, log_fp, "Update solution after rejudge failed! Error information: ", e.what());
+        LOG_FATAL(jobType, s_id, log_fp, "Update solution after rejudge failed! Error information: ", e.what());
         throw;
     }
     if (!res) {
-        LOG_FATAL(jobType, sid, log_fp, "Update solution after rejudge failed! ",
+        LOG_FATAL(jobType, s_id, log_fp, "Update solution after rejudge failed! ",
                   "Error code: ", update.errnum(),
                   ", Error information: ", update.error());
         throw std::logic_error(update.error());
@@ -207,21 +207,21 @@ void UpdatorJob::rejudge_user_and_problem(const Result & result, UnitedJudgeResu
     query.parse();
     mysqlpp::StoreQueryResult res;
     try {
-        res = query.store(postTime.c_str(), postTime.c_str(), postTime.c_str(), cid_param, uid, pid);
+        res = query.store(postTime.c_str(), postTime.c_str(), postTime.c_str(), cid_param, uid, p_id);
     } catch (const mysqlpp::BadParamCount & e) {
-        LOG_FATAL(jobType, sid, log_fp, "Select count info from solution failed! Error information: ", e.what());
+        LOG_FATAL(jobType, s_id, log_fp, "Select count info from solution failed! Error information: ", e.what());
         throw;
     } catch (const mysqlpp::BadQuery & e) {
-        LOG_FATAL(jobType, sid, log_fp, "Select count info from solution failed! Error information: ", e.what());
+        LOG_FATAL(jobType, s_id, log_fp, "Select count info from solution failed! Error information: ", e.what());
         throw;
     }
 
     if (res.empty()) {
         if (query.errnum() == 0) {
-            LOG_FATAL(jobType, sid, log_fp, "Select count info from solution failed! Error information: ", "empty set");
+            LOG_FATAL(jobType, s_id, log_fp, "Select count info from solution failed! Error information: ", "empty set");
             throw std::logic_error("empty set");
         } else {
-            LOG_FATAL(jobType, sid, log_fp, "Select count info from solution failed! ",
+            LOG_FATAL(jobType, s_id, log_fp, "Select count info from solution failed! ",
                       "Error code: ", query.errnum(),
                       ", Error information: ", query.error());
             throw std::logic_error(query.error());
@@ -249,25 +249,25 @@ void UpdatorJob::rejudge_user_and_problem(const Result & result, UnitedJudgeResu
                 query.parse();
                 mysqlpp::StoreQueryResult res;
                 try {
-                    query.store(postTime, cid_param, uid, pid,
-                                postTime, cid_param, uid, pid);
+                    query.store(postTime, cid_param, uid, p_id,
+                                postTime, cid_param, uid, p_id);
                 } catch (const mysqlpp::BadParamCount & e) {
-                    LOG_FATAL(jobType, sid, log_fp, "Select count info from solution failed! Error information: ",
+                    LOG_FATAL(jobType, s_id, log_fp, "Select count info from solution failed! Error information: ",
                               e.what());
                     throw;
                 } catch (const mysqlpp::BadQuery & e) {
-                    LOG_FATAL(jobType, sid, log_fp, "Select count info from solution failed! Error information: ",
+                    LOG_FATAL(jobType, s_id, log_fp, "Select count info from solution failed! Error information: ",
                               e.what());
                     throw;
                 }
 
                 if (res.empty()) {
                     if (query.errnum() == 0) {
-                        LOG_FATAL(jobType, sid, log_fp, "Select count info from solution failed! Error information: ",
+                        LOG_FATAL(jobType, s_id, log_fp, "Select count info from solution failed! Error information: ",
                                   "empty set");
                         throw std::logic_error("empty set");
                     } else {
-                        LOG_FATAL(jobType, sid, log_fp, "Select count info from solution failed! ",
+                        LOG_FATAL(jobType, s_id, log_fp, "Select count info from solution failed! ",
                                   "Error code: ", query.errnum(),
                                   ", Error information: ", query.error());
                         throw std::logic_error(query.error());
@@ -289,15 +289,15 @@ void UpdatorJob::rejudge_user_and_problem(const Result & result, UnitedJudgeResu
                 try {
                     res = query.execute(std::stoi(row[0]), uid);
                 } catch (const mysqlpp::BadParamCount & e) {
-                    LOG_FATAL(jobType, sid, log_fp, "Update user failed! Error information: ", e.what());
+                    LOG_FATAL(jobType, s_id, log_fp, "Update user failed! Error information: ", e.what());
                     throw;
                 } catch (const mysqlpp::BadQuery & e) {
-                    LOG_FATAL(jobType, sid, log_fp, "Update user failed! Error information: ", e.what());
+                    LOG_FATAL(jobType, s_id, log_fp, "Update user failed! Error information: ", e.what());
                     throw;
                 }
 
                 if (!res) {
-                    LOG_FATAL(jobType, sid, log_fp, "Update user failed! ",
+                    LOG_FATAL(jobType, s_id, log_fp, "Update user failed! ",
                               "Error code: ", query.errnum(),
                               ", Error information: ", query.error());
                     throw std::logic_error(query.error());
@@ -316,17 +316,17 @@ void UpdatorJob::rejudge_user_and_problem(const Result & result, UnitedJudgeResu
                 query.parse();
                 mysqlpp::SimpleResult res;
                 try {
-                    res = query.execute(std::stoi(row[0]), pid);
+                    res = query.execute(std::stoi(row[0]), p_id);
                 } catch (const mysqlpp::BadParamCount & e) {
-                    LOG_FATAL(jobType, sid, log_fp, "Update problem failed! Error information: ", e.what());
+                    LOG_FATAL(jobType, s_id, log_fp, "Update problem failed! Error information: ", e.what());
                     throw;
                 } catch (const mysqlpp::BadQuery & e) {
-                    LOG_FATAL(jobType, sid, log_fp, "Update problem failed! Error information: ", e.what());
+                    LOG_FATAL(jobType, s_id, log_fp, "Update problem failed! Error information: ", e.what());
                     throw;
                 }
 
                 if (!res) {
-                    LOG_FATAL(jobType, sid, log_fp, "Update problem failed! ",
+                    LOG_FATAL(jobType, s_id, log_fp, "Update problem failed! ",
                               "Error code: ", query.errnum(),
                               ", Error information: ", query.error());
                     throw std::logic_error(query.error());
@@ -347,14 +347,14 @@ void UpdatorJob::rejudge_user_and_problem(const Result & result, UnitedJudgeResu
                 try {
                     res = update.execute(submitafter, this->uid);
                 } catch (const mysqlpp::BadParamCount & e) {
-                    LOG_FATAL(jobType, sid, log_fp, "Update user failed! Error information: ", e.what());
+                    LOG_FATAL(jobType, s_id, log_fp, "Update user failed! Error information: ", e.what());
                     throw;
                 } catch (const mysqlpp::BadQuery & e) {
-                    LOG_FATAL(jobType, sid, log_fp, "Update user failed! Error information: ", e.what());
+                    LOG_FATAL(jobType, s_id, log_fp, "Update user failed! Error information: ", e.what());
                     throw;
                 }
                 if (!res) {
-                    LOG_FATAL(jobType, sid, log_fp, "Update user failed! ",
+                    LOG_FATAL(jobType, s_id, log_fp, "Update user failed! ",
                               "Error code: ", query.errnum(),
                               ", Error information: ", query.error());
                     throw std::logic_error(query.error());
@@ -373,16 +373,16 @@ void UpdatorJob::rejudge_user_and_problem(const Result & result, UnitedJudgeResu
                 update.parse();
                 mysqlpp::SimpleResult res;
                 try {
-                    res = update.execute(submitafter, pid);
+                    res = update.execute(submitafter, p_id);
                 } catch (const mysqlpp::BadParamCount & e) {
-                    LOG_FATAL(jobType, sid, log_fp, "Update problem failed! Error information: ", e.what());
+                    LOG_FATAL(jobType, s_id, log_fp, "Update problem failed! Error information: ", e.what());
                     throw;
                 } catch (const mysqlpp::BadQuery & e) {
-                    LOG_FATAL(jobType, sid, log_fp, "Update problem failed! Error information: ", e.what());
+                    LOG_FATAL(jobType, s_id, log_fp, "Update problem failed! Error information: ", e.what());
                     throw;
                 }
                 if (!res) {
-                    LOG_FATAL(jobType, sid, log_fp, "Update problem failed! ",
+                    LOG_FATAL(jobType, s_id, log_fp, "Update problem failed! ",
                               "Error code: ", query.errnum(),
                               ", Error information: ", query.error());
                     throw std::logic_error(query.error());
@@ -404,22 +404,22 @@ void UpdatorJob::rejudge_course_user(const Result & result, UnitedJudgeResult or
     query_solution.parse();
     mysqlpp::StoreQueryResult res;
     try {
-        res = query_solution.store(postTime, postTime, postTime, cid, uid, pid);
+        res = query_solution.store(postTime, postTime, postTime, cid, uid, p_id);
     } catch (const mysqlpp::BadParamCount & e) {
-        LOG_FATAL(jobType, sid, log_fp,
+        LOG_FATAL(jobType, s_id, log_fp,
                   "Select count info from solution failed! Error information: ", e.what());
         throw;
     } catch (const mysqlpp::BadQuery & e) {
-        LOG_FATAL(jobType, sid, log_fp,
+        LOG_FATAL(jobType, s_id, log_fp,
                   "Select count info from solution failed! Error information: ", e.what());
         throw;
     }
     if (res.empty()) {
         if (query_solution.errnum() == 0) {
-            LOG_FATAL(jobType, sid, log_fp, "Select count info from solution failed! Error information: ", "empty set");
+            LOG_FATAL(jobType, s_id, log_fp, "Select count info from solution failed! Error information: ", "empty set");
             throw std::logic_error("empty set");
         } else {
-            LOG_FATAL(jobType, sid, log_fp, "Select count info from solution failed! ",
+            LOG_FATAL(jobType, s_id, log_fp, "Select count info from solution failed! ",
                       "Error code: ", query_solution.errnum(),
                       ", Error information: ", query_solution.error());
             throw std::logic_error(query_solution.error());
@@ -446,21 +446,21 @@ void UpdatorJob::rejudge_course_user(const Result & result, UnitedJudgeResult or
 
             mysqlpp::StoreQueryResult res;
             try {
-                res = query.store(postTime, cid, uid, pid,
-                                  postTime, cid, uid, pid);
+                res = query.store(postTime, cid, uid, p_id,
+                                  postTime, cid, uid, p_id);
             } catch (const mysqlpp::BadParamCount & e) {
-                LOG_FATAL(jobType, sid, log_fp, "Select count info from solution failed! Error information: ", e.what());
+                LOG_FATAL(jobType, s_id, log_fp, "Select count info from solution failed! Error information: ", e.what());
                 throw;
             } catch (const mysqlpp::BadQuery & e) {
-                LOG_FATAL(jobType, sid, log_fp, "Select count info from solution failed! Error information: ", e.what());
+                LOG_FATAL(jobType, s_id, log_fp, "Select count info from solution failed! Error information: ", e.what());
                 throw;
             }
             if (res.empty()) {
                 if (query_solution.errnum() == 0) {
-                    LOG_FATAL(jobType, sid, log_fp, "Select count info from solution failed! Error information: ", "empty set");
+                    LOG_FATAL(jobType, s_id, log_fp, "Select count info from solution failed! Error information: ", "empty set");
                     throw std::logic_error("empty set");
                 } else {
-                    LOG_FATAL(jobType, sid, log_fp, "Select count info from solution failed! ",
+                    LOG_FATAL(jobType, s_id, log_fp, "Select count info from solution failed! ",
                               "Error code: ", query_solution.errnum(),
                               ", Error information: ", query_solution.error());
                     throw std::logic_error(query_solution.error());
@@ -483,14 +483,14 @@ void UpdatorJob::rejudge_course_user(const Result & result, UnitedJudgeResult or
 				try {
 					res = update.execute(std::stoi(row[0]), cid, uid);
 				} catch (const mysqlpp::BadParamCount & e) {
-					LOG_FATAL(jobType, sid, log_fp, "Update course_user failed! Error information: ", e.what());
+					LOG_FATAL(jobType, s_id, log_fp, "Update course_user failed! Error information: ", e.what());
 					throw;
 				} catch (const mysqlpp::BadQuery & e) {
-					LOG_FATAL(jobType, sid, log_fp, "Update course_user failed! Error information: ", e.what());
+					LOG_FATAL(jobType, s_id, log_fp, "Update course_user failed! Error information: ", e.what());
 					throw;
 				}
 				if (!res) {
-					LOG_FATAL(jobType, sid, log_fp, "Update course_user failed! ",
+					LOG_FATAL(jobType, s_id, log_fp, "Update course_user failed! ",
 							  "Error code: ", update.errnum(),
 							  ", Error information: ", update.error());
 					throw std::logic_error(update.error());
@@ -509,14 +509,14 @@ void UpdatorJob::rejudge_course_user(const Result & result, UnitedJudgeResult or
 			try {
 				res = update.execute(submitafter, cid, uid);
 			} catch (const mysqlpp::BadParamCount & e) {
-				LOG_FATAL(jobType, sid, log_fp, "Update course_user failed! Error information: ", e.what());
+				LOG_FATAL(jobType, s_id, log_fp, "Update course_user failed! Error information: ", e.what());
 				throw;
 			} catch (const mysqlpp::BadQuery & e) {
-				LOG_FATAL(jobType, sid, log_fp, "Update course_user failed! Error information: ", e.what());
+				LOG_FATAL(jobType, s_id, log_fp, "Update course_user failed! Error information: ", e.what());
 				throw;
 			}
 			if (!res) {
-				LOG_FATAL(jobType, sid, log_fp, "Update course_user failed! ",
+				LOG_FATAL(jobType, s_id, log_fp, "Update course_user failed! ",
 						  "Error code: ", update.errnum(),
 						  ", Error information: ", update.error());
 				throw std::logic_error(update.error());
@@ -542,23 +542,23 @@ int UpdatorJob::rejudge_user_problem(MYSQL * conn)
     //查询通过数和提交数
     sprintf(sql,
             "select count(case when s_result = '0' then 1 end), count(*) from solution where u_id = '%d' and p_id = '%d' and c_id %s",
-            uid, pid, cid_param);
+            uid, p_id, cid_param);
     int ret = mysql_real_query(conn, sql, strlen(sql));
     if (ret) {
-        LOG_WARNING(jobType, sid, log_fp,
+        LOG_WARNING(jobType, s_id, log_fp,
                     "REJUDGE: select count info from user_problem failed!, errno:%d, error:%s\nsql:%s",
                     mysql_errno(conn), mysql_error(conn), sql);
         return ret;
     }
     res = mysql_store_result(conn);
     if (res == NULL) {
-        LOG_FATAL(jobType, sid, log_fp, "REJUDGE: store result failed!, errno:%d, error:%s\nsql:%s", mysql_errno(conn),
+        LOG_FATAL(jobType, s_id, log_fp, "REJUDGE: store result failed!, errno:%d, error:%s\nsql:%s", mysql_errno(conn),
                   mysql_error(conn), sql);
         return mysql_errno(conn);
     }
     row = mysql_fetch_row(res);
     if (row == NULL) {
-        LOG_FATAL(jobType, sid, log_fp, "REJUDGE: fetch row from resultset failed!");
+        LOG_FATAL(jobType, s_id, log_fp, "REJUDGE: fetch row from resultset failed!");
         mysql_free_result(res);
         return -1;
     }
@@ -576,17 +576,17 @@ int UpdatorJob::rejudge_user_problem(MYSQL * conn)
 
     memset(sql, 0, sizeof(sql));
     //查找原来的user_problem记录
-    sprintf(sql, "select status from user_problem where u_id = '%d' and p_id = '%d' and c_id %s", uid, pid, cid_param);
+    sprintf(sql, "select status from user_problem where u_id = '%d' and p_id = '%d' and c_id %s", uid, p_id, cid_param);
     ret = mysql_real_query(conn, sql, strlen(sql));
     if (ret) {
-        LOG_WARNING(jobType, sid, log_fp,
+        LOG_WARNING(jobType, s_id, log_fp,
                     "REJUDGE: select status from user_problem failed!, errno:%d, error:%s\nsql:%s", mysql_errno(conn),
                     mysql_error(conn), sql);
         return ret;
     }
     res = mysql_store_result(conn);
     if (res == NULL) {
-        LOG_FATAL(jobType, sid, log_fp, "REJUDGE: store result failed!, errno:%d, error:%s\nsql:%s", mysql_errno(conn),
+        LOG_FATAL(jobType, s_id, log_fp, "REJUDGE: store result failed!, errno:%d, error:%s\nsql:%s", mysql_errno(conn),
                   mysql_error(conn), sql);
         return mysql_errno(conn);
     }
@@ -596,23 +596,23 @@ int UpdatorJob::rejudge_user_problem(MYSQL * conn)
         if (stat == 0 || stat == 1) {
             if (cid) {
                 sprintf(sql, "insert into user_problem (u_id, p_id, c_id, status) values ('%d', '%d', '%d', '%d')", uid,
-                        pid, cid, stat);
+                        p_id, cid, stat);
             } else {
-                sprintf(sql, "insert into user_problem (u_id, p_id, status) values ('%d', '%d', '%d')", uid, pid, stat);
+                sprintf(sql, "insert into user_problem (u_id, p_id, status) values ('%d', '%d', '%d')", uid, p_id, stat);
             }
         }
     } else {
         if (stat == 0 || stat == 1) {
             sprintf(sql, "update user_problem set status = '%d' where u_id = '%d' and p_id = '%d' and c_id %s", stat,
-                    uid, pid, cid_param);
+                    uid, p_id, cid_param);
         } else {
-            sprintf(sql, "delete from user_problem where u_id = '%d' and p_id = '%d' and c_id %s", uid, pid, cid_param);
+            sprintf(sql, "delete from user_problem where u_id = '%d' and p_id = '%d' and c_id %s", uid, p_id, cid_param);
         }
     }
     mysql_free_result(res);
     ret = mysql_real_query(conn, sql, strlen(sql));
     if (ret) {
-        LOG_WARNING(jobType, sid, log_fp, "REJUDGE: update user_problem failed!, errno:%d, error:%s\nsql:%s",
+        LOG_WARNING(jobType, s_id, log_fp, "REJUDGE: update user_problem failed!, errno:%d, error:%s\nsql:%s",
                     mysql_errno(conn), mysql_error(conn), sql);
     }
     return ret;
@@ -627,16 +627,16 @@ int UpdatorJob::rejudge_contest_user_problem(MYSQL * conn)
     //更新contest_problem表中first_ac_user
     sprintf(sql,
             "select u_id from contest_solution%d where p_id = '%d' and s_result = '0' order by s_posttime asc limit 1",
-            jobType, pid);
+            jobType, p_id);
     int ret = mysql_real_query(conn, sql, strlen(sql));
     if (ret) {
-        LOG_WARNING(jobType, sid, log_fp, "REJUDGE: select first_ac_user failed!, errno:%d, error:%s\nsql:%s",
+        LOG_WARNING(jobType, s_id, log_fp, "REJUDGE: select first_ac_user failed!, errno:%d, error:%s\nsql:%s",
                     mysql_errno(conn), mysql_error(conn), sql);
         return ret;
     }
     res = mysql_store_result(conn);
     if (res == NULL) {
-        LOG_FATAL(jobType, sid, log_fp, "REJUDGE: store result failed!, errno:%d, error:%d\nsql:%s", mysql_errno(conn),
+        LOG_FATAL(jobType, s_id, log_fp, "REJUDGE: store result failed!, errno:%d, error:%d\nsql:%s", mysql_errno(conn),
                   mysql_error(conn), sql);
         return mysql_errno(conn);
     }
@@ -645,16 +645,16 @@ int UpdatorJob::rejudge_contest_user_problem(MYSQL * conn)
     int first_ac_user = 0;
     if (row == NULL) {
         sprintf(sql, "update contest_problem set first_ac_user = NULL where ct_id = '%d' and p_id = '%d'", jobType,
-                pid);
+                p_id);
     } else {
         first_ac_user = atoi(row[0]);
         sprintf(sql, "update contest_problem set first_ac_user = '%d' where ct_id = '%d' and p_id = '%d'",
-                first_ac_user, jobType, pid);
+                first_ac_user, jobType, p_id);
     }
     mysql_free_result(res);
     ret = mysql_real_query(conn, sql, strlen(sql));
     if (ret) {
-        LOG_WARNING(jobType, sid, log_fp,
+        LOG_WARNING(jobType, s_id, log_fp,
                     "REJUDGE: update first_ac_user in contest_problem failed!, errno:%d, error:%s\nsql:%s",
                     mysql_errno(conn), mysql_error(conn), sql);
         return ret;
@@ -662,10 +662,10 @@ int UpdatorJob::rejudge_contest_user_problem(MYSQL * conn)
     //更新contest_user_problem表中的is_first_ac
     //先将所有本题记录的is_first_ac设为0
     memset(sql, 0, sizeof(sql));
-    sprintf(sql, "update contest_user_problem%d set is_first_ac = '0' where p_id = '%d'", jobType, pid);
+    sprintf(sql, "update contest_user_problem%d set is_first_ac = '0' where p_id = '%d'", jobType, p_id);
     ret = mysql_real_query(conn, sql, strlen(sql));
     if (ret) {
-        LOG_WARNING(jobType, sid, log_fp,
+        LOG_WARNING(jobType, s_id, log_fp,
                     "REJUDGE: update contest_user_problem set is_first_ac to zero failed!, errno:%d, error:%s\nsql:%s",
                     mysql_errno(conn), mysql_error(conn), sql);
         return ret;
@@ -674,10 +674,10 @@ int UpdatorJob::rejudge_contest_user_problem(MYSQL * conn)
     memset(sql, 0, sizeof(sql));
     if (first_ac_user) {
         sprintf(sql, "update contest_user_problem%d set is_first_ac = '1' where u_id = '%d' and p_id = '%d'", jobType,
-                first_ac_user, pid);
+                first_ac_user, p_id);
         ret = mysql_real_query(conn, sql, strlen(sql));
         if (ret) {
-            LOG_WARNING(jobType, sid, log_fp,
+            LOG_WARNING(jobType, s_id, log_fp,
                         "REJUDGE: update contest_user_problem set is_first_ac failed!, errno:%d, error:%s\nsql:%s",
                         mysql_errno(conn), mysql_error(conn), sql);
             return ret;
@@ -687,23 +687,23 @@ int UpdatorJob::rejudge_contest_user_problem(MYSQL * conn)
     memset(sql, 0, sizeof(sql));
     //更新contest_user_problem表，查询本题通过数和提交数
     sprintf(sql, "select count(case when s_result = '0' then 1 end), count(*) from contest_solution%d "
-                 "where u_id = '%d' and p_id = '%d'", jobType, uid, pid);
+                 "where u_id = '%d' and p_id = '%d'", jobType, uid, p_id);
     ret = mysql_real_query(conn, sql, strlen(sql));
     if (ret) {
-        LOG_WARNING(jobType, sid, log_fp,
+        LOG_WARNING(jobType, s_id, log_fp,
                     "REJUDGE: select count info from contest_solution failed!, errno:%d, error:%s\nsql:%s",
                     mysql_errno(conn), mysql_error(conn), sql);
         return ret;
     }
     res = mysql_store_result(conn);
     if (res == NULL) {
-        LOG_FATAL(jobType, sid, log_fp, "REJUDGE: store result failed!, errno:%d, error:%s\nsql:%s", mysql_errno(conn),
+        LOG_FATAL(jobType, s_id, log_fp, "REJUDGE: store result failed!, errno:%d, error:%s\nsql:%s", mysql_errno(conn),
                   mysql_error(conn), sql);
         return mysql_errno(conn);
     }
     row = mysql_fetch_row(res);
     if (row == NULL) {
-        LOG_FATAL(jobType, sid, log_fp, "REJUDGE: fetch row from resultset failed!");
+        LOG_FATAL(jobType, s_id, log_fp, "REJUDGE: fetch row from resultset failed!");
         mysql_free_result(res);
         return -1;
     }
@@ -717,23 +717,23 @@ int UpdatorJob::rejudge_contest_user_problem(MYSQL * conn)
                 "select count(*) from contest_solution%d "
                 "where s_posttime < all ("
                 "select s_posttime from contest_solution%d where u_id = '%d' and p_id = '%d' and s_result = '0') "
-                "and u_id = '%d' and p_id = '%d'", jobType, jobType, uid, pid, uid, pid);
+                "and u_id = '%d' and p_id = '%d'", jobType, jobType, uid, p_id, uid, p_id);
         ret = mysql_real_query(conn, sql, strlen(sql));
         if (ret) {
-            LOG_WARNING(jobType, sid, log_fp,
+            LOG_WARNING(jobType, s_id, log_fp,
                         "REJUDGE: select count info from contest_solution failed!, errno:%d, error:%s\nsql:%s",
                         mysql_errno(conn), mysql_error(conn), sql);
             return ret;
         }
         res = mysql_store_result(conn);
         if (res == NULL) {
-            LOG_FATAL(jobType, sid, log_fp, "REJUDGE: store result failed!, errno:%d, error:%s\nsql:%s",
+            LOG_FATAL(jobType, s_id, log_fp, "REJUDGE: store result failed!, errno:%d, error:%s\nsql:%s",
                       mysql_errno(conn), mysql_error(conn), sql);
             return mysql_errno(conn);
         }
         row = mysql_fetch_row(res);
         if (row == NULL) {
-            LOG_FATAL(jobType, sid, log_fp, "REJUDGE: fetch row from resultset failed!");
+            LOG_FATAL(jobType, s_id, log_fp, "REJUDGE: fetch row from resultset failed!");
             mysql_free_result(res);
             return -1;
         }
@@ -744,23 +744,23 @@ int UpdatorJob::rejudge_contest_user_problem(MYSQL * conn)
         //查询第一次AC时间
         sprintf(sql, "select s_posttime from contest_solution%d "
                      "where u_id = '%d' and p_id = '%d' and s_result = '0' "
-                     "order by s_posttime asc limit 1", jobType, uid, pid);
+                     "order by s_posttime asc limit 1", jobType, uid, p_id);
         ret = mysql_real_query(conn, sql, strlen(sql));
         if (ret) {
-            LOG_WARNING(jobType, sid, log_fp,
+            LOG_WARNING(jobType, s_id, log_fp,
                         "REJUDGE: select s_posttime from contest_solution failed!, errno:%d, error:%s\nsql:%s",
                         mysql_errno(conn), mysql_error(conn), sql);
             return ret;
         }
         res = mysql_store_result(conn);
         if (res == NULL) {
-            LOG_FATAL(jobType, sid, log_fp, "REJUDGE: store result failed!, errno:%d, error:%s\nsql:%s",
+            LOG_FATAL(jobType, s_id, log_fp, "REJUDGE: store result failed!, errno:%d, error:%s\nsql:%s",
                       mysql_errno(conn), mysql_error(conn), sql);
             return mysql_errno(conn);
         }
         row = mysql_fetch_row(res);
         if (row == NULL) {
-            LOG_FATAL(jobType, sid, log_fp, "REJUDGE: fetch row from resultset failed!");
+            LOG_FATAL(jobType, s_id, log_fp, "REJUDGE: fetch row from resultset failed!");
             mysql_free_result(res);
             return -1;
         }
@@ -769,21 +769,21 @@ int UpdatorJob::rejudge_contest_user_problem(MYSQL * conn)
         //更新contest_user_problem表
         sprintf(sql, "update contest_user_problem%d "
                      "set is_ac = '1', ac_time = '%s', error_count = '%d', is_first_ac = '%d' "
-                     "where u_id = '%d' and p_id = '%d'", jobType, row[0], error_count, is_first_ac, uid, pid);
+                     "where u_id = '%d' and p_id = '%d'", jobType, row[0], error_count, is_first_ac, uid, p_id);
         mysql_free_result(res);
         ret = mysql_real_query(conn, sql, strlen(sql));
         if (ret) {
-            LOG_WARNING(jobType, sid, log_fp,
+            LOG_WARNING(jobType, s_id, log_fp,
                         "REJUDGE: select update contest_user_problem failed!, errno:%d, error:%s\nsql:%s",
                         mysql_errno(conn), mysql_error(conn), sql);
         }
     } else { //如果没有通过过
         sprintf(sql, "update contest_user_problem%d "
                      "set is_ac = '0', is_bal = NULL, ac_time = NULL, error_count = '%d', is_first_ac = '0' "
-                     "where u_id = '%d' and p_id = '%d'", jobType, submitnum, uid, pid);
+                     "where u_id = '%d' and p_id = '%d'", jobType, submitnum, uid, p_id);
         ret = mysql_real_query(conn, sql, strlen(sql));
         if (ret) {
-            LOG_WARNING(jobType, sid, log_fp,
+            LOG_WARNING(jobType, s_id, log_fp,
                         "REJUDGE: update contest_user_problem failed!, errno:%d, error:%s\nsql:%s", mysql_errno(conn),
                         mysql_error(conn), sql);
         }
