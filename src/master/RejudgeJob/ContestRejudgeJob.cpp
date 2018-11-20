@@ -83,7 +83,7 @@ void ContestRejudgeJob::update_solution()
 	LOG_DEBUG(jobType, s_id, log_fp, BOOST_CURRENT_FUNCTION);
 
     mysqlpp::Query update = mysqlConn->query(
-            "update contest_solution%0"
+            "update contest_solution%0 "
             "set s_result = %1, s_time = %2, s_mem = %3, s_similarity_percentage = %4 "
             "where s_id = %5"
     );
@@ -97,11 +97,6 @@ void ContestRejudgeJob::update_solution()
 		EXCEPT_FATAL(jobType, s_id, log_fp, "Update solution failed!", e);
 		throw e;
 	}
-}
-
-void ContestRejudgeJob::update_compile_info(const char * compile_info)
-{
-
 }
 
 void ContestRejudgeJob::update_user()
@@ -153,7 +148,7 @@ void ContestRejudgeJob::rejudge_compile_info(ojv4::s_result_enum orig_result)
 	if(this->result.judge_result == ojv4::s_result_enum::COMPILE_ERROR)
 	{
 		mysqlpp::Query update = mysqlConn->query(
-				"insert into compile_info%0(s_id, compile_error_info) "
+				"insert into contest_compile_info%0(s_id, compile_error_info) "
 				"values(%1, %2q) "
 				"on duplicate key "
 				"update compile_error_info = %2q"
@@ -177,7 +172,7 @@ void ContestRejudgeJob::rejudge_compile_info(ojv4::s_result_enum orig_result)
 		}
 	} else {
 		mysqlpp::Query del = mysqlConn->query(
-				"delete from compile_info%0 "
+				"delete from contest_compile_info%0 "
 				"where s_id = %1"
 		);
 		del.parse();
@@ -185,7 +180,7 @@ void ContestRejudgeJob::rejudge_compile_info(ojv4::s_result_enum orig_result)
 		mysqlpp::SimpleResult res = del.execute(ct_id, s_id);
 
 		if(!res) {
-			LOG_WARNING(jobType, s_id, log_fp, "Delete compile info failed!");
+			LOG_WARNING(jobType, s_id, log_fp, "Delete compile info failed! Info: ", del.error());
 			// 删除失败可以不做 failed 处理
 		}
 	}

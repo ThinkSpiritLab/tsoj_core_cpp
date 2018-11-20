@@ -12,6 +12,7 @@ environment_init:
 	-useradd -u 1666  -d /home/ts_judger -m ts_judger
 
 # java权限文件
+	-mkdir /dev/shm/judge_space -p
 	-cp ./java.policy /dev/shm/judge_space
 	-chmod 755 /dev/shm/judge_space/java.policy
 	-chown ts_judger:ts_judger /dev/shm/judge_space/java.policy

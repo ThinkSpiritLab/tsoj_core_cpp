@@ -124,7 +124,9 @@ void ContestManagement::update_problem_s_submit_and_accept_num(mysqlpp::Connecti
 
 	{
 		mysqlpp::Query update = mysql_conn.query(
-				"update contest_problem set ct_p_submit = %0, ct_p_accept = %1 where p_id = %2 and ct_id = %3"
+				"update contest_problem "
+				"set ct_p_submit = %0, ct_p_accept = %1 "
+				"where p_id = %2 and ct_id = %3"
 		);
 		update.parse();
 
