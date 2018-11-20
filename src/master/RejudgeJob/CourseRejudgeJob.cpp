@@ -129,10 +129,11 @@ void CourseRejudgeJob::send_rejudge_notification()
 
 		mysqlpp::Query insert = mysqlConn->query(
 				"insert into message (u_id, u_receiver, m_content, m_status) "
-				"values (1, %0, '您于 %1q 在课程《%5q》中提交的问题 %2 的代码已经被重新评测，新的结果为 %3q，请查询。', '%4')"
+				"values (1, %0, %1q, %2)"
 		);
 		insert.parse();
-		mysqlpp::SimpleResult res = insert.execute(u_id, s_posttime, p_id, getJudgeResultName(result.judge_result), 0b10100, c_name);
+		static boost::format message_templ("您于 %s 在课程《%s》中提交的问题 %d 的代码已经被重新评测，新的结果为 %s，请查询。");
+		mysqlpp::SimpleResult res = insert.execute(u_id, (message_templ % s_posttime % c_name % p_id % getJudgeResultName(result.judge_result)).str(), 0b10100);
 		//0b10100 means bold font and closed.
 		if (!res) {
 			MysqlEmptyResException e(insert.errnum(), insert.error());
