@@ -2,7 +2,7 @@
  * RejudgeJobBase.cpp
  *
  *  Created on: 2018年11月20日
- *      Author: peter
+ *	  Author: peter
  */
 
 #include "RejudgeJobBase.hpp"
@@ -84,6 +84,13 @@ void RejudgeJobBase::handle()
 		} catch (const std::exception & e) {
 			update_compile_error_info_exception = std::current_exception();
 			EXCEPT_FATAL(jobType, s_id, log_fp, "Update compile error info failed!", e);
+			//DO NOT THROW
+		}
+
+		try {
+			this->send_rejudge_notification();
+		} catch (const std::exception & e){
+			EXCEPT_WARNING(jobType, s_id, log_fp, "Send rejudge notification failed!", e);
 			//DO NOT THROW
 		}
 

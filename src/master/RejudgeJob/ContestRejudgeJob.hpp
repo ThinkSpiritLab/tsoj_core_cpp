@@ -39,6 +39,10 @@ class ContestRejudgeJob : public RejudgeJobBase
 
 		virtual void rejudge_compile_info(ojv4::s_result_enum orig_result) override final;
 
+		virtual void send_rejudge_notification() override final
+        {
+        }
+
 	public:
 		virtual ~ContestRejudgeJob() noexcept = default;
 };

@@ -2,7 +2,7 @@
  * RejudgeJobBase.hpp
  *
  *  Created on: 2018年11月20日
- *      Author: peter
+ *	  Author: peter
  */
 
 #ifndef SRC_MASTER_REJUDGEJOB_REJUDGEJOBBASE_HPP_
@@ -58,6 +58,8 @@ class RejudgeJobBase: public UpdateJobBase
 		virtual void update_user_problem() override = 0;
 
 		virtual void update_user_problem_status() override = 0;
+
+		virtual void send_rejudge_notification() override = 0;
 
 	public:
 		virtual ~RejudgeJobBase() noexcept = default;

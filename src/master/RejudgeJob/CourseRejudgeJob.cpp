@@ -2,7 +2,7 @@
  * CourseRejudgeJob.cpp
  *
  *  Created on: 2018年11月9日
- *      Author: peter
+ *	  Author: peter
  */
 
 #include "CourseRejudgeJob.hpp"
@@ -109,3 +109,39 @@ void CourseRejudgeJob::update_user_problem_status()
 }
 
 
+void CourseRejudgeJob::send_rejudge_notification()
+{
+	LOG_DEBUG(jobType, s_id, log_fp, BOOST_CURRENT_FUNCTION);
+
+	try {
+
+		mysqlpp::Query query = mysqlConn->query(
+				"select c_name from course where c_id = %0"
+				);
+		query.parse();
+		mysqlpp::StoreQueryResult r = query.store(c_id);
+		if(r.empty()){
+			MysqlEmptyResException e(query.errnum(), query.error());
+			EXCEPT_FATAL(jobType, s_id, log_fp, "Select course name failed!", e);
+			throw e;
+		}
+
+		std::string c_name = r[0]["c_name"];
+
+		mysqlpp::Query insert = mysqlConn->query(
+				 "insert into message (u_id, u_receiver, m_content, m_status) "
+				 "values (1, %0, '您于 %1q 在课程《%5q》中提交的问题 %2 的代码已经被重新评测，新的结果为 %3q，请查询。', '%4')"
+		);
+		insert.parse();
+		mysqlpp::SimpleResult res = insert.execute(u_id, s_posttime, p_id, getJudgeResultName(result.judge_result), 0b10100, c_name);
+		//0b10100 means bold font and closed.
+		if(!res) {
+			MysqlEmptyResException e(insert.errnum(), insert.error());
+			EXCEPT_FATAL(jobType, s_id, log_fp, "Insert into message failed!", e);
+			throw e;
+		}
+	} catch (const std::exception & e) {
+		EXCEPT_FATAL(jobType, s_id, log_fp, "Send rejudge notification failed!", e);
+		throw;
+	}
+}

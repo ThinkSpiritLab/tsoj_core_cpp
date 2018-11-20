@@ -31,6 +31,8 @@ class ExerciseRejudgeJob : public ExerciseRejudgeJobBase
 
 		virtual void update_user_problem_status() override final;
 
+		virtual void send_rejudge_notification() override final;
+
 	public:
 		virtual ~ExerciseRejudgeJob() noexcept = default;
 };
