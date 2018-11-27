@@ -3,12 +3,9 @@
 
 #include <iostream>
 #include <sstream>
-
-#include <kerbal/utility/costream.hpp>
-
 #include <boost/format.hpp>
-
-#include "ojv4_db_type.hpp"
+#include <kerbal/utility/costream.hpp>
+#include "db_typedef.hpp"
 
 namespace costream_ns = kerbal::utility::costream;
 

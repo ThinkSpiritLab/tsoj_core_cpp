@@ -1,12 +1,12 @@
 /*
- * ojv4_type.hpp
+ * db_typedef.hpp
  *
  *  Created on: 2018年11月6日
  *      Author: peter
  */
 
-#ifndef SRC_SHARED_SRC_OJV4_DB_TYPE_HPP_
-#define SRC_SHARED_SRC_OJV4_DB_TYPE_HPP_
+#ifndef SRC_SHARED_SRC_DB_TYPEDEF_HPP_
+#define SRC_SHARED_SRC_DB_TYPEDEF_HPP_
 
 #include <kerbal/utility/storage.hpp>
 #include <kerbal/redis/redis_type_traits.hpp>
@@ -218,5 +218,10 @@ constexpr ojv4::c_id_type operator""_c_id(unsigned long long src)
 	return ojv4::c_id_type(src);
 }
 
+constexpr ojv4::ct_id_type operator""_ct_id(unsigned long long src)
+{
+	return ojv4::ct_id_type(src);
+}
 
-#endif /* SRC_SHARED_SRC_OJV4_DB_TYPE_HPP_ */
+
+#endif /* SRC_SHARED_SRC_DB_TYPEDEF_HPP_ */

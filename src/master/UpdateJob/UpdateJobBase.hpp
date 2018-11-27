@@ -10,7 +10,7 @@
 
 #include "JobBase.hpp"
 #include "Result.hpp"
-#include "ojv4_db_type.hpp"
+#include "db_typedef.hpp"
 #include "mysql_empty_res_exception.hpp"
 
 #include <boost/current_function.hpp>

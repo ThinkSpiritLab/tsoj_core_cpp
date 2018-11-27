@@ -41,7 +41,12 @@ int test_main(int argc, char *argv[])
 			conn_pool::construct(1, std::move(conn));
 		}
 
-		CourseManagement::refresh_all_problems_submit_and_accept_num_in_course(22);
+		auto start = std::chrono::steady_clock::now();
+
+		CourseManagement::refresh_all_problems_submit_and_accept_num_in_course(*conn_pool::fetch(), 25_c_id);
+
+		auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start);
+		LOG_INFO(0, 0, log_fp, "ms: ", ms.count());
 
 	} catch (const std::exception & e) {
 		BOOST_FAIL(e.what());            // 给出一个错误信息，终止执行

@@ -37,9 +37,25 @@ int test_main(int argc, char *argv[])
 	try {
 		using namespace boost;
 
-		conn_pool::construct(64, "ojv4", "127.0.0.1", "root", "123");
+		for(int i = 0; i < 130; ++i) {
+			mysqlpp::Connection conn(false);
+			conn.set_option(new mysqlpp::SetCharsetNameOption("utf8"));
+			if(!conn.connect("ojv4", "127.0.0.1", "root", "123")) {
+				throw std::runtime_error("connected failed!");
+			}
+			conn_pool::construct(1, std::move(conn));
+		}
 
-		ContestManagement::refresh_all_problems_submit_and_accept_num_in_contest(1);
+		mysqlpp::Connection conn(false);
+		conn.set_option(new mysqlpp::SetCharsetNameOption("utf8"));
+		conn.connect("ojv4", "127.0.0.1", "root", "123");
+
+		auto start = std::chrono::system_clock::now();
+		ContestManagement::update_scoreboard(conn, 17_ct_id);
+
+		auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - start);
+		LOG_INFO(0, 0, log_fp, "refresh_all_user_problem finished! ms: ", ms.count());
+
 
 	} catch (const std::exception & e) {
 		BOOST_FAIL(e.what());            // 给出一个错误信息，终止执行

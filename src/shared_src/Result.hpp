@@ -8,8 +8,7 @@
 #ifndef SRC_RESULT_HPP_
 #define SRC_RESULT_HPP_
 
-#include "ojv4_db_type.hpp"
-
+#include "db_typedef.hpp"
 #include <iostream>
 #include <chrono>
 

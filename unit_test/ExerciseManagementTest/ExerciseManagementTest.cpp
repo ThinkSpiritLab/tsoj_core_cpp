@@ -41,8 +41,14 @@ int test_main(int argc, char *argv[])
 			conn_pool::construct(1, std::move(conn));
 		}
 
-		ExerciseManagement::refresh_all_problems_submit_and_accept_num();
-		LOG_INFO(0, 0, log_fp, "refresh_all_user_problem finished!");
+		auto start = std::chrono::system_clock::now();
+//		ExerciseManagement::refresh_all_user_problem();
+		
+		ExerciseManagement::refresh_all_user_problem2(*conn_pool::fetch());
+		
+		
+		auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - start);
+		LOG_INFO(0, 0, log_fp, "refresh_all_user_problem finished! ms: ", ms.count());
 
 	} catch (const std::exception & e) {
 		EXCEPT_FATAL(0, 0, log_fp, "refresh_all_user_problem falied!", e);

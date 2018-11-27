@@ -8,7 +8,7 @@
 #ifndef SRC_MASTER_EXERCISEMANAGEMENT_HPP_
 #define SRC_MASTER_EXERCISEMANAGEMENT_HPP_
 
-#include "ojv4_db_type.hpp"
+#include "db_typedef.hpp"
 
 #ifndef MYSQLPP_MYSQL_HEADERS_BURIED
 #	define MYSQLPP_MYSQL_HEADERS_BURIED
@@ -22,11 +22,13 @@ class ExerciseManagement
 	public:
 		ExerciseManagement() = delete;
 
-		static void refresh_all_users_submit_and_accept_num();
+		static void refresh_all_users_submit_and_accept_num(mysqlpp::Connection & mysql_conn);
+		
+		static void refresh_all_problems_submit_and_accept_num(mysqlpp::Connection & mysql_conn);
 
-		static void refresh_all_problems_submit_and_accept_num();
+		static void refresh_all_user_problem(mysqlpp::Connection & mysql_conn);
 
-		static void refresh_all_user_problem();
+		static void refresh_all_user_problem2(mysqlpp::Connection & mysql_conn);
 
 		static void update_user_s_submit_and_accept_num(mysqlpp::Connection & mysql_conn, ojv4::u_id_type u_id);
 

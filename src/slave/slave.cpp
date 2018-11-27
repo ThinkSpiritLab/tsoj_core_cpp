@@ -127,13 +127,13 @@ void regist_SIGTERM_handler(int signum) noexcept
  * @brief 加载 slave 工作的配置
  * 根据 judge_server.conf 文档，读取工作配置信息。loadConfig 的工作原理详见其文档。
  */
-void load_config(const char * config_file_path)
+void load_config(const char * config_file)
 {
 	using std::string;
 	using namespace kerbal::utility::costream;
 	const auto & ccerr = costream<cerr>(LIGHT_RED);
 
-	std::ifstream fp(config_file_path, std::ios::in); //BUG "re"
+	std::ifstream fp(config_file, std::ios::in); //BUG "re"
 	if (!fp) {
 		ccerr << "can't not open judge_server.conf" << endl;
 		exit(0);
@@ -226,7 +226,8 @@ int main(int argc, const char * argv[]) try
 	}
 
 	cout << std::boolalpha;
-	load_config("/etc/ts_judger/judge_server.conf");
+	load_config("/etc/ts_judger/judge_server.conf"); // 提醒: 此函数运行结束以后才可以使用 log 系列宏, 否则 log_fp 没打开
+	LOG_INFO(0, 0, log_fp, "Configuration load finished!");
 
 	try {
 		mkdir_p(init_dir);
@@ -252,7 +253,7 @@ int main(int argc, const char * argv[]) try
 		std::thread(register_self, std::move(register_self_conn)).detach();
 	} catch (const std::exception & e) {
 		LOG_FATAL(0, 0, log_fp, "Register self service process fork failed.");
-		exit(0);
+		exit(-1);
 	}
 
 	signal(SIGTERM, regist_SIGTERM_handler);

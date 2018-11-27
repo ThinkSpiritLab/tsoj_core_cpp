@@ -9,7 +9,6 @@
 #define SRC_MASTER_COURSEUPDATEJOB_HPP_
 
 #include "ExerciseUpdateJobBase.hpp"
-#include "ojv4_db_type.hpp"
 
 /**
  * @brief 课程练习类，定义了其独特的 update_solution 等操作。针对课程，此类还维护 user_problem 表中 cid 非空的数据。

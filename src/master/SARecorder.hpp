@@ -10,7 +10,7 @@
 
 #include <unordered_set>
 
-#include "ojv4_db_type.hpp"
+#include "db_typedef.hpp"
 
 class ProblemSARecorder
 {

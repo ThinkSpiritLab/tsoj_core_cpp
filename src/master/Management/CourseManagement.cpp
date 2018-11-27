@@ -8,13 +8,9 @@
 #include "CourseManagement.hpp"
 #include "mysql_empty_res_exception.hpp"
 #include "logger.hpp"
-#include "sync_instance_pool.hpp"
 #include "SARecorder.hpp"
 
-#include <unordered_set>
 #include <unordered_map>
-#include <future>
-#include <mutex>
 
 #ifndef MYSQLPP_MYSQL_HEADERS_BURIED
 #	define MYSQLPP_MYSQL_HEADERS_BURIED
@@ -25,11 +21,10 @@
 
 extern std::ofstream log_fp;
 
-
-void CourseManagement::refresh_all_users_submit_and_accept_num_in_course(ojv4::c_id_type c_id)
+void CourseManagement::refresh_all_users_submit_and_accept_num_in_course(mysqlpp::Connection & mysql_conn, ojv4::c_id_type c_id)
 {
 	// 以下课程/考试的成绩较为敏感, 其中用户的提交数通过数不应当再刷新. 故使用硬编码的方式予以保护
-	static const std::unordered_set<ojv4::c_id_type, id_type_hash<ojv4::c_id_type>> protected_course = {
+	constexpr ojv4::c_id_type protected_course[] = {
 
 		16_c_id, // 2017级程序设计实验/实训
 		17_c_id, // 2018研究生复试
@@ -37,27 +32,30 @@ void CourseManagement::refresh_all_users_submit_and_accept_num_in_course(ojv4::c
 		23_c_id, // 2017级程序设计实验/实训补考
 	};
 
-	if(protected_course.find(c_id) != protected_course.cend()) {
+	if(std::find(std::begin(protected_course), std::end(protected_course), c_id) != std::end(protected_course)) {
 		LOG_WARNING(0, 0, log_fp, "Protected course/exam. c_id: ", c_id);
 		return;
 	}
 
-	using conn_pool = sync_instance_pool<mysqlpp::Connection>;
-
-	auto conn = conn_pool::fetch();
-
-	mysqlpp::Query query = conn->query(
-			"select u_id, p_id, s_result from solution "
-			"where c_id = %0 and p_id in (select p_id from course_problem where c_id = %1) order by s_id"
-			// 注: 需要过滤掉不在课程中的题目 (考虑到有加题再删题的情形)
-			// 思考: 需不需要过滤掉不在课程中的学生呢? 答案在下面若干行
-			// order by s_id 是重中之重, 因为根据 update 先后次序的不同, s_id 小的可能在 s_id 大的 solution 后面
-	);
-	query.parse();
-
 	std::unordered_map<ojv4::u_id_type, UserSARecorder, id_type_hash<ojv4::u_id_type>> m;
 	{
+		mysqlpp::Query query = mysql_conn.query(
+				"select u_id, p_id, s_result from solution "
+				"where c_id = %0 and p_id in (select p_id from course_problem where c_id = %1) order by s_id"
+				// 注: 需要过滤掉不在课程中的题目 (考虑到有加题再删题的情形)
+				// 思考: 需不需要过滤掉不在课程中的学生呢? 答案在下面若干行
+				// order by s_id 是重中之重, 因为根据 update 先后次序的不同, s_id 小的可能在 s_id 大的 solution 后面
+		);
+		query.parse();
+
 		mysqlpp::StoreQueryResult solutions = query.store(c_id, c_id);
+
+		if(query.errnum() != 0) {
+			MysqlEmptyResException e(query.errnum(), query.error());
+			EXCEPT_FATAL(0, 0, log_fp, "Query users' submit and accept num in course failed!", e, " c_id: ", c_id);
+			throw e;
+		}
+
 		for (const auto & row : solutions) {
 			ojv4::u_id_type u_id = row["u_id"];
 			ojv4::p_id_type p_id = row["p_id"];
@@ -66,7 +64,13 @@ void CourseManagement::refresh_all_users_submit_and_accept_num_in_course(ojv4::c
 		}
 	}
 
-	std::vector<std::pair<ojv4::u_id_type, std::future<mysqlpp::SimpleResult>>> future_group;
+	mysqlpp::Query update = mysql_conn.query(
+			"update course_user set c_submit = %2, c_accept = %3 "
+			"where c_id = %0 and u_id = %1"
+	);
+	update.parse();
+
+	mysqlpp::Transaction trans(mysql_conn);
 
 	for (const auto & ele : m) {
 		ojv4::u_id_type u_id = ele.first;
@@ -74,66 +78,36 @@ void CourseManagement::refresh_all_users_submit_and_accept_num_in_course(ojv4::c
 		int submit = u_info.submit_num();
 		int accept = u_info.accept_num();
 
-		auto as = [](conn_pool::auto_revert_t conn, ojv4::c_id_type c_id, ojv4::u_id_type u_id, int submit, int accept) -> mysqlpp::SimpleResult
-		{
-			mysqlpp::Query update = conn->query(
-					"update course_user set c_submit = %2, c_accept = %3 "
-					"where c_id = %0 and u_id = %1"
-			);
-			update.parse();
-			mysqlpp::SimpleResult res = update.execute(c_id, u_id, submit, accept);
-			if(!res) {
-				/*
-				 * 注: 对于不在课程中的学生, update 不会出错, 不会执行到该分支
-				 * 提示: 假设你在命令行中模拟执行该 update 语句, 会提示
-				 * Query OK, 0 rows affected (0.01 sec)
-				 * Rows matched: 0  Changed: 0  Warnings: 0
-				 * where 子句不会匹配到相应的行, 也就不会出错了
-				 */
-				MysqlEmptyResException e(update.errnum(), update.error());
-				throw e;
-			}
-			return res;
-		};
-		conn_pool::auto_revert_t conn = conn_pool::block_fetch();
-
-		future_group.emplace_back(u_id, std::async(std::launch::async, as, std::move(conn), c_id, u_id, submit, accept));
-	}
-
-	std::exception_ptr e_ptr;
-	for(auto & ele : future_group) {
-		ojv4::u_id_type u_id = ele.first;
-		try {
-			mysqlpp::SimpleResult res = ele.second.get();
-		} catch(const std::exception & e) {
-			EXCEPT_FATAL(0, 0, log_fp, "Refresh all users' submit and accept num in course failed!", e, " c_id: ", c_id, " u_id: ", u_id);
-			if(e_ptr == nullptr) {
-				// 保存首个异常
-				e_ptr = std::current_exception();
-			}
+		mysqlpp::SimpleResult res = update.execute(c_id, u_id, submit, accept);
+		if(!res) {
+			/*
+			 * 注: 对于不在课程中的学生, update 不会出错, 不会执行到该分支
+			 * 提示: 假设你在命令行中模拟执行该 update 语句, 会提示
+			 * Query OK, 0 rows affected (0.01 sec)
+			 * Rows matched: 0  Changed: 0  Warnings: 0
+			 * where 子句不会匹配到相应的行, 也就不会出错了
+			 */
+			MysqlEmptyResException e(update.errnum(), update.error());
+			EXCEPT_FATAL(0, 0, log_fp, "Refresh user's submit and accept num in course failed!", e, " c_id: ", c_id, " u_id: ", u_id);
+			throw e;
 		}
 	}
-	if(e_ptr != nullptr) {
-		std::rethrow_exception(e_ptr);
-	}
+
+	trans.commit();
 }
 
-void CourseManagement::refresh_all_problems_submit_and_accept_num_in_course(ojv4::c_id_type c_id)
+void CourseManagement::refresh_all_problems_submit_and_accept_num_in_course(mysqlpp::Connection & mysql_conn, ojv4::c_id_type c_id)
 {
-	using conn_pool = sync_instance_pool<mysqlpp::Connection>;
-
-	auto conn = conn_pool::fetch();
-
-	mysqlpp::Query query = conn->query(
-			"select u_id, p_id, s_result from solution "
-			"where c_id = %0 and u_id in (select u_id from course_user where c_id = %1) order by s_id"
-			// 注: 需要过滤掉不在课程中的用户 (考虑到有加人再删人的情形)
-			// order by s_id 是重中之重, 因为根据 update 先后次序的不同, s_id 小的可能在 s_id 大的 solution 后面
-	);
-	query.parse();
-
 	std::unordered_map<ojv4::p_id_type, ProblemSARecorder, id_type_hash<ojv4::p_id_type>> m;
 	{
+		mysqlpp::Query query = mysql_conn.query(
+				"select u_id, p_id, s_result from solution "
+				"where c_id = %0 and u_id in (select u_id from course_user where c_id = %1) order by s_id"
+				// 注: 需要过滤掉不在课程中的用户 (考虑到有加人再删人的情形)
+				// order by s_id 是重中之重, 因为根据 update 先后次序的不同, s_id 小的可能在 s_id 大的 solution 后面
+		);
+		query.parse();
+
 		mysqlpp::StoreQueryResult solutions = query.store(c_id, c_id);
 
 		if(query.errnum() != 0) {
@@ -150,7 +124,13 @@ void CourseManagement::refresh_all_problems_submit_and_accept_num_in_course(ojv4
 		}
 	}
 
-	std::vector<std::pair<ojv4::p_id_type, std::future<mysqlpp::SimpleResult>>> future_group;
+	mysqlpp::Query update = mysql_conn.query(
+			"update course_problem set c_p_submit = %2, c_p_accept = %3 "
+			"where c_id = %0 and p_id = %1"
+	);
+	update.parse();
+
+	mysqlpp::Transaction trans(mysql_conn);
 
 	for (const auto & ele : m) {
 		ojv4::p_id_type p_id = ele.first;
@@ -158,40 +138,15 @@ void CourseManagement::refresh_all_problems_submit_and_accept_num_in_course(ojv4
 		int submit = p_info.submit_num();
 		int accept = p_info.accept_num();
 
-		auto as = [](conn_pool::auto_revert_t conn, ojv4::c_id_type c_id, ojv4::p_id_type p_id, int submit, int accept) -> mysqlpp::SimpleResult
-		{
-			mysqlpp::Query update = conn->query(
-					"update course_problem set c_p_submit = %2, c_p_accept = %3 "
-					"where c_id = %0 and p_id = %1"
-			);
-			update.parse();
-			mysqlpp::SimpleResult res = update.execute(c_id, p_id, submit, accept);
-			if(!res) {
-				MysqlEmptyResException e(update.errnum(), update.error());
-				throw e;
-			}
-			return res;
-		};
-		conn_pool::auto_revert_t conn = conn_pool::block_fetch();
-		future_group.emplace_back(p_id, std::async(std::launch::async, as, std::move(conn), c_id, p_id, submit, accept));
-	}
-
-	std::exception_ptr e_ptr;
-	for(auto & ele : future_group) {
-		ojv4::p_id_type p_id = ele.first;
-		try {
-			mysqlpp::SimpleResult res = ele.second.get();
-		} catch(const std::exception & e) {
+		mysqlpp::SimpleResult res = update.execute(c_id, p_id, submit, accept);
+		if(!res) {
+			MysqlEmptyResException e(update.errnum(), update.error());
 			EXCEPT_FATAL(0, 0, log_fp, "Refresh problem's submit and accept num in course failed!", e, " c_id: ", c_id, " p_id: ", p_id);
-			if(e_ptr == nullptr) {
-				// 保存首个异常
-				e_ptr = std::current_exception();
-			}
+			throw e;
 		}
 	}
-	if(e_ptr != nullptr) {
-		std::rethrow_exception(e_ptr);
-	}
+
+	trans.commit();
 }
 
 void CourseManagement::update_user_s_submit_and_accept_num(mysqlpp::Connection & conn, ojv4::c_id_type c_id, ojv4::u_id_type u_id)
@@ -221,31 +176,23 @@ void CourseManagement::update_user_s_submit_and_accept_num(mysqlpp::Connection &
 		}
 	}
 
-	{
-		mysqlpp::Query update = conn.query(
-				"update course_user set c_submit = %2, c_accept = %3 "
-				"where c_id = %0 and u_id = %1"
-		);
-		update.parse();
-		mysqlpp::SimpleResult res;
-		try {
-			res = update.execute(c_id, u_id, u_info.submit_num(), u_info.accept_num());
-		} catch (const std::exception & e) {
-			EXCEPT_FATAL(0, 0, log_fp, "Update user's submit and accept num failed!", e, " c_id: ", c_id, " u_id: ", u_id);
-			throw;
-		}
-		if (!res) {
-			/*
-			 * 注: 对于不在课程中的学生, update 不会出错, 不会执行到该分支
-			 * 提示: 假设你在命令行中模拟执行该 update 语句, 会提示
-			 * Query OK, 0 rows affected (0.01 sec)
-			 * Rows matched: 0  Changed: 0  Warnings: 0
-			 * where 子句不会匹配到相应的行, 也就不会出错了
-			 */
-			MysqlEmptyResException e(update.errnum(), update.error());
-			EXCEPT_FATAL(0, 0, log_fp, "Update user's submit and accept num failed!", e, " c_id: ", c_id, " u_id: ", u_id);
-			throw e;
-		}
+	mysqlpp::Query update = conn.query(
+			"update course_user set c_submit = %2, c_accept = %3 "
+			"where c_id = %0 and u_id = %1"
+	);
+	update.parse();
+	mysqlpp::SimpleResult res = update.execute(c_id, u_id, u_info.submit_num(), u_info.accept_num());
+	if (!res) {
+		/*
+		 * 注: 对于不在课程中的学生, update 不会出错, 不会执行到该分支
+		 * 提示: 假设你在命令行中模拟执行该 update 语句, 会提示
+		 * Query OK, 0 rows affected (0.01 sec)
+		 * Rows matched: 0  Changed: 0  Warnings: 0
+		 * where 子句不会匹配到相应的行, 也就不会出错了
+		 */
+		MysqlEmptyResException e(update.errnum(), update.error());
+		EXCEPT_FATAL(0, 0, log_fp, "Update user's submit and accept num failed!", e, " c_id: ", c_id, " u_id: ", u_id);
+		throw e;
 	}
 }
 
@@ -276,24 +223,16 @@ void CourseManagement::update_problem_s_submit_and_accept_num(mysqlpp::Connectio
 		}
 	}
 
-	{
-		mysqlpp::Query update = conn.query(
-				"update course_problem set c_p_submit = %2, c_p_accept = %3 "
-				"where c_id = %0 and p_id = %1"
-		);
-		update.parse();
-		mysqlpp::SimpleResult res;
-		try {
-			res = update.execute(c_id, p_id, p_info.submit_num(), p_info.accept_num());
-		} catch (const std::exception & e) {
-			EXCEPT_FATAL(0, 0, log_fp, "Update problem's submit and accept num failed!", e, " c_id: ", c_id, " p_id: ", p_id);
-			throw;
-		}
-		if (!res) {
-			MysqlEmptyResException e(update.errnum(), update.error());
-			EXCEPT_FATAL(0, 0, log_fp, "Update problem's submit and accept num failed!", e, " c_id: ", c_id, " p_id: ", p_id);
-			throw e;
-		}
+	mysqlpp::Query update = conn.query(
+			"update course_problem set c_p_submit = %2, c_p_accept = %3 "
+			"where c_id = %0 and p_id = %1"
+	);
+	update.parse();
+	mysqlpp::SimpleResult res = update.execute(c_id, p_id, p_info.submit_num(), p_info.accept_num());
+	if (!res) {
+		MysqlEmptyResException e(update.errnum(), update.error());
+		EXCEPT_FATAL(0, 0, log_fp, "Update problem's submit and accept num failed!", e, " c_id: ", c_id, " p_id: ", p_id);
+		throw e;
 	}
 }
 

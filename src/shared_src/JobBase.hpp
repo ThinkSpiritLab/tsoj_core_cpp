@@ -14,7 +14,7 @@
 #include <string>
 #include <chrono>
 
-#include "ojv4_db_type.hpp"
+#include "db_typedef.hpp"
 #include "united_resource.hpp"
 
 /**
