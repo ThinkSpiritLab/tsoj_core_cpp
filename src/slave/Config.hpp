@@ -8,7 +8,7 @@
 #ifndef SRC_CONFIG_HPP_
 #define SRC_CONFIG_HPP_
 
-#include <kerbal/utility/memory_storage.hpp>
+#include <kerbal/utility/storage.hpp>
 #include <chrono>
 
 #include "ExecuteArgs.hpp"

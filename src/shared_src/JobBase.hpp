@@ -10,7 +10,7 @@
 
 #include <kerbal/redis/operation.hpp>
 #include <kerbal/redis/redis_context.hpp>
-#include <kerbal/utility/memory_storage.hpp>
+#include <kerbal/utility/storage.hpp>
 
 #include <string>
 #include <chrono>

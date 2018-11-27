@@ -185,6 +185,10 @@ class process : virtual kerbal::utility::noncopyable, kerbal::utility::nonassign
 			return res;
 		}
 
+		pid_type get_child_id() const
+		{
+			return this->child_id;
+		}
 };
 
 #endif /* SRC_PROCESS_HPP_ */

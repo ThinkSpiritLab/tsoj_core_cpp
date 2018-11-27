@@ -10,7 +10,7 @@
 
 #include "united_resource.hpp"
 
-#include <kerbal/utility/memory_storage.hpp>
+#include <kerbal/utility/storage.hpp>
 
 #include <iostream>
 #include <chrono>
