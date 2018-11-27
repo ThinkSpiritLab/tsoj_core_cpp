@@ -35,7 +35,6 @@ namespace
 	int listening_pid; ///< 本机监听进程号
 	std::string judge_server_id; ///< 评测服务器id，定义为 host_name:ip
 	bool loop = true; ///< 主工作循环
-	std::string init_dir; ///< updater 的临时工作路径
 	std::string log_file_name; ///< 日志文件名
 	std::string updater_lock_file; ///< lock_file,用于保证一次只能有一个 updater 守护进程在运行
 	std::string mysql_hostname; ///< mysql 主机名
@@ -135,7 +134,6 @@ void load_config(const char * config_file)
 		return src;
 	};
 
-	loadConfig.add_rules(init_dir, "updater_init_dir", stringAssign);
 	loadConfig.add_rules(log_file_name, "log_file", stringAssign);
 	loadConfig.add_rules(updater_lock_file, "updater_lock_file", stringAssign);
 	loadConfig.add_rules(mysql_hostname, "mysql_hostname", stringAssign);
@@ -291,13 +289,6 @@ int main(int argc, const char * argv[]) try
 	std::cout << std::boolalpha;
 	load_config("/etc/ts_judger/updater.conf"); // 提醒: 此函数运行结束以后才可以使用 log 系列宏, 否则 log_fp 没打开
 	LOG_INFO(0, 0, log_fp, "Configuration load finished!");
-	
-	try {
-		mkdir_p(init_dir);
-	} catch (const std::exception & e) {
-		EXCEPT_FATAL(0, 0, log_fp, "Make init dir failed.", e);
-		exit(-1);
-	}
 
 	// 连接 mysql
 	LOG_INFO(0, 0, log_fp, "Connecting main MYSQL connection...");
@@ -318,13 +309,6 @@ int main(int argc, const char * argv[]) try
 		exit(-1);
 	}
 	LOG_INFO(0, 0, log_fp, "Main REDIS connection connected!");
-
-	#ifdef DEBUG
-	if (chdir(updater_init_dir.c_str())) {
-		LOG_FATAL(0, 0, log_fp, "Error: ", RunnerError::CHDIR_ERROR);
-		exit(-1);
-	}
-	#endif //DEBUG
 
 	try {
 		// 创建并分离发送更新竞赛榜单线程
