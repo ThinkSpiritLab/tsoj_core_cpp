@@ -37,9 +37,9 @@ class JobBase
 
 		int cases; ///< 测试用例数量
 
-		std::chrono::milliseconds timeLimit; ///< 时间限制
+		ojv4::s_time_in_milliseconds timeLimit; ///< 时间限制
 
-		kerbal::utility::MB memoryLimit; ///< 空间限制
+		ojv4::s_mem_in_MB memoryLimit; ///< 空间限制
 
 		ojv4::s_similarity_type similarity_threshold; ///< 重复率限制
 

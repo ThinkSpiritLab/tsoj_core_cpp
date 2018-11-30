@@ -391,92 +391,89 @@ ojv4::u_p_status_enum query_user_s_problem_status_from_solution(mysqlpp::Connect
 
 void ExerciseManagement::update_user_problem_status(mysqlpp::Connection & conn, ojv4::u_id_type u_id, ojv4::p_id_type p_id)
 {
-	ojv4::u_p_status_enum status = ojv4::u_p_status_enum::TODO;
-
-	try {
-		status = query_user_s_problem_status_from_solution(conn, u_id, p_id);
-	} catch (const std::exception & e) {
-		EXCEPT_FATAL(0, 0, log_fp, "Query user's problem status from solution failed!", e);
-		throw;
-	}
-
-	if (status == ojv4::u_p_status_enum::TODO) {
-		return;
-	}
-
-
-//	 insert into user_problem_status(u_id, p_id, status)
-//	 values(1, 1001, 0)
-//	 on duplicate key update status = 0
-
-	mysqlpp::Query on_duplicate_insert = conn.query(
-			"insert into user_problem_status(u_id, p_id, status) "
-			"values(%0, %1, %2) "
-			"on duplicate key update status = %2"
-	);
-	on_duplicate_insert.parse();
-
-	mysqlpp::SimpleResult res = on_duplicate_insert.execute(u_id, p_id, ojv4::u_p_status_type(status));
-
-	if (!res) {
-		MysqlEmptyResException e(on_duplicate_insert.errnum(), on_duplicate_insert.error());
-		EXCEPT_FATAL(0, 0, log_fp, "Update user's problem status failed!", e);
-		throw e;
-	}
+//	ojv4::u_p_status_enum status = ojv4::u_p_status_enum::TODO;
+//
+//	try {
+//		status = query_user_s_problem_status_from_solution(conn, u_id, p_id);
+//	} catch (const std::exception & e) {
+//		EXCEPT_FATAL(0, 0, log_fp, "Query user's problem status from solution failed!", e);
+//		throw;
+//	}
+//
+//	if (status == ojv4::u_p_status_enum::TODO) {
+//		return;
+//	}
+//
+//
+////	 insert into user_problem_status(u_id, p_id, status)
+////	 values(1, 1001, 0)
+////	 on duplicate key update status = 0
+//
+//	mysqlpp::Query on_duplicate_insert = conn.query(
+//			"insert into user_problem_status(u_id, p_id, status) "
+//			"values(%0, %1, %2) "
+//			"on duplicate key update status = %2"
+//	);
+//	on_duplicate_insert.parse();
+//
+//	mysqlpp::SimpleResult res = on_duplicate_insert.execute(u_id, p_id, ojv4::u_p_status_type(status));
+//
+//	if (!res) {
+//		MysqlEmptyResException e(on_duplicate_insert.errnum(), on_duplicate_insert.error());
+//		EXCEPT_FATAL(0, 0, log_fp, "Update user's problem status failed!", e);
+//		throw e;
+//	}
 }
 
 void ExerciseManagement::update_user_problem(mysqlpp::Connection & conn, ojv4::u_id_type u_id, ojv4::p_id_type p_id)
 {
-	ojv4::u_p_status_enum status = ojv4::u_p_status_enum::TODO;
+	ojv4::u_p_status_enum new_status = ojv4::u_p_status_enum::TODO;
 
 	try {
-		status = query_user_s_problem_status_from_solution(conn, u_id, p_id);
+		new_status = query_user_s_problem_status_from_solution(conn, u_id, p_id);
 	} catch (const std::exception & e) {
 		EXCEPT_FATAL(0, 0, log_fp, "Query user's problem status failed!", e);
 		throw;
 	}
 
-	if (status == ojv4::u_p_status_enum::TODO) {
+	if (new_status == ojv4::u_p_status_enum::TODO) {
 		return;
 	}
 
-	bool if_exists = false;
+	ojv4::u_p_status_enum previous_status = ojv4::u_p_status_enum::TODO;
 	{
-		mysqlpp::Query query_if_exists = conn.query(
-				"select id from user_problem "
-				"where u_id = %0 and p_id = %1 and c_id is null"
-		);
-		query_if_exists.parse();
+		mysqlpp::Query query = conn.query(
+				"select status from user_problem "
+				"where u_id = %0 and p_id = %1 and c_id is null");
+		query.parse();
 
-		mysqlpp::StoreQueryResult query_if_exists_res = query_if_exists.store(u_id, p_id);
-		if (query_if_exists.errnum() != 0) {
-			MysqlEmptyResException e(query_if_exists.errnum(), query_if_exists.error());
-			EXCEPT_FATAL(0, 0, log_fp, "Query if exists user-problem failed!", e);
+		mysqlpp::StoreQueryResult res = query.store(u_id, p_id);
+		if (query.errnum() != 0) {
+			MysqlEmptyResException e(query.errnum(), query.error());
+			EXCEPT_FATAL(0, 0, log_fp, "Query previous status from user-problem failed!", e);
 			throw e;
 		}
-		if (query_if_exists_res.empty()) {
-			if_exists = false;
+		if (res.empty()) {
+			previous_status = ojv4::u_p_status_enum::TODO;
 		} else {
-			if_exists = true;
+			previous_status = ojv4::u_p_status_enum(ojv4::u_p_status_type(res[0]["status"]));
 		}
 	}
 
-
-	if(if_exists == false) {
-
+	if (previous_status == ojv4::u_p_status_enum::TODO) {
 		mysqlpp::Query insert = conn.query(
 				"insert into user_problem (u_id, p_id, status, c_id) "
 				"values (%0, %1, %2, null)"
 		);
 		insert.parse();
 
-		mysqlpp::SimpleResult insert_res = insert.execute(u_id, p_id, ojv4::u_p_status_type(status));
+		mysqlpp::SimpleResult insert_res = insert.execute(u_id, p_id, ojv4::u_p_status_type(new_status));
 		if (!insert_res) {
 			MysqlEmptyResException e(insert.errnum(), insert.error());
 			EXCEPT_FATAL(0, 0, log_fp, "Update user-problem failed!", e);
 			throw e;
 		}
-	} else {
+	} else if (previous_status != new_status) {
 		mysqlpp::Query update = conn.query(
 				"update user_problem set "
 				"status = %0 "
@@ -484,7 +481,7 @@ void ExerciseManagement::update_user_problem(mysqlpp::Connection & conn, ojv4::u
 		);
 		update.parse();
 
-		mysqlpp::SimpleResult update_res = update.execute(ojv4::u_p_status_type(status), u_id, p_id);
+		mysqlpp::SimpleResult update_res = update.execute(ojv4::u_p_status_type(new_status), u_id, p_id);
 		if (!update_res) {
 			MysqlEmptyResException e(update.errnum(), update.error());
 			EXCEPT_FATAL(0, 0, log_fp, "Update user-problem failed!", e);

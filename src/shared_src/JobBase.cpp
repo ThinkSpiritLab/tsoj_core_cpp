@@ -60,8 +60,13 @@ JobBase::JobBase(int jobType, ojv4::s_id_type s_id, const kerbal::redis::RedisCo
 		this->p_id = ojv4::p_id_type(opt.hget<ojv4::p_id_literal>(job_info_key, "pid"));
 		this->lang = (Language) (opt.hget<int>(job_info_key, "lang"));
 		this->cases = opt.hget<int>(job_info_key, "cases");
-		this->timeLimit = milliseconds(opt.hget<ojv4::s_time_literal>(job_info_key, "time_limit"));
-		this->memoryLimit = MB(opt.hget<ojv4::s_mem_literal>(job_info_key, "memory_limit"));
+
+		auto time_limit_literal = opt.hget<ojv4::s_time_literal>(job_info_key, "time_limit");
+		this->timeLimit = ojv4::s_time_type<std::milli>(time_limit_literal);
+
+		auto memory_limit_literal = opt.hget<ojv4::s_mem_literal>(job_info_key, "memory_limit");
+		this->memoryLimit = ojv4::s_mem_type<kerbal::utility::mebi>(memory_limit_literal);
+
 		this->similarity_threshold = opt.hget<int>(job_info_key, "sim_threshold");
 	} catch (const RedisNilException & e) {
 		EXCEPT_FATAL(jobType, s_id, log_fp, "Job details lost.", e);

@@ -8,14 +8,16 @@
 #ifndef SRC_MASTER_SARECORDER_HPP_
 #define SRC_MASTER_SARECORDER_HPP_
 
-#include <unordered_set>
+//#include <unordered_set>
+#include <set>
 
 #include "db_typedef.hpp"
 
 class ProblemSARecorder
 {
 		int __submit_num;
-		std::unordered_set<ojv4::u_id_type, id_type_hash<ojv4::u_id_type>> accepted_users;
+//		std::unordered_set<ojv4::u_id_type, id_type_hash<ojv4::u_id_type>> accepted_users;
+		std::set<ojv4::u_id_type, literal_less<ojv4::u_id_type>> accepted_users;
 
 	public:
 		ProblemSARecorder() :
@@ -35,19 +37,18 @@ class ProblemSARecorder
 
 		void add_solution(ojv4::u_id_type u_id, ojv4::s_result_enum s_result)
 		{
-			// 此题已通过的用户的集合中无此条 solution 对应的用户
-			if (accepted_users.find(u_id) == accepted_users.end()) {
-				switch (s_result) {
-					case UnitedJudgeResult::SYSTEM_ERROR: // ignore system error
-						break;
-					case UnitedJudgeResult::ACCEPTED:
-						accepted_users.insert(u_id);
+			switch (s_result) {
+				case ojv4::s_result_enum::ACCEPTED:
+					if (accepted_users.insert(u_id).second == true) {
+						// 当此题已通过的用户的集合中无此条 solution 对应的用户时, insert 操作返回 true
 						++__submit_num;
-						break;
-					default:
-						++__submit_num;
-						break;
-				}
+					}
+					break;
+				case ojv4::s_result_enum::SYSTEM_ERROR: // ignore system error
+					break;
+				default:
+					++__submit_num;
+					break;
 			}
 		}
 };
@@ -55,7 +56,8 @@ class ProblemSARecorder
 class UserSARecorder
 {
 		int __submit_num;
-		std::unordered_set<ojv4::p_id_type, id_type_hash<ojv4::p_id_type>> accepted_problems;
+//		std::unordered_set<ojv4::p_id_type, id_type_hash<ojv4::p_id_type>> accepted_problems;
+		std::set<ojv4::p_id_type, literal_less<ojv4::p_id_type>> accepted_problems;
 
 	public:
 		UserSARecorder() :
@@ -75,19 +77,18 @@ class UserSARecorder
 
 		void add_solution(ojv4::p_id_type p_id, ojv4::s_result_enum s_result)
 		{
-			// 此用户已通过的题目编号的集合中无此条 solution 对应的题目编号
-			if (accepted_problems.find(p_id) == accepted_problems.end()) {
-				switch (s_result) {
-					case UnitedJudgeResult::SYSTEM_ERROR: // ignore system error
-						break;
-					case UnitedJudgeResult::ACCEPTED:
-						accepted_problems.insert(p_id);
+			switch (s_result) {
+				case ojv4::s_result_enum::ACCEPTED:
+					if (accepted_problems.insert(p_id).second == true) {
+						// 此用户已通过的题目编号的集合中无此条 solution 对应的题目编号时, insert 操作返回 true
 						++__submit_num;
-						break;
-					default:
-						++__submit_num;
-						break;
-				}
+					}
+					break;
+				case ojv4::s_result_enum::SYSTEM_ERROR: // ignore system error
+					break;
+				default:
+					++__submit_num;
+					break;
 			}
 		}
 };

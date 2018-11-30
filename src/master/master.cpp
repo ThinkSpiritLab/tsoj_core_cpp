@@ -150,9 +150,11 @@ void load_config(const char * config_file)
 		std::tie(key, value) = parse_buf(buf);
 		if (key != "" && value != "") {
 			if (loadConfig.parse(key, value) == false) {
-				ccerr << "unexpected key name" << std::endl;
+				ccerr << "unexpected key name: "
+					  << key << " = " << value << std::endl;
+			} else {
+				std::cout << key << " = " << value << std::endl;
 			}
-			std::cout << key << " = " << value << std::endl;
 		}
 	}
 

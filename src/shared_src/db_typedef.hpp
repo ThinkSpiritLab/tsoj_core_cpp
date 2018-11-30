@@ -107,6 +107,19 @@ struct id_type_hash : std::enable_if<std::is_base_of<id_type_base<typename IDTyp
 		}
 };
 
+template <typename IDType>
+struct literal_less : std::enable_if<std::is_base_of<id_type_base<typename IDType::integer_type>, IDType>::value, std::true_type>::type
+{
+		using result_type = typename std::hash<typename IDType::integer_type>::result_type;
+		using argument_type = IDType;
+
+		result_type operator()(const argument_type & a, const argument_type & b) const
+		{
+
+			return a.to_literal() < b.to_literal();
+		}
+};
+
 namespace kerbal
 {
 	namespace redis
@@ -160,9 +173,15 @@ struct ojv4
 		using s_time_literal = std::int32_t;
 		using s_time_in_milliseconds = std::chrono::duration<s_time_literal, std::milli>;
 
+		template <typename Ratio>
+		using s_time_type = std::chrono::duration<s_time_literal, Ratio>;
+
 		using s_mem_literal = std::int32_t;
-		using s_mem_in_byte = kerbal::utility::storage<s_mem_literal, std::ratio<1, 1> >;
-		using s_mem_in_MB = kerbal::utility::storage<s_mem_literal, std::ratio<1024 * 1024, 1> >;
+		using s_mem_in_byte = kerbal::utility::storage<s_mem_literal>;
+		using s_mem_in_MB = kerbal::utility::storage<s_mem_literal, kerbal::utility::mebi>;
+
+		template <typename Ratio>
+		using s_mem_type = kerbal::utility::storage<s_mem_literal, Ratio>;
 
 		/**
 		 * @brief 枚举类，标识每道题目对一个用户的状态
