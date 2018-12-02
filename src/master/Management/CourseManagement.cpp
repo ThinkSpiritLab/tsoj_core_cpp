@@ -50,7 +50,7 @@ void CourseManagement::refresh_all_users_submit_and_accept_num_in_course(mysqlpp
 
 		mysqlpp::StoreQueryResult solutions = query.store(c_id, c_id);
 
-		if(query.errnum() != 0) {
+		if (query.errnum() != 0) {
 			MysqlEmptyResException e(query.errnum(), query.error());
 			EXCEPT_FATAL(0, 0, log_fp, "Query users' submit and accept num in course failed!", e, " c_id: ", c_id);
 			throw e;

@@ -209,13 +209,10 @@ void ContestManagement::update_user_problem(mysqlpp::Connection & mysql_conn, oj
 	);
 	query_if_exists.parse();
 
-	static std::mutex mtx_of_updating_ctup;
-	std::lock_guard<std::mutex> lck_g(mtx_of_updating_ctup);
-
 	mysqlpp::StoreQueryResult query_if_exists_res = query_if_exists.store(ct_id, u_id, p_id);
 	if (query_if_exists.errnum() != 0) {
 		MysqlEmptyResException e(query_if_exists.errnum(), query_if_exists.error());
-		EXCEPT_FATAL(0, 0, log_fp, "Update user problem status failed!", e);
+		EXCEPT_FATAL(0, 0, log_fp, "Query previous user problem status failed!", e);
 		throw e;
 	}
 
@@ -227,8 +224,8 @@ void ContestManagement::update_user_problem(mysqlpp::Connection & mysql_conn, oj
 		);
 		insert.parse();
 
-		mysqlpp::SimpleResult insert_res = insert.execute(ct_id, u_id, p_id, is_ac, ac_time, error_count);
-		if (!insert_res) {
+		mysqlpp::SimpleResult res = insert.execute(ct_id, u_id, p_id, is_ac, ac_time, error_count);
+		if (!res) {
 			MysqlEmptyResException e(insert.errnum(), insert.error());
 			EXCEPT_FATAL(0, 0, log_fp, "Update user problem status failed!", e);
 			throw e;
@@ -243,15 +240,8 @@ void ContestManagement::update_user_problem(mysqlpp::Connection & mysql_conn, oj
 		);
 		update.parse();
 
-		mysqlpp::SimpleResult update_res;
-		try {
-			update_res = update.execute(ct_id, u_id, p_id, is_ac, ac_time, error_count);
-		} catch (const std::exception & e) {
-			EXCEPT_FATAL(0, 0, log_fp, "Update user problem status failed!", e);
-			throw e;
-		}
-
-		if (!update_res) {
+		mysqlpp::SimpleResult res = update.execute(ct_id, u_id, p_id, is_ac, ac_time, error_count);
+		if (!res) {
 			MysqlEmptyResException e(update.errnum(), update.error());
 			EXCEPT_FATAL(0, 0, log_fp, "Update user problem status failed!", e);
 			throw e;

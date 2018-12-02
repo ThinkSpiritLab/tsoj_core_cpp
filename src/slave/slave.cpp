@@ -263,8 +263,7 @@ int main(int argc, const char * argv[]) try
 	while (loop) {
 
 		// Step 1: Pop job item and parser job_type and job_id.
-		std::string job_item = "0,0";
-		int job_type = 0;
+		int job_type(0);
 		ojv4::s_id_type job_id(0);
 		/*
 		 * 当收到 SIGTERM 信号时，会在评测队列末端加一个特殊的评测任务用于标识停止测评。此处若检测到停止
@@ -272,22 +271,25 @@ int main(int argc, const char * argv[]) try
 		 * 若取得的是正常的评测任务则继续工作
 		 */
 		try {
-			job_item = job_list.block_pop_front(0_s);
+			std::string job_item = job_list.block_pop_front(0_s);
 			if (JobBase::isExitJob(job_item) == true) {
 				loop = false;
 				LOG_INFO(0, 0, log_fp, "Get exit job.");
 				continue;
 			}
-			std::tie(job_type, job_id) = JudgeJob::parseJobItem(job_item);
-			LOG_DEBUG(job_type, job_id, log_fp, "Judge server ", judge_server_id, " get job: ", job_item);
-		} catch (const RedisNilException & e) {
-			EXCEPT_FATAL(0, 0, log_fp, "Fail to fetch job.", e, "job_item: ", job_item);
-			continue;
+			LOG_DEBUG(jobType, s_id, log_fp, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+			LOG_DEBUG(job_type, job_id, log_fp, "Judge server: ", judge_server_id, " get judge job: ", job_item);
+			try {
+				std::tie(job_type, job_id) = JudgeJob::parseJobItem(job_item);
+			} catch (const std::exception & e) {
+				EXCEPT_FATAL(0, 0, log_fp, "Fail to parse job item.", e, "job_item: ", job_item);
+				continue;
+			}
 		} catch (const std::exception & e) {
-			EXCEPT_FATAL(0, 0, log_fp, "Fail to fetch job.", e, "job_item: ", job_item);
+			EXCEPT_FATAL(0, 0, log_fp, "Fail to fetch job.", e);
 			continue;
 		} catch (...) {
-			UNKNOWN_EXCEPT_FATAL(0, 0, log_fp, "Fail to fetch job.", "job_item: ", job_item);
+			UNKNOWN_EXCEPT_FATAL(0, 0, log_fp, "Fail to fetch job.");
 			continue;
 		}
 
@@ -322,10 +324,10 @@ int main(int argc, const char * argv[]) try
 				try {
 					job.reset(new JudgeJob(job_type, job_id, child_conn));
 				} catch (const std::exception & e) {
-					EXCEPT_FATAL(job_type, job_id, log_fp, "Fail to create job.", e);
+					EXCEPT_FATAL(job_type, job_id, log_fp, "Fail to construct job.", e);
 					return;
 				} catch (...) {
-					UNKNOWN_EXCEPT_FATAL(job_type, job_id, log_fp, "Fail to create job");
+					UNKNOWN_EXCEPT_FATAL(job_type, job_id, log_fp, "Fail to construct job");
 					return;
 				}
 

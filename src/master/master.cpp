@@ -20,6 +20,15 @@
 #include <kerbal/compatibility/chrono_suffix.hpp>
 
 #include "ContestManagement.hpp"
+#include "CourseManagement.hpp"
+#include "ExerciseManagement.hpp"
+
+#ifndef MYSQLPP_MYSQL_HEADERS_BURIED
+#	define MYSQLPP_MYSQL_HEADERS_BURIED
+#endif
+
+#include <mysql++/query.h>
+
 
 using namespace kerbal::compatibility::chrono_suffix;
 
@@ -320,7 +329,37 @@ int main(int argc, const char * argv[]) try
 		exit(-1);
 	}
 
-	LOG_INFO(0, 0, log_fp, "updater starting ...");
+
+	{
+		mysqlpp::Query query = mainMysqlConn.query(
+				"select c_id from course where c_id not in(16, 17, 22, 23)"
+		);
+		mysqlpp::StoreQueryResult res = query.store();
+		if (query.errnum() != 0) {
+			MysqlEmptyResException e(query.errnum(), query.error());
+			EXCEPT_FATAL(0, 0, log_fp, "Query courses' information failed!", e);
+			throw e;
+		}
+
+		for (const auto & row : res) {
+			ojv4::c_id_type c_id = row["c_id"];
+			LOG_INFO(0, 0, log_fp, "Refresh all users' submit and accept num in course: ", c_id, " ...");
+			CourseManagement::refresh_all_users_submit_and_accept_num_in_course(mainMysqlConn, c_id);
+		}
+		for (const auto & row : res) {
+			ojv4::c_id_type c_id = row["c_id"];
+			LOG_INFO(0, 0, log_fp, "Refresh all problems' submit and accept num in course: ", c_id, " ...");
+			CourseManagement::refresh_all_problems_submit_and_accept_num_in_course(mainMysqlConn, c_id);
+		}
+	}
+
+	LOG_INFO(0, 0, log_fp, "Refresh all users' submit and accept num in exercise...");
+	ExerciseManagement::refresh_all_users_submit_and_accept_num(mainMysqlConn);
+	LOG_INFO(0, 0, log_fp, "Refresh all problems' submit and accept num in exercise...");
+	ExerciseManagement::refresh_all_problems_submit_and_accept_num(mainMysqlConn);
+
+
+	LOG_INFO(0, 0, log_fp, "updater starting...");
 
 	try {
 		std::thread update_contest_scoreboard_thread(update_contest_scoreboard_handler);
@@ -337,9 +376,8 @@ int main(int argc, const char * argv[]) try
 
 	while (loop) {
 
-		std::string job_item = "-1,-1";
-		int jobType = -1;
-		ojv4::s_id_type s_id(-1);
+		int jobType(0);
+		ojv4::s_id_type s_id(0);
 
 		/*
 		 * 当收到 SIGTERM 信号时，会在评测队列末端加一个特殊的评测任务用于标识停止测评。此处若检测到停止
@@ -347,20 +385,25 @@ int main(int argc, const char * argv[]) try
 		 * 若取得的是正常的评测任务则继续工作
 		 */
 		try {
-			job_item = update_queue.block_pop_front(0_s);
+			std::string job_item = update_queue.block_pop_front(0_s);
 			if (JobBase::isExitJob(job_item) == true) {
 				loop = false;
 				LOG_INFO(0, 0, log_fp, "Get exit job.");
 				continue;
 			}
-			std::tie(jobType, s_id) = JobBase::parseJobItem(job_item);
 			LOG_DEBUG(jobType, s_id, log_fp, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
 			LOG_DEBUG(jobType, s_id, log_fp, "Master get update job: ", job_item);
+			try {
+				std::tie(jobType, s_id) = JobBase::parseJobItem(job_item);
+			} catch (const std::exception & e) {
+				EXCEPT_FATAL(0, 0, log_fp, "Fail to parse job item.", e, "job_item: ", job_item);
+				continue;
+			}
 		} catch (const std::exception & e) {
-			EXCEPT_FATAL(0, 0, log_fp, "Fail to fetch job.", e, "job_item: ", job_item);
+			EXCEPT_FATAL(0, 0, log_fp, "Fail to fetch job.", e);
 			continue;
 		} catch (...) {
-			LOG_FATAL(0, 0, log_fp, "Fail to fetch job. Error info: ", "unknown exception", "job_item: ", job_item);
+			UNKNOWN_EXCEPT_FATAL(0, 0, log_fp, "Fail to fetch job.");
 			continue;
 		}
 
@@ -379,7 +422,7 @@ int main(int argc, const char * argv[]) try
 		std::unique_ptr <mysqlpp::Connection> mysqlConn(new mysqlpp::Connection(false));
 		mysqlConn->set_option(new mysqlpp::SetCharsetNameOption("utf8"));
 		if (!mysqlConn->connect(mysql_database.c_str(), mysql_hostname.c_str(), mysql_username.c_str(), mysql_passwd.c_str())) {
-			LOG_FATAL(jobType, s_id, log_fp, "Mysql connection connect failed!");
+			LOG_FATAL(jobType, s_id, log_fp, "MYSQL connection connect failed!");
 			continue;
 		}
 
@@ -396,7 +439,7 @@ int main(int argc, const char * argv[]) try
 			EXCEPT_FATAL(jobType, s_id, log_fp, "Job construct failed!", e);
 			continue;
 		} catch (...) {
-			LOG_FATAL(jobType, s_id, log_fp, "Job construct failed! Error information: ", UNKNOWN_EXCEPTION_WHAT);
+			UNKNOWN_EXCEPT_FATAL(jobType, s_id, log_fp, "Job construct failed!");
 			continue;
 		}
 
@@ -407,7 +450,7 @@ int main(int argc, const char * argv[]) try
 			EXCEPT_FATAL(jobType, s_id, log_fp, "Job handle failed!", e);
 			continue;
 		} catch (...) {
-			LOG_FATAL(jobType, s_id, log_fp, "Job handle failed! Error information: ", UNKNOWN_EXCEPTION_WHAT);
+			UNKNOWN_EXCEPT_FATAL(jobType, s_id, log_fp, "Job handle failed!");
 			continue;
 		}
 
