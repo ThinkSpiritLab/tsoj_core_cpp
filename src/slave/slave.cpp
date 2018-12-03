@@ -277,14 +277,14 @@ int main(int argc, const char * argv[]) try
 				LOG_INFO(0, 0, log_fp, "Get exit job.");
 				continue;
 			}
-			LOG_DEBUG(jobType, s_id, log_fp, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
-			LOG_DEBUG(job_type, job_id, log_fp, "Judge server: ", judge_server_id, " get judge job: ", job_item);
 			try {
 				std::tie(job_type, job_id) = JudgeJob::parseJobItem(job_item);
 			} catch (const std::exception & e) {
 				EXCEPT_FATAL(0, 0, log_fp, "Fail to parse job item.", e, "job_item: ", job_item);
 				continue;
 			}
+			LOG_DEBUG(job_type, job_id, log_fp, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+			LOG_DEBUG(job_type, job_id, log_fp, "Judge server: ", judge_server_id, " get judge job: ", job_item);
 		} catch (const std::exception & e) {
 			EXCEPT_FATAL(0, 0, log_fp, "Fail to fetch job.", e);
 			continue;
