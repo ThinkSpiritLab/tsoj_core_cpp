@@ -28,44 +28,66 @@ ExerciseUpdateJobBase::ExerciseUpdateJobBase(int jobType, ojv4::s_id_type s_id, 
 void ExerciseUpdateJobBase::update_source_code(const char * source_code)
 {
 	LOG_DEBUG(jobType, s_id, log_fp, BOOST_CURRENT_FUNCTION);
+	PROFILE_HEAD
 
 	if (source_code == nullptr) {
 		LOG_WARNING(jobType, s_id, log_fp, "empty source code!");
 		return;
 	}
 
+//	mysqlpp::Query insert = mysqlConn->query(
+//			"insert into source (s_id, source_code)"
+//			"values (%0, %1q)"
+//	);
+//	insert.parse();
+//	mysqlpp::SimpleResult res = insert.execute(s_id, source_code);
+
 	mysqlpp::Query insert = mysqlConn->query(
-			"insert into source (s_id, source_code)"
-			"values (%0, %1q)"
+			"insert into source (s_id, source_code) "
+			"values("
 	);
-	insert.parse();
-	mysqlpp::SimpleResult res = insert.execute(s_id, source_code);
+	insert << s_id << ','
+			<< mysqlpp::quote << source_code << ')';
+	mysqlpp::SimpleResult res = insert.execute();
 	if (!res) {
 		MysqlEmptyResException e(insert.errnum(), insert.error());
 		EXCEPT_FATAL(jobType, s_id, log_fp, "Update source code failed!", e);
 		throw e;
 	}
+
+	PROFILE_WARNING_TAIL(jobType, s_id, log_fp, 50);
 }
 
 void ExerciseUpdateJobBase::update_compile_info(const char * compile_info)
 {
 	LOG_DEBUG(jobType, s_id, log_fp, BOOST_CURRENT_FUNCTION);
+	PROFILE_HEAD
 
 	if (compile_info == nullptr) {
 		LOG_WARNING(jobType, s_id, log_fp, "empty compile info!");
 		return;
 	}
 
+//	mysqlpp::Query insert = mysqlConn->query(
+//			"insert into compile_info (s_id, compile_error_info) "
+//			"values (%0, %1q)"
+//	);
+//	insert.parse();
+//	mysqlpp::SimpleResult res = insert.execute(s_id, compile_info);
+
 	mysqlpp::Query insert = mysqlConn->query(
 			"insert into compile_info (s_id, compile_error_info) "
-			"values (%0, %1q)"
+			"values("
 	);
-	insert.parse();
-	mysqlpp::SimpleResult res = insert.execute(s_id, compile_info);
+	insert << s_id << ','
+			<< mysqlpp::quote << compile_info << ')';
+	mysqlpp::SimpleResult res = insert.execute();
 	if (!res) {
 		MysqlEmptyResException e(insert.errnum(), insert.error());
 		EXCEPT_FATAL(jobType, s_id, log_fp, "Update compile info failed!", e);
 		throw e;
 	}
+
+	PROFILE_WARNING_TAIL(jobType, s_id, log_fp, 50);
 }
 

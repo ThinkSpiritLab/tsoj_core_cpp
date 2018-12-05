@@ -210,5 +210,15 @@ void log_write(int type, int job_id, const char source_filename[], int line, std
 #define UNKNOWN_EXCEPT_FATAL(type, job_id, log_fp, events, x...)	    LOG_FATAL(type, job_id, log_fp, events, \
 																		" Error information: ", UNKNOWN_EXCEPTION_WHAT, ##x)
 
+//#define PROFILE_HEAD
+//#define PROFILE_WARNING_TAIL(type, s_id, log_fp, yu_ms)
+
+#define PROFILE_HEAD auto profile_start = std::chrono::system_clock::now();
+#define PROFILE_TAIL(type, s_id, log_fp) LOG_INFO(type, s_id, log_fp, std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - profile_start).count());
+
+#define PROFILE_WARNING_TAIL(type, s_id, log_fp, yu_ms, x...)   auto profile_ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - profile_start); \
+												if(profile_ms.count() > yu_ms) {LOG_WARNING(type, s_id, log_fp, BOOST_CURRENT_FUNCTION, ": consume: ", profile_ms.count(), " ms  ", ##x);}
+
+
 #endif //LOGGER_H
 

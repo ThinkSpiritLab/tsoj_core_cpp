@@ -283,8 +283,8 @@ int main(int argc, const char * argv[]) try
 				EXCEPT_FATAL(0, 0, log_fp, "Fail to parse job item.", e, "job_item: ", job_item);
 				continue;
 			}
-			LOG_DEBUG(job_type, job_id, log_fp, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
-			LOG_DEBUG(job_type, job_id, log_fp, "Judge server: ", judge_server_id, " get judge job: ", job_item);
+			LOG_INFO(job_type, job_id, log_fp, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+			LOG_INFO(job_type, job_id, log_fp, "Judge server: ", judge_server_id, " get judge job: ", job_item);
 		} catch (const std::exception & e) {
 			EXCEPT_FATAL(0, 0, log_fp, "Fail to fetch job.", e);
 			continue;
@@ -343,6 +343,10 @@ int main(int argc, const char * argv[]) try
 					job->push_back_failed_judge_job();
 					return;
 				}
+				
+				LOG_INFO(job_type, job_id, log_fp, "Judge finished.");
+				LOG_INFO(job_type, job_id, log_fp, ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+				
 			}, job_type, job_id);
 			judge_process.detach();
 			LOG_DEBUG(job_type, job_id, log_fp, "Judge process fork success. Child_pid: ", judge_process.get_child_id());
