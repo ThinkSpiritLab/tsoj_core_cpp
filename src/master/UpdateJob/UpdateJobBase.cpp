@@ -228,14 +228,14 @@ void UpdateJobBase::handle()
 		}
 
 		// Step 5: 在 source 表或 contest_source%d 表中留存用户代码
-//		try {
-//			RedisReply reply = this->get_source_code();
-//			this->update_source_code(reply->str);
-//		} catch (const std::exception & e) {
-//			update_source_code_exception = std::current_exception();
-//			EXCEPT_WARNING(jobType, s_id, log_fp, "Update source code failed!", e);
-//			//DO NOT THROW
-//		}
+		try {
+			RedisReply reply = this->get_source_code();
+			this->update_source_code(reply->str);
+		} catch (const std::exception & e) {
+			update_source_code_exception = std::current_exception();
+			EXCEPT_WARNING(jobType, s_id, log_fp, "Update source code failed!", e);
+			//DO NOT THROW
+		}
 
 		// Step 6: 在 compile_info 表或 contest_compile_info%d 表中留存编译错误信息
 		if (result.judge_result == UnitedJudgeResult::COMPILE_ERROR) {
