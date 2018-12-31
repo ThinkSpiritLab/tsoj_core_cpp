@@ -47,7 +47,8 @@ class ProblemSARecorder
 				case ojv4::s_result_enum::SYSTEM_ERROR: // ignore system error
 					break;
 				default:
-					++__submit_num;
+					if (accepted_users.find(u_id) == accepted_users.end())
+						++__submit_num;
 					break;
 			}
 		}
@@ -87,7 +88,8 @@ class UserSARecorder
 				case ojv4::s_result_enum::SYSTEM_ERROR: // ignore system error
 					break;
 				default:
-					++__submit_num;
+					if (accepted_problems.find(p_id) == accepted_problems.end())
+						++__submit_num;
 					break;
 			}
 		}
