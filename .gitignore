@@ -2,3 +2,5 @@
 /release/
 /.idea/
 /.tracecompass/
+/bin/
+/sync

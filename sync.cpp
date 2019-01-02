@@ -26,7 +26,6 @@ typedef sync_instance_pool<mysqlpp::Connection> conn_pool;
 std::ofstream log_fp("/dev/null");
 
 int main(int argc, char *argv[])
-// 测试主函数，不需要在定义main()
 {
 	try {
 
@@ -37,7 +36,7 @@ int main(int argc, char *argv[])
 		cout << "update exercise" << endl;
 		ExerciseManagement::refresh_all_users_submit_and_accept_num(conn);
 		ExerciseManagement::refresh_all_problems_submit_and_accept_num(conn);
-/*
+
 		mysqlpp::Query query = conn.query(
 			"select distinct c_id from course"
 		);
@@ -50,7 +49,7 @@ int main(int argc, char *argv[])
 			CourseManagement::refresh_all_problems_submit_and_accept_num_in_course(conn, c_id);
 			CourseManagement::refresh_all_users_submit_and_accept_num_in_course(conn, c_id);
 		}
-*/
+
 	} catch (const std::exception & e) {
 		cerr << e.what() << endl;            // 给出一个错误信息，终止执行
 	} catch (...) {

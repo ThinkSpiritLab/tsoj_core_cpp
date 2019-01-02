@@ -40,19 +40,37 @@ void ContestManagement::refresh_all_problems_submit_and_accept_num_in_contest(my
 		);
 		query.parse();
 
-		mysqlpp::StoreQueryResult solutions = query.store(ct_id, ct_id);
-
-		if(query.errnum() != 0) {
+		mysqlpp::UseQueryResult solutions = query.use(ct_id, ct_id);
+		if (!solutions) {
 			MysqlEmptyResException e(query.errnum(), query.error());
 			EXCEPT_FATAL(0, 0, log_fp, "Query problems' submit and accept num in contest failed!", e, " ct_id: ", ct_id);
 			throw e;
 		}
 
-		for (const auto & row : solutions) {
-			ojv4::u_id_type u_id = row["u_id"];
-			ojv4::p_id_type p_id = row["p_id"];
-			ojv4::s_result_enum s_result = ojv4::s_result_enum(ojv4::s_result_in_db_type(row["s_result"]));
+		while (mysqlpp::Row row = solutions.fetch_row()) {
+			auto it = row.begin();
+			ojv4::u_id_type u_id(::atoll(it->c_str()));
+			++it;
+			ojv4::p_id_type p_id(::atoll(it->c_str()));
+			++it;
+			ojv4::s_result_enum s_result(ojv4::s_result_enum(::atoll(it->c_str())));
 			m[p_id].add_solution(u_id, s_result);
+		}
+	}
+
+	mysqlpp::Transaction trans(mysql_conn);
+
+	{
+		mysqlpp::Query clear = mysql_conn.query(
+				"update contest_problem set c_p_submit = 0, c_p_accept = 0 "
+				"where ct_id = %0"
+		);
+		clear.parse();
+		mysqlpp::SimpleResult res = clear.execute(ct_id);
+		if (!res) {
+			MysqlEmptyResException e(clear.errnum(), clear.error());
+			EXCEPT_FATAL(0, 0, log_fp, "Clear problems' submit and accept num in contest failed!", e, " ct_id: ", ct_id);
+			throw e;
 		}
 	}
 
@@ -62,8 +80,6 @@ void ContestManagement::refresh_all_problems_submit_and_accept_num_in_contest(my
 	);
 	update.parse();
 
-	mysqlpp::Transaction trans(mysql_conn);
-
 	for (const auto & ele : m) {
 		ojv4::p_id_type p_id = ele.first;
 		const ProblemSARecorder & p_info = ele.second;
@@ -71,7 +87,7 @@ void ContestManagement::refresh_all_problems_submit_and_accept_num_in_contest(my
 		int accept = p_info.accept_num();
 
 		mysqlpp::SimpleResult res = update.execute(ct_id, p_id, submit, accept);
-		if(!res) {
+		if (!res) {
 			MysqlEmptyResException e(update.errnum(), update.error());
 			EXCEPT_FATAL(0, 0, log_fp, "Update problem's submit and accept num in contest failed!", e, " ct_id: ", ct_id, " p_id: ", p_id);
 			throw e;

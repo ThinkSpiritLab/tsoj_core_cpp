@@ -32,7 +32,7 @@ void CourseManagement::refresh_all_users_submit_and_accept_num_in_course(mysqlpp
 		23_c_id, // 2017级程序设计实验/实训补考
 	};
 
-	if(std::find(std::begin(protected_course), std::end(protected_course), c_id) != std::end(protected_course)) {
+	if (std::find(std::begin(protected_course), std::end(protected_course), c_id) != std::end(protected_course)) {
 		LOG_WARNING(0, 0, log_fp, "Protected course/exam. c_id: ", c_id);
 		return;
 	}
@@ -48,19 +48,36 @@ void CourseManagement::refresh_all_users_submit_and_accept_num_in_course(mysqlpp
 		);
 		query.parse();
 
-		mysqlpp::StoreQueryResult solutions = query.store(c_id, c_id);
-
-		if (query.errnum() != 0) {
+		mysqlpp::UseQueryResult solutions = query.use(c_id, c_id);
+		if (!solutions) {
 			MysqlEmptyResException e(query.errnum(), query.error());
 			EXCEPT_FATAL(0, 0, log_fp, "Query users' submit and accept num in course failed!", e, " c_id: ", c_id);
 			throw e;
 		}
-
-		for (const auto & row : solutions) {
-			ojv4::u_id_type u_id = row["u_id"];
-			ojv4::p_id_type p_id = row["p_id"];
-			ojv4::s_result_enum s_result = ojv4::s_result_enum(ojv4::s_result_in_db_type(row["s_result"]));
+		while (mysqlpp::Row row = solutions.fetch_row()) {
+			auto it = row.begin();
+			ojv4::u_id_type u_id(::atoll(it->c_str()));
+			++it;
+			ojv4::p_id_type p_id(::atoll(it->c_str()));
+			++it;
+			ojv4::s_result_enum s_result(ojv4::s_result_enum(::atoll(it->c_str())));
 			m[u_id].add_solution(p_id, s_result);
+		}
+	}
+
+	mysqlpp::Transaction trans(mysql_conn);
+
+	{
+		mysqlpp::Query clear = mysql_conn.query(
+				"update course_user set c_submit = 0, c_accept = 0 "
+				"where c_id = %0"
+		);
+		clear.parse();
+		mysqlpp::SimpleResult res = clear.execute(c_id);
+		if (!res) {
+			MysqlEmptyResException e(clear.errnum(), clear.error());
+			EXCEPT_FATAL(0, 0, log_fp, "Clear users' submit and accept num in course failed!", e, " c_id: ", c_id);
+			throw e;
 		}
 	}
 
@@ -69,8 +86,6 @@ void CourseManagement::refresh_all_users_submit_and_accept_num_in_course(mysqlpp
 			"where c_id = %0 and u_id = %1"
 	);
 	update.parse();
-
-	mysqlpp::Transaction trans(mysql_conn);
 
 	for (const auto & ele : m) {
 		ojv4::u_id_type u_id = ele.first;
@@ -108,19 +123,37 @@ void CourseManagement::refresh_all_problems_submit_and_accept_num_in_course(mysq
 		);
 		query.parse();
 
-		mysqlpp::StoreQueryResult solutions = query.store(c_id, c_id);
-
-		if(query.errnum() != 0) {
+		mysqlpp::UseQueryResult solutions = query.use(c_id, c_id);
+		if (!solutions) {
 			MysqlEmptyResException e(query.errnum(), query.error());
 			EXCEPT_FATAL(0, 0, log_fp, "Query problems' submit and accept num in course failed!", e, " c_id: ", c_id);
 			throw e;
 		}
 
-		for (const auto & row : solutions) {
-			ojv4::u_id_type u_id = row["u_id"];
-			ojv4::p_id_type p_id = row["p_id"];
-			ojv4::s_result_enum s_result = ojv4::s_result_enum(ojv4::s_result_in_db_type(row["s_result"]));
+		while (mysqlpp::Row row = solutions.fetch_row()) {
+			auto it = row.begin();
+			ojv4::u_id_type u_id(::atoll(it->c_str()));
+			++it;
+			ojv4::p_id_type p_id(::atoll(it->c_str()));
+			++it;
+			ojv4::s_result_enum s_result(ojv4::s_result_enum(::atoll(it->c_str())));
 			m[p_id].add_solution(u_id, s_result);
+		}
+	}
+
+	mysqlpp::Transaction trans(mysql_conn);
+
+	{
+		mysqlpp::Query clear = mysql_conn.query(
+				"update course_problem set c_p_submit = 0, c_p_accept = 0 "
+				"where c_id = %0"
+		);
+		clear.parse();
+		mysqlpp::SimpleResult res = clear.execute(c_id);
+		if (!res) {
+			MysqlEmptyResException e(clear.errnum(), clear.error());
+			EXCEPT_FATAL(0, 0, log_fp, "Clear problems' submit and accept num in course failed!", e, " c_id: ", c_id);
+			throw e;
 		}
 	}
 
@@ -129,8 +162,6 @@ void CourseManagement::refresh_all_problems_submit_and_accept_num_in_course(mysq
 			"where c_id = %0 and p_id = %1"
 	);
 	update.parse();
-
-	mysqlpp::Transaction trans(mysql_conn);
 
 	for (const auto & ele : m) {
 		ojv4::p_id_type p_id = ele.first;

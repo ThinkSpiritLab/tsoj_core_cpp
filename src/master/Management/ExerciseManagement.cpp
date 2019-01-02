@@ -40,18 +40,37 @@ try {
 				"order by s_id"
 				// order by s_id 是重中之重, 因为根据 update 先后次序的不同, s_id 小的可能在 s_id 大的 solution 后面
 		);
-		mysqlpp::StoreQueryResult solutions = query.store();
 
-		if (query.errnum() != 0) {
+		mysqlpp::UseQueryResult solutions = query.use();
+		if (!solutions) {
 			MysqlEmptyResException e(query.errnum(), query.error());
-			EXCEPT_FATAL(0, 0, log_fp, "Query users' submit and accept num failed!", e);
+			EXCEPT_FATAL(0, 0, log_fp, "Query users' submit and accept num in exercise failed!", e);
 			throw e;
 		}
 
-		for (const auto & row : solutions) {
-			ojv4::u_id_type u_id = row["u_id"];
-			ojv4::p_id_type p_id = row["p_id"];
-			ojv4::s_result_enum s_result = ojv4::s_result_enum(ojv4::s_result_in_db_type(row["s_result"]));
+		// 性能优化提示 1: 这边用 Query::use(), 比使用 store() 方法先把数据保存下来然后再遍历效率要更高
+		while (mysqlpp::Row row = solutions.fetch_row()) {
+			/*
+			 * 性能优化提示 2:
+			 * 取出迭代器后自己遍历去取值的速度要比通过 row["key"] 和 row[0] 去取的效率高,
+			 * 当然代价是少了越界检查, 代码不安全.
+			 * 当然该函数工作量较大, 这里是为了性能考虑, 不得不做妥协
+			 *
+			 * 性能优化提示 3:
+			 * 这里不用 ojv4::u_id_type = *it 的理由是,
+			 * 使用隐式的 mysqlpp::String 到整数的类型转换效率太低 (可能 mysql++ 的内部实现有各种安全检查)
+			 * 故要想提升性能, 可以使用 std::stox 或者 C 标准里的 atox 系列函数手动转换
+			 *
+			 * 性能优化提示 4:
+			 * 使用 atox 不使用 stox 的理由是, stox 的参数为 const std::string, 会从 const char* 构造一次临时变量, 效率低
+			 * 不过缺点是 C 的 atox 没有异常机制, 如若传进去的字符串非法就可能有隐患
+			 */
+			auto it = row.begin();
+			ojv4::u_id_type u_id(::atoll(it->c_str()));
+			++it;
+			ojv4::p_id_type p_id(::atoll(it->c_str()));
+			++it;
+			ojv4::s_result_enum s_result(ojv4::s_result_enum(::atoll(it->c_str())));
 			m[u_id].add_solution(p_id, s_result);
 		}
 	}
@@ -78,6 +97,7 @@ try {
 
 	total = m.size();
 	finished = 0;
+	int innear_finished = 0;
 	for (const auto & ele : m) {
 		ojv4::u_id_type u_id = ele.first;
 		const UserSARecorder & u_info = ele.second;
@@ -90,9 +110,17 @@ try {
 			EXCEPT_FATAL(0, 0, log_fp, "Update user's submit and accept num in exercise failed!", e, " u_id: ", u_id);
 			throw e;
 		}
-		++*finished;
+		/*
+		 * 性能优化提示 5:
+		 * innear_finished 变量由于作用域小, 可以被编译器优化为寄存器变量,
+		 * 但是 finished 变量就不一样了, 每次做自增可能都要花很大的代价,
+		 * 故每隔一定周期做一下刷新
+		 */
+		++innear_finished;
+		if (innear_finished % 500 == 0)
+			*finished = innear_finished;
 	}
-
+	*finished = innear_finished;
 	trans.commit();
 } catch (...) {
 	total = 0;
@@ -119,18 +147,21 @@ try {
 				"order by s_id"
 		// order by s_id 是重中之重, 因为根据 update 先后次序的不同, s_id 小的可能在 s_id 大的 solution 后面
 		);
-		mysqlpp::StoreQueryResult solutions = query.store();
 
-		if (query.errnum() != 0) {
+		mysqlpp::UseQueryResult solutions = query.use();
+		if (!solutions) {
 			MysqlEmptyResException e(query.errnum(), query.error());
-			EXCEPT_FATAL(0, 0, log_fp, "Query problems' submit and accept num failed!", e);
+			EXCEPT_FATAL(0, 0, log_fp, "Query problems' submit and accept num in exercise failed!", e);
 			throw e;
 		}
 
-		for (const auto & row : solutions) {
-			ojv4::u_id_type u_id = row["u_id"];
-			ojv4::p_id_type p_id = row["p_id"];
-			ojv4::s_result_enum s_result = ojv4::s_result_enum(ojv4::s_result_in_db_type(row["s_result"]));
+		while (mysqlpp::Row row = solutions.fetch_row()) {
+			auto it = row.begin();
+			ojv4::u_id_type u_id(::atoll(it->c_str()));
+			++it;
+			ojv4::p_id_type p_id(::atoll(it->c_str()));
+			++it;
+			ojv4::s_result_enum s_result(ojv4::s_result_enum(::atoll(it->c_str())));
 			m[p_id].add_solution(u_id, s_result);
 		}
 	}
@@ -157,6 +188,7 @@ try {
 
 	total = m.size();
 	finished = 0;
+	int innear_finished = 0;
 	for (const auto & ele : m) {
 		ojv4::p_id_type p_id = ele.first;
 		const ProblemSARecorder & p_info = ele.second;
@@ -169,8 +201,11 @@ try {
 			EXCEPT_FATAL(0, 0, log_fp, "Update problem's submit and accept num in exercise failed!", e, " p_id: ", p_id);
 			throw e;
 		}
-		++*finished;
+		++innear_finished;
+		if (innear_finished % 500 == 0)
+			*finished = innear_finished;
 	}
+	*finished = innear_finished;
 	trans.commit();
 } catch (...) {
 	total = 0;
