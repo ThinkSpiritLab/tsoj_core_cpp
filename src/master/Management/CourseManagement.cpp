@@ -51,16 +51,14 @@ void CourseManagement::refresh_all_users_submit_and_accept_num_in_course(mysqlpp
 		mysqlpp::UseQueryResult solutions = query.use(c_id, c_id);
 		if (!solutions) {
 			MysqlEmptyResException e(query.errnum(), query.error());
-			EXCEPT_FATAL(0, 0, log_fp, "Query users' submit and accept num in course failed!", e, " c_id: ", c_id);
+			EXCEPT_FATAL(0, 0, log_fp, "Query users' solutions in course failed!", e, " c_id: ", c_id);
 			throw e;
 		}
 		while (mysqlpp::Row row = solutions.fetch_row()) {
 			auto it = row.begin();
-			ojv4::u_id_type u_id(::atoll(it->c_str()));
-			++it;
-			ojv4::p_id_type p_id(::atoll(it->c_str()));
-			++it;
-			ojv4::s_result_enum s_result(ojv4::s_result_enum(::atoll(it->c_str())));
+			ojv4::u_id_type u_id(::atoll(it[0].c_str()));
+			ojv4::p_id_type p_id(::atoll(it[1].c_str()));
+			ojv4::s_result_enum s_result(ojv4::s_result_enum(::atoll(it[2].c_str())));
 			m[u_id].add_solution(p_id, s_result);
 		}
 	}
@@ -126,17 +124,15 @@ void CourseManagement::refresh_all_problems_submit_and_accept_num_in_course(mysq
 		mysqlpp::UseQueryResult solutions = query.use(c_id, c_id);
 		if (!solutions) {
 			MysqlEmptyResException e(query.errnum(), query.error());
-			EXCEPT_FATAL(0, 0, log_fp, "Query problems' submit and accept num in course failed!", e, " c_id: ", c_id);
+			EXCEPT_FATAL(0, 0, log_fp, "Query problems' solutions in course failed!", e, " c_id: ", c_id);
 			throw e;
 		}
 
 		while (mysqlpp::Row row = solutions.fetch_row()) {
 			auto it = row.begin();
-			ojv4::u_id_type u_id(::atoll(it->c_str()));
-			++it;
-			ojv4::p_id_type p_id(::atoll(it->c_str()));
-			++it;
-			ojv4::s_result_enum s_result(ojv4::s_result_enum(::atoll(it->c_str())));
+			ojv4::u_id_type u_id(::atoll(it[0].c_str()));
+			ojv4::p_id_type p_id(::atoll(it[1].c_str()));
+			ojv4::s_result_enum s_result(ojv4::s_result_enum(::atoll(it[2].c_str())));
 			m[p_id].add_solution(u_id, s_result);
 		}
 	}

@@ -43,17 +43,15 @@ void ContestManagement::refresh_all_problems_submit_and_accept_num_in_contest(my
 		mysqlpp::UseQueryResult solutions = query.use(ct_id, ct_id);
 		if (!solutions) {
 			MysqlEmptyResException e(query.errnum(), query.error());
-			EXCEPT_FATAL(0, 0, log_fp, "Query problems' submit and accept num in contest failed!", e, " ct_id: ", ct_id);
+			EXCEPT_FATAL(0, 0, log_fp, "Query problems' solutions in contest failed!", e, " ct_id: ", ct_id);
 			throw e;
 		}
 
 		while (mysqlpp::Row row = solutions.fetch_row()) {
 			auto it = row.begin();
-			ojv4::u_id_type u_id(::atoll(it->c_str()));
-			++it;
-			ojv4::p_id_type p_id(::atoll(it->c_str()));
-			++it;
-			ojv4::s_result_enum s_result(ojv4::s_result_enum(::atoll(it->c_str())));
+			ojv4::u_id_type u_id(::atoll(it[0].c_str()));
+			ojv4::p_id_type p_id(::atoll(it[1].c_str()));
+			ojv4::s_result_enum s_result(ojv4::s_result_enum(::atoll(it[2].c_str())));
 			m[p_id].add_solution(u_id, s_result);
 		}
 	}

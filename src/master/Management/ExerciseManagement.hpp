@@ -42,6 +42,8 @@ class ExerciseManagement
 
 		static void refresh_all_user_problem2(mysqlpp::Connection & mysql_conn);
 
+		static void refresh_all_user_problem3(mysqlpp::Connection & mysql_conn);
+
 		static void update_user_s_submit_and_accept_num(mysqlpp::Connection & mysql_conn, ojv4::u_id_type u_id);
 
 		static void update_problem_s_submit_and_accept_num(mysqlpp::Connection & mysql_conn, ojv4::p_id_type p_id);

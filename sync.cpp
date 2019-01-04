@@ -29,26 +29,59 @@ int main(int argc, char *argv[])
 {
 	try {
 
-		mysqlpp::Connection conn(false);
-		conn.set_option(new mysqlpp::SetCharsetNameOption("utf8"));
-		conn.connect("ojv4", "127.0.0.1", "root", "123");
+		for(int i = 0; i < 20; ++i) {
+			mysqlpp::Connection conn(false);
+			conn.set_option(new mysqlpp::SetCharsetNameOption("utf8"));
+			if(!conn.connect("ojv4", "127.0.0.1", "root", "123")) {
+				throw std::runtime_error("connected failed!");
+			}
+			conn_pool::construct(1, std::move(conn));
+		}
 
-		cout << "update exercise" << endl;
-		ExerciseManagement::refresh_all_users_submit_and_accept_num(conn);
-		ExerciseManagement::refresh_all_problems_submit_and_accept_num(conn);
 
+//		std::deque<std::thread> th_group;
+//
+//		th_group.push_back(std::thread([](){
+//			auto conn_handle = conn_pool::block_fetch();
+//			auto conn = *conn_handle;
+//			ExerciseManagement::refresh_all_users_submit_and_accept_num(conn);
+//		}));
+//
+//		th_group.push_back(std::thread([](){
+//			auto conn_handle = conn_pool::block_fetch();
+//			auto conn = *conn_handle;
+//			ExerciseManagement::refresh_all_problems_submit_and_accept_num(conn);
+//		}));
+
+		auto conn_handle = conn_pool::block_fetch();
+		auto conn = *conn_handle;
 		mysqlpp::Query query = conn.query(
 			"select distinct c_id from course"
 		);
 
-		mysqlpp::StoreQueryResult res = query.store();
+		ExerciseManagement::refresh_all_user_problem2(conn);
 
-		for(const auto & row : res) {
-			ojv4::c_id_type c_id = row["c_id"];
-			cout << "update course: " << c_id << endl;
-			CourseManagement::refresh_all_problems_submit_and_accept_num_in_course(conn, c_id);
-			CourseManagement::refresh_all_users_submit_and_accept_num_in_course(conn, c_id);
-		}
+//		mysqlpp::StoreQueryResult res = query.store();
+//
+//		for (const auto & row : res) {
+//			ojv4::c_id_type c_id = row["c_id"];
+//			th_group.push_back(std::thread([c_id]() {
+//				cout << "update course user: " << c_id << endl;
+//				auto conn_handle = conn_pool::block_fetch();
+//				auto conn = *conn_handle;
+//				CourseManagement::refresh_all_problems_submit_and_accept_num_in_course(conn, c_id);
+//			}));
+//			th_group.push_back(std::thread([c_id]() {
+//				cout << "update course problem: " << c_id << endl;
+//				auto conn_handle = conn_pool::block_fetch();
+//				auto conn = *conn_handle;
+//				CourseManagement::refresh_all_users_submit_and_accept_num_in_course(conn, c_id);
+//			}));
+//		}
+//
+//		for (auto & t : th_group) {
+//			t.join();
+//		}
 
 	} catch (const std::exception & e) {
 		cerr << e.what() << endl;            // 给出一个错误信息，终止执行
