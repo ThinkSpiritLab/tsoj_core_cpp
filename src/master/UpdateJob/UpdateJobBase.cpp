@@ -19,6 +19,11 @@
 
 extern std::ofstream log_fp;
 
+#ifndef MYSQLPP_MYSQL_HEADERS_BURIED
+#	define MYSQLPP_MYSQL_HEADERS_BURIED
+#endif
+
+#include <mysql++/transaction.h>
 
 std::unique_ptr<UpdateJobBase>
 make_update_job(int jobType, ojv4::s_id_type s_id, const kerbal::redis::RedisContext & redisConn,
@@ -178,6 +183,9 @@ void UpdateJobBase::handle()
 	if (update_solution_exception == nullptr) {
 
 		if (this->result.judge_result != ojv4::s_result_enum::SYSTEM_ERROR) { // ignore system error
+
+			mysqlpp::Transaction trans(*this->mysqlConn);
+
 			// Step 2: 更新用户的提交数与通过数
 			//注意!!! 更新用户提交数通过数的操作必须在更新用户题目完成状态成功之前
 			try {
@@ -215,6 +223,8 @@ void UpdateJobBase::handle()
 				EXCEPT_FATAL(jobType, s_id, log_fp, "Update user problem status failed!", e);
 				//DO NOT THROW
 			}
+
+			trans.commit();
 		}
 
 		// Step 5: 在 source 表或 contest_source%d 表中留存用户代码

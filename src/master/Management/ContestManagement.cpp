@@ -179,6 +179,7 @@ void ContestManagement::update_user_problem_status(mysqlpp::Connection & mysql_c
 
 void ContestManagement::update_user_problem(mysqlpp::Connection & mysql_conn, ojv4::ct_id_type ct_id, ojv4::u_id_type u_id, ojv4::p_id_type p_id)
 {
+	//WARNING: 'is_first_ac' field has been marked as deprecated
 	using s_result_in_db_type = ojv4::s_result_in_db_type;
 	using s_result_enum_type = ojv4::s_result_enum;
 
@@ -200,7 +201,7 @@ void ContestManagement::update_user_problem(mysqlpp::Connection & mysql_conn, oj
 			throw e;
 		}
 
-		if(solutions.empty()) {
+		if (solutions.empty()) {
 			return;
 		}
 

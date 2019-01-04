@@ -391,14 +391,14 @@ int main(int argc, const char * argv[]) try
 				LOG_INFO(0, 0, log_fp, "Get exit job.");
 				continue;
 			}
-			LOG_DEBUG(jobType, s_id, log_fp, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
-			LOG_DEBUG(jobType, s_id, log_fp, "Master get update job: ", job_item);
 			try {
 				std::tie(jobType, s_id) = JobBase::parseJobItem(job_item);
 			} catch (const std::exception & e) {
 				EXCEPT_FATAL(0, 0, log_fp, "Fail to parse job item.", e, "job_item: ", job_item);
 				continue;
 			}
+			LOG_INFO(jobType, s_id, log_fp, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+			LOG_INFO(jobType, s_id, log_fp, "Master get update job: ", job_item);
 		} catch (const std::exception & e) {
 			EXCEPT_FATAL(0, 0, log_fp, "Fail to fetch job.", e);
 			continue;
@@ -458,8 +458,8 @@ int main(int argc, const char * argv[]) try
 		auto end(std::chrono::steady_clock::now());
 		// 本次更新耗时
 		auto time_consume = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-		LOG_DEBUG(jobType, s_id, log_fp, "Update consume: ", time_consume.count());
-		LOG_DEBUG(jobType, s_id, log_fp, ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+		LOG_INFO(jobType, s_id, log_fp, "Update consume: ", time_consume.count());
+		LOG_INFO(jobType, s_id, log_fp, ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 	}
 	return 0;
 } catch (const std::exception & e) {
