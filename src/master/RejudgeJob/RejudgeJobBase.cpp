@@ -8,10 +8,18 @@
 #include "RejudgeJobBase.hpp"
 #include "logger.hpp"
 
+#ifndef MYSQLPP_MYSQL_HEADERS_BURIED
+#	define MYSQLPP_MYSQL_HEADERS_BURIED
+#endif
+
+#include <mysql++/transaction.h>
+
+#include <mysql_conn_factory.hpp>
+
 extern std::ofstream log_fp;
 
-RejudgeJobBase::RejudgeJobBase(int jobType, ojv4::s_id_type s_id, const kerbal::redis::RedisContext & redisConn, std::unique_ptr<mysqlpp::Connection> && mysqlConn) :
-		UpdateJobBase(jobType, s_id, redisConn, std::move(mysqlConn)), rejudge_time(mysqlpp::DateTime::now())
+RejudgeJobBase::RejudgeJobBase(int jobType, ojv4::s_id_type s_id, const kerbal::redis::RedisContext & redisConn) :
+		UpdateJobBase(jobType, s_id, redisConn), rejudge_time(mysqlpp::DateTime::now())
 {
 	LOG_DEBUG(jobType, s_id, log_fp, BOOST_CURRENT_FUNCTION);
 }
@@ -22,78 +30,98 @@ void RejudgeJobBase::handle()
 	LOG_DEBUG(jobType, s_id, log_fp, BOOST_CURRENT_FUNCTION);
 
 	std::exception_ptr move_solution_exception = nullptr;
-	ojv4::s_result_enum orig_result = ojv4::s_result_enum::ACCEPTED;
+	std::exception_ptr update_solution_exception = nullptr;
+	std::exception_ptr update_compile_error_info_exception = nullptr;
+	std::exception_ptr update_user_exception = nullptr;
+	std::exception_ptr update_problem_exception = nullptr;
+	std::exception_ptr update_user_problem_exception = nullptr;
+	std::exception_ptr update_user_problem_status_exception = nullptr;
+	std::exception_ptr commit_exception = nullptr;
+
+	// 本次更新任务的 mysql 连接
+	auto mysql_conn_handle = sync_fetch_mysql_conn();
+	mysqlpp::Connection & mysql_conn = *mysql_conn_handle;
+
+	mysqlpp::Transaction trans(mysql_conn);
 	try {
-		orig_result = this->move_orig_solution_to_rejudge_solution();
+		this->move_orig_solution_to_rejudge_solution(mysql_conn);
 	} catch (const std::exception & e) {
 		move_solution_exception = std::current_exception();
 		EXCEPT_FATAL(jobType, s_id, log_fp, "Move original solution failed!", e);
 		//DO NOT THROW
 	}
 
-	std::exception_ptr update_solution_exception = nullptr;
-	std::exception_ptr update_user_exception = nullptr;
-	std::exception_ptr update_problem_exception = nullptr;
-	std::exception_ptr update_user_problem_exception = nullptr;
-	std::exception_ptr update_user_problem_status_exception = nullptr;
-	std::exception_ptr update_compile_error_info_exception = nullptr;
 	if (move_solution_exception == nullptr) {
 
 		try {
-			this->update_solution();
+			this->update_solution(mysql_conn);
 		} catch (const std::exception & e) {
 			move_solution_exception = std::current_exception();
 			EXCEPT_FATAL(jobType, s_id, log_fp, "Update solution failed!", e);
 			//DO NOT THROW
 		}
 
+		if (update_solution_exception == nullptr) {
+			try {
+				this->update_compile_info(mysql_conn);
+			} catch (const std::exception & e) {
+				update_compile_error_info_exception = std::current_exception();
+				EXCEPT_FATAL(jobType, s_id, log_fp, "Update compile error info failed!", e);
+				//DO NOT THROW
+			}
+
+			try {
+				this->update_user(mysql_conn);
+			} catch (const std::exception & e) {
+				update_user_exception = std::current_exception();
+				EXCEPT_FATAL(jobType, s_id, log_fp, "Update user failed!", e);
+				//DO NOT THROW
+			}
+
+			try {
+				this->update_problem(mysql_conn);
+			} catch (const std::exception & e) {
+				update_problem_exception = std::current_exception();
+				EXCEPT_FATAL(jobType, s_id, log_fp, "Update problem failed!", e);
+				//DO NOT THROW
+			}
+
+			try {
+				this->update_user_problem(mysql_conn);
+			} catch (const std::exception & e) {
+				update_user_problem_exception = std::current_exception();
+				EXCEPT_FATAL(jobType, s_id, log_fp, "Update user problem failed!", e);
+				//DO NOT THROW
+			}
+
+//			try {
+//				this->update_user_problem_status(mysql_conn);
+//			} catch (const std::exception & e) {
+//				update_user_problem_status_exception = std::current_exception();
+//				EXCEPT_FATAL(jobType, s_id, log_fp, "Update user problem status failed!", e);
+//				//DO NOT THROW
+//			}
+
+			try {
+				this->send_rejudge_notification(mysql_conn);
+			} catch (const std::exception & e){
+				EXCEPT_WARNING(jobType, s_id, log_fp, "Send rejudge notification failed!", e);
+				//DO NOT THROW
+			}
+
+		}
+
 		try {
-			this->update_user();
+			trans.commit();
 		} catch (const std::exception & e) {
-			move_solution_exception = std::current_exception();
-			EXCEPT_FATAL(jobType, s_id, log_fp, "Update user failed!", e);
+			EXCEPT_FATAL(jobType, s_id, log_fp, "MySQL commit failed!", e);
+			commit_exception = std::current_exception();
+			//DO NOT THROW
+		} catch (...) {
+			UNKNOWN_EXCEPT_FATAL(jobType, s_id, log_fp, "MySQL commit failed!");
+			commit_exception = std::current_exception();
 			//DO NOT THROW
 		}
-
-		try {
-			this->update_problem();
-		} catch (const std::exception & e) {
-			move_solution_exception = std::current_exception();
-			EXCEPT_FATAL(jobType, s_id, log_fp, "Update problem failed!", e);
-			//DO NOT THROW
-		}
-
-		try {
-			this->update_user_problem();
-		} catch (const std::exception & e) {
-			move_solution_exception = std::current_exception();
-			EXCEPT_FATAL(jobType, s_id, log_fp, "Update user problem failed!", e);
-			//DO NOT THROW
-		}
-
-		try {
-			this->update_user_problem_status();
-		} catch (const std::exception & e) {
-			move_solution_exception = std::current_exception();
-			EXCEPT_FATAL(jobType, s_id, log_fp, "Update user problem status failed!", e);
-			//DO NOT THROW
-		}
-
-		try {
-			this->rejudge_compile_info(orig_result);
-		} catch (const std::exception & e) {
-			update_compile_error_info_exception = std::current_exception();
-			EXCEPT_FATAL(jobType, s_id, log_fp, "Update compile error info failed!", e);
-			//DO NOT THROW
-		}
-
-		try {
-			this->send_rejudge_notification();
-		} catch (const std::exception & e){
-			EXCEPT_WARNING(jobType, s_id, log_fp, "Send rejudge notification failed!", e);
-			//DO NOT THROW
-		}
-
 	}
 }
 

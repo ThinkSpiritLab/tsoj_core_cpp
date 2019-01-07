@@ -75,7 +75,13 @@ class id_type_base
 			in >> src.val;
 			return in;
 		}
+
+		friend std::string to_string(const id_type_base & id)
+		{
+			return std::to_string(id.to_literal());
+		}
 };
+
 
 
 template <typename IDType>

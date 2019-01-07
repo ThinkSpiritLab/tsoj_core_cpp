@@ -92,7 +92,8 @@ class JobBase
 
 		/**
 		 * @brief 从 redis 中取得代码
-		 * @return Redis 返回集. 注意! 返回集的类型只可能为字符串类型, 否则该方法会通过抛出异常报告错误
+		 * @return Redis 返回集.
+		 * @warning 注意! 返回集的类型只可能为字符串类型, 否则该方法会通过抛出异常报告错误
 		 * @throws RedisUnexpectedCaseException 如果取得的结果不为字符串类型 (包括空类型), 则抛出此异常
 		 * @throws std::exception 该方法执行过程中还会因 redis 操作失败
 		 */

@@ -5,6 +5,7 @@
 #include <sstream>
 #include <boost/format.hpp>
 #include <kerbal/utility/costream.hpp>
+#include <kerbal/compatibility/chrono_suffix.hpp>
 #include "db_typedef.hpp"
 
 namespace costream_ns = kerbal::utility::costream;
@@ -17,7 +18,7 @@ extern costream_ns::costream<std::cerr> ccerr;
  */
 enum class LogLevel
 {
-	LEVEL_FATAL = 0, LEVEL_WARNING = 1, LEVEL_INFO = 2, LEVEL_DEBUG = 3
+	LEVEL_FATAL = 0, LEVEL_WARNING = 1, LEVEL_INFO = 2, LEVEL_DEBUG = 3, LEVEL_PROFILE = 4
 };
 
 /**
@@ -52,6 +53,13 @@ template <>
 struct Log_level_traits<LogLevel::LEVEL_DEBUG>
 {
 		static constexpr const char * str = "DEBUG";
+		static const costream_ns::costream<std::cout> outstream;
+};
+
+template <>
+struct Log_level_traits<LogLevel::LEVEL_PROFILE>
+{
+		static constexpr const char * str = "PROF";
 		static const costream_ns::costream<std::cout> outstream;
 };
 
@@ -167,7 +175,8 @@ void log_write(int type, int job_id, const char source_filename[], int line, std
 #	undef LOG_DEBUG
 #endif
 #ifdef DEBUG
-#	define LOG_DEBUG(type, job_id, log_fp, x...)	log_write<LogLevel::LEVEL_DEBUG>(type, job_id, __FILE__, __LINE__, log_fp, ##x)
+#	define LOG_DEBUG(type, job_id, log_fp, x...) \
+	log_write<LogLevel::LEVEL_DEBUG>(type, job_id, __FILE__, __LINE__, log_fp, ##x)
 #else
 #	define LOG_DEBUG(type, job_id, log_fp, x...)
 #endif
@@ -175,18 +184,47 @@ void log_write(int type, int job_id, const char source_filename[], int line, std
 #ifdef LOG_INFO
 #	undef LOG_INFO
 #endif
-#define LOG_INFO(type, job_id, log_fp, x...)		log_write<LogLevel::LEVEL_INFO>(type, job_id, __FILE__, __LINE__, log_fp, ##x)
+#define LOG_INFO(type, job_id, log_fp, x...) \
+	log_write<LogLevel::LEVEL_INFO>(type, job_id, __FILE__, __LINE__, log_fp, ##x)
 
 #ifdef LOG_WARNING
 #	undef LOG_WARNING
 #endif
-#define LOG_WARNING(type, job_id, log_fp, x...)		log_write<LogLevel::LEVEL_WARNING>(type, job_id, __FILE__, __LINE__, log_fp, ##x)
+#define LOG_WARNING(type, job_id, log_fp, x...)	 \
+	log_write<LogLevel::LEVEL_WARNING>(type, job_id, __FILE__, __LINE__, log_fp, ##x)
 
 #ifdef LOG_FATAL
 #	undef LOG_FATAL
 #endif
-#define LOG_FATAL(type, job_id, log_fp, x...)		log_write<LogLevel::LEVEL_FATAL>(type, job_id, __FILE__, __LINE__, log_fp, ##x)
+#define LOG_FATAL(type, job_id, log_fp, x...) \
+	log_write<LogLevel::LEVEL_FATAL>(type, job_id, __FILE__, __LINE__, log_fp, ##x)
 
+#ifdef LOG_PROFILE
+#	undef LOG_PROFILE
+#	undef PROFILE_HEAD
+#	undef PROFILE_TAIL
+#endif
+#ifdef PROFILE
+#	define LOG_PROFILE(type, job_id, log_fp, args...) \
+		log_write<LogLevel::LEVEL_PROFILE>(type, job_id, __FILE__, __LINE__, log_fp, ##args)
+#	define PROFILE_HEAD \
+		using namespace kerbal::compatibility::chrono_suffix; \
+		auto __profile_start = std::chrono::system_clock::now();
+#	define PROFILE_TAIL(type, job_id, log_fp, args...) \
+		LOG_PROFILE(type, job_id, log_fp, BOOST_CURRENT_FUNCTION, ": consume: ", \
+		std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - __profile_start).count(), " ms ", ##args);
+
+#	define PROFILE_WARNING_TAIL(type, job_id, log_fp, consume_threshold, args...) \
+		auto __profile_ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - __profile_start); \
+		if (__profile_ms > consume_threshold) { \
+			PROFILE_TAIL(type, job_id, log_fp, ##args); \
+		}
+
+#else
+#	define LOG_PROFILE(type, job_id, log_fp, args...)
+#	define PROFILE_HEAD
+#	define PROFILE_WARNING_TAIL(type, job_id, log_fp, consume_threshold, args...)
+#endif
 
 #ifdef EXCEPT_WARNING
 #	undef EXCEPT_WARNING
@@ -209,16 +247,6 @@ void log_write(int type, int job_id, const char source_filename[], int line, std
 #endif
 #define UNKNOWN_EXCEPT_FATAL(type, job_id, log_fp, events, x...)	    LOG_FATAL(type, job_id, log_fp, events, \
 																		" Error information: ", UNKNOWN_EXCEPTION_WHAT, ##x)
-
-//#define PROFILE_HEAD
-//#define PROFILE_WARNING_TAIL(type, s_id, log_fp, yu_ms)
-
-#define PROFILE_HEAD auto profile_start = std::chrono::system_clock::now();
-#define PROFILE_TAIL(type, s_id, log_fp) LOG_INFO(type, s_id, log_fp, std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - profile_start).count());
-
-#define PROFILE_WARNING_TAIL(type, s_id, log_fp, yu_ms, x...)   auto profile_ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - profile_start); \
-												if(profile_ms.count() > yu_ms) {LOG_WARNING(type, s_id, log_fp, BOOST_CURRENT_FUNCTION, ": consume: ", profile_ms.count(), " ms  ", ##x);}
-
 
 #endif //LOGGER_H
 

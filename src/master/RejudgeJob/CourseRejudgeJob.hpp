@@ -15,24 +15,22 @@ class CourseRejudgeJob: public ExerciseRejudgeJobBase
 	private:
 		friend
 		std::unique_ptr<UpdateJobBase>
-		make_update_job(int jobType, ojv4::s_id_type s_id, const RedisContext & redisConn,
-						std::unique_ptr<mysqlpp::Connection> && mysqlConn);
+		make_update_job(int jobType, ojv4::s_id_type s_id, const RedisContext & redisConn);
 
 	protected:
-		CourseRejudgeJob(int jobType, ojv4::s_id_type s_id, ojv4::c_id_type c_id, const kerbal::redis::RedisContext & redisConn,
-				std::unique_ptr<mysqlpp::Connection> && mysqlConn);
+		CourseRejudgeJob(int jobType, ojv4::s_id_type s_id, ojv4::c_id_type c_id, const kerbal::redis::RedisContext & redisConn);
 
 		ojv4::c_id_type c_id;
 
-		virtual void update_user() override final;
+		virtual void update_user(mysqlpp::Connection & mysql_conn) override final;
 
-		virtual void update_problem() override final;
+		virtual void update_problem(mysqlpp::Connection & mysql_conn) override final;
 
-		virtual void update_user_problem() override final;
+		virtual void update_user_problem(mysqlpp::Connection & mysql_conn) override final;
 
-		virtual void update_user_problem_status() override final;
+		virtual void update_user_problem_status(mysqlpp::Connection & mysql_conn) override final;
 
-		virtual void send_rejudge_notification() override final;
+		virtual void send_rejudge_notification(mysqlpp::Connection & mysql_conn) override final;
 
 	public:
 		virtual ~CourseRejudgeJob() noexcept = default;

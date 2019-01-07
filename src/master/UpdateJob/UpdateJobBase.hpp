@@ -31,8 +31,6 @@ class UpdateJobBase: public JobBase
 
 		using RedisContext = kerbal::redis::RedisContext;
 
-		std::unique_ptr<mysqlpp::Connection> mysqlConn;
-
 		ojv4::u_id_type u_id; ///< @brief user id
 
 		std::string s_posttime; ///< @brief post time
@@ -47,14 +45,14 @@ class UpdateJobBase: public JobBase
 		// 因此构造函数定义为 protected，只能由 make_update_job 来生成，故 make_update_job 也需要成为友元函数。
 		friend
 		std::unique_ptr<UpdateJobBase>
-		make_update_job(int jobType, ojv4::s_id_type s_id, const RedisContext & redisConn,
-						std::unique_ptr<mysqlpp::Connection> && mysqlConn);
+		make_update_job(int jobType, ojv4::s_id_type s_id, const RedisContext & redisConn);
+
 		/**
 		 * @brief 通用基类的构造函数，除父类 JobBase 构造函数获得的信息除外，还额外获取更新类别任务的额外信息如 u_id,
 		 * cid, postTime等信息。
 		 */
-		UpdateJobBase(int jobType, ojv4::s_id_type s_id, const RedisContext & redisConn,
-						std::unique_ptr<mysqlpp::Connection> && mysqlConn);
+		UpdateJobBase(int jobType, ojv4::s_id_type s_id, const RedisContext & redisConn);
+
 	public:
 		/**
 		 * @brief 执行任务
@@ -67,21 +65,19 @@ class UpdateJobBase: public JobBase
 		 * @brief 将本次提交记录更新至 solution 表
 		 * @warning 仅规定 update solution 表的接口, 具体操作需由子类实现
 		 */
-		virtual void update_solution() = 0;
+		virtual void update_solution(mysqlpp::Connection & mysql_conn) = 0;
 
 		/**
 		 * @brief 将提交代码更新至 mysql
-		 * @param source_code 指向代码字符串的常量指针
 		 * @warning 仅规定 update source_code 表的接口, 具体操作需由子类实现
 		 */
-		virtual void update_source_code(const char * source_code) = 0;
+		virtual void update_source_code(mysqlpp::Connection & mysql_conn) = 0;
 
 		/**
 		 * @brief 将编译错误信息更新至 mysql
-		 * @param compile_info 指向编译错误信息字符串的常量指针
 		 * @warning 仅规定 update compile_info 表的接口, 具体操作需由子类实现
 		 */
-		virtual void update_compile_info(const char * compile_info) = 0;
+		virtual void update_compile_info(mysqlpp::Connection & mysql_conn) = 0;
 
 		/**
 		 * @brief 从 redis 中取得编译错误信息
@@ -95,27 +91,27 @@ class UpdateJobBase: public JobBase
 		 * @brief 更新用户的提交数, 通过数
 		 * @warning 仅规定 update user 表的接口, 具体操作需由子类实现
 		 */
-		virtual void update_user() = 0;
+		virtual void update_user(mysqlpp::Connection & mysql_conn) = 0;
 
 		/**
 		 * @brief 更新题目的提交数, 通过数
 		 * @warning 仅规定 update problem 表的接口, 具体操作需由子类实现
 		 */
-		virtual void update_problem() = 0;
+		virtual void update_problem(mysqlpp::Connection & mysql_conn) = 0;
 
 		/**
 		 * @brief 更新此用户此题的完成状态
 		 * @detail 用户所见到的每题 AC, TO_DO, ATTEMPT 三种状态即为user problem 表所提供的服务
 		 * @warning 仅规定 update user problem 表的接口, 具体操作需由子类实现
 		 */
-		virtual void update_user_problem() = 0;
+		virtual void update_user_problem(mysqlpp::Connection & mysql_conn) = 0;
 
 		/**
 		 * @brief 更新此用户此题的完成状态 [新]
 		 * @detail 用户所见到的每题 AC, TO_DO, ATTEMPT 三种状态即为user problem 表所提供的服务
 		 * @warning 仅规定 update user problem 表的接口, 具体操作需由子类实现
 		 */
-		virtual void update_user_problem_status() = 0;
+		virtual void update_user_problem_status(mysqlpp::Connection & mysql_conn) = 0;
 
 	private:
 
@@ -149,7 +145,6 @@ class UpdateJobBase: public JobBase
  * @warning 返回的对象具有多态性, 请谨慎处理!
  */
 std::unique_ptr<UpdateJobBase>
-make_update_job(int jobType, ojv4::s_id_type s_id, const kerbal::redis::RedisContext & redisConn,
-				std::unique_ptr<mysqlpp::Connection> && mysqlConn);
+make_update_job(int jobType, ojv4::s_id_type s_id, const kerbal::redis::RedisContext & redisConn);
 
 #endif /* SRC_MASTER_UPDATEJOBBASE_HPP_ */

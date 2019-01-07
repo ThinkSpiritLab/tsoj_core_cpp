@@ -16,51 +16,48 @@
  */
 class ContestUpdateJob: public UpdateJobBase
 {
-	private:
+	protected:
 
 		friend
 		std::unique_ptr<UpdateJobBase>
-		make_update_job(int jobType, ojv4::s_id_type s_id, const RedisContext & redisConn,
-						std::unique_ptr<mysqlpp::Connection> && mysqlConn);
+		make_update_job(int jobType, ojv4::s_id_type s_id, const RedisContext & redisConn);
 
-	protected:
-		ContestUpdateJob(int jobType, ojv4::s_id_type s_id, const kerbal::redis::RedisContext & redisConn,
-						std::unique_ptr <mysqlpp::Connection> && mysqlConn);
+		ContestUpdateJob(int jobType, ojv4::s_id_type s_id, const kerbal::redis::RedisContext & redisConn);
+
+		ojv4::ct_id_type ct_id;
 
 	private:
 		/**
 		 * @brief 该方法实现了祖先类 UpdateJobBase 中规定的 update solution 表的接口, 将本次提交记录更新至每个竞赛对应的 solution 表
 		 * @warning 该方法已被标记为 final, 禁止子类覆盖本方法
 		 */
-		virtual void update_solution() override final;
+		virtual void update_solution(mysqlpp::Connection & mysql_conn) override final;
 
 		/**
 		 * @brief 将提交代码更新至 mysql
-		 * @param source_code 指向代码字符串的常量指针
 		 */
-		virtual void update_source_code(const char * source_code) override final;
+		virtual void update_source_code(mysqlpp::Connection & mysql_conn) override final;
 
 		/**
 		 * @brief 将编译错误信息更新至 mysql
-		 * @param compile_info 指向编译错误信息字符串的常量指针
 		 */
-		virtual void update_compile_info(const char * compile_info) override final;
+		virtual void update_compile_info(mysqlpp::Connection & mysql_conn) override final;
 
 		/**
 		 * @brief 更新用户的提交数, 通过数
 		 * @warning 仅规定 update user 表的接口, 具体操作需由子类实现
 		 */
-		virtual void update_user() override final;
+		virtual void update_user(mysqlpp::Connection & mysql_conn) override final;
 
 		/**
 		 * @brief 更新题目的提交数, 通过数
 		 * @warning 仅规定 update problem 表的接口, 具体操作需由子类实现
 		 */
-		virtual void update_problem() override final;
+		virtual void update_problem(mysqlpp::Connection & mysql_conn) override final;
 
-		virtual void update_user_problem() override final;
+		virtual void update_user_problem(mysqlpp::Connection & mysql_conn) override final;
 
-		virtual void update_user_problem_status() override final;
+		virtual void update_user_problem_status(mysqlpp::Connection & mysql_conn) override final;
 
 		virtual ~ContestUpdateJob() noexcept = default;
 };

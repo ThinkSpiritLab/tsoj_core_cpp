@@ -20,22 +20,20 @@ class ExerciseUpdateJob: public ExerciseUpdateJobBase
 
 		friend
 		std::unique_ptr<UpdateJobBase>
-		make_update_job(int jobType, ojv4::s_id_type s_id, const RedisContext & redisConn,
-						std::unique_ptr<mysqlpp::Connection> && mysqlConn);
+		make_update_job(int jobType, ojv4::s_id_type s_id, const RedisContext & redisConn);
 
 	private:
-		ExerciseUpdateJob(int jobType, ojv4::s_id_type s_id, const kerbal::redis::RedisContext & redisConn,
-						std::unique_ptr<mysqlpp::Connection> && mysqlConn);
+		ExerciseUpdateJob(int jobType, ojv4::s_id_type s_id, const kerbal::redis::RedisContext & redisConn);
 
-		virtual void update_solution() override final;
+		virtual void update_solution(mysqlpp::Connection & mysql_conn) override final;
 
-		virtual void update_user() override final;
+		virtual void update_user(mysqlpp::Connection & mysql_conn) override final;
 
-		virtual void update_problem() override final;
+		virtual void update_problem(mysqlpp::Connection & mysql_conn) override final;
 
-		virtual void update_user_problem() override final;
+		virtual void update_user_problem(mysqlpp::Connection & mysql_conn) override final;
 
-		virtual void update_user_problem_status() override final;
+		virtual void update_user_problem_status(mysqlpp::Connection & mysql_conn) override final;
 
 		virtual ~ExerciseUpdateJob() noexcept = default;
 };

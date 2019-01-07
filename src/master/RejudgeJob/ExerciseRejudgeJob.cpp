@@ -17,55 +17,54 @@
 
 extern std::ofstream log_fp;
 
-ExerciseRejudgeJob::ExerciseRejudgeJob(int jobType, ojv4::s_id_type s_id, const kerbal::redis::RedisContext & redisConn,
-		std::unique_ptr<mysqlpp::Connection> && mysqlConn) :
-		ExerciseRejudgeJobBase(jobType, s_id, redisConn, std::move(mysqlConn))
+ExerciseRejudgeJob::ExerciseRejudgeJob(int jobType, ojv4::s_id_type s_id, const kerbal::redis::RedisContext & redisConn) :
+		ExerciseRejudgeJobBase(jobType, s_id, redisConn)
 {
 	LOG_DEBUG(jobType, s_id, log_fp, BOOST_CURRENT_FUNCTION);
 }
 
-void ExerciseRejudgeJob::update_user()
+void ExerciseRejudgeJob::update_user(mysqlpp::Connection & mysql_conn)
 {
 	LOG_DEBUG(jobType, s_id, log_fp, BOOST_CURRENT_FUNCTION);
 
 	try {
-		ExerciseManagement::update_user_s_submit_and_accept_num(*this->mysqlConn, this->u_id);
+		ExerciseManagement::update_user_s_submit_and_accept_num(mysql_conn, this->u_id);
 	} catch(const std::exception & e) {
 		EXCEPT_FATAL(jobType, s_id, log_fp, "Update user's submit and accept num failed!", e);
 		throw;
 	}
 }
 
-void ExerciseRejudgeJob::update_problem()
+void ExerciseRejudgeJob::update_problem(mysqlpp::Connection & mysql_conn)
 {
 	LOG_DEBUG(jobType, s_id, log_fp, BOOST_CURRENT_FUNCTION);
 
 	try {
-		ExerciseManagement::update_problem_s_submit_and_accept_num(*this->mysqlConn, this->p_id);
+		ExerciseManagement::update_problem_s_submit_and_accept_num(mysql_conn, this->p_id);
 	} catch(const std::exception & e) {
 		EXCEPT_FATAL(jobType, s_id, log_fp, "Update problem's submit and accept num failed!", e);
 		throw;
 	}
 }
 
-void ExerciseRejudgeJob::update_user_problem()
+void ExerciseRejudgeJob::update_user_problem(mysqlpp::Connection & mysql_conn)
 {
 	LOG_DEBUG(jobType, s_id, log_fp, BOOST_CURRENT_FUNCTION);
 
 	try {
-		ExerciseManagement::update_user_problem(*this->mysqlConn, u_id, p_id);
+		ExerciseManagement::update_user_problem(mysql_conn, u_id, p_id);
 	} catch (const std::exception & e) {
 		EXCEPT_FATAL(jobType, s_id, log_fp, "Update problem's submit and accept num failed!", e);
 		throw;
 	}
 }
 
-void ExerciseRejudgeJob::update_user_problem_status()
+void ExerciseRejudgeJob::update_user_problem_status(mysqlpp::Connection & mysql_conn)
 {
 	LOG_DEBUG(jobType, s_id, log_fp, BOOST_CURRENT_FUNCTION);
 
 	try {
-		ExerciseManagement::update_user_problem_status(*this->mysqlConn, u_id, p_id);
+		ExerciseManagement::update_user_problem_status(mysql_conn, u_id, p_id);
 	} catch (const std::exception & e) {
 		EXCEPT_FATAL(jobType, s_id, log_fp, "Update problem's submit and accept num failed!", e);
 		throw;
@@ -73,12 +72,12 @@ void ExerciseRejudgeJob::update_user_problem_status()
 }
 
 
-void ExerciseRejudgeJob::send_rejudge_notification()
+void ExerciseRejudgeJob::send_rejudge_notification(mysqlpp::Connection & mysql_conn)
 {
 	LOG_DEBUG(jobType, s_id, log_fp, BOOST_CURRENT_FUNCTION);
 
 	try {
-		mysqlpp::Query insert = mysqlConn->query(
+		mysqlpp::Query insert = mysql_conn.query(
 				 "insert into message (u_id, u_receiver, m_content, m_status) "
 				 "values (1, %0, %1q, %2)"
 		);

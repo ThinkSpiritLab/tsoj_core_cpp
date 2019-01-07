@@ -16,6 +16,7 @@
 #include "boost_format_suffix.hpp"
 
 #include <kerbal/data_struct/optional/optional.hpp>
+#include <mysql_conn_factory.hpp>
 
 extern std::ofstream log_fp;
 
@@ -25,9 +26,11 @@ extern std::ofstream log_fp;
 
 #include <mysql++/transaction.h>
 
+#include <functional>
+
+
 std::unique_ptr<UpdateJobBase>
-make_update_job(int jobType, ojv4::s_id_type s_id, const kerbal::redis::RedisContext & redisConn,
-				std::unique_ptr<mysqlpp::Connection> && mysqlConn)
+make_update_job(int jobType, ojv4::s_id_type s_id, const kerbal::redis::RedisContext & redisConn)
 {
 	using return_type = std::unique_ptr<UpdateJobBase>;
 
@@ -35,7 +38,7 @@ make_update_job(int jobType, ojv4::s_id_type s_id, const kerbal::redis::RedisCon
 		using kerbal::data_struct::optional;
 		using kerbal::data_struct::nullopt;
 
-		static boost::format key_name_tmpl("job_info:%d:%d");
+		boost::format key_name_tmpl("job_info:%d:%d");
 		kerbal::redis::Operation opt(redisConn);
 
 
@@ -78,23 +81,23 @@ make_update_job(int jobType, ojv4::s_id_type s_id, const kerbal::redis::RedisCon
 
 			if (c_id != nullopt && *c_id != 0_c_id) { // 取到的课程 id 不为空, 且明确非零情况下, 表明这是一个课程任务, 而不是练习任务
 
-				if (is_rejudge != nullopt && *is_rejudge == true) { // 取到的 is_rejudge 字段非空, 且明确为真的情况下, 表明这是一个重评任务
-					return return_type(new CourseRejudgeJob(jobType, s_id, *c_id, redisConn, std::move(mysqlConn)));
+				if (is_rejudge != nullopt && is_rejudge.ignored_get() == true) { // 取到的 is_rejudge 字段非空, 且明确为真的情况下, 表明这是一个重评任务
+					return return_type(new CourseRejudgeJob(jobType, s_id, *c_id, redisConn));
 				} else {
-					return return_type(new CourseUpdateJob(jobType, s_id, *c_id, redisConn, std::move(mysqlConn)));
+					return return_type(new CourseUpdateJob(jobType, s_id, *c_id, redisConn));
 				}
 			} else {
-				if (is_rejudge != nullopt && *is_rejudge == true) {
-					return return_type(new ExerciseRejudgeJob(jobType, s_id, redisConn, std::move(mysqlConn)));
+				if (is_rejudge != nullopt && is_rejudge.ignored_get() == true) {
+					return return_type(new ExerciseRejudgeJob(jobType, s_id, redisConn));
 				} else {
-					return return_type(new ExerciseUpdateJob(jobType, s_id, redisConn, std::move(mysqlConn)));
+					return return_type(new ExerciseUpdateJob(jobType, s_id, redisConn));
 				}
 			}
 		} else {
-			if (is_rejudge != nullopt && *is_rejudge == true) {
-				return return_type(new ContestRejudgeJob(jobType, s_id, redisConn, std::move(mysqlConn)));
+			if (is_rejudge != nullopt && is_rejudge.ignored_get() == true) {
+				return return_type(new ContestRejudgeJob(jobType, s_id, redisConn));
 			} else {
-				return return_type(new ContestUpdateJob(jobType, s_id, redisConn, std::move(mysqlConn)));
+				return return_type(new ContestUpdateJob(jobType, s_id, redisConn));
 			}
 		}
 	} catch (const std::exception & e) {
@@ -103,15 +106,14 @@ make_update_job(int jobType, ojv4::s_id_type s_id, const kerbal::redis::RedisCon
 	}
 }
 
-UpdateJobBase::UpdateJobBase(int jobType, ojv4::s_id_type s_id, const RedisContext & redisConn,
-								std::unique_ptr<mysqlpp::Connection> && mysqlConn) :
-		JobBase(jobType, s_id, redisConn), mysqlConn(std::move(mysqlConn))
+UpdateJobBase::UpdateJobBase(int jobType, ojv4::s_id_type s_id, const RedisContext & redisConn) :
+		JobBase(jobType, s_id, redisConn)
 {
 	LOG_DEBUG(jobType, s_id, log_fp, BOOST_CURRENT_FUNCTION);
 
 	using namespace kerbal::redis;
 
-	static boost::format key_name_tmpl("job_info:%d:%d");
+	boost::format key_name_tmpl("job_info:%d:%d");
 	const std::string key_name = (key_name_tmpl % jobType % s_id).str();
 
 	kerbal::redis::Operation opt(redisConn);
@@ -120,7 +122,6 @@ UpdateJobBase::UpdateJobBase(int jobType, ojv4::s_id_type s_id, const RedisConte
 	try {
 		this->u_id = opt.hget<ojv4::u_id_type>(key_name, "uid");
 		this->s_posttime = opt.hget(key_name, "post_time");
-//		this->is_rejudge = (bool) opt.hget<int>(key_name, "is_rejudge");
 	} catch (const RedisNilException & e) {
 		EXCEPT_FATAL(jobType, s_id, log_fp, "job details lost.", e);
 		throw;
@@ -135,7 +136,7 @@ UpdateJobBase::UpdateJobBase(int jobType, ojv4::s_id_type s_id, const RedisConte
 		throw;
 	}
 
-	static boost::format judge_status_name_tmpl("judge_status:%d:%d");
+	boost::format judge_status_name_tmpl("judge_status:%d:%d");
 	const std::string judge_status = (judge_status_name_tmpl % jobType % s_id).str();
 
 	// 取评测结果
@@ -164,132 +165,137 @@ void UpdateJobBase::handle()
 {
 	using namespace kerbal::redis;
 
-	// Step 1: 在 solution 表中插入本 solution 记录
 	std::exception_ptr update_solution_exception = nullptr;
+	std::exception_ptr update_source_code_exception = nullptr;
+	std::exception_ptr update_compile_info_exception = nullptr;
+	std::exception_ptr update_user_exception = nullptr;
+	std::exception_ptr update_problem_exception = nullptr;
+	std::exception_ptr update_user_problem_exception = nullptr;
+	std::exception_ptr update_user_problem_status_exception = nullptr;
+	std::exception_ptr commit_exception = nullptr;
+	std::reference_wrapper<const std::exception_ptr> exception_ptrs[8] = {
+		update_solution_exception,
+		update_source_code_exception,
+		update_compile_info_exception,
+		update_user_exception,
+		update_problem_exception,
+		update_user_problem_exception,
+		update_user_problem_status_exception,
+		commit_exception
+	};
+
+	// 本次更新任务的 mysql 连接
+	auto mysql_conn_handle = sync_fetch_mysql_conn();
+	mysqlpp::Connection & mysql_conn = *mysql_conn_handle;
+
+	mysqlpp::Transaction trans(mysql_conn);
+
+	// Step 1: 在 solution 表中插入本 solution 记录
 	try {
-		this->update_solution();
+		this->update_solution(mysql_conn);
 	} catch (const std::exception & e) {
 		update_solution_exception = std::current_exception();
 		EXCEPT_FATAL(jobType, s_id, log_fp, "Update solution failed!", e);
 		//DO NOT THROW
 	}
 
-	std::exception_ptr update_user_exception = nullptr;
-	std::exception_ptr update_problem_exception = nullptr;
-	std::exception_ptr update_user_problem_exception = nullptr;
-	std::exception_ptr update_user_problem_status_exception = nullptr;
-	std::exception_ptr update_source_code_exception = nullptr;
-	std::exception_ptr update_compile_info_exception = nullptr;
 	if (update_solution_exception == nullptr) {
 
-		if (this->result.judge_result != ojv4::s_result_enum::SYSTEM_ERROR) { // ignore system error
-
-			mysqlpp::Transaction trans(*this->mysqlConn);
-
-			// Step 2: 更新用户的提交数与通过数
-			//注意!!! 更新用户提交数通过数的操作必须在更新用户题目完成状态成功之前
-			try {
-				this->update_user();
-			} catch (const std::exception & e) {
-				update_user_exception = std::current_exception();
-				EXCEPT_FATAL(jobType, s_id, log_fp, "Update user failed!", e);
-				//DO NOT THROW
-			}
-
-			// Step 3: 更新题目的提交数与通过数
-			//注意!!! 更新题目提交数通过数的操作必须在更新用户题目完成状态成功之前
-			try {
-				this->update_problem();
-			} catch (const std::exception & e) {
-				update_problem_exception = std::current_exception();
-				EXCEPT_FATAL(jobType, s_id, log_fp, "Update problem failed!", e);
-				//DO NOT THROW
-			}
-
-			// Step 4: 更新/插入 user_problem 表中该用户对应该题目的解题状态
-			try {
-				this->update_user_problem();
-			} catch (const std::exception & e) {
-				update_user_problem_exception = std::current_exception();
-				EXCEPT_FATAL(jobType, s_id, log_fp, "Update user problem failed!", e);
-				//DO NOT THROW
-			}
-
-			// Step 4.2: 更新/插入 user_problem 表中该用户对应该题目的解题状态
-			try {
-				this->update_user_problem_status();
-			} catch (const std::exception & e) {
-				update_user_problem_status_exception = std::current_exception();
-				EXCEPT_FATAL(jobType, s_id, log_fp, "Update user problem status failed!", e);
-				//DO NOT THROW
-			}
-
-			trans.commit();
-		}
-
-		// Step 5: 在 source 表或 contest_source%d 表中留存用户代码
+		// Step 2: 在 source 表或 contest_source%d 表中留存用户代码
 		try {
-			RedisReply reply = this->get_source_code();
-			this->update_source_code(reply->str);
+			this->update_source_code(mysql_conn);
 		} catch (const std::exception & e) {
 			update_source_code_exception = std::current_exception();
 			EXCEPT_WARNING(jobType, s_id, log_fp, "Update source code failed!", e);
 			//DO NOT THROW
 		}
 
-		// Step 6: 在 compile_info 表或 contest_compile_info%d 表中留存编译错误信息
+		// Step 3: 在 compile_info 表或 contest_compile_info%d 表中留存编译错误信息
 		if (result.judge_result == UnitedJudgeResult::COMPILE_ERROR) {
 			try {
-				RedisReply reply = this->get_compile_info();
-				this->update_compile_info(reply->str);
+				this->update_compile_info(mysql_conn);
 			} catch (const std::exception & e) {
 				update_compile_info_exception = std::current_exception();
 				EXCEPT_WARNING(jobType, s_id, log_fp, "Update compile info failed!", e);
 				//DO NOT THROW
 			}
 		}
-	} else {
-		//如果 update solution 失败, 则跳过 update user
-		LOG_WARNING(jobType, s_id, log_fp, "Escape update user because update solution failed!");
-		//如果 update solution 失败, 则跳过 update problem
-		LOG_WARNING(jobType, s_id, log_fp, "Escape update problem because update solution failed!");
-		//如果 update solution 失败, 则跳过 update user problem
-		LOG_WARNING(jobType, s_id, log_fp, "Escape update user problem because update solution failed!");
-		//如果 update solution 失败, 则跳过 update user problem status
-		LOG_WARNING(jobType, s_id, log_fp, "Escape update user problem status because update solution failed!");
-		//如果 update solution 失败, 则跳过 update source code
-		LOG_WARNING(jobType, s_id, log_fp, "Escape update source code because update solution failed!");
-		//如果 update solution 失败, 则跳过 update compile info
-		LOG_WARNING(jobType, s_id, log_fp, "Escape update compile info because update solution failed!");
+
+//		// Step 4: 更新用户的提交数与通过数
+//		//注意!!! 更新用户提交数通过数的操作必须在更新用户题目完成状态成功之前
+//		try {
+//			this->update_user(mysql_conn);
+//		} catch (const std::exception & e) {
+//			update_user_exception = std::current_exception();
+//			EXCEPT_FATAL(jobType, s_id, log_fp, "Update user failed!", e);
+//			//DO NOT THROW
+//		}
+//
+//		// Step 5: 更新题目的提交数与通过数
+//		//注意!!! 更新题目提交数通过数的操作必须在更新用户题目完成状态成功之前
+//		try {
+//			this->update_problem(mysql_conn);
+//		} catch (const std::exception & e) {
+//			update_problem_exception = std::current_exception();
+//			EXCEPT_FATAL(jobType, s_id, log_fp, "Update problem failed!", e);
+//			//DO NOT THROW
+//		}
+
+		// Step 6: 更新/插入 user_problem 表中该用户对应该题目的解题状态
+		try {
+			this->update_user_problem(mysql_conn);
+		} catch (const std::exception & e) {
+			update_user_problem_exception = std::current_exception();
+			EXCEPT_FATAL(jobType, s_id, log_fp, "Update user problem failed!", e);
+			//DO NOT THROW
+		}
+
+//		// Step 6.2: 更新/插入 user_problem 表中该用户对应该题目的解题状态
+//		try {
+//			this->update_user_problem_status(mysql_conn);
+//		} catch (const std::exception & e) {
+//			update_user_problem_status_exception = std::current_exception();
+//			EXCEPT_FATAL(jobType, s_id, log_fp, "Update user problem status failed!", e);
+//			//DO NOT THROW
+//		}
+
+		try {
+			trans.commit();
+		} catch (const std::exception & e) {
+			EXCEPT_FATAL(jobType, s_id, log_fp, "MySQL commit failed!", e);
+			commit_exception = std::current_exception();
+			//DO NOT THROW
+		} catch (...) {
+			UNKNOWN_EXCEPT_FATAL(jobType, s_id, log_fp, "MySQL commit failed!");
+			commit_exception = std::current_exception();
+			//DO NOT THROW
+		}
 	}
+
+	auto is_nullptr = [](const std::exception_ptr & ep) noexcept {
+		return ep == nullptr;
+	};
 
 	// Step 7: 若所有表都更新成功，则本次同步到 mysql 的操作成功，
 	//         应将 redis 数据库中本 solution 的无用的信息删除。
-	if (update_solution_exception == nullptr
-			&& update_user_exception == nullptr
-			&& update_problem_exception == nullptr
-			&& update_user_problem_exception == nullptr
-			&& update_user_problem_status_exception == nullptr
-			&& update_source_code_exception == nullptr
-			&& update_compile_info_exception == nullptr) {
-
+	if (std::all_of(std::begin(exception_ptrs), std::end(exception_ptrs), is_nullptr) == true) {
 		this->clear_this_jobs_info_in_redis();
-
 	} else {
 		LOG_WARNING(jobType, s_id, log_fp, "Error occurred while update this job!");
 	}
 
+	this->commitJudgeStatusToRedis(JudgeStatus::UPDATED);
+
 	// Step 8: 清除 redis 中过于久远的 solution 数据, 这些 redis 缓存过于久远以致 Web 不大可能访问的到
 	this->clear_previous_jobs_info_in_redis();
 
-	this->commitJudgeStatusToRedis(JudgeStatus::UPDATED);
 }
 
 kerbal::redis::RedisReply UpdateJobBase::get_compile_info() const
 {
 	using namespace kerbal::redis;
 
-	static RedisCommand query("get compile_info:%d:%d");
+	RedisCommand query("get compile_info:%d:%d");
 	RedisReply reply;
 	try {
 		reply = query.execute(redisConn, this->jobType, this->s_id);
@@ -316,13 +322,13 @@ void UpdateJobBase::clear_previous_jobs_info_in_redis() noexcept try
 
 		Operation opt(this->redisConn);
 
-		static boost::format judge_status_templ("judge_status:%d:%d");
+		boost::format judge_status_templ("judge_status:%d:%d");
 
 		JudgeStatus judge_status = JudgeStatus::UPDATED;
 		try {
 			judge_status = (JudgeStatus) opt.hget<int>((judge_status_templ % jobType % prev_s_id).str(), "status");
 		} catch (const std::exception & e) {
-			EXCEPT_FATAL(jobType, s_id, log_fp, "Get judge status failed!", e);
+			EXCEPT_FATAL(jobType, s_id, log_fp, "Get judge status failed! Failed to delete previous job's judge_status", e);
 			return; //DO NOT THROW
 		}
 
@@ -337,7 +343,7 @@ void UpdateJobBase::clear_previous_jobs_info_in_redis() noexcept try
 			}
 
 			try {
-				static boost::format similarity_details("similarity_details:%d:%d");
+				boost::format similarity_details("similarity_details:%d:%d");
 				if (opt.del((similarity_details % jobType % prev_s_id).str()) == false) {
 //					LOG_WARNING(jobType, s_id, log_fp, "Doesn't delete similarity_details actually!");
 				}
@@ -347,7 +353,7 @@ void UpdateJobBase::clear_previous_jobs_info_in_redis() noexcept try
 			}
 
 			try {
-				static boost::format job_info("job_info:%d:%d");
+				boost::format job_info("job_info:%d:%d");
 				if (opt.del((job_info % jobType % prev_s_id).str()) == false) {
 //					LOG_WARNING(jobType, s_id, log_fp, "Doesn't delete job_info actually!");
 				}
@@ -369,7 +375,7 @@ void UpdateJobBase::clear_this_jobs_info_in_redis() noexcept try
 
 	Operation opt(this->redisConn);
 	try {
-		static boost::format source_code("source_code:%d:%d");
+		boost::format source_code("source_code:%d:%d");
 		if (opt.del((source_code % jobType % s_id).str()) == false) {
 			LOG_WARNING(jobType, s_id, log_fp, "Source code doesn't exist!");
 		}
@@ -379,7 +385,7 @@ void UpdateJobBase::clear_this_jobs_info_in_redis() noexcept try
 	}
 
 	try {
-		static boost::format compile_info("compile_info:%d:%d");
+		boost::format compile_info("compile_info:%d:%d");
 		opt.del((compile_info % jobType % s_id).str());
 		// 可能 job 编译通过没有 compile_info, 所以不管有没有都 del 一次, 不过不用判断是否删除成功
 	} catch (const std::exception & e) {
@@ -387,7 +393,7 @@ void UpdateJobBase::clear_this_jobs_info_in_redis() noexcept try
 		//DO NOT THROW
 	}
 } catch (...) {
-	LOG_FATAL(jobType, s_id, log_fp, "Clear this jobs info in redis failed! Error information: ", UNKNOWN_EXCEPTION_WHAT);
+	UNKNOWN_EXCEPT_FATAL(jobType, s_id, log_fp, "Clear this jobs info in redis failed!");
 }
 
 void UpdateJobBase::core_update_failed_table(const kerbal::redis::RedisReply & source_code, const kerbal::redis::RedisReply & compile_error_info) noexcept try

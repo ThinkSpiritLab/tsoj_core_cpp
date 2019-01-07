@@ -17,14 +17,13 @@
 
 extern std::ofstream log_fp;
 
-ContestRejudgeJob::ContestRejudgeJob(int jobType, ojv4::s_id_type s_id, const kerbal::redis::RedisContext & redisConn,
-		std::unique_ptr<mysqlpp::Connection> && mysqlConn) :
-		RejudgeJobBase(jobType, s_id, redisConn, std::move(mysqlConn)), ct_id(ojv4::ct_id_type(jobType))
+ContestRejudgeJob::ContestRejudgeJob(int jobType, ojv4::s_id_type s_id, const kerbal::redis::RedisContext & redisConn) :
+		RejudgeJobBase(jobType, s_id, redisConn), ct_id(ojv4::ct_id_type(jobType))
 {
 	LOG_DEBUG(jobType, s_id, log_fp, BOOST_CURRENT_FUNCTION);
 }
 
-ojv4::s_result_enum ContestRejudgeJob::move_orig_solution_to_rejudge_solution()
+void ContestRejudgeJob::move_orig_solution_to_rejudge_solution(mysqlpp::Connection & mysql_conn)
 {
 	LOG_DEBUG(jobType, s_id, log_fp, BOOST_CURRENT_FUNCTION);
 
@@ -33,7 +32,7 @@ ojv4::s_result_enum ContestRejudgeJob::move_orig_solution_to_rejudge_solution()
 	ojv4::s_mem_in_byte orig_mem;
 	ojv4::s_similarity_type orig_similarity;
 	{
-		mysqlpp::Query query = mysqlConn->query(
+		mysqlpp::Query query = mysql_conn.query(
 				"select s_result, s_time, s_mem, s_similarity_percentage "
 				"from contest_solution%0 where s_id = %1");
 		query.parse();
@@ -59,7 +58,7 @@ ojv4::s_result_enum ContestRejudgeJob::move_orig_solution_to_rejudge_solution()
 		orig_similarity = row["s_similarity_percentage"];
 	}
 
-	mysqlpp::Query insert = mysqlConn->query(
+	mysqlpp::Query insert = mysql_conn.query(
 			"insert into rejudge_solution "
 			"(ct_id, s_id, orig_result, orig_time, orig_mem, orig_similarity_percentage, rejudge_time) "
 			"values(%0, %1, %2, %3, %4, %5, %6q)"
@@ -74,15 +73,13 @@ ojv4::s_result_enum ContestRejudgeJob::move_orig_solution_to_rejudge_solution()
 		EXCEPT_FATAL(jobType, s_id, log_fp, "Insert original result into rejudge_solution failed!", e);
 		throw e;
 	}
-
-	return orig_result;
 }
 
-void ContestRejudgeJob::update_solution()
+void ContestRejudgeJob::update_solution(mysqlpp::Connection & mysql_conn)
 {
 	LOG_DEBUG(jobType, s_id, log_fp, BOOST_CURRENT_FUNCTION);
 
-    mysqlpp::Query update = mysqlConn->query(
+    mysqlpp::Query update = mysql_conn.query(
             "update contest_solution%0 "
             "set s_result = %1, s_time = %2, s_mem = %3, s_similarity_percentage = %4 "
             "where s_id = %5"
@@ -99,61 +96,52 @@ void ContestRejudgeJob::update_solution()
 	}
 }
 
-void ContestRejudgeJob::update_user()
+void ContestRejudgeJob::update_user(mysqlpp::Connection & mysql_conn)
 {
-//	LOG_DEBUG(jobType, s_id, log_fp, BOOST_CURRENT_FUNCTION);
-
+	LOG_DEBUG(jobType, s_id, log_fp, BOOST_CURRENT_FUNCTION);
 }
 
-void ContestRejudgeJob::update_problem()
+void ContestRejudgeJob::update_problem(mysqlpp::Connection & mysql_conn)
 {
 	LOG_DEBUG(jobType, s_id, log_fp, BOOST_CURRENT_FUNCTION);
 
 	try {
-		ContestManagement::update_problem_s_submit_and_accept_num(*this->mysqlConn, ct_id, p_id);
+		ContestManagement::update_problem_s_submit_and_accept_num(mysql_conn, ct_id, p_id);
 	} catch(const std::exception & e) {
 		EXCEPT_FATAL(jobType, s_id, log_fp, "Update problem's submit and accept num failed!", e);
 		throw;
 	}
 }
 
-void ContestRejudgeJob::update_user_problem()
+void ContestRejudgeJob::update_user_problem(mysqlpp::Connection & mysql_conn)
 {
 	LOG_DEBUG(jobType, s_id, log_fp, BOOST_CURRENT_FUNCTION);
 
 	try {
-		ContestManagement::update_user_problem(*this->mysqlConn, ct_id, u_id, p_id);
+		ContestManagement::update_user_problem(mysql_conn, ct_id, u_id, p_id);
 	} catch (const std::exception & e) {
 		EXCEPT_FATAL(jobType, s_id, log_fp, "Update problem's submit and accept num failed!", e);
 		throw;
 	}
 }
 
-void ContestRejudgeJob::update_user_problem_status()
+void ContestRejudgeJob::update_user_problem_status(mysqlpp::Connection & mysql_conn)
 {
 	LOG_DEBUG(jobType, s_id, log_fp, BOOST_CURRENT_FUNCTION);
 
 	try {
-		ContestManagement::update_user_problem_status(*this->mysqlConn, ct_id, u_id, p_id);
+		ContestManagement::update_user_problem_status(mysql_conn, ct_id, u_id, p_id);
 	} catch (const std::exception & e) {
 		EXCEPT_FATAL(jobType, s_id, log_fp, "Update problem's submit and accept num failed!", e);
 		throw;
 	}
 }
 
-void ContestRejudgeJob::rejudge_compile_info(ojv4::s_result_enum orig_result)
+void ContestRejudgeJob::update_compile_info(mysqlpp::Connection & mysql_conn)
 {
 	LOG_DEBUG(jobType, s_id, log_fp, BOOST_CURRENT_FUNCTION);
 
-	if(this->result.judge_result == ojv4::s_result_enum::COMPILE_ERROR)
-	{
-		mysqlpp::Query update = mysqlConn->query(
-				"insert into contest_compile_info%0(s_id, compile_error_info) "
-				"values(%1, %2q) "
-				"on duplicate key "
-				"update compile_error_info = %2q"
-		);
-		update.parse();
+	if (this->result.judge_result == ojv4::s_result_enum::COMPILE_ERROR) {
 
 		kerbal::redis::RedisReply ce_info;
 		try {
@@ -163,15 +151,23 @@ void ContestRejudgeJob::rejudge_compile_info(ojv4::s_result_enum orig_result)
 			throw;
 		}
 
+		mysqlpp::Query update = mysql_conn.query(
+				"insert into contest_compile_info%0(s_id, compile_error_info) "
+				"values(%1, %2q) "
+				"on duplicate key "
+				"update compile_error_info = %2q"
+		);
+		update.parse();
+
 		mysqlpp::SimpleResult res = update.execute(ct_id, s_id, ce_info->str);
 
-		if(!res) {
+		if (!res) {
 			MysqlEmptyResException e(update.errnum(), update.error());
 			EXCEPT_FATAL(jobType, s_id, log_fp, "Update compile info failed!", e);
 			throw e;
 		}
 	} else {
-		mysqlpp::Query del = mysqlConn->query(
+		mysqlpp::Query del = mysql_conn.query(
 				"delete from contest_compile_info%0 "
 				"where s_id = %1"
 		);
@@ -179,7 +175,7 @@ void ContestRejudgeJob::rejudge_compile_info(ojv4::s_result_enum orig_result)
 
 		mysqlpp::SimpleResult res = del.execute(ct_id, s_id);
 
-		if(!res) {
+		if (!res) {
 			LOG_WARNING(jobType, s_id, log_fp, "Delete compile info failed! Info: ", del.error());
 			// 删除失败可以不做 failed 处理
 		}

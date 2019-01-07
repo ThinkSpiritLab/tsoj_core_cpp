@@ -25,7 +25,7 @@ master:
 									compile_options="-std=c++11 -O2 -Wall -c -fmessage-length=0 -MMD -MP" \
 									linker=g++ \
 									linker_name="GCC C++ Linker" \
-									link_options="-lseccomp -lhiredis -lmysqlpp -pthread" \
+									link_options="-lseccomp -lhiredis -lmysqlpp -lmysqlclient -pthread" \
 									obj_folder=../../release/obj \
 									master_bin_name=../../release/ts_judger_master
 	

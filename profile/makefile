@@ -9,7 +9,7 @@ slave:
 	+@cd $(src)/slave && make slave configuration=release \
 									compiler=g++ \
 									compiler_name="GCC C++ Compiler" \
-									compile_options="-std=c++11 -O2 -Wall -c -fmessage-length=0 -MMD -MP" \
+									compile_options="-std=c++11 -O2 -Wall -c -DPROFILE -fmessage-length=0 -MMD -MP" \
 									linker=g++ \
 									linker_name="GCC C++ Linker" \
 									link_options="-lseccomp -lhiredis -pthread" \
@@ -22,10 +22,10 @@ master:
 	+@cd $(src)/master && make master configuration=release \
 									compiler=g++ \
 									compiler_name="GCC C++ Compiler" \
-									compile_options="-std=c++11 -O2 -Wall -c -fmessage-length=0 -MMD -MP" \
+									compile_options="-std=c++11 -O2 -Wall -c -DPROFILE -fmessage-length=0 -MMD -MP" \
 									linker=g++ \
 									linker_name="GCC C++ Linker" \
-									link_options="-lseccomp -lhiredis -lmysqlpp -pthread" \
+									link_options="-lseccomp -lhiredis -lmysqlpp -lmysqlclient -pthread" \
 									obj_folder=../../profile/obj \
 									master_bin_name=../../profile/ts_judger_master
 	

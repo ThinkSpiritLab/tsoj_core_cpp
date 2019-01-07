@@ -589,5 +589,184 @@ void ContestManagement::update_scoreboard(mysqlpp::Connection & mysql_conn, kerb
 	rset.execute(redis_conn, ct_id, scoreboard_s);
 }
 
+void ContestManagement::update_scoreboard(mysqlpp::Connection & mysql_conn, kerbal::redis_v2::connection & redis_conn, ojv4::ct_id_type ct_id)
+{
+	std::chrono::system_clock::time_point ct_starttime;
+	std::chrono::system_clock::time_point ct_endtime;
+	std::chrono::system_clock::time_point ct_lockranktime;
+	std::chrono::seconds ct_timeplus(1200);
+	int problem_count = 0;
+	{
+		mysqlpp::Query query = mysql_conn.query(
+				"select ct_starttime, ct_endtime, ct_timeplus, ct_lockrankbefore, count(p_id) as problem_count "
+				"from contest, contest_problem "
+				"where contest.ct_id = %0 and contest_problem.ct_id = %1"
+		);
+		query.parse();
+		mysqlpp::StoreQueryResult res = query.store(ct_id, ct_id);
+		if (query.errnum() != 0) {
+			MysqlEmptyResException e(query.errnum(), query.error());
+			EXCEPT_FATAL(0, 0, log_fp, "Error occurred while getting contest details.", e);
+			throw e;
+		}
+		if (res.size() == 0) {
+			std::runtime_error e("A contest id doesn't exist");
+			EXCEPT_FATAL(0, 0, log_fp, "Error occurred while getting contest details.", e);
+			throw e;
+		}
+
+		const mysqlpp::Row & ct_info = res[0];
+		ct_starttime = std::chrono::system_clock::from_time_t(time_t(mysqlpp::DateTime(ct_info["ct_starttime"])));
+		ct_endtime = std::chrono::system_clock::from_time_t(time_t(mysqlpp::DateTime(ct_info["ct_endtime"])));
+		if (ct_info["ct_timeplus"] != mysqlpp::null) {
+			ct_timeplus = std::chrono::seconds(int(ct_info["ct_timeplus"]));
+		}
+		std::chrono::seconds ct_lockrankbefore(3600);
+		if (ct_info["ct_lockrankbefore"] != mysqlpp::null) {
+			ct_lockrankbefore = std::chrono::seconds(int(ct_info["ct_lockrankbefore"]));
+		}
+		ct_lockranktime = ct_endtime - ct_lockrankbefore;
+		problem_count = ct_info["problem_count"];
+	}
+
+	std::chrono::system_clock::time_point current_time = std::chrono::system_clock::now();
+
+	boost::ptr_vector<scoreboard_row> scoreboard;
+	{
+		mysqlpp::Query query = mysql_conn.query(
+				"select distinct u_id, u_name, u_realname from ctuser "
+				"where ct_id = %0 order by u_id"
+		);
+		query.parse();
+		mysqlpp::StoreQueryResult res = query.store(ct_id);
+		if (query.errnum() != 0) {
+			MysqlEmptyResException e(query.errnum(), query.error());
+			EXCEPT_FATAL(0, 0, log_fp, "Error occurred while getting contest details.", e);
+			throw e;
+		}
+		for(const mysqlpp::Row & row : res) {
+			ojv4::u_id_type u_id = row["u_id"];
+			std::string u_name(row["u_name"]);
+			std::string u_realname(row["u_realname"]);
+			scoreboard.push_back(new scoreboard_row(u_id, std::move(u_name), std::move(u_realname)));
+		}
+	}
+
+	{
+		mysqlpp::Query query = mysql_conn.query(
+				"select u_id, p_logic, s_result, s_posttime "
+				"from contest_solution%0 as so, contest_problem as cp "
+				"where so.p_id = cp.p_id and cp.ct_id = %1 and "
+				"u_id in (select u_id from ctuser where ct_id = %1) order by s_id"
+		);
+		query.parse();
+		mysqlpp::StoreQueryResult res = query.store(ct_id, ct_id);
+		if (query.errnum() != 0) {
+			MysqlEmptyResException e(query.errnum(), query.error());
+			EXCEPT_FATAL(0, 0, log_fp, "Error occurred while getting contest details.", e);
+			throw e;
+		}
+		for (const auto & row : res) {
+			ojv4::u_id_type u_id = row["u_id"];
+			logic_p_id_type p_logic = row["p_logic"].c_str()[0];
+			if (('A' <= p_logic && p_logic <= 'Z') == false) {
+				continue;
+			}
+			auto s_result = ojv4::s_result_enum(ojv4::s_result_in_db_type(row["s_result"]));
+			auto s_posttime = std::chrono::system_clock::from_time_t(time_t(mysqlpp::DateTime(row["s_posttime"])));
+
+			// 通过 uid 二分搜索
+			auto it = std::lower_bound(scoreboard.begin(), scoreboard.end(), u_id, [](const boost::variant<ojv4::u_id_type, scoreboard_row> & a, const boost::variant<ojv4::u_id_type, scoreboard_row> & b) {
+				struct var_visitor : public boost::static_visitor<ojv4::u_id_type>
+				{
+					public:
+						ojv4::u_id_type operator()(ojv4::u_id_type u_id) const
+						{
+							return u_id;
+						}
+
+						ojv4::u_id_type operator()(const scoreboard_row & src) const
+						{
+							return src.u_id;
+						}
+				} v;
+
+				ojv4::u_id_type a_uid = boost::apply_visitor(v, a);
+				ojv4::u_id_type b_uid = boost::apply_visitor(v, b);
+				return a_uid.to_literal() < b_uid.to_literal();
+			});
+
+			if(it != scoreboard.end() && it->u_id == u_id) {
+				it->solutions[p_logic].add_solution_with_lock(s_result, s_posttime, current_time, ct_starttime, ct_lockranktime, ct_endtime);
+			}
+		}
+	}
+
+	scoreboard.sort([ct_timeplus](const scoreboard_row & a, const scoreboard_row & b) {
+		int a_ac_num = a.get_accept_num();
+		int b_ac_num = b.get_accept_num();
+		if (a_ac_num != b_ac_num) { // 当通过数不同时, 通过题数多者优先
+			return a_ac_num > b_ac_num;
+		}
+		if (a_ac_num != 0) { // 当两者通过数相等且均不为 0 时, 用时少者优先
+			return a.get_total_time(ct_timeplus) < b.get_total_time(ct_timeplus);
+		}
+		// 当两者通过数均为 0 时, 根据尝试次数排名
+		int a_tried_times = a.get_tried_times();
+		int b_tried_times = b.get_tried_times();
+		// 尝试次数相同, 按 u_id 排
+		if (a_tried_times == b_tried_times) {
+			return a.u_id.to_literal() < b.u_id.to_literal();
+		}
+		if (a_tried_times == 0) {
+			return false;
+		}
+		if (b_tried_times == 0) {
+			return true;
+		}
+		return a_tried_times < b_tried_times;
+	});
+
+	int rank = 1;
+	std::string scoreboard_s = "[" + std::to_string(problem_count) + ",";
+	for (const auto & row : scoreboard) {
+		static boost::format row_templ(R"------([%d,%d,"%s","%s",[)------");
+		scoreboard_s += (row_templ % rank++ % row.u_id % row.u_name % row.u_realname).str();
+
+		const auto & solutions = row.solutions;
+		for (const auto & p_u_p_status : solutions) {
+			logic_p_id_type p_logic = p_u_p_status.first;
+			const auto & u_p_status = p_u_p_status.second;
+			switch (u_p_status.status) {
+				case u_p_status::never_try:
+				case u_p_status::error: {
+					static boost::format accept_templ("[%d,1,%d],");
+					scoreboard_s += (accept_templ % (p_logic - 'A') % u_p_status.tried_times).str();
+					break;
+				}
+				case u_p_status::accept: {
+					static boost::format accept_templ("[%d,0,%d,%d],");
+					scoreboard_s += (accept_templ % (p_logic - 'A') % u_p_status.tried_times % u_p_status.ac_time_consume.count()).str();
+					break;
+				}
+				case u_p_status::pending: {
+					static boost::format accept_templ("[%d,2,%d],");
+					scoreboard_s += (accept_templ % (p_logic - 'A') % u_p_status.tried_times).str();
+					break;
+				}
+			}
+		}
+		if (solutions.size() != 0) {
+			scoreboard_s.pop_back();
+		}
+		scoreboard_s += "]],";
+	}
+	if (scoreboard.size() != 0) {
+		scoreboard_s.pop_back();
+	}
+	scoreboard_s += "]";
+	redis_conn.execute("set contest_scoreboard:%d %s", ct_id.to_literal(), scoreboard_s);
+}
+
 
 

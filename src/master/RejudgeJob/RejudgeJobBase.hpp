@@ -23,13 +23,11 @@ class RejudgeJobBase: public UpdateJobBase
 
 		friend
 		std::unique_ptr<UpdateJobBase>
-		make_update_job(int jobType, ojv4::s_id_type s_id, const RedisContext & redisConn,
-						std::unique_ptr<mysqlpp::Connection> && mysqlConn);
+		make_update_job(int jobType, ojv4::s_id_type s_id, const RedisContext & redisConn);
 
 	protected:
 
-		RejudgeJobBase(int jobType, ojv4::s_id_type s_id, const kerbal::redis::RedisContext & redisConn,
-				std::unique_ptr<mysqlpp::Connection> && mysqlConn);
+		RejudgeJobBase(int jobType, ojv4::s_id_type s_id, const kerbal::redis::RedisContext & redisConn);
 
 		mysqlpp::DateTime rejudge_time;
 
@@ -37,29 +35,25 @@ class RejudgeJobBase: public UpdateJobBase
 		virtual void handle() override final;
 
 	private:
-		virtual ojv4::s_result_enum move_orig_solution_to_rejudge_solution() = 0;
+		virtual void move_orig_solution_to_rejudge_solution(mysqlpp::Connection & mysql_conn) = 0;
 
-		virtual void update_solution() override = 0;
+		virtual void update_solution(mysqlpp::Connection & mysql_conn) override = 0;
 
-		virtual void update_source_code(const char *) override final
+		virtual void update_source_code(mysqlpp::Connection & mysql_conn) override final
 		{
 		}
 
-		virtual void update_compile_info(const char *) override final
-		{
-		}
+		virtual void update_compile_info(mysqlpp::Connection & mysql_conn) override = 0;
 
-		virtual void rejudge_compile_info(ojv4::s_result_enum orig_result) = 0;
+		virtual void update_user(mysqlpp::Connection & mysql_conn) override = 0;
 
-		virtual void update_user() override = 0;
+		virtual void update_problem(mysqlpp::Connection & mysql_conn) override = 0;
 
-		virtual void update_problem() override = 0;
+		virtual void update_user_problem(mysqlpp::Connection & mysql_conn) override = 0;
 
-		virtual void update_user_problem() override = 0;
+		virtual void update_user_problem_status(mysqlpp::Connection & mysql_conn) override = 0;
 
-		virtual void update_user_problem_status() override = 0;
-
-		virtual void send_rejudge_notification() = 0;
+		virtual void send_rejudge_notification(mysqlpp::Connection & mysql_conn) = 0;
 
 	public:
 		virtual ~RejudgeJobBase() noexcept = default;
