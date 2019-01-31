@@ -10,6 +10,7 @@
 
 #include "JobBase.hpp"
 #include "Result.hpp"
+#include <kerbal/redis/redis_context.hpp>
 
 class Config;
 
@@ -27,6 +28,8 @@ class JudgeJob: public JobBase
 		bool have_accepted;
 
 		bool no_store_ac_code; ///< whether store the user's code if this solution is accepted
+
+		kerbal::redis::RedisContext redisConn;
 
 	public:
 

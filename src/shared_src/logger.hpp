@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <mutex>
 #include <boost/format.hpp>
 #include <kerbal/utility/costream.hpp>
 #include <kerbal/compatibility/chrono_suffix.hpp>
@@ -127,6 +128,9 @@ namespace ts_judger
 
 				std::ostringstream buffer;
 
+				static std::mutex cout_mtx;
+				std::lock_guard<std::mutex> gard(cout_mtx);
+
 				multi_args_write(buffer, log::templ % datetime % (const char *) Log_level_traits<level>::str % type % job_id % source_filename % line, std::forward<T>(args)...);
 
 				Log_level_traits<level>::outstream << buffer.str() << std::endl;
@@ -223,30 +227,37 @@ void log_write(int type, int job_id, const char source_filename[], int line, std
 #else
 #	define LOG_PROFILE(type, job_id, log_fp, args...)
 #	define PROFILE_HEAD
+#	define PROFILE_TAIL(type, job_id, log_fp, args...)
 #	define PROFILE_WARNING_TAIL(type, job_id, log_fp, consume_threshold, args...)
 #endif
 
 #ifdef EXCEPT_WARNING
 #	undef EXCEPT_WARNING
 #endif
-#define EXCEPT_WARNING(type, job_id, log_fp, events, exception, x...)	LOG_WARNING(type, job_id, log_fp, events, \
-																		" Error information: ", exception.what(), "  Exception type: ", typeid(exception).name(), ##x)
+#define EXCEPT_WARNING(type, job_id, log_fp, events, exception, x...) \
+	LOG_WARNING(type, job_id, log_fp, events, \
+	" Error information: ", exception.what(), "  Exception type: ", typeid(exception).name(), ##x)
+
 #ifdef UNKNOWN_EXCEPT_WARNING
 #	undef UNKNOWN_EXCEPT_WARNING
 #endif
-#define UNKNOWN_EXCEPT_WARNING(type, job_id, log_fp, events, x...)	LOG_WARNING(type, job_id, log_fp, events, \
-																		" Error information: ", UNKNOWN_EXCEPTION_WHAT, ##x)
+#define UNKNOWN_EXCEPT_WARNING(type, job_id, log_fp, events, x...)	\
+	LOG_WARNING(type, job_id, log_fp, events, \
+	" Error information: ", UNKNOWN_EXCEPTION_WHAT, ##x)
 
 #ifdef EXCEPT_FATAL
 #	undef EXCEPT_FATAL
 #endif
-#define EXCEPT_FATAL(type, job_id, log_fp, events, exception, x...)	    LOG_FATAL(type, job_id, log_fp, events, \
-																		" Error information: ", exception.what(), "  Exception type: ", typeid(exception).name(), ##x)
+#define EXCEPT_FATAL(type, job_id, log_fp, events, exception, x...)	 \
+	LOG_FATAL(type, job_id, log_fp, events, \
+	" Error information: ", exception.what(), "  Exception type: ", typeid(exception).name(), ##x)
+
 #ifdef UNKNOWN_EXCEPT_FATAL
 #	undef UNKNOWN_EXCEPT_FATAL
 #endif
-#define UNKNOWN_EXCEPT_FATAL(type, job_id, log_fp, events, x...)	    LOG_FATAL(type, job_id, log_fp, events, \
-																		" Error information: ", UNKNOWN_EXCEPTION_WHAT, ##x)
+#define UNKNOWN_EXCEPT_FATAL(type, job_id, log_fp, events, x...) \
+	LOG_FATAL(type, job_id, log_fp, events, \
+	" Error information: ", UNKNOWN_EXCEPTION_WHAT, ##x)
 
 #endif //LOGGER_H
 

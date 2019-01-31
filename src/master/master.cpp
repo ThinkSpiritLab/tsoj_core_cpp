@@ -67,14 +67,14 @@ void register_self() noexcept try
 	auto & regist_self_conn = *redis_conn_handle;
 	LOG_INFO(0, 0, log_fp, "Regist_self thread get context.");
 	kerbal::redis_v2::operation opt(regist_self_conn);
-	kerbal::redis_v2::hash h(regist_self_conn, "judge_server:" + judge_server_id);
-	kerbal::redis_v2::set s(regist_self_conn, "online_judger");
+	kerbal::redis_v2::hash judge_server(regist_self_conn, "judge_server:" + judge_server_id);
+	kerbal::redis_v2::set online_judger(regist_self_conn, "online_judger");
 
 	while (loop) {
 		try {
 			const time_t now = time(NULL);
 			const std::string confirm_time = get_ymd_hms_in_local_time_zone(now);
-			h.hmset(
+			judge_server.hmset(
 				  "host_name", host_name,
 				  "ip", ip,
 				  "user_name", user_name,
@@ -82,7 +82,7 @@ void register_self() noexcept try
 				  "last_confirm", confirm_time
 			);
 			opt.setex("judge_server_confirm:" + judge_server_id, 30_s, confirm_time);
-			s.sadd(judge_server_id);
+			online_judger.sadd(judge_server_id);
 			std::this_thread::sleep_for(10_s);
 		} catch (const std::exception & e) {
 			EXCEPT_FATAL(0, 0, log_fp, "Register self failed.", e);
@@ -107,10 +107,7 @@ void regist_SIGTERM_handler(int signum) noexcept
 {
 	using namespace kerbal::compatibility::chrono_suffix;
 	if (signum == SIGTERM) {
-		auto redis_conn_handle = sync_fetch_redis_conn();
-		auto & redis_conn = *redis_conn_handle;
-		kerbal::redis_v2::list job_list(redis_conn, "judge_queue");
-		job_list.lpush(JobBase::getExitJobItem());
+		loop = false;
 		LOG_WARNING(0, 0, log_fp,
 					"Master has received the SIGTERM signal and will exit soon after the jobs are all finished!");
 	}
@@ -267,17 +264,14 @@ void start_up_refresh()
 	PROFILE_HEAD
 
 	std::deque<std::thread> th_group;
-	std::mutex cout_mtx;
 
-	th_group.push_back(std::thread([&cout_mtx]() {
+	th_group.push_back(std::thread([]() {
 		ExerciseManagement::refresh_all_users_submit_and_accept_num(*sync_fetch_mysql_conn());
-		std::lock_guard<std::mutex> gard(cout_mtx);
 		LOG_INFO(0, 0, log_fp, "Refresh all users' submit and accept num in exercise");
 	}));
 
-	th_group.push_back(std::thread([&cout_mtx]() {
+	th_group.push_back(std::thread([]() {
 		ExerciseManagement::refresh_all_problems_submit_and_accept_num(*sync_fetch_mysql_conn());
-		std::lock_guard<std::mutex> gard(cout_mtx);
 		LOG_INFO(0, 0, log_fp, "Refresh all problems' submit and accept num in exercise");
 	}));
 
@@ -292,7 +286,6 @@ void start_up_refresh()
 		courses = query.store();
 		if (query.errnum() != 0) {
 			MysqlEmptyResException e(query.errnum(), query.error());
-			std::lock_guard<std::mutex> gard(cout_mtx);
 			EXCEPT_FATAL(0, 0, log_fp, "Query courses' information failed!", e);
 			throw e;
 		}
@@ -300,14 +293,12 @@ void start_up_refresh()
 
 	for (const auto & row : courses) {
 		ojv4::c_id_type c_id = row["c_id"];
-		th_group.push_back(std::thread([c_id, &cout_mtx]() {
+		th_group.push_back(std::thread([c_id]() {
 			CourseManagement::refresh_all_problems_submit_and_accept_num_in_course(*sync_fetch_mysql_conn(), c_id);
-			std::lock_guard<std::mutex> gard(cout_mtx);
 			LOG_INFO(0, 0, log_fp, "Refresh all users' submit and accept num in course: ", c_id);
 		}));
-		th_group.push_back(std::thread([c_id, &cout_mtx]() {
+		th_group.push_back(std::thread([c_id]() {
 			CourseManagement::refresh_all_users_submit_and_accept_num_in_course(*sync_fetch_mysql_conn(), c_id);
-			std::lock_guard<std::mutex> gard(cout_mtx);
 			LOG_INFO(0, 0, log_fp, "Refresh all problems' submit and accept num in course: ", c_id);
 		}));
 	}
@@ -327,7 +318,6 @@ void listenning_loop()
 	kerbal::redis_v2::list update_queue(*sync_fetch_redis_conn(), "update_queue");
 
 	std::deque<std::future<void> > future_group;
-	std::mutex cout_mtx;
 
 	while (loop) {
 
@@ -345,18 +335,11 @@ void listenning_loop()
 		std::string job_item;
 		try {
 			job_item = update_queue.blpop(0_s);
-			if (JobBase::isExitJob(job_item) == true) {
-				loop = false;
-				LOG_INFO(0, 0, log_fp, "Get exit job.");
-				continue;
-			}
 		} catch (const std::exception & e) {
-			std::lock_guard<std::mutex> gard(cout_mtx);
 			EXCEPT_FATAL(0, 0, log_fp, "Fail to fetch job.", e);
 			queue_pop_exception = std::current_exception();
 			//DO NOT THROW
 		} catch (...) {
-			std::lock_guard<std::mutex> gard(cout_mtx);
 			UNKNOWN_EXCEPT_FATAL(0, 0, log_fp, "Fail to fetch job.");
 			queue_pop_exception = std::current_exception();
 			//DO NOT THROW
@@ -365,16 +348,7 @@ void listenning_loop()
 		try {
 			std::tie(jobType, s_id) = JobBase::parseJobItem(job_item);
 		} catch (const std::exception & e) {
-			std::lock_guard<std::mutex> gard(cout_mtx);
 			EXCEPT_FATAL(0, 0, log_fp, "Fail to parse job item.", e, "job_item: ", job_item);
-			continue;
-		}
-
-		// 本次更新任务的 redis 连接
-		kerbal::redis::RedisContext redisConn(redis_hostname.c_str(), redis_port, 100_ms);
-		if (!redisConn) {
-			std::lock_guard<std::mutex> gard(cout_mtx);
-			LOG_FATAL(jobType, s_id, log_fp, "Redis connection connect failed!");
 			continue;
 		}
 
@@ -386,38 +360,33 @@ void listenning_loop()
 			// 避免了无效操作的消耗与可能导致的其他逻辑混乱
 			// 此外，unique_ptr 的特性决定了其不应该使用值传递的方式。
 			// 而使用 std::move 将其强制转换为右值引用，是为了使用移动构造函数来优化性能（吗？这个不确定）
-			job = make_update_job(jobType, s_id, std::move(redisConn));
+			job = make_update_job(jobType, s_id, *sync_fetch_redis_conn());
 		} catch (const std::exception & e) {
-			std::lock_guard<std::mutex> gard(cout_mtx);
 			EXCEPT_FATAL(jobType, s_id, log_fp, "Job construct failed!", e);
 			continue;
 		} catch (...) {
-			std::lock_guard<std::mutex> gard(cout_mtx);
 			UNKNOWN_EXCEPT_FATAL(jobType, s_id, log_fp, "Job construct failed!");
 			continue;
 		}
 
 		try {
 			// 执行本次 update job
-			future_group.push_back(std::async(std::launch::async, [j=std::move(job), jobType, s_id, &cout_mtx]() {
+			future_group.push_back(std::async(std::launch::async, [j=std::move(job), jobType, s_id]() {
 				// 本次更新开始时间
 					PROFILE_HEAD
 					try {
 						j->handle();
 					} catch (const std::exception & e) {
-						std::lock_guard<std::mutex> gard(cout_mtx);
 						EXCEPT_FATAL(jobType, s_id, log_fp, "Job handle failed!", e);
 						throw e;
 					}
 					// 本次更新结束时间
-					std::lock_guard<std::mutex> gard(cout_mtx);
 					PROFILE_TAIL(jobType, s_id, log_fp, "Update finished");
+					LOG_INFO(jobType, s_id, log_fp, "Update finished");
 				}));
 		} catch (const std::exception & e) {
-			std::lock_guard<std::mutex> gard(cout_mtx);
 			EXCEPT_FATAL(jobType, s_id, log_fp, "Job handle failed!", e);
 		} catch (...) {
-			std::lock_guard<std::mutex> gard(cout_mtx);
 			UNKNOWN_EXCEPT_FATAL(jobType, s_id, log_fp, "Job handle failed!");
 		}
 
@@ -429,13 +398,12 @@ void listenning_loop()
 			}
 		};
 
-		while (future_group.size() >= 30) {
+		while (future_group.size() >= 20) {
 			try {
 				future_group.front().get();
 				future_group.pop_front();
 			} catch (const std::exception & e) {
-				std::lock_guard<std::mutex> gard(cout_mtx);
-				EXCEPT_FATAL(jobType, s_id, log_fp, "Future get failed!", e);
+				EXCEPT_FATAL(0, 0, log_fp, "Future get failed!", e);
 			}
 		}
 
@@ -444,11 +412,18 @@ void listenning_loop()
 				future_group.front().get();
 				future_group.pop_front();
 			} catch (const std::exception & e) {
-				std::lock_guard<std::mutex> gard(cout_mtx);
-				EXCEPT_FATAL(jobType, s_id, log_fp, "Future get failed!", e);
+				EXCEPT_FATAL(0, 0, log_fp, "Future get failed!", e);
 			}
 		}
-
+	}
+	
+	while (!future_group.empty()) {
+		try {
+			future_group.front().get();
+			future_group.pop_front();
+		} catch (const std::exception & e) {
+			EXCEPT_FATAL(0, 0, log_fp, "Future get failed!", e);
+		}
 	}
 }
 
@@ -494,17 +469,19 @@ int main(int argc, const char * argv[]) try
 
 	start_up_refresh();
 
+	std::thread register_self_thread;
 	try {
 		// 创建并分离发送心跳线程
-		std::thread(register_self).detach();
+		register_self_thread = std::thread(register_self);
 	} catch (const std::exception & e) {
 		EXCEPT_FATAL(0, 0, log_fp, "Register self service thread detach failed.", e);
 		exit(-1);
 	}
 
+	std::thread update_contest_scoreboard_thread;
 	try {
 		// 创建并分离更新竞赛榜单线程
-		std::thread(update_contest_scoreboard_handler).detach();
+		update_contest_scoreboard_thread = std::thread(update_contest_scoreboard_handler);
 	} catch(const std::exception & e) {
 		EXCEPT_FATAL(0, 0, log_fp, "update contest scoreboard thread detach failed.", e);
 		exit(-1);
@@ -514,6 +491,9 @@ int main(int argc, const char * argv[]) try
 
 	LOG_INFO(0, 0, log_fp, "updater starting...");
 	listenning_loop();
+
+	register_self_thread.join();
+	update_contest_scoreboard_thread.join();
 
 	return 0;
 } catch (const std::exception & e) {

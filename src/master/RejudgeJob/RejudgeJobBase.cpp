@@ -18,8 +18,8 @@
 
 extern std::ofstream log_fp;
 
-RejudgeJobBase::RejudgeJobBase(int jobType, ojv4::s_id_type s_id, const kerbal::redis::RedisContext & redisConn) :
-		UpdateJobBase(jobType, s_id, redisConn), rejudge_time(mysqlpp::DateTime::now())
+RejudgeJobBase::RejudgeJobBase(int jobType, ojv4::s_id_type s_id, kerbal::redis_v2::connection & redis_conn) :
+		UpdateJobBase(jobType, s_id, redis_conn), rejudge_time(mysqlpp::DateTime::now())
 {
 	LOG_DEBUG(jobType, s_id, log_fp, BOOST_CURRENT_FUNCTION);
 }
@@ -123,7 +123,46 @@ void RejudgeJobBase::handle()
 			//DO NOT THROW
 		}
 	}
+
+	this->clear_redis_info();
 }
 
+void RejudgeJobBase::clear_redis_info() noexcept try
+{
+	this->UpdateJobBase::clear_this_jobs_info_in_redis();
 
+	kerbal::redis_v2::connection & redis_conn = *sync_fetch_redis_conn();
+	kerbal::redis_v2::operation opt(redis_conn);
 
+	try {
+		boost::format judge_status_templ("judge_status:%d:%d");
+		if (opt.del((judge_status_templ % jobType % s_id).str()) == false) {
+			LOG_WARNING(jobType, s_id, log_fp, "Doesn't delete judge_status actually!");
+		}
+	} catch (const std::exception & e) {
+		LOG_WARNING(jobType, s_id, log_fp, "Exception occurred while deleting judge_status!");
+		//DO NOT THROW
+	}
+
+	try {
+		boost::format similarity_details("similarity_details:%d:%d");
+		if (opt.del((similarity_details % jobType % s_id).str()) == false) {
+//			LOG_WARNING(jobType, s_id, log_fp, "Doesn't delete similarity_details actually!");
+		}
+	} catch (const std::exception & e) {
+		LOG_WARNING(jobType, s_id, log_fp, "Exception occurred while deleting similarity_details!");
+		//DO NOT THROW
+	}
+
+	try {
+		boost::format job_info("job_info:%d:%d");
+		if (opt.del((job_info % jobType % s_id).str()) == false) {
+//			LOG_WARNING(jobType, s_id, log_fp, "Doesn't delete job_info actually!");
+		}
+	} catch (const std::exception & e) {
+		LOG_WARNING(jobType, s_id, log_fp, "Exception occurred while deleting job_info!");
+		//DO NOT THROW
+	}
+} catch (...) {
+	UNKNOWN_EXCEPT_FATAL(jobType, s_id, log_fp, "Clear this jobs info in redis failed!");
+}

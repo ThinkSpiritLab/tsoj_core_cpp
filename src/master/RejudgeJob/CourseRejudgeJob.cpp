@@ -18,8 +18,8 @@
 
 extern std::ofstream log_fp;
 
-CourseRejudgeJob::CourseRejudgeJob(int jobType, ojv4::s_id_type s_id, ojv4::c_id_type c_id, const kerbal::redis::RedisContext & redisConn) :
-		ExerciseRejudgeJobBase(jobType, s_id, redisConn), c_id(c_id)
+CourseRejudgeJob::CourseRejudgeJob(int jobType, ojv4::s_id_type s_id, ojv4::c_id_type c_id, kerbal::redis_v2::connection & redis_conn) :
+		ExerciseRejudgeJobBase(jobType, s_id, redis_conn), c_id(c_id)
 {
 	LOG_DEBUG(jobType, s_id, log_fp, BOOST_CURRENT_FUNCTION);
 }
@@ -131,7 +131,7 @@ void CourseRejudgeJob::send_rejudge_notification(mysqlpp::Connection & mysql_con
 				"values (1, %0, %1q, %2)"
 		);
 		insert.parse();
-		static boost::format message_templ("您于 %s 在课程《%s》中提交的问题 %d 的代码已经被重新评测，新的结果为 %s，请查询。");
+		boost::format message_templ("您于 %s 在课程《%s》中提交的问题 %d 的代码已经被重新评测，新的结果为 %s，请查询。");
 		mysqlpp::SimpleResult res = insert.execute(u_id, (message_templ % s_posttime % c_name % p_id % getJudgeResultName(result.judge_result)).str(), 0b10100);
 		//0b10100 means bold font and closed.
 		if (!res) {

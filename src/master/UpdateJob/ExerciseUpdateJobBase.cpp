@@ -18,8 +18,8 @@
 extern std::ofstream log_fp;
 
 
-ExerciseUpdateJobBase::ExerciseUpdateJobBase(int jobType, ojv4::s_id_type s_id, const RedisContext & redisConn) :
-				UpdateJobBase(jobType, s_id, redisConn)
+ExerciseUpdateJobBase::ExerciseUpdateJobBase(int jobType, ojv4::s_id_type s_id, kerbal::redis_v2::connection & redis_conn) :
+				UpdateJobBase(jobType, s_id, redis_conn)
 {
 	LOG_DEBUG(jobType, s_id, log_fp, BOOST_CURRENT_FUNCTION);
 }
@@ -29,7 +29,7 @@ void ExerciseUpdateJobBase::update_source_code(mysqlpp::Connection & mysql_conn)
 	LOG_DEBUG(jobType, s_id, log_fp, BOOST_CURRENT_FUNCTION);
 	PROFILE_HEAD
 
-	kerbal::redis::RedisReply reply = this->get_source_code();
+	kerbal::redis_v2::reply reply = this->get_source_code();
 	const char * source_code = reply->str;
 
 	if (source_code == nullptr) {
@@ -65,7 +65,7 @@ void ExerciseUpdateJobBase::update_compile_info(mysqlpp::Connection & mysql_conn
 	LOG_DEBUG(jobType, s_id, log_fp, BOOST_CURRENT_FUNCTION);
 	PROFILE_HEAD
 
-	kerbal::redis::RedisReply reply = this->get_compile_info();
+	kerbal::redis_v2::reply reply = this->get_compile_info();
 	const char * compile_info = reply->str;
 
 	if (compile_info == nullptr) {

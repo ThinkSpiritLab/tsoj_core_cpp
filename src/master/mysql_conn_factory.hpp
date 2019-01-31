@@ -36,7 +36,7 @@ inline void add_mysql_conn()
 		mysql_conn = nullptr;
 		throw;
 	}
-	mysql_conn_pool.add(std::move(mysql_conn));
+	mysql_conn_pool.add(mysql_conn);
 	mysql_conn = nullptr;
 }
 

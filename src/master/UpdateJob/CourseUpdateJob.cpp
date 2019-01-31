@@ -19,8 +19,8 @@
 extern std::ofstream log_fp;
 
 
-CourseUpdateJob::CourseUpdateJob(int jobType, ojv4::s_id_type s_id, ojv4::c_id_type c_id, const kerbal::redis::RedisContext & redisConn) :
-				ExerciseUpdateJobBase(jobType, s_id, redisConn),
+CourseUpdateJob::CourseUpdateJob(int jobType, ojv4::s_id_type s_id, ojv4::c_id_type c_id, kerbal::redis_v2::connection & redis_conn) :
+				ExerciseUpdateJobBase(jobType, s_id, redis_conn),
 				c_id(c_id)
 {
 	LOG_DEBUG(jobType, s_id, log_fp, BOOST_CURRENT_FUNCTION);

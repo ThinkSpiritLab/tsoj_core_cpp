@@ -19,15 +19,8 @@
 
 class RejudgeJobBase: public UpdateJobBase
 {
-	private:
-
-		friend
-		std::unique_ptr<UpdateJobBase>
-		make_update_job(int jobType, ojv4::s_id_type s_id, const RedisContext & redisConn);
-
 	protected:
-
-		RejudgeJobBase(int jobType, ojv4::s_id_type s_id, const kerbal::redis::RedisContext & redisConn);
+		RejudgeJobBase(int jobType, ojv4::s_id_type s_id, kerbal::redis_v2::connection & redis_conn);
 
 		mysqlpp::DateTime rejudge_time;
 
@@ -54,6 +47,8 @@ class RejudgeJobBase: public UpdateJobBase
 		virtual void update_user_problem_status(mysqlpp::Connection & mysql_conn) override = 0;
 
 		virtual void send_rejudge_notification(mysqlpp::Connection & mysql_conn) = 0;
+
+		virtual void clear_redis_info() noexcept;
 
 	public:
 		virtual ~RejudgeJobBase() noexcept = default;

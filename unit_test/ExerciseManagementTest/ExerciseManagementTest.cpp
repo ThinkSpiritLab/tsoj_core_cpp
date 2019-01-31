@@ -13,9 +13,6 @@
 
 using namespace std;
 
-#include <kerbal/range/range.hpp>
-
-#include <boost/progress.hpp>
 #include <boost/test/minimal.hpp>
 
 #include "logger.cpp"
@@ -42,42 +39,13 @@ int test_main(int argc, char *argv[])
 			conn_pool::construct(1, std::move(conn));
 		}
 
-		auto start = std::chrono::system_clock::now();
-		
-		kerbal::data_struct::optional<int> total;
-		kerbal::data_struct::optional<int> finished;
-
-		std::future<void> fu = std::async(std::launch::async, [&finished, &total]() {
-				ExerciseManagement::refresh_all_users_submit_and_accept_num(
-				*conn_pool::fetch(),
-				finished,
-				total);
-		});
-
-		while (!finished && !total) {
+		{
+			auto conn = *conn_pool::block_fetch();
+			auto start = std::chrono::system_clock::now();
+			ExerciseManagement::refresh_all_user_problem(conn);
+			auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - start);
+			LOG_INFO(0, 0, log_fp, "refresh finished! ms: ", ms.count());
 		}
-		std::chrono::milliseconds span(20);
-
-//		while (fu.wait_for(span) == std::future_status::timeout) {
-//			std::cout <<  *finished << " / " << *total << std::endl;
-//		}
-//		std::cout << std::endl;
-
-		boost::progress_display pd(*total);
-		while (fu.wait_for(span) == std::future_status::timeout) {
-			int delta = *finished - pd.count();
-			if(delta > 0)
-				pd += delta;
-		}
-		cout << endl;
-
-		fu.get();
-
-//						ExerciseManagement::refresh_all_users_submit_and_accept_num(
-//						*conn_pool::fetch());
-
-		auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - start);
-		LOG_INFO(0, 0, log_fp, "refresh finished! ms: ", ms.count());
 
 	} catch (const std::exception & e) {
 		EXCEPT_FATAL(0, 0, log_fp, "refresh falied!", e);

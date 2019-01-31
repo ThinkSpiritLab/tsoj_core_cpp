@@ -16,10 +16,10 @@ class ExerciseRejudgeJob : public ExerciseRejudgeJobBase
 
 		friend
 		std::unique_ptr<UpdateJobBase>
-		make_update_job(int jobType, ojv4::s_id_type s_id, const RedisContext & redisConn);
+		make_update_job(int jobType, ojv4::s_id_type s_id, kerbal::redis_v2::connection & redis_conn);
 
 	protected:
-		ExerciseRejudgeJob(int jobType, ojv4::s_id_type s_id, const kerbal::redis::RedisContext & redisConn);
+		ExerciseRejudgeJob(int jobType, ojv4::s_id_type s_id, kerbal::redis_v2::connection & redis_conn);
 
 		virtual void update_user(mysqlpp::Connection & mysql_conn) override final;
 

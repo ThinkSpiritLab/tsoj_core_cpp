@@ -8,8 +8,7 @@
 #ifndef SRC_JOBBASE_HPP_
 #define SRC_JOBBASE_HPP_
 
-#include <kerbal/redis/operation.hpp>
-#include <kerbal/redis/redis_context.hpp>
+#include <kerbal/redis_v2/all.hpp>
 #include <kerbal/utility/storage.hpp>
 #include <string>
 #include <chrono>
@@ -28,8 +27,6 @@ class JobBase
 
 		ojv4::s_id_type s_id; ///< solution id
 
-		kerbal::redis::RedisContext redisConn; ///< redis 连接
-
 	public:
 		ojv4::p_id_type p_id; ///< problem id
 
@@ -37,9 +34,9 @@ class JobBase
 
 		int cases; ///< 测试用例数量
 
-		ojv4::s_time_in_milliseconds timeLimit; ///< 时间限制
+		ojv4::s_time_in_milliseconds time_limit; ///< 时间限制
 
-		ojv4::s_mem_in_MB memoryLimit; ///< 空间限制
+		ojv4::s_mem_in_MB memory_limit; ///< 空间限制
 
 		ojv4::s_similarity_type similarity_threshold; ///< 重复率限制
 
@@ -52,32 +49,13 @@ class JobBase
 		static std::pair<int, ojv4::s_id_type> parseJobItem(const std::string & jobItem);
 
 		/**
-		 * @brief 判断是否终止服务 loop
-		 * @param jobItem "job_type,job_id" 格式的字符串
-		 * @return 若是检测到停止工作标识，则返回 true ，否则返回 false
-		 */
-		static bool isExitJob(const std::string & jobItem)
-		{
-			return jobItem == "0,-1";
-		}
-
-		/**
-		 * @brief 获取规定的停止工作标识
-		 * @return 返回规定的停止工作标识，规定为："0,-1"
-		 */
-		static std::string getExitJobItem()
-		{
-			return "0,-1";
-		}
-
-		/**
 		 * @brief 初始化 jobType, s_id, redisConn
 		 * @param jobType Job 类型，如：竞赛、课程等
 		 * @param s_id student id
 		 * @param redisConn Redis连接
 		 * @exception 该构造函数保证不抛出任何异常
 		 */
-		JobBase(int jobType, ojv4::s_id_type s_id, const kerbal::redis::RedisContext & redisConn);
+		JobBase(int jobType, ojv4::s_id_type s_id, kerbal::redis_v2::connection & redis_conn);
 
 		/**
 		 * @brief 析构函数使用默认析构函数
@@ -97,11 +75,11 @@ class JobBase
 		 * @throws RedisUnexpectedCaseException 如果取得的结果不为字符串类型 (包括空类型), 则抛出此异常
 		 * @throws std::exception 该方法执行过程中还会因 redis 操作失败
 		 */
-		kerbal::redis::RedisReply get_source_code() const;
+		kerbal::redis_v2::reply get_source_code() const;
 
 		/**
 		 * @brief 从 redis 数据库获取本 Job 的代码并存储到工作空间中，用于编译运行。
-		 * @warning 本函数为纯虚函数，但是有实现。实际上，其子类的部分相同信息可由此函数取得。这部分有：p_id, lang, cases, timeLimit, memoryLimit
+		 * @warning 本函数为纯虚函数，但是有实现。实际上，其子类的部分相同信息可由此函数取得。这部分有：p_id, lang, cases, time_limit, memory_limit
 		 * @exception JobHandleException
 		 */
 		void storeSourceCode(const std::string & parent_path = "./", const std::string & file_name = "Main") const;

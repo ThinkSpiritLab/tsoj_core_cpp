@@ -44,9 +44,9 @@ RunningConfig::RunningConfig(const JudgeJob & job) :
 		case Language::Cpp14: {
 			this->seccomp_rule_name = Seccomp_rule::c_cpp;
 			this->exe_path = c_cpp_exe_path;
-			this->max_memory = job.memoryLimit;
-			this->max_stack = job.memoryLimit;
-			this->max_cpu_time = job.timeLimit;
+			this->max_memory = job.memory_limit;
+			this->max_stack = job.memory_limit;
+			this->max_cpu_time = job.time_limit;
 			this->args = {c_cpp_exe_path};
 			break;
 		}
@@ -55,13 +55,13 @@ RunningConfig::RunningConfig(const JudgeJob & job) :
 			this->exe_path = java_exe_path;
 			this->max_memory = MEMORY_UNLIMITED;
 			this->max_stack = 256_MB;
-			this->max_cpu_time = job.timeLimit * 2;
+			this->max_cpu_time = job.time_limit * 2;
 			static boost::format java_xms("-Xms%dm");
 			static boost::format java_xmx("-Xmx%dm");
 			this->args = {
 				java_exe_path,
-				(java_xms % job.memoryLimit.count()).str(),
-				(java_xmx % (job.memoryLimit.count() + java_memory_bonus.count())).str(),
+				(java_xms % job.memory_limit.count()).str(),
+				(java_xmx % (job.memory_limit.count() + java_memory_bonus.count())).str(),
 				"-Djava.security.manager",
 				"-Djava.security.policy=" + java_policy_path,
 				"Main"

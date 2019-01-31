@@ -50,11 +50,16 @@ int test_main(int argc, char *argv[])
 		conn.set_option(new mysqlpp::SetCharsetNameOption("utf8"));
 		conn.connect("ojv4", "127.0.0.1", "root", "123");
 
-		auto start = std::chrono::system_clock::now();
-		ContestManagement::update_scoreboard(conn, 17_ct_id);
+		kerbal::redis_v2::connection redis_conn("127.0.0.1", 6379);
 
-		auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - start);
-		LOG_INFO(0, 0, log_fp, "refresh_all_user_problem finished! ms: ", ms.count());
+		for (int i = 1; i <= 18; ++i) {
+			auto start = std::chrono::system_clock::now();
+			cout << i << endl;
+			ContestManagement::update_scoreboard(conn, redis_conn, ojv4::ct_id_type(i));
+
+			auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - start);
+			LOG_INFO(0, 0, log_fp, "update contest scoreboard finished! ms: ", ms.count());
+		}
 
 
 	} catch (const std::exception & e) {

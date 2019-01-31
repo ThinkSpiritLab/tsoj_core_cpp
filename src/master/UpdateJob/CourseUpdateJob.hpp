@@ -21,12 +21,12 @@ class CourseUpdateJob: public ExerciseUpdateJobBase
 
 		friend
 		std::unique_ptr<UpdateJobBase>
-		make_update_job(int jobType, ojv4::s_id_type s_id, const RedisContext & redisConn);
+		make_update_job(int jobType, ojv4::s_id_type s_id, kerbal::redis_v2::connection & redis_conn);
 
 	protected:
 		ojv4::c_id_type c_id; ///< @brief course_id
 
-		CourseUpdateJob(int jobType, ojv4::s_id_type s_id, ojv4::c_id_type c_id, const kerbal::redis::RedisContext & redisConn);
+		CourseUpdateJob(int jobType, ojv4::s_id_type s_id, ojv4::c_id_type c_id, kerbal::redis_v2::connection & redis_conn);
 
 	private:
 		virtual void update_solution(mysqlpp::Connection & mysql_conn) override;

@@ -16,33 +16,16 @@
 
 #include <mysql++/connection.h>
 
-#include <kerbal/data_struct/optional/optional.hpp>
-
-
 class ExerciseManagement
 {
 	public:
 		ExerciseManagement() = delete;
 
 		static void refresh_all_users_submit_and_accept_num(mysqlpp::Connection & mysql_conn);
-		
-		static void refresh_all_users_submit_and_accept_num(mysqlpp::Connection & mysql_conn,
-																kerbal::data_struct::optional<int> & finished,
-																kerbal::data_struct::optional<int> & total
-																	);
 
 		static void refresh_all_problems_submit_and_accept_num(mysqlpp::Connection & mysql_conn);
 
-		static void refresh_all_problems_submit_and_accept_num(mysqlpp::Connection & mysql_conn,
-																kerbal::data_struct::optional<int> & finished,
-																kerbal::data_struct::optional<int> & total
-																	);
-
 		static void refresh_all_user_problem(mysqlpp::Connection & mysql_conn);
-
-		static void refresh_all_user_problem2(mysqlpp::Connection & mysql_conn);
-
-		static void refresh_all_user_problem3(mysqlpp::Connection & mysql_conn);
 
 		static void update_user_s_submit_and_accept_num(mysqlpp::Connection & mysql_conn, ojv4::u_id_type u_id);
 

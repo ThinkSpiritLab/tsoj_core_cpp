@@ -16,8 +16,8 @@
 class ProblemSARecorder
 {
 		int __submit_num;
-//		std::unordered_set<ojv4::u_id_type, id_type_hash<ojv4::u_id_type>> accepted_users;
-		std::set<ojv4::u_id_type, literal_less<ojv4::u_id_type>> accepted_users;
+//		std::unordered_set<ojv4::u_id_type, ojv4::u_id_type::hash> accepted_users;
+		std::set<ojv4::u_id_type, ojv4::u_id_type::literal_less> accepted_users;
 
 	public:
 		ProblemSARecorder() :
@@ -57,8 +57,8 @@ class ProblemSARecorder
 class UserSARecorder
 {
 		int __submit_num;
-//		std::unordered_set<ojv4::p_id_type, id_type_hash<ojv4::p_id_type>> accepted_problems;
-		std::set<ojv4::p_id_type, literal_less<ojv4::p_id_type>> accepted_problems;
+//		std::unordered_set<ojv4::p_id_type, ojv4::p_id_type::hash> accepted_problems;
+		std::set<ojv4::p_id_type, ojv4::p_id_type::literal_less> accepted_problems;
 
 	public:
 		UserSARecorder() :

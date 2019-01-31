@@ -13,7 +13,7 @@
 class ExerciseRejudgeJobBase : public RejudgeJobBase
 {
 	protected:
-		ExerciseRejudgeJobBase(int jobType, ojv4::s_id_type s_id, const kerbal::redis::RedisContext & redisConn);
+		ExerciseRejudgeJobBase(int jobType, ojv4::s_id_type s_id, kerbal::redis_v2::connection & redis_conn);
 
 		virtual void move_orig_solution_to_rejudge_solution(mysqlpp::Connection & mysql_conn) override final;
 

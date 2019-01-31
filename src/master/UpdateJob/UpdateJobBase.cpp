@@ -15,6 +15,7 @@
 #include "logger.hpp"
 #include "boost_format_suffix.hpp"
 
+#include <boost/lexical_cast.hpp>
 #include <kerbal/data_struct/optional/optional.hpp>
 #include <mysql_conn_factory.hpp>
 
@@ -30,134 +31,107 @@ extern std::ofstream log_fp;
 
 
 std::unique_ptr<UpdateJobBase>
-make_update_job(int jobType, ojv4::s_id_type s_id, const kerbal::redis::RedisContext & redisConn)
+make_update_job(int jobType, ojv4::s_id_type s_id, kerbal::redis_v2::connection & redis_conn)
 {
 	using return_type = std::unique_ptr<UpdateJobBase>;
+	using kerbal::data_struct::optional;
+	using kerbal::data_struct::nullopt;
 
+	boost::format key_name_tmpl("job_info:%d:%d");
+	kerbal::redis_v2::hash h(redis_conn, (key_name_tmpl % jobType % s_id).str());
+
+	optional<int> is_rejudge(nullopt);
 	try {
-		using kerbal::data_struct::optional;
-		using kerbal::data_struct::nullopt;
+		is_rejudge = h.hget<optional<int>>("is_rejudge");
+	} catch (const std::exception & e) {
+		EXCEPT_FATAL(jobType, s_id, log_fp, "Get is_rejudge failed!", e);
+		throw;
+	} catch (...) {
+		UNKNOWN_EXCEPT_FATAL(jobType, s_id, log_fp, "Get is_rejudge failed!");
+		throw;
+	}
 
-		boost::format key_name_tmpl("job_info:%d:%d");
-		kerbal::redis::Operation opt(redisConn);
+	/*
+	 *  jobType  |   c_id   |   type
+	 *  ------------------------------
+	 *  0        |     0    |  Exercise
+	 *  0        |    !0    |  Course
+	 *  !0       |  0 or !0 |  Contest
+	 */
+	if (jobType == 0) {
 
-
-		optional<bool> is_rejudge(nullopt);
+		optional<ojv4::c_id_type> c_id(nullopt);
 		try {
-			is_rejudge = bool(opt.hget<int>((key_name_tmpl % jobType % s_id).str(), "is_rejudge"));
-		} catch (const kerbal::redis::RedisNilException &) {
-			is_rejudge = nullopt;
-			//NO NOT THROW
+			c_id = h.hget<optional<ojv4::c_id_type>>("cid");
 		} catch (const std::exception & e) {
-			EXCEPT_FATAL(jobType, s_id, log_fp, "Get is_rejudge failed!", e);
+			EXCEPT_FATAL(jobType, s_id, log_fp, "Get c_id failed!", e);
 			throw;
 		} catch (...) {
-			UNKNOWN_EXCEPT_FATAL(jobType, s_id, log_fp, "Get is_rejudge failed!");
+			UNKNOWN_EXCEPT_FATAL(jobType, s_id, log_fp, "Get c_id failed!");
 			throw;
 		}
 
-		/*
-		 *  jobType  |   c_id   |   type
-		 *  ------------------------------
-		 *  0        |     0    |  Exercise
-		 *  0        |    !0    |  Course
-		 *  !0       |  0 or !0 |  Contest
-		 */
-		if (jobType == 0) {
+		if (c_id != nullopt && *c_id != 0_c_id) { // 取到的课程 id 不为空, 且明确非零情况下, 表明这是一个课程任务, 而不是练习任务
 
-			optional<ojv4::c_id_type> c_id(nullopt);
-			try {
-				c_id = opt.hget<ojv4::c_id_type>((key_name_tmpl % jobType % s_id).str(), "cid");
-			} catch (const kerbal::redis::RedisNilException &) {
-				c_id = nullopt;
-				//NO NOT THROW
-			} catch (const std::exception & e) {
-				EXCEPT_FATAL(jobType, s_id, log_fp, "Get c_id failed!", e);
-				throw;
-			} catch (...) {
-				UNKNOWN_EXCEPT_FATAL(jobType, s_id, log_fp, "Get c_id failed!");
-				throw;
-			}
-
-			if (c_id != nullopt && *c_id != 0_c_id) { // 取到的课程 id 不为空, 且明确非零情况下, 表明这是一个课程任务, 而不是练习任务
-
-				if (is_rejudge != nullopt && is_rejudge.ignored_get() == true) { // 取到的 is_rejudge 字段非空, 且明确为真的情况下, 表明这是一个重评任务
-					return return_type(new CourseRejudgeJob(jobType, s_id, *c_id, redisConn));
-				} else {
-					return return_type(new CourseUpdateJob(jobType, s_id, *c_id, redisConn));
-				}
+			if (is_rejudge != nullopt && is_rejudge.ignored_get() == true) { // 取到的 is_rejudge 字段非空, 且明确为真的情况下, 表明这是一个重评任务
+				return return_type(new CourseRejudgeJob(jobType, s_id, *c_id, redis_conn));
 			} else {
-				if (is_rejudge != nullopt && is_rejudge.ignored_get() == true) {
-					return return_type(new ExerciseRejudgeJob(jobType, s_id, redisConn));
-				} else {
-					return return_type(new ExerciseUpdateJob(jobType, s_id, redisConn));
-				}
+				return return_type(new CourseUpdateJob(jobType, s_id, *c_id, redis_conn));
 			}
 		} else {
 			if (is_rejudge != nullopt && is_rejudge.ignored_get() == true) {
-				return return_type(new ContestRejudgeJob(jobType, s_id, redisConn));
+				return return_type(new ExerciseRejudgeJob(jobType, s_id, redis_conn));
 			} else {
-				return return_type(new ContestUpdateJob(jobType, s_id, redisConn));
+				return return_type(new ExerciseUpdateJob(jobType, s_id, redis_conn));
 			}
 		}
-	} catch (const std::exception & e) {
-		EXCEPT_FATAL(jobType, s_id, log_fp, "Error occurred while construct update job!", e);
-		throw;
+	} else {
+		if (is_rejudge != nullopt && is_rejudge.ignored_get() == true) {
+			return return_type(new ContestRejudgeJob(jobType, s_id, redis_conn));
+		} else {
+			return return_type(new ContestUpdateJob(jobType, s_id, redis_conn));
+		}
 	}
 }
 
-UpdateJobBase::UpdateJobBase(int jobType, ojv4::s_id_type s_id, const RedisContext & redisConn) :
-		JobBase(jobType, s_id, redisConn)
+UpdateJobBase::UpdateJobBase(int jobType, ojv4::s_id_type s_id, kerbal::redis_v2::connection & redis_conn) :
+		JobBase(jobType, s_id, redis_conn)
 {
 	LOG_DEBUG(jobType, s_id, log_fp, BOOST_CURRENT_FUNCTION);
 
-	using namespace kerbal::redis;
+	using boost::lexical_cast;
+	using namespace kerbal::utility;
+	namespace optional_ns = kerbal::data_struct;
+	using namespace optional_ns;
 
-	boost::format key_name_tmpl("job_info:%d:%d");
-	const std::string key_name = (key_name_tmpl % jobType % s_id).str();
+	{
+		// 取 job 信息
+		boost::format key_name_tmpl("job_info:%d:%d");
+		kerbal::redis_v2::hash h(redis_conn, (key_name_tmpl % jobType % s_id).str());
+		std::vector<optional<std::string>> job_info = h.hmget(
+				"uid",
+				"post_time");
 
-	kerbal::redis::Operation opt(redisConn);
-
-	// 取 job 信息
-	try {
-		this->u_id = opt.hget<ojv4::u_id_type>(key_name, "uid");
-		this->s_posttime = opt.hget(key_name, "post_time");
-	} catch (const RedisNilException & e) {
-		EXCEPT_FATAL(jobType, s_id, log_fp, "job details lost.", e);
-		throw;
-	} catch (const RedisUnexpectedCaseException & e) {
-		EXCEPT_FATAL(jobType, s_id, log_fp, "redis returns an unexpected type.", e);
-		throw;
-	} catch (const RedisException & e) {
-		EXCEPT_FATAL(jobType, s_id, log_fp, "Fail to fetch job details.", e);
-		throw;
-	} catch (const std::exception & e) {
-		EXCEPT_FATAL(jobType, s_id, log_fp, "Fail to fetch job details.", e);
-		throw;
+		this->u_id = lexical_cast<ojv4::u_id_type>(job_info[0].value());
+		this->s_posttime = std::move(job_info[1].value());
 	}
 
-	boost::format judge_status_name_tmpl("judge_status:%d:%d");
-	const std::string judge_status = (judge_status_name_tmpl % jobType % s_id).str();
+	{
+		// 取评测结果
+		boost::format judge_status_name_tmpl("judge_status:%d:%d");
+		kerbal::redis_v2::hash h(redis_conn, (judge_status_name_tmpl % jobType % s_id).str());
+		std::vector<optional<std::string>> judge_status = h.hmget(
+				"result",
+				"cpu_time",
+				"real_time",
+				"memory",
+				"similarity_percentage");
 
-	// 取评测结果
-	try {
-		this->result.judge_result = ojv4::s_result_enum(opt.hget<int>(judge_status, "result"));
-		this->result.cpu_time = ojv4::s_time_in_milliseconds(opt.hget<int>(judge_status, "cpu_time"));
-		this->result.real_time = ojv4::s_time_in_milliseconds(opt.hget<int>(judge_status, "real_time"));
-		this->result.memory = ojv4::s_mem_in_byte(opt.hget<int>(judge_status, "memory"));
-		this->similarity_percentage = opt.hget<int>(judge_status, "similarity_percentage");
-	} catch (const RedisNilException & e) {
-		EXCEPT_FATAL(jobType, s_id, log_fp, "job details lost.", e);
-		throw;
-	} catch (const RedisUnexpectedCaseException & e) {
-		EXCEPT_FATAL(jobType, s_id, log_fp, "redis returns an unexpected type.", e);
-		throw;
-	} catch (const RedisException & e) {
-		EXCEPT_FATAL(jobType, s_id, log_fp, "Fail to fetch job details.", e);
-		throw;
-	} catch (const std::exception & e) {
-		EXCEPT_FATAL(jobType, s_id, log_fp, "Fail to fetch job details.", e);
-		throw;
+		this->result.judge_result = ojv4::s_result_enum(lexical_cast<int>(judge_status[0].value()));
+		this->result.cpu_time = ojv4::s_time_in_milliseconds(lexical_cast<int>(judge_status[1].value()));
+		this->result.real_time = ojv4::s_time_in_milliseconds(lexical_cast<int>(judge_status[2].value()));
+		this->result.memory = ojv4::s_mem_in_byte(lexical_cast<int>(judge_status[3].value()));
+		this->similarity_percentage = lexical_cast<int>(judge_status[4].value());
 	}
 }
 
@@ -221,25 +195,25 @@ void UpdateJobBase::handle()
 			}
 		}
 
-//		// Step 4: 更新用户的提交数与通过数
-//		//注意!!! 更新用户提交数通过数的操作必须在更新用户题目完成状态成功之前
-//		try {
-//			this->update_user(mysql_conn);
-//		} catch (const std::exception & e) {
-//			update_user_exception = std::current_exception();
-//			EXCEPT_FATAL(jobType, s_id, log_fp, "Update user failed!", e);
-//			//DO NOT THROW
-//		}
-//
-//		// Step 5: 更新题目的提交数与通过数
-//		//注意!!! 更新题目提交数通过数的操作必须在更新用户题目完成状态成功之前
-//		try {
-//			this->update_problem(mysql_conn);
-//		} catch (const std::exception & e) {
-//			update_problem_exception = std::current_exception();
-//			EXCEPT_FATAL(jobType, s_id, log_fp, "Update problem failed!", e);
-//			//DO NOT THROW
-//		}
+		// Step 4: 更新用户的提交数与通过数
+		//注意!!! 更新用户提交数通过数的操作必须在更新用户题目完成状态成功之前
+		try {
+			this->update_user(mysql_conn);
+		} catch (const std::exception & e) {
+			update_user_exception = std::current_exception();
+			EXCEPT_FATAL(jobType, s_id, log_fp, "Update user failed!", e);
+			//DO NOT THROW
+		}
+
+		// Step 5: 更新题目的提交数与通过数
+		//注意!!! 更新题目提交数通过数的操作必须在更新用户题目完成状态成功之前
+		try {
+			this->update_problem(mysql_conn);
+		} catch (const std::exception & e) {
+			update_problem_exception = std::current_exception();
+			EXCEPT_FATAL(jobType, s_id, log_fp, "Update problem failed!", e);
+			//DO NOT THROW
+		}
 
 		// Step 6: 更新/插入 user_problem 表中该用户对应该题目的解题状态
 		try {
@@ -291,78 +265,71 @@ void UpdateJobBase::handle()
 
 }
 
-kerbal::redis::RedisReply UpdateJobBase::get_compile_info() const
-{
-	using namespace kerbal::redis;
+#include "db_typedef.hpp"
 
-	RedisCommand query("get compile_info:%d:%d");
-	RedisReply reply;
-	try {
-		reply = query.execute(redisConn, this->jobType, this->s_id);
-	} catch (std::exception & e) {
-		EXCEPT_FATAL(jobType, s_id, log_fp, "Get compile info failed!", e);
-		throw;
-	}
-	if (reply.replyType() != RedisReplyType::STRING) {
-		RedisUnexpectedCaseException e(reply.replyType());
-		EXCEPT_FATAL(jobType, s_id, log_fp, "Get compile info failed!", e);
-		throw e;
+kerbal::redis_v2::reply UpdateJobBase::get_compile_info() const
+{
+	kerbal::redis_v2::connection & redis_conn = *sync_fetch_redis_conn();
+	kerbal::redis_v2::reply reply = redis_conn.execute("get compile_info:%d:%d", this->jobType, this->s_id.to_literal());
+
+	if (reply.type() != kerbal::redis_v2::reply_type::STRING) {
+		throw std::runtime_error("Wrong compile info type. Expected: STRING, actually get: " + reply_type_name(reply.type()));
 	}
 	return reply;
 }
 
 void UpdateJobBase::clear_previous_jobs_info_in_redis() noexcept try
 {
-	using namespace kerbal::redis;
-
 	constexpr int REDIS_SOLUTION_MAX_NUM = 600;
 
-	if (s_id.to_literal() > REDIS_SOLUTION_MAX_NUM) {
-		int prev_s_id = this->s_id.to_literal() - REDIS_SOLUTION_MAX_NUM;
+	if (s_id.to_literal() <= REDIS_SOLUTION_MAX_NUM) {
+		return;
+	}
+	int prev_s_id = this->s_id.to_literal() - REDIS_SOLUTION_MAX_NUM;
+	kerbal::redis_v2::connection & redis_conn = *sync_fetch_redis_conn();
+	boost::format judge_status_templ("judge_status:%d:%d");
 
-		Operation opt(this->redisConn);
+	JudgeStatus judge_status = JudgeStatus::UPDATED;
+	try {
+		kerbal::redis_v2::hash h(redis_conn, (judge_status_templ % jobType % prev_s_id).str());
+		judge_status = (JudgeStatus) h.hget<int>("status");
+	} catch (const std::exception & e) {
+		EXCEPT_FATAL(jobType, s_id, log_fp, "Get judge status failed!", e);
+		return; //DO NOT THROW
+	}
 
-		boost::format judge_status_templ("judge_status:%d:%d");
+	if (judge_status != JudgeStatus::UPDATED) {
+		return;
+	}
 
-		JudgeStatus judge_status = JudgeStatus::UPDATED;
-		try {
-			judge_status = (JudgeStatus) opt.hget<int>((judge_status_templ % jobType % prev_s_id).str(), "status");
-		} catch (const std::exception & e) {
-			EXCEPT_FATAL(jobType, s_id, log_fp, "Get judge status failed! Failed to delete previous job's judge_status", e);
-			return; //DO NOT THROW
+	kerbal::redis_v2::operation opt(redis_conn);
+	try {
+		if (opt.del((judge_status_templ % jobType % prev_s_id).str()) == false) {
+			LOG_WARNING(jobType, s_id, log_fp, "Doesn't delete judge_status actually!");
 		}
+	} catch (const std::exception & e) {
+		LOG_WARNING(jobType, s_id, log_fp, "Exception occurred while deleting judge_status!");
+		//DO NOT THROW
+	}
 
-		if (judge_status == JudgeStatus::UPDATED) {
-			try {
-				if (opt.del((judge_status_templ % jobType % prev_s_id).str()) == false) {
-//					LOG_WARNING(jobType, s_id, log_fp, "Doesn't delete judge_status actually!");
-				}
-			} catch (const std::exception & e) {
-				LOG_WARNING(jobType, s_id, log_fp, "Exception occurred while deleting judge_status!");
-				//DO NOT THROW
-			}
-
-			try {
-				boost::format similarity_details("similarity_details:%d:%d");
-				if (opt.del((similarity_details % jobType % prev_s_id).str()) == false) {
-//					LOG_WARNING(jobType, s_id, log_fp, "Doesn't delete similarity_details actually!");
-				}
-			} catch (const std::exception & e) {
-				LOG_WARNING(jobType, s_id, log_fp, "Exception occurred while deleting similarity_details!");
-				//DO NOT THROW
-			}
-
-			try {
-				boost::format job_info("job_info:%d:%d");
-				if (opt.del((job_info % jobType % prev_s_id).str()) == false) {
-//					LOG_WARNING(jobType, s_id, log_fp, "Doesn't delete job_info actually!");
-				}
-			} catch (const std::exception & e) {
-				LOG_WARNING(jobType, s_id, log_fp, "Exception occurred while deleting job_info!");
-				//DO NOT THROW
-			}
-
+	try {
+		boost::format similarity_details("similarity_details:%d:%d");
+		if (opt.del((similarity_details % jobType % prev_s_id).str()) == false) {
+			//LOG_WARNING(jobType, s_id, log_fp, "Doesn't delete similarity_details actually!");
 		}
+	} catch (const std::exception & e) {
+		LOG_WARNING(jobType, s_id, log_fp, "Exception occurred while deleting similarity_details!");
+		//DO NOT THROW
+	}
+
+	try {
+		boost::format job_info("job_info:%d:%d");
+		if (opt.del((job_info % jobType % prev_s_id).str()) == false) {
+			LOG_WARNING(jobType, s_id, log_fp, "Doesn't delete job_info actually!");
+		}
+	} catch (const std::exception & e) {
+		LOG_WARNING(jobType, s_id, log_fp, "Exception occurred while deleting job_info!");
+		//DO NOT THROW
 	}
 } catch(...) {
 	UNKNOWN_EXCEPT_FATAL(jobType, s_id, log_fp, "Clear previous jobs info in redis failed!");
@@ -373,7 +340,8 @@ void UpdateJobBase::clear_this_jobs_info_in_redis() noexcept try
 {
 	using namespace kerbal::redis;
 
-	Operation opt(this->redisConn);
+	kerbal::redis_v2::connection & redis_conn = *sync_fetch_redis_conn();
+	kerbal::redis_v2::operation opt(redis_conn);
 	try {
 		boost::format source_code("source_code:%d:%d");
 		if (opt.del((source_code % jobType % s_id).str()) == false) {

@@ -16,7 +16,7 @@
 class ExerciseUpdateJobBase : public UpdateJobBase
 {
 	protected:
-		ExerciseUpdateJobBase(int jobType, ojv4::s_id_type s_id, const kerbal::redis::RedisContext & redisConn);
+		ExerciseUpdateJobBase(int jobType, ojv4::s_id_type s_id, kerbal::redis_v2::connection & redis_conn);
 
 
 	private:

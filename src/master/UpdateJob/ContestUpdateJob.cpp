@@ -7,10 +7,10 @@
 
 #include "ContestUpdateJob.hpp"
 #include "boost_format_suffix.hpp"
+#include "redis_conn_factory.hpp"
 #include "logger.hpp"
 #include "ContestManagement.hpp"
 
-#include <kerbal/redis/redis_data_struct/list.hpp>
 
 #ifndef MYSQLPP_MYSQL_HEADERS_BURIED
 #	define MYSQLPP_MYSQL_HEADERS_BURIED
@@ -21,8 +21,8 @@
 extern std::ofstream log_fp;
 
 
-ContestUpdateJob::ContestUpdateJob(int jobType, ojv4::s_id_type s_id, const RedisContext & redisConn) :
-		UpdateJobBase(jobType, s_id, redisConn), ct_id(ojv4::ct_id_type(jobType))
+ContestUpdateJob::ContestUpdateJob(int jobType, ojv4::s_id_type s_id, kerbal::redis_v2::connection & redis_conn) :
+		UpdateJobBase(jobType, s_id, redis_conn), ct_id(ojv4::ct_id_type(jobType))
 {
 	LOG_DEBUG(jobType, s_id, log_fp, BOOST_CURRENT_FUNCTION);
 }
@@ -74,7 +74,7 @@ void ContestUpdateJob::update_source_code(mysqlpp::Connection & mysql_conn)
 	LOG_DEBUG(jobType, s_id, log_fp, BOOST_CURRENT_FUNCTION);
 	PROFILE_HEAD
 
-	kerbal::redis::RedisReply reply = this->get_source_code();
+	kerbal::redis_v2::reply reply = this->get_source_code();
 	const char * source_code = reply->str;
 
 	if (source_code == nullptr) {
@@ -112,7 +112,7 @@ void ContestUpdateJob::update_compile_info(mysqlpp::Connection & mysql_conn)
 	LOG_DEBUG(jobType, s_id, log_fp, BOOST_CURRENT_FUNCTION);
 	PROFILE_HEAD
 
-	kerbal::redis::RedisReply reply = this->get_compile_info();
+	kerbal::redis_v2::reply reply = this->get_compile_info();
 	const char * compile_info = reply->str;
 
 	if (compile_info == nullptr) {
@@ -152,10 +152,9 @@ void ContestUpdateJob::update_user(mysqlpp::Connection & mysql_conn)
 
 	// 竞赛更新 user 表的语义转变为更新榜单
 	try {
-		kerbal::redis::List<ojv4::ct_id_type> update_contest_scoreboard_queue(this->redisConn, "update_contest_scoreboard_queue");
-		update_contest_scoreboard_queue.push_back(this->ct_id);
+		ContestManagement::update_scoreboard(mysql_conn, *sync_fetch_redis_conn(), ct_id);
 	} catch (const std::exception & e) {
-		EXCEPT_FATAL(jobType, s_id, log_fp, "Insert update scoreboard job failed!", e);
+		EXCEPT_FATAL(jobType, s_id, log_fp, "Update scoreboard failed!", e, ", ct_id: ", ct_id);
 		return;
 	}
 

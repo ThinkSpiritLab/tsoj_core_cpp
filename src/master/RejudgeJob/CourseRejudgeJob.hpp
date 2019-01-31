@@ -15,10 +15,10 @@ class CourseRejudgeJob: public ExerciseRejudgeJobBase
 	private:
 		friend
 		std::unique_ptr<UpdateJobBase>
-		make_update_job(int jobType, ojv4::s_id_type s_id, const RedisContext & redisConn);
+		make_update_job(int jobType, ojv4::s_id_type s_id, kerbal::redis_v2::connection & redis_conn);
 
 	protected:
-		CourseRejudgeJob(int jobType, ojv4::s_id_type s_id, ojv4::c_id_type c_id, const kerbal::redis::RedisContext & redisConn);
+		CourseRejudgeJob(int jobType, ojv4::s_id_type s_id, ojv4::c_id_type c_id, kerbal::redis_v2::connection & redis_conn);
 
 		ojv4::c_id_type c_id;
 

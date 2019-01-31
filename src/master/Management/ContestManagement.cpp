@@ -6,17 +6,13 @@
  */
 
 #include "ContestManagement.hpp"
-
-#include "mysql_empty_res_exception.hpp"
-#include "logger.hpp"
 #include "SARecorder.hpp"
 
+#include <string>
 #include <unordered_map>
-#include <mutex>
-#include <boost/ptr_container/ptr_vector.hpp>
-#include <boost/variant.hpp>
 #include <boost/format.hpp>
-#include <kerbal/redis/redis_command.hpp>
+#include <boost/lexical_cast.hpp>
+#include <boost/ptr_container/ptr_vector.hpp>
 
 #ifndef MYSQLPP_MYSQL_HEADERS_BURIED
 #	define MYSQLPP_MYSQL_HEADERS_BURIED
@@ -24,13 +20,11 @@
 
 #include <mysql++/query.h>
 
-
-extern std::ofstream log_fp;
-
+using namespace std::string_literals;
 
 void ContestManagement::refresh_all_problems_submit_and_accept_num_in_contest(mysqlpp::Connection & mysql_conn, ojv4::ct_id_type ct_id)
 {
-	std::unordered_map<ojv4::p_id_type, ProblemSARecorder, id_type_hash<ojv4::p_id_type>> m;
+	std::unordered_map<ojv4::p_id_type, ProblemSARecorder, ojv4::p_id_type::hash> m;
 	{
 		mysqlpp::Query query = mysql_conn.query(
 				"select s_id, u_id, p_id, s_result from contest_solution%0 "
@@ -42,16 +36,16 @@ void ContestManagement::refresh_all_problems_submit_and_accept_num_in_contest(my
 
 		mysqlpp::UseQueryResult solutions = query.use(ct_id, ct_id);
 		if (!solutions) {
-			MysqlEmptyResException e(query.errnum(), query.error());
-			EXCEPT_FATAL(0, 0, log_fp, "Query problems' solutions in contest failed!", e, " ct_id: ", ct_id);
-			throw e;
+			throw std::runtime_error("Query problems' solutions in contest failed!"s
+					+ " ct_id = " + std::to_string(ct_id)
+					+ " MySQL errnum: " + std::to_string(mysql_conn.errnum())
+					+ " MySQL error: " + mysql_conn.error());
 		}
 
-		while (mysqlpp::Row row = solutions.fetch_row()) {
-			auto it = row.begin();
-			ojv4::u_id_type u_id(::atoll(it[0].c_str()));
-			ojv4::p_id_type p_id(::atoll(it[1].c_str()));
-			ojv4::s_result_enum s_result(ojv4::s_result_enum(::atoll(it[2].c_str())));
+		while (::MYSQL_ROW row = solutions.fetch_raw_row()) {
+			auto u_id(boost::lexical_cast<ojv4::u_id_type>(row[0]));
+			auto p_id(boost::lexical_cast<ojv4::p_id_type>(row[1]));
+			auto s_result(ojv4::s_result_enum(boost::lexical_cast<int>(row[2])));
 			m[p_id].add_solution(u_id, s_result);
 		}
 	}
@@ -64,11 +58,11 @@ void ContestManagement::refresh_all_problems_submit_and_accept_num_in_contest(my
 				"where ct_id = %0"
 		);
 		clear.parse();
-		mysqlpp::SimpleResult res = clear.execute(ct_id);
-		if (!res) {
-			MysqlEmptyResException e(clear.errnum(), clear.error());
-			EXCEPT_FATAL(0, 0, log_fp, "Clear problems' submit and accept num in contest failed!", e, " ct_id: ", ct_id);
-			throw e;
+		if (!clear.execute(ct_id)) {
+			throw std::runtime_error("Clear problems' submit and accept num in contest failed!"s
+					+ " ct_id = " + std::to_string(ct_id)
+					+ " MySQL errnum: " + std::to_string(mysql_conn.errnum())
+					+ " MySQL error: " + mysql_conn.error());
 		}
 	}
 
@@ -78,17 +72,12 @@ void ContestManagement::refresh_all_problems_submit_and_accept_num_in_contest(my
 	);
 	update.parse();
 
-	for (const auto & ele : m) {
-		ojv4::p_id_type p_id = ele.first;
-		const ProblemSARecorder & p_info = ele.second;
-		int submit = p_info.submit_num();
-		int accept = p_info.accept_num();
-
-		mysqlpp::SimpleResult res = update.execute(ct_id, p_id, submit, accept);
-		if (!res) {
-			MysqlEmptyResException e(update.errnum(), update.error());
-			EXCEPT_FATAL(0, 0, log_fp, "Update problem's submit and accept num in contest failed!", e, " ct_id: ", ct_id, " p_id: ", p_id);
-			throw e;
+	for (const auto & [p_id, p_sa_info] : m) {
+		if (!update.execute(ct_id, p_id, p_sa_info.submit_num(), p_sa_info.accept_num())) {
+			throw std::runtime_error("Update problem's submit and accept num in contest failed!"s
+					+ " ct_id = " + std::to_string(ct_id)
+					+ " MySQL errnum: " + std::to_string(mysql_conn.errnum())
+					+ " MySQL error: " + mysql_conn.error());
 		}
 	}
 
@@ -108,17 +97,17 @@ void ContestManagement::update_problem_s_submit_and_accept_num(mysqlpp::Connecti
 		);
 		query.parse();
 
-		mysqlpp::StoreQueryResult res = query.store(ct_id, p_id);
-
-		if (query.errnum() != 0) {
-			MysqlEmptyResException e(query.errnum(), query.error());
-			EXCEPT_FATAL(0, 0, log_fp, "Query problem's solutions failed!", e);
-			throw e;
+		mysqlpp::UseQueryResult solutions = query.use(ct_id, p_id);
+		if (!solutions) {
+			throw std::runtime_error("Query problem's solutions failed!"s
+					+ " ct_id = " + std::to_string(ct_id)
+					+ " MySQL errnum: " + std::to_string(query.errnum())
+					+ " MySQL error: " + query.error());
 		}
 
-		for (const auto & row : res) {
-			ojv4::u_id_type u_id = row["u_id"];
-			ojv4::s_result_enum s_result = ojv4::s_result_enum(ojv4::s_result_in_db_type(row["s_result"]));
+		while (::MYSQL_ROW row = solutions.fetch_raw_row()) {
+			auto u_id(boost::lexical_cast<ojv4::u_id_type>(row[0]));
+			auto s_result(ojv4::s_result_enum(boost::lexical_cast<int>(row[1])));
 			p_info.add_solution(u_id, s_result);
 		}
 	}
@@ -130,51 +119,16 @@ void ContestManagement::update_problem_s_submit_and_accept_num(mysqlpp::Connecti
 	);
 	update.parse();
 
-	mysqlpp::SimpleResult update_res = update.execute(p_info.submit_num(), p_info.accept_num(), p_id, ct_id);
-	if (!update_res) {
-		MysqlEmptyResException e(update.errnum(), update.error());
-		EXCEPT_FATAL(0, 0, log_fp, "Update problem submit and accept num failed!", e);
-		throw e;
+	if (!update.execute(p_info.submit_num(), p_info.accept_num(), p_id, ct_id)) {
+		throw std::runtime_error("Update problem's submit and accept num failed!"s
+				+ " ct_id = " + std::to_string(ct_id)
+				+ " MySQL errnum: " + std::to_string(mysql_conn.errnum())
+				+ " MySQL error: " + mysql_conn.error());
 	}
 }
 
 void ContestManagement::update_user_problem_status(mysqlpp::Connection & mysql_conn, ojv4::ct_id_type ct_id, ojv4::u_id_type u_id, ojv4::p_id_type p_id)
 {
-//	constexpr ojv4::s_result_in_db_type ACCEPTED = ojv4::s_result_in_db_type(ojv4::s_result_enum::ACCEPTED);
-//	constexpr ojv4::s_result_in_db_type SYSTEM_ERROR = ojv4::s_result_in_db_type(ojv4::s_result_enum::SYSTEM_ERROR);
-//
-//	mysqlpp::Query insert = mysql_conn.query(
-//			"insert into contest_user_problem%0 (u_id, p_id, is_ac, ac_time, error_count) "
-//			"values (%1, %2, "
-//			"((select count(s_id) from contest_solution%0 where u_id = %1 and p_id = %2 and s_result = %3) > 0), " // is_ac
-//			"(select min(s_posttime) from contest_solution%0 where u_id = %1 and p_id = %2 and s_result = %3), " // ac_time
-//			"(select count(s_id) from (select s_id from contest_solution%0 where u_id = %1 and p_id = %2 and s_result <> %4 order by s_id) as ctusr_pro_status \
-//						where \
-//						s_id >= (select min(s_id) from contest_solution%0 where u_id = %1 and p_id = %2 and s_result <> %4) \
-//						and \
-//						s_id < (select min(s_id) from contest_solution%0 where u_id = %1 and p_id = %2 and s_result = %3)) "
-//			")"
-//	);
-//	insert.parse();
-//	if (!insert.execute(ct_id, u_id, p_id, ACCEPTED, SYSTEM_ERROR)) {
-//		mysqlpp::Query update = mysql_conn.query(
-//				"update contest_user_problem%0 set "
-//				"is_ac = ((select count(s_id) from contest_user_problem_solution%0 where u_id = %1 and p_id = %2 and s_result = %3) > 0), " // is_ac
-//				"ac_time = (select min(s_posttime) from contest_user_problem_solution%0 where u_id = %1 and p_id = %2 and s_result = %3), " // ac_time
-//				"error_count = (select count(s_id) from (select s_id from contest_solution%0 where u_id = %1 and p_id = %2 and s_result <> %4 order by s_id) as ctusr_pro_status \
-//								where \
-//								s_id >= (select min(s_id) from contest_solution%0 where u_id = %1 and p_id = %2 and s_result <> %4) \
-//								and \
-//								s_id < (select min(s_id) from contest_solution%0 where u_id = %1 and p_id = %2 and s_result = %3)) "
-//				"where u_id = %1 and p_id = %2"
-//		);
-//		update.parse();
-//		if(!update.execute(ct_id, u_id, p_id, ACCEPTED, SYSTEM_ERROR)) {
-//			MysqlEmptyResException e(mysql_conn.errnum(), mysql_conn.error());
-//			throw e;
-//		}
-//	}
-
 }
 
 void ContestManagement::update_user_problem(mysqlpp::Connection & mysql_conn, ojv4::ct_id_type ct_id, ojv4::u_id_type u_id, ojv4::p_id_type p_id)
@@ -184,55 +138,63 @@ void ContestManagement::update_user_problem(mysqlpp::Connection & mysql_conn, oj
 	using s_result_enum_type = ojv4::s_result_enum;
 
 	bool is_ac = false;
-	mysqlpp::DateTime ac_time;
+	mysqlpp::Null<mysqlpp::DateTime> ac_time;
 	int error_count = 0;
 	{
 		mysqlpp::Query get_solution = mysql_conn.query(
 				"select s_result, s_posttime from contest_solution%0 "
-				"where u_id = %1 and p_id = %2"
+				"where u_id = %1 and p_id = %2 "
+				"order by s_id"
 		);
 		get_solution.parse();
 
-		mysqlpp::StoreQueryResult solutions = get_solution.store(ct_id, u_id, p_id);
+		mysqlpp::UseQueryResult solutions = get_solution.use(ct_id, u_id, p_id);
 
-		if (get_solution.errnum() != 0) {
-			MysqlEmptyResException e(get_solution.errnum(), get_solution.error());
-			EXCEPT_FATAL(0, 0, log_fp, "Query solution failed!", e);
-			throw e;
+		if (!solutions) {
+			throw std::runtime_error("Query solution failed!"s
+					+ " ct_id = " + std::to_string(ct_id)
+					+ " MySQL errnum: " + std::to_string(mysql_conn.errnum())
+					+ " MySQL error: " + mysql_conn.error());
 		}
 
-		if (solutions.empty()) {
-			return;
+		if (solutions.fetch_lengths() == 0) {
+			return; // 如果 solution 为空, 即该用户没有过提交, 则放弃更新
 		}
 
-		for (const auto & row : solutions) {
-			switch (s_result_enum_type(s_result_in_db_type(row["s_result"]))) {
-				case s_result_enum_type::SYSTEM_ERROR: // ignore system error
-					break;
-				case s_result_enum_type::ACCEPTED:
-					is_ac = true;
-					ac_time = row["s_posttime"];
-					break;
-				default:
-					++error_count;
+		while (mysqlpp::Row row = solutions.fetch_row()) {
+			auto s_result(s_result_enum_type(boost::lexical_cast<s_result_in_db_type>(row["s_result"])));
+			if (s_result == s_result_enum_type::ACCEPTED) {
+				is_ac = true;
+				ac_time = mysqlpp::DateTime(row["s_posttime"]);
+				break; //
+			} else if (s_result != s_result_enum_type::SYSTEM_ERROR) { // ignore system error
+				++error_count;
 			}
 		}
 	}
 
-	mysqlpp::Query query_if_exists = mysql_conn.query(
-			"select id from contest_user_problem%0 where u_id = %1 and p_id = %2"
-	);
-	query_if_exists.parse();
+	bool if_exists = false;
+	{
+		mysqlpp::Query query = mysql_conn.query(
+				"select id from contest_user_problem%0 where u_id = %1 and p_id = %2"
+		);
+		query.parse();
 
-	mysqlpp::StoreQueryResult query_if_exists_res = query_if_exists.store(ct_id, u_id, p_id);
-	if (query_if_exists.errnum() != 0) {
-		MysqlEmptyResException e(query_if_exists.errnum(), query_if_exists.error());
-		EXCEPT_FATAL(0, 0, log_fp, "Query previous user problem status failed!", e);
-		throw e;
+		mysqlpp::StoreQueryResult res = query.store(ct_id, u_id, p_id);
+		if (!res) {
+			throw std::runtime_error("Query previous user problem failed!"s
+					+ " ct_id = " + std::to_string(ct_id)
+					+ " MySQL errnum: " + std::to_string(mysql_conn.errnum())
+					+ " MySQL error: " + mysql_conn.error());
+		}
+		if (res.empty()) {
+			if_exists = false;
+		} else {
+			if_exists = true;
+		}
 	}
 
-	if (query_if_exists_res.empty()) {
-
+	if (if_exists == false) {
 		mysqlpp::Query insert = mysql_conn.query(
 				"insert into contest_user_problem%0 (u_id, p_id, is_ac, ac_time, error_count) "
 				"values (%1, %2, %3, %4q, %5)"
@@ -241,25 +203,25 @@ void ContestManagement::update_user_problem(mysqlpp::Connection & mysql_conn, oj
 
 		mysqlpp::SimpleResult res = insert.execute(ct_id, u_id, p_id, is_ac, ac_time, error_count);
 		if (!res) {
-			MysqlEmptyResException e(insert.errnum(), insert.error());
-			EXCEPT_FATAL(0, 0, log_fp, "Update user problem status failed!", e);
-			throw e;
+			throw std::runtime_error("Update user problem failed!"s
+					+ " ct_id = " + std::to_string(ct_id)
+					+ " MySQL errnum: " + std::to_string(mysql_conn.errnum())
+					+ " MySQL error: " + mysql_conn.error());
 		}
 	} else {
 		mysqlpp::Query update = mysql_conn.query(
 				"update contest_user_problem%0 set "
-				"is_ac = %3, " // is_ac
-				"ac_time = %4q, " // ac_time
-				"error_count = %5 "
+				"is_ac = %3, ac_time = %4q, error_count = %5 "
 				"where u_id = %1 and p_id = %2"
 		);
 		update.parse();
 
 		mysqlpp::SimpleResult res = update.execute(ct_id, u_id, p_id, is_ac, ac_time, error_count);
 		if (!res) {
-			MysqlEmptyResException e(update.errnum(), update.error());
-			EXCEPT_FATAL(0, 0, log_fp, "Update user problem status failed!", e);
-			throw e;
+			throw std::runtime_error("Update user problem status failed!"s
+					+ " ct_id = " + std::to_string(ct_id)
+					+ " MySQL errnum: " + std::to_string(mysql_conn.errnum())
+					+ " MySQL error: " + mysql_conn.error());
 		}
 	}
 }
@@ -409,186 +371,6 @@ class scoreboard_row
 
 };
 
-void ContestManagement::update_scoreboard(mysqlpp::Connection & mysql_conn, kerbal::redis::RedisContext redis_conn, ojv4::ct_id_type ct_id)
-{
-	std::chrono::system_clock::time_point ct_starttime;
-	std::chrono::system_clock::time_point ct_endtime;
-	std::chrono::system_clock::time_point ct_lockranktime;
-	std::chrono::seconds ct_timeplus(1200);
-	int problem_count = 0;
-	{
-		mysqlpp::Query query = mysql_conn.query(
-				"select ct_starttime, ct_endtime, ct_timeplus, ct_lockrankbefore, count(p_id) as problem_count "
-				"from contest, contest_problem "
-				"where contest.ct_id = %0 and contest_problem.ct_id = %1"
-		);
-		query.parse();
-		mysqlpp::StoreQueryResult res = query.store(ct_id, ct_id);
-		if (query.errnum() != 0) {
-			MysqlEmptyResException e(query.errnum(), query.error());
-			EXCEPT_FATAL(0, 0, log_fp, "Error occurred while getting contest details.", e);
-			throw e;
-		}
-		if (res.size() == 0) {
-			std::runtime_error e("A contest id doesn't exist");
-			EXCEPT_FATAL(0, 0, log_fp, "Error occurred while getting contest details.", e);
-			throw e;
-		}
-
-		const mysqlpp::Row & ct_info = res[0];
-		ct_starttime = std::chrono::system_clock::from_time_t(time_t(mysqlpp::DateTime(ct_info["ct_starttime"])));
-		ct_endtime = std::chrono::system_clock::from_time_t(time_t(mysqlpp::DateTime(ct_info["ct_endtime"])));
-		if (ct_info["ct_timeplus"] != mysqlpp::null) {
-			ct_timeplus = std::chrono::seconds(int(ct_info["ct_timeplus"]));
-		}
-		std::chrono::seconds ct_lockrankbefore(3600);
-		if (ct_info["ct_lockrankbefore"] != mysqlpp::null) {
-			ct_lockrankbefore = std::chrono::seconds(int(ct_info["ct_lockrankbefore"]));
-		}
-		ct_lockranktime = ct_endtime - ct_lockrankbefore;
-		problem_count = ct_info["problem_count"];
-	}
-
-	std::chrono::system_clock::time_point current_time = std::chrono::system_clock::now();
-
-	boost::ptr_vector<scoreboard_row> scoreboard;
-	{
-		mysqlpp::Query query = mysql_conn.query(
-				"select distinct u_id, u_name, u_realname from ctuser "
-				"where ct_id = %0 order by u_id"
-		);
-		query.parse();
-		mysqlpp::StoreQueryResult res = query.store(ct_id);
-		if (query.errnum() != 0) {
-			MysqlEmptyResException e(query.errnum(), query.error());
-			EXCEPT_FATAL(0, 0, log_fp, "Error occurred while getting contest details.", e);
-			throw e;
-		}
-		for(const mysqlpp::Row & row : res) {
-			ojv4::u_id_type u_id = row["u_id"];
-			std::string u_name(row["u_name"]);
-			std::string u_realname(row["u_realname"]);
-			scoreboard.push_back(new scoreboard_row(u_id, std::move(u_name), std::move(u_realname)));
-		}
-	}
-
-	{
-		mysqlpp::Query query = mysql_conn.query(
-				"select u_id, p_logic, s_result, s_posttime "
-				"from contest_solution%0 as so, contest_problem as cp "
-				"where so.p_id = cp.p_id and cp.ct_id = %1 and "
-				"u_id in (select u_id from ctuser where ct_id = %1) order by s_id"
-		);
-		query.parse();
-		mysqlpp::StoreQueryResult res = query.store(ct_id, ct_id);
-		if (query.errnum() != 0) {
-			MysqlEmptyResException e(query.errnum(), query.error());
-			EXCEPT_FATAL(0, 0, log_fp, "Error occurred while getting contest details.", e);
-			throw e;
-		}
-		for (const auto & row : res) {
-			ojv4::u_id_type u_id = row["u_id"];
-			logic_p_id_type p_logic = row["p_logic"].c_str()[0];
-			if (('A' <= p_logic && p_logic <= 'Z') == false) {
-				continue;
-			}
-			auto s_result = ojv4::s_result_enum(ojv4::s_result_in_db_type(row["s_result"]));
-			auto s_posttime = std::chrono::system_clock::from_time_t(time_t(mysqlpp::DateTime(row["s_posttime"])));
-
-			// 通过 uid 二分搜索
-			auto it = std::lower_bound(scoreboard.begin(), scoreboard.end(), u_id, [](const boost::variant<ojv4::u_id_type, scoreboard_row> & a, const boost::variant<ojv4::u_id_type, scoreboard_row> & b) {
-				struct var_visitor : public boost::static_visitor<ojv4::u_id_type>
-				{
-					public:
-						ojv4::u_id_type operator()(ojv4::u_id_type u_id) const
-						{
-							return u_id;
-						}
-
-						ojv4::u_id_type operator()(const scoreboard_row & src) const
-						{
-							return src.u_id;
-						}
-				} v;
-
-				ojv4::u_id_type a_uid = boost::apply_visitor(v, a);
-				ojv4::u_id_type b_uid = boost::apply_visitor(v, b);
-				return a_uid.to_literal() < b_uid.to_literal();
-			});
-
-			if(it != scoreboard.end() && it->u_id == u_id) {
-				it->solutions[p_logic].add_solution_with_lock(s_result, s_posttime, current_time, ct_starttime, ct_lockranktime, ct_endtime);
-			}
-		}
-	}
-
-	scoreboard.sort([ct_timeplus](const scoreboard_row & a, const scoreboard_row & b) {
-		int a_ac_num = a.get_accept_num();
-		int b_ac_num = b.get_accept_num();
-		if (a_ac_num != b_ac_num) { // 当通过数不同时, 通过题数多者优先
-			return a_ac_num > b_ac_num;
-		}
-		if (a_ac_num != 0) { // 当两者通过数相等且均不为 0 时, 用时少者优先
-			return a.get_total_time(ct_timeplus) < b.get_total_time(ct_timeplus);
-		}
-		// 当两者通过数均为 0 时, 根据尝试次数排名
-		int a_tried_times = a.get_tried_times();
-		int b_tried_times = b.get_tried_times();
-		// 尝试次数相同, 按 u_id 排
-		if (a_tried_times == b_tried_times) {
-			return a.u_id.to_literal() < b.u_id.to_literal();
-		}
-		if (a_tried_times == 0) {
-			return false;
-		}
-		if (b_tried_times == 0) {
-			return true;
-		}
-		return a_tried_times < b_tried_times;
-	});
-
-	int rank = 1;
-	std::string scoreboard_s = "[" + std::to_string(problem_count) + ",";
-	for (const auto & row : scoreboard) {
-		static boost::format row_templ(R"------([%d,%d,"%s","%s",[)------");
-		scoreboard_s += (row_templ % rank++ % row.u_id % row.u_name % row.u_realname).str();
-
-		const auto & solutions = row.solutions;
-		for (const auto & p_u_p_status : solutions) {
-			logic_p_id_type p_logic = p_u_p_status.first;
-			const auto & u_p_status = p_u_p_status.second;
-			switch (u_p_status.status) {
-				case u_p_status::never_try:
-				case u_p_status::error: {
-					static boost::format accept_templ("[%d,1,%d],");
-					scoreboard_s += (accept_templ % (p_logic - 'A') % u_p_status.tried_times).str();
-					break;
-				}
-				case u_p_status::accept: {
-					static boost::format accept_templ("[%d,0,%d,%d],");
-					scoreboard_s += (accept_templ % (p_logic - 'A') % u_p_status.tried_times % u_p_status.ac_time_consume.count()).str();
-					break;
-				}
-				case u_p_status::pending: {
-					static boost::format accept_templ("[%d,2,%d],");
-					scoreboard_s += (accept_templ % (p_logic - 'A') % u_p_status.tried_times).str();
-					break;
-				}
-			}
-		}
-		if (solutions.size() != 0) {
-			scoreboard_s.pop_back();
-		}
-		scoreboard_s += "]],";
-	}
-	if (scoreboard.size() != 0) {
-		scoreboard_s.pop_back();
-	}
-	scoreboard_s += "]";
-	kerbal::redis::RedisCommand rset("set contest_scoreboard:%d %s");
-	rset.execute(redis_conn, ct_id, scoreboard_s);
-}
-
 void ContestManagement::update_scoreboard(mysqlpp::Connection & mysql_conn, kerbal::redis_v2::connection & redis_conn, ojv4::ct_id_type ct_id)
 {
 	std::chrono::system_clock::time_point ct_starttime;
@@ -598,21 +380,22 @@ void ContestManagement::update_scoreboard(mysqlpp::Connection & mysql_conn, kerb
 	int problem_count = 0;
 	{
 		mysqlpp::Query query = mysql_conn.query(
-				"select ct_starttime, ct_endtime, ct_timeplus, ct_lockrankbefore, count(p_id) as problem_count "
-				"from contest, contest_problem "
-				"where contest.ct_id = %0 and contest_problem.ct_id = %1"
+				"select ct_starttime, ct_endtime, ct_timeplus, ct_lockrankbefore, "
+				"(select count(p_id) from contest_problem where contest_problem.ct_id = contest.ct_id) as problem_count "
+				"from contest "
+				"where ct_id = %0"
 		);
 		query.parse();
-		mysqlpp::StoreQueryResult res = query.store(ct_id, ct_id);
+		mysqlpp::StoreQueryResult res = query.store(ct_id);
 		if (query.errnum() != 0) {
-			MysqlEmptyResException e(query.errnum(), query.error());
-			EXCEPT_FATAL(0, 0, log_fp, "Error occurred while getting contest details.", e);
-			throw e;
+			throw std::runtime_error("Query contest details failed!"s
+					+ " ct_id = " + std::to_string(ct_id)
+					+ " MySQL errnum: " + std::to_string(query.errnum())
+					+ " MySQL error: " + query.error());
 		}
-		if (res.size() == 0) {
-			std::runtime_error e("A contest id doesn't exist");
-			EXCEPT_FATAL(0, 0, log_fp, "Error occurred while getting contest details.", e);
-			throw e;
+
+		if (res.empty()) {
+			return; // 不存在的竞赛
 		}
 
 		const mysqlpp::Row & ct_info = res[0];
@@ -634,70 +417,75 @@ void ContestManagement::update_scoreboard(mysqlpp::Connection & mysql_conn, kerb
 	boost::ptr_vector<scoreboard_row> scoreboard;
 	{
 		mysqlpp::Query query = mysql_conn.query(
-				"select distinct u_id, u_name, u_realname from ctuser "
-				"where ct_id = %0 order by u_id"
+				"select u_id, u_name, u_realname from ctuser "
+				"where ct_id = %0 order by u_id" // 注意，这里的 order by u_id 的目的是为了方便下面的二分查找
 		);
 		query.parse();
-		mysqlpp::StoreQueryResult res = query.store(ct_id);
-		if (query.errnum() != 0) {
-			MysqlEmptyResException e(query.errnum(), query.error());
-			EXCEPT_FATAL(0, 0, log_fp, "Error occurred while getting contest details.", e);
-			throw e;
+		mysqlpp::UseQueryResult users = query.use(ct_id);
+		if (!users) {
+			throw std::runtime_error("Query contest uses' information failed!"s
+					+ " ct_id = " + std::to_string(ct_id)
+					+ " MySQL errnum: " + std::to_string(query.errnum())
+					+ " MySQL error: " + query.error());
 		}
-		for(const mysqlpp::Row & row : res) {
-			ojv4::u_id_type u_id = row["u_id"];
-			std::string u_name(row["u_name"]);
-			std::string u_realname(row["u_realname"]);
-			scoreboard.push_back(new scoreboard_row(u_id, std::move(u_name), std::move(u_realname)));
+		scoreboard.reserve(100);
+		while (::MYSQL_ROW user = users.fetch_raw_row()) {
+			auto u_id(boost::lexical_cast<ojv4::u_id_type>(user[0]));
+			const char * u_name = user[1];
+			const char * u_realname = user[2];
+			scoreboard.push_back(new scoreboard_row(u_id, u_name, u_realname));
 		}
 	}
-
+	
 	{
 		mysqlpp::Query query = mysql_conn.query(
-				"select u_id, p_logic, s_result, s_posttime "
-				"from contest_solution%0 as so, contest_problem as cp "
-				"where so.p_id = cp.p_id and cp.ct_id = %1 and "
-				"u_id in (select u_id from ctuser where ct_id = %1) order by s_id"
+				"select u_id, (select p_logic from contest_problem where ct_id = %0 and contest_problem.p_id = so.p_id) as p_logic, s_result, s_posttime "
+				"from contest_solution%1 as so "
+				"order by s_id"
 		);
 		query.parse();
-		mysqlpp::StoreQueryResult res = query.store(ct_id, ct_id);
-		if (query.errnum() != 0) {
-			MysqlEmptyResException e(query.errnum(), query.error());
-			EXCEPT_FATAL(0, 0, log_fp, "Error occurred while getting contest details.", e);
-			throw e;
+		mysqlpp::UseQueryResult solutions = query.use(ct_id, ct_id);
+		if (!solutions) {
+			throw std::runtime_error("Query contest solutions failed!"s
+					+ " ct_id = " + std::to_string(ct_id)
+					+ " MySQL errnum: " + std::to_string(query.errnum())
+					+ " MySQL error: " + query.error());
 		}
-		for (const auto & row : res) {
-			ojv4::u_id_type u_id = row["u_id"];
-			logic_p_id_type p_logic = row["p_logic"].c_str()[0];
+		while (::MYSQL_ROW solution = solutions.fetch_raw_row()) {
+			auto u_id(boost::lexical_cast<ojv4::u_id_type>(solution[0]));
+			if (solution[1] == nullptr) {
+				continue; // 过滤掉已删除，造成 p_logic 取出为 NULL 的题
+			}
+			logic_p_id_type p_logic = solution[1][0];
 			if (('A' <= p_logic && p_logic <= 'Z') == false) {
 				continue;
 			}
-			auto s_result = ojv4::s_result_enum(ojv4::s_result_in_db_type(row["s_result"]));
-			auto s_posttime = std::chrono::system_clock::from_time_t(time_t(mysqlpp::DateTime(row["s_posttime"])));
+			auto s_result(ojv4::s_result_enum(boost::lexical_cast<int>(solution[2])));
+			const char* s_posttime_s = solution[3];
+			auto s_posttime = std::chrono::system_clock::from_time_t(time_t(
+													mysqlpp::DateTime(s_posttime_s)));
 
-			// 通过 uid 二分搜索
-			auto it = std::lower_bound(scoreboard.begin(), scoreboard.end(), u_id, [](const boost::variant<ojv4::u_id_type, scoreboard_row> & a, const boost::variant<ojv4::u_id_type, scoreboard_row> & b) {
-				struct var_visitor : public boost::static_visitor<ojv4::u_id_type>
-				{
-					public:
-						ojv4::u_id_type operator()(ojv4::u_id_type u_id) const
-						{
-							return u_id;
-						}
-
-						ojv4::u_id_type operator()(const scoreboard_row & src) const
-						{
-							return src.u_id;
-						}
-				} v;
-
-				ojv4::u_id_type a_uid = boost::apply_visitor(v, a);
-				ojv4::u_id_type b_uid = boost::apply_visitor(v, b);
-				return a_uid.to_literal() < b_uid.to_literal();
-			});
-
-			if(it != scoreboard.end() && it->u_id == u_id) {
-				it->solutions[p_logic].add_solution_with_lock(s_result, s_posttime, current_time, ct_starttime, ct_lockranktime, ct_endtime);
+			// 二分查找 u_id = u_id 的 scoreboard_row
+			auto l = scoreboard.begin();
+			auto r = scoreboard.end();
+			auto it = l + (r - l) / 2;
+//			std::cout << "要找 " << u_id << endl;
+			while (l <= r && l != scoreboard.end() && r != scoreboard.begin()) {
+//				std::cout << "当前 " << it->u_id << std::endl;
+				if (it->u_id.to_literal() < u_id.to_literal()) {
+					l = it;
+					++l;
+					it = l + (r - l) / 2;
+					continue;
+				} else if (it->u_id.to_literal() > u_id.to_literal()) {
+					r = it;
+					it = l + (r - l) / 2;
+					continue;
+				} else {
+//					std::cout << "命中" << endl;
+					it->solutions[p_logic].add_solution_with_lock(s_result, s_posttime, current_time, ct_starttime, ct_lockranktime, ct_endtime);
+					break;
+				}
 			}
 		}
 	}
@@ -729,9 +517,10 @@ void ContestManagement::update_scoreboard(mysqlpp::Connection & mysql_conn, kerb
 
 	int rank = 1;
 	std::string scoreboard_s = "[" + std::to_string(problem_count) + ",";
+	scoreboard_s.reserve(scoreboard.size() * 60);
 	for (const auto & row : scoreboard) {
 		static boost::format row_templ(R"------([%d,%d,"%s","%s",[)------");
-		scoreboard_s += (row_templ % rank++ % row.u_id % row.u_name % row.u_realname).str();
+		scoreboard_s += (boost::format(row_templ) % rank++ % row.u_id % row.u_name % row.u_realname).str();
 
 		const auto & solutions = row.solutions;
 		for (const auto & p_u_p_status : solutions) {
@@ -741,17 +530,17 @@ void ContestManagement::update_scoreboard(mysqlpp::Connection & mysql_conn, kerb
 				case u_p_status::never_try:
 				case u_p_status::error: {
 					static boost::format accept_templ("[%d,1,%d],");
-					scoreboard_s += (accept_templ % (p_logic - 'A') % u_p_status.tried_times).str();
+					scoreboard_s += (boost::format(accept_templ) % (p_logic - 'A') % u_p_status.tried_times).str();
 					break;
 				}
 				case u_p_status::accept: {
 					static boost::format accept_templ("[%d,0,%d,%d],");
-					scoreboard_s += (accept_templ % (p_logic - 'A') % u_p_status.tried_times % u_p_status.ac_time_consume.count()).str();
+					scoreboard_s += (boost::format(accept_templ) % (p_logic - 'A') % u_p_status.tried_times % u_p_status.ac_time_consume.count()).str();
 					break;
 				}
 				case u_p_status::pending: {
 					static boost::format accept_templ("[%d,2,%d],");
-					scoreboard_s += (accept_templ % (p_logic - 'A') % u_p_status.tried_times).str();
+					scoreboard_s += (boost::format(accept_templ) % (p_logic - 'A') % u_p_status.tried_times).str();
 					break;
 				}
 			}
@@ -765,7 +554,9 @@ void ContestManagement::update_scoreboard(mysqlpp::Connection & mysql_conn, kerb
 		scoreboard_s.pop_back();
 	}
 	scoreboard_s += "]";
-	redis_conn.execute("set contest_scoreboard:%d %s", ct_id.to_literal(), scoreboard_s);
+	
+	//cout << scoreboard_s << endl;
+	redis_conn.execute("set contest_scoreboard:%d %s", ct_id.to_literal(), scoreboard_s.c_str());
 }
 
 

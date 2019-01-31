@@ -10,6 +10,7 @@
 
 #include <kerbal/utility/storage.hpp>
 #include <kerbal/redis/redis_type_traits.hpp>
+#include <kerbal/redis_v2/type_traits.hpp>
 #include <cstdint>
 #include <chrono>
 #include "united_resource.hpp"
@@ -21,7 +22,7 @@
 #include <mysql++/stadapter.h>
 
 
-template <typename IntegerType>
+template <typename IntegerType, typename IDType>
 class id_type_base
 {
 	public:
@@ -29,9 +30,10 @@ class id_type_base
 
 	protected:
 		integer_type val;
+		using supper_t = id_type_base<IntegerType, IDType>;
 
 	public:
-		constexpr explicit id_type_base() : val()
+		constexpr explicit id_type_base() : val(0)
 		{
 		}
 
@@ -43,10 +45,10 @@ class id_type_base
 		{
 		}
 
-		id_type_base& operator=(const mysqlpp::String & s)
+		IDType& operator=(const mysqlpp::String & s)
 		{
 			this->val = s;
-			return *this;
+			return static_cast<IDType&>(*this);
 		}
 
 		constexpr explicit operator integer_type() const
@@ -76,99 +78,89 @@ class id_type_base
 			return in;
 		}
 
-		friend std::string to_string(const id_type_base & id)
+		friend bool operator==(const IDType & lhs, const IDType & rhs)
 		{
-			return std::to_string(id.to_literal());
+			return lhs.val == rhs.val;
 		}
+
+		friend bool operator!=(const IDType & lhs, const IDType & rhs)
+		{
+			return lhs.val != rhs.val;
+		}
+
+		struct hash : std::hash<integer_type>
+		{
+				using argument_type = IDType;
+
+				auto operator()(const argument_type & val) const
+				{
+					return std::hash<integer_type>::operator()(val.val);
+				}
+		};
+
+		struct literal_less
+		{
+				using argument_type = IDType;
+
+				bool operator()(const argument_type & lhs, const argument_type & rhs) const
+				{
+					return lhs.val < rhs.val;
+				}
+		};
 };
 
-
-
-template <typename IDType>
-constexpr
-typename std::enable_if<std::is_base_of<id_type_base<typename IDType::integer_type>, IDType>::value, bool>::type
-operator==(const IDType & lhs, const IDType & rhs)
+namespace std
 {
-	return lhs.to_literal() == rhs.to_literal();
-}
-
-template <typename IDType>
-constexpr
-typename std::enable_if<std::is_base_of<id_type_base<typename IDType::integer_type>, IDType>::value, bool>::type
-operator!=(const IDType & lhs, const IDType & rhs)
-{
-	return !(lhs == rhs);
-}
-
-template <typename IDType>
-struct id_type_hash : std::enable_if<std::is_base_of<id_type_base<typename IDType::integer_type>, IDType>::value, std::true_type>::type
-{
-		using result_type = typename std::hash<typename IDType::integer_type>::result_type;
-		using argument_type = IDType;
-
-		result_type operator()(const argument_type & val) const
-		{
-
-			return std::hash<typename IDType::integer_type>()(val.to_literal());
-		}
-};
-
-template <typename IDType>
-struct literal_less : std::enable_if<std::is_base_of<id_type_base<typename IDType::integer_type>, IDType>::value, std::true_type>::type
-{
-		using result_type = typename std::hash<typename IDType::integer_type>::result_type;
-		using argument_type = IDType;
-
-		result_type operator()(const argument_type & a, const argument_type & b) const
-		{
-
-			return a.to_literal() < b.to_literal();
-		}
-};
-
-namespace kerbal
-{
-	namespace redis
+	template <typename IDType>
+	typename std::enable_if<std::is_base_of<id_type_base<typename IDType::integer_type, IDType>, IDType>::value,
+	std::string>::type
+	to_string(const IDType & id)
 	{
+		return std::to_string(id.to_literal());
+	}
+}
 
+namespace boost
+{
+	template <typename IDType>
+	typename std::enable_if<std::is_base_of<id_type_base<typename IDType::integer_type, IDType>, IDType>::value,
+	IDType>::type
+	lexical_cast(const char * s)
+	{
+		return boost::lexical_cast<typename IDType::integer_type>(s);
 	}
 }
 
 struct ojv4
 {
 		using u_id_literal = std::int32_t;
-		class u_id_type : public id_type_base<u_id_literal>
+		struct u_id_type : id_type_base<u_id_literal, u_id_type>
 		{
-			public:
-				using id_type_base<u_id_literal>::id_type_base;
+				using supper_t::supper_t;
 		};
 
 		using p_id_literal = std::int32_t;
-		class p_id_type : public id_type_base<std::int32_t>
+		struct p_id_type : id_type_base<p_id_literal, p_id_type>
 		{
-			public:
-				using id_type_base<std::int32_t>::id_type_base;
+				using supper_t::supper_t;
 		};
 
 		using c_id_literal = std::int32_t;
-		class c_id_type : public id_type_base<c_id_literal>
+		struct c_id_type : id_type_base<c_id_literal, c_id_type>
 		{
-			public:
-				using id_type_base<c_id_literal>::id_type_base;
+				using supper_t::supper_t;
 		};
 
 		using ct_id_literal = std::int32_t;
-		class ct_id_type : public id_type_base<ct_id_literal>
+		struct ct_id_type : id_type_base<ct_id_literal, ct_id_type>
 		{
-			public:
-				using id_type_base<ct_id_literal>::id_type_base;
+				using supper_t::supper_t;
 		};
 
 		using s_id_literal = std::int32_t;
-		class s_id_type : public id_type_base<s_id_literal>
+		struct s_id_type : id_type_base<s_id_literal, s_id_type>
 		{
-			public:
-				using id_type_base<s_id_literal>::id_type_base;
+				using supper_t::supper_t;
 		};
 
 		using s_result_in_db_type = std::int32_t;
@@ -236,6 +228,46 @@ namespace kerbal
 
 	}
 
+	namespace redis_v2
+	{
+		template <typename IDType>
+		typename std::enable_if<std::is_base_of<id_type_base<typename IDType::integer_type, IDType>, IDType>::value,
+		IDType>::type
+		redis_type_cast(const char * src)
+		{
+			return redis_type_cast<typename IDType::interger_type>(src);
+		}
+
+		template <typename >
+		struct is_redis_execute_allow_type;
+
+		template <>
+		struct is_redis_execute_allow_type<ojv4::u_id_type> : public is_redis_execute_allow_type<typename ojv4::u_id_type::integer_type>
+		{
+		};
+
+		template <>
+		struct is_redis_execute_allow_type<ojv4::p_id_type> : public is_redis_execute_allow_type<typename ojv4::p_id_type::integer_type>
+		{
+		};
+
+		template <>
+		struct is_redis_execute_allow_type<ojv4::c_id_type> : public is_redis_execute_allow_type<typename ojv4::c_id_type::integer_type>
+		{
+		};
+
+		template <>
+		struct is_redis_execute_allow_type<ojv4::ct_id_type> : public is_redis_execute_allow_type<typename ojv4::ct_id_type::integer_type>
+		{
+		};
+
+		template <>
+		struct is_redis_execute_allow_type<ojv4::s_id_type> : public is_redis_execute_allow_type<typename ojv4::s_id_type::integer_type>
+		{
+		};
+
+	}
+
 }
 
 constexpr ojv4::c_id_type operator""_c_id(unsigned long long src)
@@ -247,6 +279,5 @@ constexpr ojv4::ct_id_type operator""_ct_id(unsigned long long src)
 {
 	return ojv4::ct_id_type(src);
 }
-
 
 #endif /* SRC_SHARED_SRC_DB_TYPEDEF_HPP_ */

@@ -8,6 +8,7 @@
 #include "ContestRejudgeJob.hpp"
 #include "ContestManagement.hpp"
 #include "logger.hpp"
+#include "redis_conn_factory.hpp"
 
 #ifndef MYSQLPP_MYSQL_HEADERS_BURIED
 #	define MYSQLPP_MYSQL_HEADERS_BURIED
@@ -17,8 +18,8 @@
 
 extern std::ofstream log_fp;
 
-ContestRejudgeJob::ContestRejudgeJob(int jobType, ojv4::s_id_type s_id, const kerbal::redis::RedisContext & redisConn) :
-		RejudgeJobBase(jobType, s_id, redisConn), ct_id(ojv4::ct_id_type(jobType))
+ContestRejudgeJob::ContestRejudgeJob(int jobType, ojv4::s_id_type s_id, kerbal::redis_v2::connection & redis_conn) :
+		RejudgeJobBase(jobType, s_id, redis_conn), ct_id(ojv4::ct_id_type(jobType))
 {
 	LOG_DEBUG(jobType, s_id, log_fp, BOOST_CURRENT_FUNCTION);
 }
@@ -27,46 +28,16 @@ void ContestRejudgeJob::move_orig_solution_to_rejudge_solution(mysqlpp::Connecti
 {
 	LOG_DEBUG(jobType, s_id, log_fp, BOOST_CURRENT_FUNCTION);
 
-	ojv4::s_result_enum orig_result;
-	ojv4::s_time_in_milliseconds orig_time;
-	ojv4::s_mem_in_byte orig_mem;
-	ojv4::s_similarity_type orig_similarity;
-	{
-		mysqlpp::Query query = mysql_conn.query(
-				"select s_result, s_time, s_mem, s_similarity_percentage "
-				"from contest_solution%0 where s_id = %1");
-		query.parse();
-
-		mysqlpp::StoreQueryResult res = query.store(ct_id, s_id);
-
-		if (query.errnum() != 0) {
-			MysqlEmptyResException e(query.errnum(), query.error());
-			EXCEPT_FATAL(jobType, s_id, log_fp, "Query original result failed!", e);
-			throw e;
-		}
-
-		if (res.empty()) {
-			MysqlEmptyResException e(query.errnum(), query.error());
-			EXCEPT_FATAL(jobType, s_id, log_fp, "Empty original result!", e);
-			throw e;
-		}
-
-		const auto & row = res[0];
-		orig_result = ojv4::s_result_enum(ojv4::s_result_in_db_type(row["s_result"]));
-		orig_time = ojv4::s_time_in_milliseconds(row["s_time"]);
-		orig_mem = ojv4::s_mem_in_byte(row["s_mem"]);
-		orig_similarity = row["s_similarity_percentage"];
-	}
-
 	mysqlpp::Query insert = mysql_conn.query(
 			"insert into rejudge_solution "
-			"(ct_id, s_id, orig_result, orig_time, orig_mem, orig_similarity_percentage, rejudge_time) "
-			"values(%0, %1, %2, %3, %4, %5, %6q)"
+			"(ct_id, s_id, orig_result, orig_time, orig_mem, orig_similarity_percentage) "
+			"(select %0, solution.s_id as ct_s_id, s_result, s_time, s_mem, s_similarity_percentage "
+			"from contest_solution%1 "
+			"where ct_s_id = %2)"
 	);
 	insert.parse();
 
-	mysqlpp::SimpleResult res = insert.execute(ct_id, s_id, ojv4::s_result_in_db_type(orig_result), orig_time.count(),
-												orig_mem.count(), orig_similarity, rejudge_time);
+	mysqlpp::SimpleResult res = insert.execute(ct_id, ct_id, s_id);
 
 	if(!res) {
 		MysqlEmptyResException e(insert.errnum(), insert.error());
@@ -99,6 +70,17 @@ void ContestRejudgeJob::update_solution(mysqlpp::Connection & mysql_conn)
 void ContestRejudgeJob::update_user(mysqlpp::Connection & mysql_conn)
 {
 	LOG_DEBUG(jobType, s_id, log_fp, BOOST_CURRENT_FUNCTION);
+	PROFILE_HEAD
+
+	// 竞赛更新 user 表的语义转变为更新榜单
+	try {
+		ContestManagement::update_scoreboard(mysql_conn, *sync_fetch_redis_conn(), ct_id);
+	} catch (const std::exception & e) {
+		EXCEPT_FATAL(jobType, s_id, log_fp, "Update scoreboard failed!", e, ", ct_id: ", ct_id);
+		return;
+	}
+
+	PROFILE_WARNING_TAIL(jobType, s_id, log_fp, 50_ms);
 }
 
 void ContestRejudgeJob::update_problem(mysqlpp::Connection & mysql_conn)
@@ -143,9 +125,9 @@ void ContestRejudgeJob::update_compile_info(mysqlpp::Connection & mysql_conn)
 
 	if (this->result.judge_result == ojv4::s_result_enum::COMPILE_ERROR) {
 
-		kerbal::redis::RedisReply ce_info;
+		kerbal::redis_v2::reply ce_info_reply;
 		try {
-			ce_info = this->get_compile_info();
+			ce_info_reply = this->get_compile_info();
 		} catch (const std::exception & e) {
 			EXCEPT_FATAL(jobType, s_id, log_fp, "Get compile error info failed!", e);
 			throw;
@@ -155,11 +137,11 @@ void ContestRejudgeJob::update_compile_info(mysqlpp::Connection & mysql_conn)
 				"insert into contest_compile_info%0(s_id, compile_error_info) "
 				"values(%1, %2q) "
 				"on duplicate key "
-				"update compile_error_info = %2q"
+				"update compile_error_info = values(compile_error_info)"
 		);
 		update.parse();
 
-		mysqlpp::SimpleResult res = update.execute(ct_id, s_id, ce_info->str);
+		mysqlpp::SimpleResult res = update.execute(ct_id, s_id, ce_info_reply->str);
 
 		if (!res) {
 			MysqlEmptyResException e(update.errnum(), update.error());

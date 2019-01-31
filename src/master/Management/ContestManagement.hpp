@@ -16,8 +16,6 @@
 
 #include <mysql++/connection.h>
 
-#include <kerbal/redis/redis_context.hpp>
-
 #include <kerbal/redis_v2/connection.hpp>
 
 class ContestManagement
@@ -43,11 +41,6 @@ class ContestManagement
 				ojv4::ct_id_type ct_id,
 				ojv4::u_id_type u_id,
 				ojv4::p_id_type p_id);
-
-		static void update_scoreboard(
-				mysqlpp::Connection & mysql_conn,
-				kerbal::redis::RedisContext redis_conn,
-				ojv4::ct_id_type ct_id);
 
 		static void update_scoreboard(
 				mysqlpp::Connection & mysql_conn,

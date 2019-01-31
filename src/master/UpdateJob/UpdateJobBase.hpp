@@ -21,6 +21,9 @@
 
 #include <mysql++/connection.h>
 
+#include <kerbal/redis/operation.hpp>
+#include <redis_conn_factory.hpp>
+
 /**
  * @brief JobBase 的子类，同时是所有类型的 update 类的基类。
  * @note 此类为虚基类，update_solution 等函数需要由子类实现，此类不可实例化
@@ -28,9 +31,6 @@
 class UpdateJobBase: public JobBase
 {
 	protected:
-
-		using RedisContext = kerbal::redis::RedisContext;
-
 		ojv4::u_id_type u_id; ///< @brief user id
 
 		std::string s_posttime; ///< @brief post time
@@ -40,18 +40,12 @@ class UpdateJobBase: public JobBase
 		ojv4::s_similarity_type similarity_percentage;
 
 	protected:
-		// make_update_job 为一个全局函数，用于根据提供的信息生成一个具体的 UpdateJobBase 信息，
-		// 而 UpdateJobBase的实例化应该被控制，将随意 new 一个出来的可能性暴露出来是不妥当的，
-		// 因此构造函数定义为 protected，只能由 make_update_job 来生成，故 make_update_job 也需要成为友元函数。
-		friend
-		std::unique_ptr<UpdateJobBase>
-		make_update_job(int jobType, ojv4::s_id_type s_id, const RedisContext & redisConn);
 
 		/**
 		 * @brief 通用基类的构造函数，除父类 JobBase 构造函数获得的信息除外，还额外获取更新类别任务的额外信息如 u_id,
 		 * cid, postTime等信息。
 		 */
-		UpdateJobBase(int jobType, ojv4::s_id_type s_id, const RedisContext & redisConn);
+		UpdateJobBase(int jobType, ojv4::s_id_type s_id, kerbal::redis_v2::connection & redis_conn);
 
 	public:
 		/**
@@ -85,7 +79,7 @@ class UpdateJobBase: public JobBase
 		 * @throws RedisUnexpectedCaseException 如果取得的结果不为字符串类型 (包括空类型), 则抛出此异常
 		 * @throws std::exception 该方法执行过程中还会因 redis 操作失败
 		 */
-		kerbal::redis::RedisReply get_compile_info() const;
+		kerbal::redis_v2::reply get_compile_info() const;
 
 		/**
 		 * @brief 更新用户的提交数, 通过数
@@ -113,7 +107,10 @@ class UpdateJobBase: public JobBase
 		 */
 		virtual void update_user_problem_status(mysqlpp::Connection & mysql_conn) = 0;
 
-	private:
+		/**
+		 * @brief 删除 redis 中本条 job 不再需要的信息
+		 */
+ 		void clear_this_jobs_info_in_redis() noexcept;
 
 		/**
 		 * @brief 如果 update job 的过程中产生失败, 则将记录插入 core_update_failed 表中
@@ -122,15 +119,11 @@ class UpdateJobBase: public JobBase
 		 */
 		void core_update_failed_table(const kerbal::redis::RedisReply & source_code, const kerbal::redis::RedisReply & compile_error_info) noexcept;
 
+	private:
 		/**
 		 * @brief 删除 redis 中本条 job 向前推 600 条的 job 信息
 		 */
  		void clear_previous_jobs_info_in_redis() noexcept;
-
-		/**
-		 * @brief 删除 redis 中本条 job 不再需要的信息
-		 */
- 		void clear_this_jobs_info_in_redis() noexcept;
 
 	public:
 		virtual ~UpdateJobBase() noexcept = default;
@@ -145,6 +138,6 @@ class UpdateJobBase: public JobBase
  * @warning 返回的对象具有多态性, 请谨慎处理!
  */
 std::unique_ptr<UpdateJobBase>
-make_update_job(int jobType, ojv4::s_id_type s_id, const kerbal::redis::RedisContext & redisConn);
+make_update_job(int jobType, ojv4::s_id_type s_id, kerbal::redis_v2::connection & redis_conn);
 
 #endif /* SRC_MASTER_UPDATEJOBBASE_HPP_ */

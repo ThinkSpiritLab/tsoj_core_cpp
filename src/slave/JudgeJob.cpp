@@ -23,6 +23,7 @@
 #include "Config.hpp"
 #include "global_shared_variable.hpp"
 #include "boost_format_suffix.hpp"
+#include "redis_conn_factory.hpp"
 
 #include <kerbal/redis/redis_data_struct/list.hpp>
 #include <kerbal/redis/redis_type_cast.hpp>
@@ -32,8 +33,10 @@ using namespace kerbal::redis;
 using kerbal::redis::RedisContext;
 
 
-JudgeJob::JudgeJob(int jobType, ojv4::s_id_type s_id, const kerbal::redis::RedisContext & conn) :
-			supper_t(jobType, s_id, conn), dir((boost::format(init_dir + "/job-%d-%d") % jobType % s_id).str())
+JudgeJob::JudgeJob(int jobType, ojv4::s_id_type s_id, const kerbal::redis::RedisContext & redisConn) :
+			supper_t(jobType, s_id, *redis_conn_pool.sync_fetch()),
+			dir((boost::format(init_dir + "/job-%d-%d") % jobType % s_id).str()),
+			redisConn(redisConn)
 {
 	kerbal::redis::Operation opt(redisConn);
 	static boost::format key_name_tmpl("job_info:%d:%d");

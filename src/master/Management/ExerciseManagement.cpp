@@ -6,35 +6,23 @@
  */
 
 #include "ExerciseManagement.hpp"
-#include "mysql_empty_res_exception.hpp"
-#include "logger.hpp"
 #include "SARecorder.hpp"
 
+#include <string>
 #include <unordered_map>
+#include <boost/lexical_cast.hpp>
 
 #ifndef MYSQLPP_MYSQL_HEADERS_BURIED
 #	define MYSQLPP_MYSQL_HEADERS_BURIED
 #endif
 
 #include <mysql++/query.h>
-#include <mysql++/ssqls.h>
 
-extern std::ofstream log_fp;
-
+using namespace std::string_literals;
 
 void ExerciseManagement::refresh_all_users_submit_and_accept_num(mysqlpp::Connection & mysql_conn)
 {
-	kerbal::data_struct::optional<int> finished;
-	kerbal::data_struct::optional<int> total;
-	ExerciseManagement::refresh_all_users_submit_and_accept_num(mysql_conn, finished, total);
-}
-
-
-void ExerciseManagement::refresh_all_users_submit_and_accept_num(mysqlpp::Connection & mysql_conn,
-																	kerbal::data_struct::optional<int> & finished,
-																	kerbal::data_struct::optional<int> & total)
-try {
-	std::unordered_map<ojv4::u_id_type, UserSARecorder, id_type_hash<ojv4::u_id_type>> m;
+	std::unordered_map<ojv4::u_id_type, UserSARecorder, ojv4::u_id_type::hash> m;
 	{
 		mysqlpp::Query query = mysql_conn.query(
 				"select u_id, p_id, s_result from solution "
@@ -42,52 +30,43 @@ try {
 				// order by s_id 是重中之重, 因为根据 update 先后次序的不同, s_id 小的可能在 s_id 大的 solution 后面
 		);
 
+		// 性能优化提示 1: 这边用 Query::use(), 比使用 store() 方法先把数据保存下来然后再遍历效率要更高
 		mysqlpp::UseQueryResult solutions = query.use();
 		if (!solutions) {
-			MysqlEmptyResException e(query.errnum(), query.error());
-			EXCEPT_FATAL(0, 0, log_fp, "Query users' solutions in exercise failed!", e);
-			throw e;
+			throw std::runtime_error("Query users' solutions in exercise failed!"s
+					+ " MySQL errnum: " + std::to_string(mysql_conn.errnum())
+					+ " MySQL error: " + mysql_conn.error());
 		}
 
-		// 性能优化提示 1: 这边用 Query::use(), 比使用 store() 方法先把数据保存下来然后再遍历效率要更高
-		while (mysqlpp::Row row = solutions.fetch_row()) {
+		while (::MYSQL_ROW row = solutions.fetch_raw_row()) {
 			/*
 			 * 性能优化提示 2:
-			 * 取出迭代器后自己遍历去取值的速度要比通过 row["key"] 和 row[0] 去取的效率高,
-			 * 当然代价是少了越界检查, 代码不安全.
+			 * 使用 C 风格版裸的 MYSQL_ROW 类型比 C++ 风格的 mysql::row 类型效率要高,
+			 * 因为前者就是 char**，而后者是对 vector<string> 的封装
+			 * 当然改用 MYSQL_ROW 的代价是少了类型检查、越界检查等, 代码不安全.
 			 * 当然该函数工作量较大, 这里是为了性能考虑, 不得不做妥协
 			 *
 			 * 性能优化提示 3:
-			 * 这里不用 ojv4::u_id_type = *it 的理由是,
-			 * 使用隐式的 mysqlpp::String 到整数的类型转换效率太低 (可能 mysql++ 的内部实现有各种安全检查)
-			 * 故要想提升性能, 可以使用 std::stox 或者 C 标准里的 atox 系列函数手动转换
-			 *
-			 * 性能优化提示 4:
-			 * 使用 atox 不使用 stox 的理由是, stox 的参数为 const std::string, 会从 const char* 构造一次临时变量, 效率低
-			 * 不过缺点是 C 的 atox 没有异常机制, 如若传进去的字符串非法就可能有隐患
+			 * 使用 boost::lexical_cast 而不使用 stox 的理由是:
+			 * stox 的参数为 const std::string&, 会从 const char* 构造一个 string 类型临时变量, 效率低;
+			 * 而 boost::lexical_cast 支持从 const char* 转换
+			 * 不使用 C 语言风格的 atox 系列函数的理由是: atox 没有异常机制, 如若传进去的字符串非法就可能有隐患
+			 * 尽管 boost::lexical_cast 的效率略低于 atox, 但在满足安全原则的前提下低不了多少
 			 */
-			auto it = row.begin();
-
-
-			ojv4::u_id_type u_id(::atoll(it[0].c_str()));
-			ojv4::p_id_type p_id(::atoll(it[1].c_str()));
-			ojv4::s_result_enum s_result(ojv4::s_result_enum(::atoll(it[2].c_str())));
+			auto u_id(boost::lexical_cast<ojv4::u_id_type>(row[0]));
+			auto p_id(boost::lexical_cast<ojv4::p_id_type>(row[1]));
+			auto s_result(ojv4::s_result_enum(boost::lexical_cast<int>(row[2])));
 			m[u_id].add_solution(p_id, s_result);
 		}
 	}
 
 	mysqlpp::Transaction trans(mysql_conn);
-
-	{
-		mysqlpp::Query clear = mysql_conn.query(
-				"update user set u_submit = 0, u_accept = 0"
-		);
-		mysqlpp::SimpleResult res = clear.execute();
-		if (!res) {
-			MysqlEmptyResException e(clear.errnum(), clear.error());
-			EXCEPT_FATAL(0, 0, log_fp, "Clear users' submit and accept num in exercise failed!", e);
-			throw e;
-		}
+	
+	// 刷新前，先把所有用户的 SA 数置零
+	if (!mysql_conn.query("update user set u_submit = 0, u_accept = 0").execute()) {
+		throw std::runtime_error("Clear users' submit and accept num in exercise failed!"s
+				+ " MySQL errnum: " + std::to_string(mysql_conn.errnum())
+				+ " MySQL error: " + mysql_conn.error());
 	}
 
 	mysqlpp::Query update = mysql_conn.query(
@@ -96,52 +75,20 @@ try {
 	);
 	update.parse();
 
-	total = m.size();
-	finished = 0;
-	int innear_finished = 0;
-	for (const auto & ele : m) {
-		ojv4::u_id_type u_id = ele.first;
-		const UserSARecorder & u_info = ele.second;
-		int submit = u_info.submit_num();
-		int accept = u_info.accept_num();
-
-		mysqlpp::SimpleResult res = update.execute(u_id, submit, accept);
-		if (!res) {
-			MysqlEmptyResException e(update.errnum(), update.error());
-			EXCEPT_FATAL(0, 0, log_fp, "Update user's submit and accept num in exercise failed!", e, " u_id: ", u_id);
-			throw e;
+	for (const auto & [u_id, u_sa_info] : m) {
+		if (!update.execute(u_id, u_sa_info.submit_num(), u_sa_info.accept_num())) {
+			throw std::runtime_error("Update user's submit and accept num in exercise failed!"s
+					+ " u_id = " + std::to_string(u_id)
+					+ " MySQL errnum: " + std::to_string(mysql_conn.errnum())
+					+ " MySQL error: " + mysql_conn.error());
 		}
-		/*
-		 * 性能优化提示 5:
-		 * innear_finished 变量由于作用域小, 可以被编译器优化为寄存器变量,
-		 * 但是 finished 变量就不一样了, 每次做自增可能都要花很大的代价,
-		 * 故每隔一定周期做一下刷新
-		 */
-		++innear_finished;
-		if (innear_finished % 500 == 0)
-			*finished = innear_finished;
 	}
-	*finished = innear_finished;
 	trans.commit();
-} catch (...) {
-	total = 0;
-	finished = 0;
-	throw;
 }
-
 
 void ExerciseManagement::refresh_all_problems_submit_and_accept_num(mysqlpp::Connection & mysql_conn)
 {
-	kerbal::data_struct::optional<int> finished;
-	kerbal::data_struct::optional<int> total;
-	ExerciseManagement::refresh_all_problems_submit_and_accept_num(mysql_conn, finished, total);
-}
-
-void ExerciseManagement::refresh_all_problems_submit_and_accept_num(mysqlpp::Connection & mysql_conn,
-																			kerbal::data_struct::optional<int> & finished,
-																			kerbal::data_struct::optional<int> & total)
-try {
-	std::unordered_map<ojv4::p_id_type, ProblemSARecorder, id_type_hash<ojv4::p_id_type>> m;
+	std::unordered_map<ojv4::p_id_type, ProblemSARecorder, ojv4::p_id_type::hash> m;
 	{
 		mysqlpp::Query query = mysql_conn.query(
 				"select u_id, p_id, s_result from solution "
@@ -151,32 +98,25 @@ try {
 
 		mysqlpp::UseQueryResult solutions = query.use();
 		if (!solutions) {
-			MysqlEmptyResException e(query.errnum(), query.error());
-			EXCEPT_FATAL(0, 0, log_fp, "Query problems' solutions in exercise failed!", e);
-			throw e;
+			throw std::runtime_error("Query problems' solutions in exercise failed!"s
+					+ " MySQL errnum: " + std::to_string(mysql_conn.errnum())
+					+ " MySQL error: " + mysql_conn.error());
 		}
 
-		while (mysqlpp::Row row = solutions.fetch_row()) {
-			auto it = row.begin();
-			ojv4::u_id_type u_id(::atoll(it[0].c_str()));
-			ojv4::p_id_type p_id(::atoll(it[1].c_str()));
-			ojv4::s_result_enum s_result(ojv4::s_result_enum(::atoll(it[2].c_str())));
+		while (::MYSQL_ROW row = solutions.fetch_raw_row()) {
+			auto u_id(boost::lexical_cast<ojv4::u_id_type>(row[0]));
+			auto p_id(boost::lexical_cast<ojv4::p_id_type>(row[1]));
+			auto s_result(ojv4::s_result_enum(boost::lexical_cast<int>(row[2])));
 			m[p_id].add_solution(u_id, s_result);
 		}
 	}
 
 	mysqlpp::Transaction trans(mysql_conn);
 
-	{
-		mysqlpp::Query clear = mysql_conn.query(
-				"update problem set p_submit = 0, p_accept = 0"
-		);
-		mysqlpp::SimpleResult res = clear.execute();
-		if (!res) {
-			MysqlEmptyResException e(clear.errnum(), clear.error());
-			EXCEPT_FATAL(0, 0, log_fp, "Clear problems' submit and accept num in exercise failed!", e);
-			throw e;
-		}
+	if (!mysql_conn.query("update problem set p_submit = 0, p_accept = 0").execute()) {
+		throw std::runtime_error("Clear problems' submit and accept num in exercise failed!"s
+				+ " MySQL errnum: " + std::to_string(mysql_conn.errnum())
+				+ " MySQL error: " + mysql_conn.error());
 	}
 
 	mysqlpp::Query update = mysql_conn.query(
@@ -185,31 +125,15 @@ try {
 	);
 	update.parse();
 
-	total = m.size();
-	finished = 0;
-	int innear_finished = 0;
-	for (const auto & ele : m) {
-		ojv4::p_id_type p_id = ele.first;
-		const ProblemSARecorder & p_info = ele.second;
-		int submit = p_info.submit_num();
-		int accept = p_info.accept_num();
-
-		mysqlpp::SimpleResult res = update.execute(p_id, submit, accept);
-		if (!res) {
-			MysqlEmptyResException e(update.errnum(), update.error());
-			EXCEPT_FATAL(0, 0, log_fp, "Update problem's submit and accept num in exercise failed!", e, " p_id: ", p_id);
-			throw e;
+	for (const auto & [p_id, p_sa_info] : m) {
+		if (!update.execute(p_id, p_sa_info.submit_num(), p_sa_info.accept_num())) {
+			throw std::runtime_error("Update problem's submit and accept num in exercise failed!"s
+					+ " p_id = " + std::to_string(p_id)
+					+ " MySQL errnum: " + std::to_string(mysql_conn.errnum())
+					+ " MySQL error: " + mysql_conn.error());
 		}
-		++innear_finished;
-		if (innear_finished % 500 == 0)
-			*finished = innear_finished;
 	}
-	*finished = innear_finished;
 	trans.commit();
-} catch (...) {
-	total = 0;
-	finished = 0;
-	throw;
 }
 
 void ExerciseManagement::refresh_all_user_problem(mysqlpp::Connection & mysql_conn)
@@ -218,88 +142,11 @@ void ExerciseManagement::refresh_all_user_problem(mysqlpp::Connection & mysql_co
 	{
 			size_t operator()(const std::pair<ojv4::u_id_type, ojv4::p_id_type> & p) const
 			{
-				return id_type_hash<ojv4::u_id_type>()(p.first) ^ id_type_hash<ojv4::p_id_type>()(p.second);
-			}
-	};
+//				return id_type_hash<ojv4::u_id_type>()(p.first) ^ id_type_hash<ojv4::p_id_type>()(p.second);
 
-	std::unordered_map<std::pair<ojv4::u_id_type, ojv4::p_id_type>, ojv4::u_p_status_enum, pair_hash> u_p_status;
-	{
-		mysqlpp::Query query = mysql_conn.query(
-				"select u_id, p_id, s_result from solution order by s_id"
-		);
-		mysqlpp::StoreQueryResult solutions = query.store();
-
-		if (query.errnum() != 0) {
-			MysqlEmptyResException e(query.errnum(), query.error());
-			EXCEPT_FATAL(0, 0, log_fp, "Query solutions failed!", e);
-			throw e;
-		}
-
-		for (const auto & row : solutions) {
-			ojv4::u_id_type u_id = row["u_id"];
-			ojv4::p_id_type p_id = row["p_id"];
-			ojv4::s_result_enum s_result = ojv4::s_result_enum(ojv4::s_result_in_db_type(row["s_result"]));
-			switch (s_result) {
-				case ojv4::s_result_enum::ACCEPTED:
-					u_p_status[ { u_id, p_id }] = ojv4::u_p_status_enum::ACCEPTED;
-					break;
-				case ojv4::s_result_enum::SYSTEM_ERROR:
-					break;
-				default:
-					//inserts if the key does not exist, does nothing if the key exists
-					u_p_status.insert( { { u_id, p_id }, ojv4::u_p_status_enum::ATTEMPTED });
-			}
-		}
-	}
-
-	mysqlpp::Transaction trans(mysql_conn);
-
-	{
-		mysqlpp::Query delete_table = mysql_conn.query(
-				"delete from user_problem"
-		);
-		mysqlpp::SimpleResult res = delete_table.execute();
-		if(!res) {
-			MysqlEmptyResException e(delete_table.errnum(), delete_table.error());
-			EXCEPT_FATAL(0, 0, log_fp, "Clear user_problem table failed!", e);
-			throw e;
-		}
-	}
-
-	{
-		mysqlpp::Query insert = mysql_conn.query(
-				"insert into user_problem(u_id, p_id, status, c_id) values"
-		);
-
-		for (auto it = u_p_status.cbegin(); it != u_p_status.cend(); ++it) {
-			ojv4::u_id_type u_id = it->first.first;
-			ojv4::p_id_type p_id = it->first.second;
-			ojv4::u_p_status_enum status = it->second;
-			insert << "(" << u_id << ',' << p_id << ',' << int(ojv4::u_p_status_type(status)) << ",null)";
-
-			if (std::next(it) != u_p_status.cend()) {
-				insert << ',';
-			}
-		}
-
-		mysqlpp::SimpleResult res = insert.execute();
-		if (!res) {
-			MysqlEmptyResException e(insert.errnum(), insert.error());
-			EXCEPT_FATAL(0, 0, log_fp, "Insert failed!", e);
-			throw e;
-		}
-	}
-
-	trans.commit();
-}
-
-void ExerciseManagement::refresh_all_user_problem2(mysqlpp::Connection & mysql_conn)
-{
-	struct pair_hash
-	{
-			size_t operator()(const std::pair<ojv4::u_id_type, ojv4::p_id_type> & p) const
-			{
-				return id_type_hash<ojv4::u_id_type>()(p.first) ^ id_type_hash<ojv4::p_id_type>()(p.second);
+				size_t hash = ojv4::u_id_type::hash()(p.first);
+				hash = hash * 48271UL + ojv4::p_id_type::hash()(p.second);
+				return hash;
 			}
 	};
 
@@ -307,7 +154,35 @@ void ExerciseManagement::refresh_all_user_problem2(mysqlpp::Connection & mysql_c
 	{
 			size_t operator()(const std::tuple<ojv4::u_id_type, ojv4::p_id_type, ojv4::c_id_type> & p) const
 			{
-				return id_type_hash<ojv4::u_id_type>()(std::get<0>(p)) + id_type_hash<ojv4::p_id_type>()(std::get<1>(p)) + id_type_hash<ojv4::c_id_type>()(std::get<2>(p));
+//				return
+//				 id_type_hash<ojv4::u_id_type>()(std::get<0>(p)) +
+//				 id_type_hash<ojv4::p_id_type>()(std::get<1>(p)) +
+//				 id_type_hash<ojv4::c_id_type>()(std::get<2>(p));
+
+				/*
+				 * 一个适用于 pair, tuple 的低冲突概率哈希策略的灵感来源:
+				 * 由于 STL 没有为 pair 及 tuple 提供默认的哈希实现, 因此如果想使用 pair 或 tuple
+				 * 做为 unordered_map 的键类型的话, 就需要我们自己实现一个哈希策略.
+				 * 在初步编码时, 为了方便, 笔者选择了最简单的方案, 即: hash(tuple) = hash(tuple[0]) + hash(tuple[1]) + hash(tuple[2])
+				 * 在优化此方法时, 笔者使用 MySQL 中的全真数据做了一下测试 (当时 max(s_id) = 214601),
+				 * 发现部分哈希值碰撞次数达到 20 - 30 甚至 50 之多. 而我们知道, 为了提高效率, 哈希冲突显然是越小越好
+				 * 于是第二版的哈希策略我借鉴了标准库 <random> 中 minstd_rand 的实现原理
+				 *
+				 * typedef linear_congruential_engine<uint_fast32_t, 16807UL, 0UL, 2147483647UL>
+				 * minstd_rand0;
+				 * typedef linear_congruential_engine<uint_fast32_t, 48271UL, 0UL, 2147483647UL>
+				 * minstd_rand;
+				 *
+				 * minstd_rand 是一个代入了特化参数的线性同余随机数引擎, linear_congruential_engine 的数学本质就是,
+				 * 在上一次产生的随机数的基础上, 乘以一个较大的素数, 再加上一个偏移量, 最后对所设定的最大上限求余, 得到下一个随机数.
+				 * 这样, 就以较为简单的方式, 产生了一系列分布较为均匀的伪随机数. 而这里的 "分布均匀" 不就是我们所追求的 "低冲突" 吗?
+				 * 最后, 笔者用优化过的哈希策略使用同样的数据进行测试, 发现竟一次冲突也没有发生!
+				 * 同时, 两个 map 的计算时间也由 700 ms 降低到了 600 ms
+				 */
+				size_t hash = ojv4::u_id_type::hash()(std::get<0>(p));
+				hash = hash * 48271UL + ojv4::p_id_type::hash()(std::get<1>(p));
+				hash = hash * 48271UL + ojv4::c_id_type::hash()(std::get<2>(p));
+				return hash;
 			}
 	};
 
@@ -315,160 +190,41 @@ void ExerciseManagement::refresh_all_user_problem2(mysqlpp::Connection & mysql_c
 	std::unordered_map<std::tuple<ojv4::u_id_type, ojv4::p_id_type, ojv4::c_id_type>, ojv4::u_p_status_enum, tuple_hash> u_p_status_of_course;
 	{
 		mysqlpp::Query query = mysql_conn.query(
-				"select u_id, p_id, c_id, s_result from solution order by s_id"
+				"select u_id, p_id, ( "
+				"	case "
+				"	when c_id is NULL then NULL " // 原本就是练习中的提交, 不做任何处理
+				"	when ( u_id in (select u_id from course_user where c_id = solution.c_id) and "
+				"		   p_id in (select p_id from course_problem where c_id = solution.c_id) "
+				"	) then c_id " // 人/题还在课程中, 则使用原 c_id
+				"	else NULL " // 如果是被删过的人/题, 则仍被看作是练习中的一次提交
+				"	end "
+				") as c_id_considering_delete, s_result "
+				"from solution order by s_id"
 		);
-		mysqlpp::StoreQueryResult solutions = query.store();
-
-		if (query.errnum() != 0) {
-			MysqlEmptyResException e(query.errnum(), query.error());
-			EXCEPT_FATAL(0, 0, log_fp, "Query solutions failed!", e);
-			throw e;
-		}
-
-		for (const auto & row : solutions) {
-			ojv4::u_id_type u_id = row["u_id"];
-			ojv4::p_id_type p_id = row["p_id"];
-			ojv4::s_result_enum s_result = ojv4::s_result_enum(ojv4::s_result_in_db_type(row["s_result"]));
-			switch (s_result) {
-				case ojv4::s_result_enum::ACCEPTED:
-					u_p_status[ { u_id, p_id }] = ojv4::u_p_status_enum::ACCEPTED;
-					break;
-				case ojv4::s_result_enum::SYSTEM_ERROR:
-					break;
-				default:
-					//inserts if the key does not exist, does nothing if the key exists
-					u_p_status.insert( { { u_id, p_id }, ojv4::u_p_status_enum::ATTEMPTED });
-			}
-			if (row["c_id"] != mysqlpp::null) {
-				ojv4::c_id_type c_id = row["c_id"];
-				switch (s_result) {
-					case ojv4::s_result_enum::ACCEPTED:
-						u_p_status_of_course[ { u_id, p_id, c_id }] = ojv4::u_p_status_enum::ACCEPTED;
-						break;
-					case ojv4::s_result_enum::SYSTEM_ERROR:
-						break;
-					default:
-						//inserts if the key does not exist, does nothing if the key exists
-						u_p_status_of_course.insert( { { u_id, p_id, c_id }, ojv4::u_p_status_enum::ACCEPTED });
-				}
-			}
-		}
-	}
-
-	LOG_INFO(0, 0, log_fp, "count: ", u_p_status.size(), "  , count: ", u_p_status_of_course.size());
-
-	mysqlpp::Transaction trans(mysql_conn);
-
-	{
-		mysqlpp::Query delete_table = mysql_conn.query(
-				"delete from user_problem"
-		);
-		mysqlpp::SimpleResult res = delete_table.execute();
-		if (!res) {
-			MysqlEmptyResException e(delete_table.errnum(), delete_table.error());
-			EXCEPT_FATAL(0, 0, log_fp, "Clear user_problem table failed!", e);
-			throw e;
-		}
-	}
-
-	{
-		mysqlpp::Query insert = mysql_conn.query(
-				"insert into user_problem(u_id, p_id, status, c_id) "
-				"values(%0, %1, %2, %3)"
-		);
-		insert.parse();
-
-		for (auto it = u_p_status.cbegin(); it != u_p_status.cend(); ++it) {
-			ojv4::u_id_type u_id = it->first.first;
-			ojv4::p_id_type p_id = it->first.second;
-			ojv4::u_p_status_enum status = it->second;
-			mysqlpp::SimpleResult res = insert.execute(u_id, p_id, int(ojv4::u_p_status_type(status)), mysqlpp::null);
-			if (!res) {
-				MysqlEmptyResException e(insert.errnum(), insert.error());
-				EXCEPT_FATAL(0, 0, log_fp, "Insert failed!", e);
-				throw e;
-			}
-		}
-	}
-
-	{
-		mysqlpp::Query insert = mysql_conn.query(
-				"insert into user_problem(u_id, p_id, status, c_id) "
-				"values(%0, %1, %2, %3)"
-		);
-		insert.parse();
-
-		for (auto it = u_p_status_of_course.cbegin(); it != u_p_status_of_course.cend(); ++it) {
-			ojv4::u_id_type u_id = std::get<0>(it->first);
-			ojv4::p_id_type p_id = std::get<1>(it->first);
-			ojv4::c_id_type c_id = std::get<2>(it->first);
-			ojv4::u_p_status_enum status = it->second;
-			mysqlpp::SimpleResult res = insert.execute(u_id, p_id, int(ojv4::u_p_status_type(status)), c_id);
-			if (!res) {
-				MysqlEmptyResException e(insert.errnum(), insert.error());
-				EXCEPT_FATAL(0, 0, log_fp, "Insert failed!", e);
-				throw e;
-			}
-		}
-	}
-
-	trans.commit();
-}
-
-
-void ExerciseManagement::refresh_all_user_problem3(mysqlpp::Connection & mysql_conn)
-{
-//	sql_create_4(user_problem, 3, 4,
-//		mysqlpp::sql_int_unsigned, u_id,
-//		mysqlpp::sql_int_unsigned, p_id,
-//		mysqlpp::sql_int_unsigned_null, c_id,
-//		mysqlpp::sql_tinyint, status)
-
-	struct pair_hash
-	{
-			size_t operator()(const std::pair<ojv4::u_id_type, ojv4::p_id_type> & p) const
-			{
-				return id_type_hash<ojv4::u_id_type>()(p.first) ^ id_type_hash<ojv4::p_id_type>()(p.second);
-			}
-	};
-
-	struct tuple_hash
-	{
-			size_t operator()(const std::tuple<ojv4::u_id_type, ojv4::p_id_type, ojv4::c_id_type> & p) const
-			{
-				return id_type_hash<ojv4::u_id_type>()(std::get<0>(p)) + id_type_hash<ojv4::p_id_type>()(std::get<1>(p)) + id_type_hash<ojv4::c_id_type>()(std::get<2>(p));
-			}
-	};
-
-	std::unordered_map<std::pair<ojv4::u_id_type, ojv4::p_id_type>, ojv4::u_p_status_enum, pair_hash> u_p_status;
-	std::unordered_map<std::tuple<ojv4::u_id_type, ojv4::p_id_type, ojv4::c_id_type>, ojv4::u_p_status_enum, tuple_hash> u_p_status_of_course;
-	{
-		mysqlpp::Query query = mysql_conn.query(
-				"select u_id, p_id, c_id, s_result, "
-				"("
-				"select u_id in (select u_id from course_user where course_user.c_id = solution.c_id) and "
-				"       p_id in (select p_id from course_user where course_user.c_id = solution.c_id) "
-				") as is_deleted_from course "
-				"from solution"
-		);
+		/*
+		 * c_id_considering_delete 的含义:
+		 * 基于之前的文档我们知道, 如果课程里删除过人或者题以后, 那么计算提交数通过数时需要过滤掉已删除的人/题;
+		 * 同样的, 在重算 user-problem 时也需要考虑到这个问题.
+		 * 我们知道, 在课程中提交了一次会被视为也在练习中提交了一次处理的.
+		 * 所以, 如果课程中删人了, 那我们在此约定, 受到影响的 solution 不再算作是课程中的提交, 但是仍算作是练习中的一次提交
+		 */
 		mysqlpp::UseQueryResult solutions = query.use();
 
 		if (!solutions) {
-			MysqlEmptyResException e(query.errnum(), query.error());
-			EXCEPT_FATAL(0, 0, log_fp, "Query solutions failed!", e);
-			throw e;
+			throw std::runtime_error("Query solutions failed!"s
+					+ " MySQL errnum: " + std::to_string(mysql_conn.errnum())
+					+ " MySQL error: " + mysql_conn.error());
 		}
 
-		while (mysqlpp::Row row = solutions.fetch_row()) {
-			auto it = row.begin();
-			ojv4::u_id_type u_id(::atoll(it[0].c_str()));
-			ojv4::p_id_type p_id(::atoll(it[1].c_str()));
-			ojv4::s_result_enum s_result(ojv4::s_result_enum(::atoll(it[3].c_str())));
+		while (::MYSQL_ROW row = solutions.fetch_raw_row()) {
+			auto u_id(boost::lexical_cast<ojv4::u_id_type>(row[0]));
+			auto p_id(boost::lexical_cast<ojv4::p_id_type>(row[1]));
+			auto s_result(ojv4::s_result_enum(boost::lexical_cast<int>(row[3])));
 			switch (s_result) {
 				case ojv4::s_result_enum::ACCEPTED:
 					u_p_status[ { u_id, p_id }] = ojv4::u_p_status_enum::ACCEPTED;
-					if (it[2] != mysqlpp::null && ::atoi(it[4]) ) {
-						ojv4::c_id_type c_id(::atoll(it[2].c_str()));
+					if (row[2] != nullptr) {
+						auto c_id(boost::lexical_cast<ojv4::c_id_type>(row[2]));
 						u_p_status_of_course[ { u_id, p_id, c_id }] = ojv4::u_p_status_enum::ACCEPTED;
 					}
 					break;
@@ -477,59 +233,70 @@ void ExerciseManagement::refresh_all_user_problem3(mysqlpp::Connection & mysql_c
 				default:
 					//inserts if the key does not exist, does nothing if the key exists
 					u_p_status.insert( { { u_id, p_id }, ojv4::u_p_status_enum::ATTEMPTED });
-					if (it[2] != mysqlpp::null) {
-						ojv4::c_id_type c_id(::atoll(it[2].c_str()));
+					if (row[2] != nullptr) {
+						auto c_id(boost::lexical_cast<ojv4::c_id_type>(row[2]));
 						u_p_status_of_course.insert( { { u_id, p_id, c_id }, ojv4::u_p_status_enum::ATTEMPTED });
 					}
 			}
 		}
 	}
 
-	LOG_INFO(0, 0, log_fp, "count: ", u_p_status.size(), "  , count: ", u_p_status_of_course.size());
-
 	mysqlpp::Transaction trans(mysql_conn);
 
+	if (!(mysql_conn.query("delete from user_problem").execute())) {
+		throw std::runtime_error("Clear user_problem table failed!"s
+				+ " MySQL errnum: " + std::to_string(mysql_conn.errnum())
+				+ " MySQL error: " + mysql_conn.error());
+	}
+
 	{
-		mysqlpp::Query delete_table = mysql_conn.query(
-				"delete from user_problem"
+		mysqlpp::Query insert = mysql_conn.query(
+				"insert into user_problem(u_id, p_id, status, c_id) "
+				"values("
 		);
-		mysqlpp::SimpleResult res = delete_table.execute();
-		if (!res) {
-			MysqlEmptyResException e(delete_table.errnum(), delete_table.error());
-			EXCEPT_FATAL(0, 0, log_fp, "Clear user_problem table failed!", e);
-			throw e;
+		auto begin = u_p_status.cbegin();
+		auto end = u_p_status.cend();
+
+		if (begin != end) {
+			const auto & [key, status] = *begin;
+			const auto & [u_id, p_id] = key;
+			insert << u_id << ',' << p_id << ',' << int(status) << ",null)";
+
+			while (++begin != end) {
+				const auto & [key, status] = *begin;
+				const auto & [u_id, p_id] = key;
+				insert << ",(" << u_id << ',' << p_id << ',' << int(status) << ",null)";
+			}
+			if (!insert.execute()) {
+				throw std::runtime_error("Update user_problem table failed!"s
+						+ " MySQL errnum: " + std::to_string(mysql_conn.errnum())
+						+ " MySQL error: " + mysql_conn.error());
+			}
 		}
 	}
 
 	{
 		mysqlpp::Query insert = mysql_conn.query(
 				"insert into user_problem(u_id, p_id, status, c_id) "
-				"values(%0, %1, %2, %3)"
+				"values("
 		);
-		insert.parse();
+		auto begin = u_p_status_of_course.cbegin();
+		auto end = u_p_status_of_course.cend();
 
-		for (const auto key_value : u_p_status) {
-			ojv4::u_id_type u_id = key_value.first.first;
-			ojv4::p_id_type p_id = key_value.first.second;
-			ojv4::u_p_status_enum status = key_value.second;
-			mysqlpp::SimpleResult res = insert.execute(u_id, p_id, int(ojv4::u_p_status_type(status)), mysqlpp::null);
-			if (!res) {
-				MysqlEmptyResException e(insert.errnum(), insert.error());
-				EXCEPT_FATAL(0, 0, log_fp, "Insert failed!", e);
-				throw e;
+		if (begin != end) {
+			const auto & [key, status] = *begin;
+			const auto & [u_id, p_id, c_id] = key;
+			insert << u_id << ',' << p_id << ',' << int(status) << ',' << c_id << ')';
+
+			while (++begin != end) {
+				const auto & [key, status] = *begin;
+				const auto & [u_id, p_id, c_id] = key;
+				insert << ",(" << u_id << ',' << p_id << ',' << int(status) << ',' << c_id << ')';
 			}
-		}
-
-		for (const auto key_value : u_p_status_of_course) {
-			ojv4::u_id_type u_id = std::get<0>(key_value.first);
-			ojv4::p_id_type p_id = std::get<1>(key_value.first);
-			ojv4::c_id_type c_id = std::get<2>(key_value.first);
-			ojv4::u_p_status_enum status = key_value.second;
-			mysqlpp::SimpleResult res = insert.execute(u_id, p_id, int(ojv4::u_p_status_type(status)), c_id);
-			if (!res) {
-				MysqlEmptyResException e(insert.errnum(), insert.error());
-				EXCEPT_FATAL(0, 0, log_fp, "Insert failed!", e);
-				throw e;
+			if (!insert.execute()) {
+				throw std::runtime_error("Update user_problem table failed!"s
+						+ " MySQL errnum: " + std::to_string(mysql_conn.errnum())
+						+ " MySQL error: " + mysql_conn.error());
 			}
 		}
 	}
@@ -551,15 +318,15 @@ void ExerciseManagement::update_user_s_submit_and_accept_num(mysqlpp::Connection
 
 		mysqlpp::UseQueryResult solutions = query.use(u_id);
 		if (!solutions) {
-			MysqlEmptyResException e(query.errnum(), query.error());
-			EXCEPT_FATAL(0, 0, log_fp, "Query user's solutions in exercise failed!", e, " u_id: ", u_id);
-			throw e;
+			throw std::runtime_error("Query user's solutions failed!"s
+					+ " u_id = " + std::to_string(u_id)
+					+ " MySQL errnum: " + std::to_string(conn.errnum())
+					+ " MySQL error: " + conn.error());
 		}
 
-		while (mysqlpp::Row row = solutions.fetch_row()) {
-			auto it = row.begin();
-			ojv4::p_id_type p_id(::atoi(it[0].c_str()));
-			ojv4::s_result_enum s_result = ojv4::s_result_enum(ojv4::s_result_in_db_type(::atoi(it[1].c_str())));
+		while (::MYSQL_ROW row = solutions.fetch_raw_row()) {
+			auto p_id(boost::lexical_cast<ojv4::p_id_type>(row[0]));
+			auto s_result(ojv4::s_result_enum(boost::lexical_cast<int>(row[1])));
 			u_info.add_solution(p_id, s_result);
 		}
 	}
@@ -569,11 +336,11 @@ void ExerciseManagement::update_user_s_submit_and_accept_num(mysqlpp::Connection
 			"where u_id = %0"
 	);
 	update.parse();
-	mysqlpp::SimpleResult res = update.execute(u_id, u_info.submit_num(), u_info.accept_num());
-	if (!res) {
-		MysqlEmptyResException e(update.errnum(), update.error());
-		EXCEPT_FATAL(0, 0, log_fp, "Update user's submit and accept num failed!", e, " u_id: ", u_id);
-		throw e;
+	if (!update.execute(u_id, u_info.submit_num(), u_info.accept_num())) {
+		throw std::runtime_error("Update user's submit and accept num failed!"s
+				+ " u_id = " + std::to_string(u_id)
+				+ " MySQL errnum: " + std::to_string(conn.errnum())
+				+ " MySQL error: " + conn.error());
 	}
 }
 
@@ -590,15 +357,15 @@ void ExerciseManagement::update_problem_s_submit_and_accept_num(mysqlpp::Connect
 
 		mysqlpp::UseQueryResult solutions = query.use(p_id);
 		if (!solutions) {
-			MysqlEmptyResException e(query.errnum(), query.error());
-			EXCEPT_FATAL(0, 0, log_fp, "Query problem's solutions in exercise failed!", e, " p_id: ", p_id);
-			throw e;
+			throw std::runtime_error("Query problem's solutions failed!"s
+					+ " p_id = " + std::to_string(p_id)
+					+ " MySQL errnum: " + std::to_string(conn.errnum())
+					+ " MySQL error: " + conn.error());
 		}
 
-		while (mysqlpp::Row row = solutions.fetch_row()) {
-			auto it = row.begin();
-			ojv4::u_id_type u_id(::atoi(it[0].c_str()));
-			ojv4::s_result_enum s_result = ojv4::s_result_enum(ojv4::s_result_in_db_type(::atoi(it[1].c_str())));
+		while (::MYSQL_ROW row = solutions.fetch_raw_row()) {
+			auto u_id(boost::lexical_cast<ojv4::u_id_type>(row[0]));
+			auto s_result(ojv4::s_result_enum(boost::lexical_cast<int>(row[1])));
 			p_info.add_solution(u_id, s_result);
 		}
 	}
@@ -608,11 +375,11 @@ void ExerciseManagement::update_problem_s_submit_and_accept_num(mysqlpp::Connect
 			"where p_id = %0"
 	);
 	update.parse();
-	mysqlpp::SimpleResult res = update.execute(p_id, p_info.submit_num(), p_info.accept_num());
-	if (!res) {
-		MysqlEmptyResException e(update.errnum(), update.error());
-		EXCEPT_FATAL(0, 0, log_fp, "Update problem's submit and accept num failed!", e, " p_id: ", p_id);
-		throw e;
+	if (!update.execute(p_id, p_info.submit_num(), p_info.accept_num())) {
+		throw std::runtime_error("Update problem's submit and accept num failed!"s
+				+ " p_id = " + std::to_string(p_id)
+				+ " MySQL errnum: " + std::to_string(conn.errnum())
+				+ " MySQL error: " + conn.error());
 	}
 }
 
@@ -632,9 +399,9 @@ ojv4::u_p_status_enum query_user_s_problem_status_from_solution(mysqlpp::Connect
 
 	mysqlpp::StoreQueryResult res = query_status.store(u_id, p_id, ACCEPTED, SYSTEM_ERROR);
 
-	if(bool(res[0]["has_accepted"]) == true) {
+	if (bool(res[0]["has_accepted"]) == true) {
 		return ojv4::u_p_status_enum::ACCEPTED;
-	} else if(bool(res[0]["has_submit"]) == true) {
+	} else if (bool(res[0]["has_submit"]) == true) {
 		return ojv4::u_p_status_enum::ATTEMPTED;
 	} else {
 		return ojv4::u_p_status_enum::TODO;
@@ -643,49 +410,19 @@ ojv4::u_p_status_enum query_user_s_problem_status_from_solution(mysqlpp::Connect
 
 void ExerciseManagement::update_user_problem_status(mysqlpp::Connection & conn, ojv4::u_id_type u_id, ojv4::p_id_type p_id)
 {
-//	ojv4::u_p_status_enum status = ojv4::u_p_status_enum::TODO;
-//
-//	try {
-//		status = query_user_s_problem_status_from_solution(conn, u_id, p_id);
-//	} catch (const std::exception & e) {
-//		EXCEPT_FATAL(0, 0, log_fp, "Query user's problem status from solution failed!", e);
-//		throw;
-//	}
-//
-//	if (status == ojv4::u_p_status_enum::TODO) {
-//		return;
-//	}
-//
-//
-////	 insert into user_problem_status(u_id, p_id, status)
-////	 values(1, 1001, 0)
-////	 on duplicate key update status = 0
-//
-//	mysqlpp::Query on_duplicate_insert = conn.query(
-//			"insert into user_problem_status(u_id, p_id, status) "
-//			"values(%0, %1, %2) "
-//			"on duplicate key update status = %2"
-//	);
-//	on_duplicate_insert.parse();
-//
-//	mysqlpp::SimpleResult res = on_duplicate_insert.execute(u_id, p_id, ojv4::u_p_status_type(status));
-//
-//	if (!res) {
-//		MysqlEmptyResException e(on_duplicate_insert.errnum(), on_duplicate_insert.error());
-//		EXCEPT_FATAL(0, 0, log_fp, "Update user's problem status failed!", e);
-//		throw e;
-//	}
 }
 
 void ExerciseManagement::update_user_problem(mysqlpp::Connection & conn, ojv4::u_id_type u_id, ojv4::p_id_type p_id)
 {
-	ojv4::u_p_status_enum new_status = ojv4::u_p_status_enum::TODO;
+	ojv4::u_p_status_enum new_status = ojv4::u_p_status_enum::ATTEMPTED;
 
 	try {
 		new_status = query_user_s_problem_status_from_solution(conn, u_id, p_id);
 	} catch (const std::exception & e) {
-		EXCEPT_FATAL(0, 0, log_fp, "Query user's problem status failed!", e);
-		throw;
+		throw std::runtime_error("Query user's problem status failed!"s
+				+ " u_id = " + std::to_string(u_id)
+				+ " p_id = " + std::to_string(p_id)
+				+ " details: " + e.what());
 	}
 
 	if (new_status == ojv4::u_p_status_enum::TODO) {
@@ -700,31 +437,28 @@ void ExerciseManagement::update_user_problem(mysqlpp::Connection & conn, ojv4::u
 		query.parse();
 
 		mysqlpp::StoreQueryResult res = query.store(u_id, p_id);
-		if (query.errnum() != 0) {
-			MysqlEmptyResException e(query.errnum(), query.error());
-			EXCEPT_FATAL(0, 0, log_fp, "Query previous status from user-problem failed!", e);
-			throw e;
+		if (!res) {
+			throw std::runtime_error("Query previous status from user-problem failed!"s
+					+ " u_id = " + std::to_string(u_id)
+					+ " p_id = " + std::to_string(p_id)
+					+ " MySQL errnum: " + std::to_string(conn.errnum())
+					+ " MySQL error: " + conn.error());
 		}
 		if (res.empty()) {
 			previous_status = ojv4::u_p_status_enum::TODO;
 		} else {
-			previous_status = ojv4::u_p_status_enum(ojv4::u_p_status_type(res[0]["status"]));
+			previous_status = ojv4::u_p_status_enum(int(res[0]["status"]));
 		}
 	}
 
+	mysqlpp::SimpleResult update_res;
 	if (previous_status == ojv4::u_p_status_enum::TODO) {
 		mysqlpp::Query insert = conn.query(
 				"insert into user_problem (u_id, p_id, status, c_id) "
 				"values (%0, %1, %2, null)"
 		);
 		insert.parse();
-
-		mysqlpp::SimpleResult insert_res = insert.execute(u_id, p_id, ojv4::u_p_status_type(new_status));
-		if (!insert_res) {
-			MysqlEmptyResException e(insert.errnum(), insert.error());
-			EXCEPT_FATAL(0, 0, log_fp, "Update user-problem failed!", e);
-			throw e;
-		}
+		update_res = insert.execute(u_id, p_id, int(new_status));
 	} else if (previous_status != new_status) {
 		mysqlpp::Query update = conn.query(
 				"update user_problem set "
@@ -732,13 +466,14 @@ void ExerciseManagement::update_user_problem(mysqlpp::Connection & conn, ojv4::u
 				"where u_id = %1 and p_id = %2 and c_id is null"
 		);
 		update.parse();
-
-		mysqlpp::SimpleResult update_res = update.execute(ojv4::u_p_status_type(new_status), u_id, p_id);
-		if (!update_res) {
-			MysqlEmptyResException e(update.errnum(), update.error());
-			EXCEPT_FATAL(0, 0, log_fp, "Update user-problem failed!", e);
-			throw e;
-		}
+		update_res = update.execute(int(new_status), u_id, p_id);
+	}
+	if (!update_res) {
+		throw std::runtime_error("Update user-problem failed!"s
+				+ " u_id = " + std::to_string(u_id)
+				+ " p_id = " + std::to_string(p_id)
+				+ " MySQL errnum: " + std::to_string(conn.errnum())
+				+ " MySQL error: " + conn.error());
 	}
 }
 

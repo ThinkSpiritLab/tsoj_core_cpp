@@ -148,6 +148,14 @@ class sync_nonsingle_instance_pool : kerbal::utility::noncopyable, kerbal::utili
 		typedef __auto_revert_handle auto_revert_handle;
 		typedef PoolContainer pool_type;
 		typedef typename std::remove_reference<decltype(instance_pool.size())>::type size_type;
+		
+		~sync_nonsingle_instance_pool() noexcept
+		{
+			while (!instance_pool.empty()) {
+				delete instance_pool.front();
+				instance_pool.pop_front();
+			}
+		}
 
 		void add(InstanceType* p)
 		{

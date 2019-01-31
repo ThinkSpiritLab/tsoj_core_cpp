@@ -18,6 +18,8 @@
 
 using namespace kerbal::redis;
 
+#include "redis_conn_factory.hpp"
+
 #include <kerbal/system/system.hpp>
 #include <kerbal/compatibility/chrono_suffix.hpp>
 
@@ -44,8 +46,6 @@ std::ofstream log_fp; /**< 日志文件的文件流 */
 std::string lock_file; /**< lock_file,用于保证一次只能有一个 judge_server 守护进程在运行 */
 int judger_uid; /**< Linux 中运行评测进程的 user id。 默认为 1666 */
 int judger_gid; /**< Linux 中运行评测进程的 group id。 默认为 1666 */
-int redis_port; /**< redis 端口号 */
-std::string redis_hostname; /**< redis 主机名 */
 int max_redis_conn; /**< redis 最大连接数 */
 std::string java_policy_path; /**< java 策略 */
 int java_time_bonus; /**< java 额外运行时间值 */
@@ -72,35 +72,41 @@ namespace
  * 每隔一段时间，将本机信息提交到数据库中表示当前在线的评测机集合中，表明自身正常工作，可以处理评测任务。
  * @throw 该函数保证不抛出任何异常
  */
-void register_self(RedisContext&& regist_self_conn) noexcept try
+void register_self() noexcept try
 {
 	using namespace std::chrono;
 	using namespace kerbal::compatibility::chrono_suffix;
 
-	static Operation opt(regist_self_conn);
-	while (true) {
+	auto redis_conn_handle = sync_fetch_redis_conn();
+	auto & regist_self_conn = *redis_conn_handle;
+	LOG_INFO(0, 0, log_fp, "Regist_self thread get context.");
+	kerbal::redis_v2::operation opt(regist_self_conn);
+	kerbal::redis_v2::hash judge_server(regist_self_conn, "judge_server:" + judge_server_id);
+	kerbal::redis_v2::set online_judger(regist_self_conn, "online_judger");
+
+	while (loop) {
 		try {
 			const time_t now = time(NULL);
 			const std::string confirm_time = get_ymd_hms_in_local_time_zone(now);
-			opt.hmset("judge_server:" + judge_server_id,
-					  "host_name", host_name,
-					  "ip", ip,
-					  "user_name", user_name,
-					  "listening_pid", listening_pid,
-					  "last_confirm", confirm_time);
-			opt.set("judge_server_confirm:" + judge_server_id, confirm_time);
-			opt.expire("judge_server_confirm:" + judge_server_id, 30_s);
-
-			static kerbal::redis::Set<std::string> s(regist_self_conn, "online_judger");
-			s.insert(judge_server_id);
-
+			judge_server.hmset(
+				  "host_name", host_name,
+				  "ip", ip,
+				  "user_name", user_name,
+				  "listening_pid", listening_pid,
+				  "last_confirm", confirm_time
+			);
+			opt.setex("judge_server_confirm:" + judge_server_id, 30_s, confirm_time);
+			online_judger.sadd(judge_server_id);
 			std::this_thread::sleep_for(10_s);
-		} catch (const RedisException & e) {
+		} catch (const std::exception & e) {
 			EXCEPT_FATAL(0, 0, log_fp, "Register self failed.", e);
 		}
 	}
+} catch (const std::exception & e) {
+	EXCEPT_FATAL(0, 0, log_fp, "Regist_self thread works failed.", e);
+	exit(2);
 } catch (...) {
-	UNKNOWN_EXCEPT_FATAL(0, 0, log_fp, "Register self failed.");
+	UNKNOWN_EXCEPT_FATAL(0, 0, log_fp, "Regist_self thread works failed.");
 	exit(2);
 }
 
@@ -115,9 +121,7 @@ void regist_SIGTERM_handler(int signum) noexcept
 {
 	using namespace kerbal::compatibility::chrono_suffix;
 	if (signum == SIGTERM) {
-		RedisContext main_conn(redis_hostname.c_str(), redis_port, 1500_ms);
-		List<std::string> job_list(main_conn, "judge_queue");
-		job_list.push_back(JobBase::getExitJobItem());
+		loop = false;
 		LOG_WARNING(0, 0, log_fp,
 					"Judge server has received the SIGTERM signal and will exit soon after the jobs are all finished!");
 	}
@@ -201,82 +205,24 @@ void load_config(const char * config_file)
 	LOG_INFO(0, 0, log_fp, "listening pid: ", listening_pid);
 }
 
-/**
- * @brief slave 端主程序循环
- * 加载配置信息；连接 redis 数据库；取待评测任务信息，交由子进程并评测；创建并分离发送心跳线程
- * @throw UNKNOWN_EXCEPTION
- */
-int main(int argc, const char * argv[]) try
+void listenning_loop()
 {
-	using namespace kerbal::compatibility::chrono_suffix;
-
-	if (argc > 1 && argv[1] == std::string("--version")) {
-		cout << "version: " __DATE__ " " __TIME__ << endl;
-		exit(0);
-	}
-
-	using namespace kerbal::utility::costream;
-	const auto & ccerr = costream<cerr>(LIGHT_RED);
-
-	// 运行必须具有 root 权限
-	uid_t uid = getuid();
-	if (uid != 0) {
-		ccerr << "root required!" << endl;
-		exit(-1);
-	}
-
-	cout << std::boolalpha;
-	load_config("/etc/ts_judger/judge_server.conf"); // 提醒: 此函数运行结束以后才可以使用 log 系列宏, 否则 log_fp 没打开
-	LOG_INFO(0, 0, log_fp, "Configuration load finished!");
-
-	try {
-		mkdir_p(init_dir);
-	} catch (const std::exception & e) {
-		EXCEPT_FATAL(0, 0, log_fp, "Make init dir failed.", e);
-		exit(0);
-	}
-
-	RedisContext main_conn(redis_hostname.c_str(), redis_port, 1500_ms);
-	if (!main_conn) {
-		LOG_FATAL(0, 0, log_fp, "Main conn connect failed!");
-		exit(0);
-	}
-
-	RedisContext register_self_conn(redis_hostname.c_str(), redis_port, 1500_ms);
-	if (!main_conn) {
-		LOG_FATAL(0, 0, log_fp, "register_self_conn connect failed!");
-		exit(0);
-	}
-
-	try {
-		/// 创建并分离发送心跳线程
-		std::thread(register_self, std::move(register_self_conn)).detach();
-	} catch (const std::exception & e) {
-		LOG_FATAL(0, 0, log_fp, "Register self service process fork failed.");
-		exit(-1);
-	}
-
-	signal(SIGTERM, regist_SIGTERM_handler);
-
-	List<std::string> job_list(main_conn, "judge_queue");
+	kerbal::redis_v2::connection & main_conn = *sync_fetch_redis_conn();
+	kerbal::redis_v2::list judge_queue(main_conn, "judge_queue");
 
 	while (loop) {
 
 		// Step 1: Pop job item and parser job_type and job_id.
 		int job_type(0);
 		ojv4::s_id_type job_id(0);
+
 		/*
 		 * 当收到 SIGTERM 信号时，会在评测队列末端加一个特殊的评测任务用于标识停止测评。此处若检测到停止
 		 * 工作的信号，则结束工作loop
 		 * 若取得的是正常的评测任务则继续工作
 		 */
 		try {
-			std::string job_item = job_list.block_pop_front(0_s);
-			if (JobBase::isExitJob(job_item) == true) {
-				loop = false;
-				LOG_INFO(0, 0, log_fp, "Get exit job.");
-				continue;
-			}
+			std::string job_item = judge_queue.blpop(0_s);
 			try {
 				std::tie(job_type, job_id) = JudgeJob::parseJobItem(job_item);
 			} catch (const std::exception & e) {
@@ -361,6 +307,62 @@ int main(int argc, const char * argv[]) try
 			continue;
 		}
 	} // loop
+}
+
+/**
+ * @brief slave 端主程序循环
+ * 加载配置信息；连接 redis 数据库；取待评测任务信息，交由子进程并评测；创建并分离发送心跳线程
+ * @throw UNKNOWN_EXCEPTION
+ */
+int main(int argc, const char * argv[]) try
+{
+	using namespace kerbal::compatibility::chrono_suffix;
+
+	if (argc > 1 && argv[1] == std::string("--version")) {
+		cout << "version: " __DATE__ " " __TIME__ << endl;
+		exit(0);
+	}
+
+	using namespace kerbal::utility::costream;
+	const auto & ccerr = costream<cerr>(LIGHT_RED);
+
+	// 运行必须具有 root 权限
+	uid_t uid = getuid();
+	if (uid != 0) {
+		ccerr << "root required!" << endl;
+		exit(-1);
+	}
+
+	cout << std::boolalpha;
+	load_config("/etc/ts_judger/judge_server.conf"); // 提醒: 此函数运行结束以后才可以使用 log 系列宏, 否则 log_fp 没打开
+	LOG_INFO(0, 0, log_fp, "Configuration load finished!");
+
+	try {
+		mkdir_p(init_dir);
+	} catch (const std::exception & e) {
+		EXCEPT_FATAL(0, 0, log_fp, "Make init dir failed.", e);
+		exit(0);
+	}
+
+	for (int i = 0; i < 4; ++i)
+		add_redis_conn();
+
+	std::thread register_self_thread;
+	try {
+		// 创建并分离发送心跳线程
+		register_self_thread = std::thread(register_self);
+	} catch (const std::exception & e) {
+		EXCEPT_FATAL(0, 0, log_fp, "Register self service thread detach failed.", e);
+		exit(-1);
+	}
+
+	signal(SIGTERM, regist_SIGTERM_handler);
+
+	LOG_INFO(0, 0, log_fp, "Judge server starting...");
+	listenning_loop();
+
+	register_self_thread.join();
+
 	LOG_INFO(0, 0, log_fp, "Judge server exit.");
 	return 0;
 
