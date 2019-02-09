@@ -152,7 +152,8 @@ void ContestUpdateJob::update_user(mysqlpp::Connection & mysql_conn)
 
 	// 竞赛更新 user 表的语义转变为更新榜单
 	try {
-		ContestManagement::update_scoreboard(mysql_conn, *sync_fetch_redis_conn(), ct_id);
+        auto redis_conn_handler = sync_fetch_redis_conn();
+        ContestManagement::update_scoreboard(mysql_conn, *redis_conn_handler, ct_id);
 	} catch (const std::exception & e) {
 		EXCEPT_FATAL(jobType, s_id, log_fp, "Update scoreboard failed!", e, ", ct_id: ", ct_id);
 		return;

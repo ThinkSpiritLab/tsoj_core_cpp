@@ -10,11 +10,18 @@
 
 #include "db_typedef.hpp"
 
-#ifndef MYSQLPP_MYSQL_HEADERS_BURIED
-#	define MYSQLPP_MYSQL_HEADERS_BURIED
-#endif
+namespace mysqlpp
+{
+	class Connection;
+}
 
-#include <mysql++/connection.h>
+namespace kerbal
+{
+	namespace redis_v2
+	{
+		class connection;
+	}
+}
 
 #include <kerbal/redis_v2/connection.hpp>
 
@@ -43,6 +50,16 @@ class ContestManagement
 				ojv4::p_id_type p_id);
 
 		static void update_scoreboard(
+				mysqlpp::Connection & mysql_conn,
+				kerbal::redis_v2::connection & redis_conn,
+				ojv4::ct_id_type ct_id);
+
+		static void update_scoreboard2(
+				mysqlpp::Connection & mysql_conn,
+				kerbal::redis_v2::connection & redis_conn,
+				ojv4::ct_id_type ct_id);
+
+		static void update_scoreboard3(
 				mysqlpp::Connection & mysql_conn,
 				kerbal::redis_v2::connection & redis_conn,
 				ojv4::ct_id_type ct_id);

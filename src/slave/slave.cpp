@@ -10,6 +10,7 @@
 #include "load_helper.hpp"
 #include "JudgeJob.hpp"
 #include "mkdir_p.hpp"
+#include "Settings.hpp"
 
 #include <kerbal/redis/redis_context_pool.hpp>
 #include <kerbal/redis/operation.hpp>
@@ -29,27 +30,13 @@ using namespace kerbal::redis;
 #include <chrono>
 #include <csignal>
 #include <thread>
+#include <future>
 
 using std::cout;
 using std::cerr;
 using std::endl;
 
-std::string host_name; /**< 本机主机名 */
-std::string ip; /**< 本机 IP */
-std::string user_name; /**< 本机当前用户名 */
-int listening_pid; /**< 本机监听进程号 */
-std::string judge_server_id; /**< 评测服务器id，定义为 host_name:ip */
-std::string init_dir; /**< 程序的运行目录，用于存放临时文件等 */
-std::string input_dir; /**< 测试数据和答案的存放目录 */
-std::string log_file_name; /**< 日志文件名 */
-std::ofstream log_fp; /**< 日志文件的文件流 */
-std::string lock_file; /**< lock_file,用于保证一次只能有一个 judge_server 守护进程在运行 */
-int judger_uid; /**< Linux 中运行评测进程的 user id。 默认为 1666 */
-int judger_gid; /**< Linux 中运行评测进程的 group id。 默认为 1666 */
-int max_redis_conn; /**< redis 最大连接数 */
-std::string java_policy_path; /**< java 策略 */
-int java_time_bonus; /**< java 额外运行时间值 */
-kerbal::utility::MB java_memory_bonus; /**< java 额外运行空间值 */
+
 std::string accepted_solutions_dir; /**< 已经 AC 代码保存路径，用于查重 */
 int stored_ac_code_max_num; /**< 已经 AC 代码数量 */
 
@@ -63,8 +50,7 @@ int stored_ac_code_max_num; /**< 已经 AC 代码数量 */
 namespace
 {
 	bool loop = true;
-	int cur_running = 0;
-	int max_running;
+	std::atomic<int> cur_running = 0;
 }
 
 /**
@@ -77,8 +63,8 @@ void register_self() noexcept try
 	using namespace std::chrono;
 	using namespace kerbal::compatibility::chrono_suffix;
 
-	auto redis_conn_handle = sync_fetch_redis_conn();
-	auto & regist_self_conn = *redis_conn_handle;
+	auto redis_conn_handler = sync_fetch_redis_conn();
+	auto & regist_self_conn = *redis_conn_handler;
 	LOG_INFO(0, 0, log_fp, "Regist_self thread get context.");
 	kerbal::redis_v2::operation opt(regist_self_conn);
 	kerbal::redis_v2::hash judge_server(regist_self_conn, "judge_server:" + judge_server_id);
@@ -157,49 +143,48 @@ void load_config(const char * config_file)
 		return kerbal::utility::MB{stoull(src)};
 	};
 
-	loadConfig.add_rules(max_running, "max_running", int_assign);
-	loadConfig.add_rules(judger_uid, "judger_uid", int_assign);
-	loadConfig.add_rules(judger_gid, "judger_gid", int_assign);
-	loadConfig.add_rules(init_dir, "init_dir", string_assign);
-	loadConfig.add_rules(input_dir, "input_dir", string_assign);
+	std::string log_file_name;
 	loadConfig.add_rules(log_file_name, "log_file", string_assign);
-	loadConfig.add_rules(lock_file, "lock_file", string_assign);
-	loadConfig.add_rules(redis_port, "redis_port", int_assign);
-	loadConfig.add_rules(redis_hostname, "redis_hostname", string_assign);
-	loadConfig.add_rules(java_policy_path, "java_policy_path", string_assign);
-	loadConfig.add_rules(java_time_bonus, "java_time_bonus", int_assign);
-	loadConfig.add_rules(java_memory_bonus, "java_memory_bonus", MB_assign);
-	loadConfig.add_rules(accepted_solutions_dir, "accepted_solutions_dir", string_assign);
-	loadConfig.add_rules(stored_ac_code_max_num, "stored_ac_code_max_num", int_assign);
+	loadConfig.add_rules(Settings::lock_file, "lock_file", string_assign);
 
-	string buf;
+	loadConfig.add_rules(Settings::JudgeSettings::init_dir_v, "init_dir", string_assign);
+	loadConfig.add_rules(Settings::JudgeSettings::input_dir_v, "input_dir", string_assign);
+	loadConfig.add_rules(Settings::JudgeSettings::judger_uid_v, "judger_uid", int_assign);
+	loadConfig.add_rules(Settings::JudgeSettings::judger_gid_v, "judger_gid", int_assign);
+	loadConfig.add_rules(Settings::JudgeSettings::java_policy_path_v, "java_policy_path", string_assign);
+	loadConfig.add_rules(Settings::JudgeSettings::java_time_bonus_v, "java_time_bonus", int_assign);
+	loadConfig.add_rules(Settings::JudgeSettings::java_memory_bonus_v, "java_memory_bonus", MB_assign);
+	loadConfig.add_rules(Settings::JudgeSettings::max_running_v, "max_running", int_assign);
+//	loadConfig.add_rules(accepted_solutions_dir, "accepted_solutions_dir", string_assign);
+//	loadConfig.add_rules(stored_ac_code_max_num, "stored_ac_code_max_num", int_assign);
+
+	loadConfig.add_rules(Settings::RedisSettings::redis_hostname_v, "redis_hostname", string_assign);
+	loadConfig.add_rules(Settings::RedisSettings::redis_port_v, "redis_port", int_assign);
+
+	std::string buf;
 	while (getline(fp, buf)) {
-		string key, value;
+		std::string key, value;
 		std::tie(key, value) = parse_buf(buf);
 		if (key != "" && value != "") {
-			if (loadConfig.parse(key, value) == false) {
-				ccerr << "unexpected key name" << endl;
-			}
-			cout << key << " = " << value << endl;
+			continue;
 		}
+		if (loadConfig.parse(key, value) == false) {
+			ccerr << "unexpected key name" << endl;
+		}
+		cout << key << " = " << value << endl;
 	}
-	max_redis_conn = max_running;
+
 	if (log_file_name.empty()) {
 		ccerr << "empty log file name!" << endl;
 		exit(0);
 	}
 
-	log_fp.open(log_file_name, std::ios::app);
-	if (!log_fp) {
+	Settings::log_fp.open(log_file_name, std::ios::app);
+	if (!Settings::log_fp) {
 		ccerr << "log file open failed!" << endl;
 		exit(0);
 	}
 
-	host_name = get_host_name();
-	ip = get_addr_list(host_name).front();
-	user_name = get_user_name();
-	listening_pid = getpid();
-	judge_server_id = host_name + ":" + ip;
 
 	LOG_INFO(0, 0, log_fp, "judge_server_id: ", judge_server_id);
 	LOG_INFO(0, 0, log_fp, "listening pid: ", listening_pid);
@@ -207,7 +192,8 @@ void load_config(const char * config_file)
 
 void listenning_loop()
 {
-	kerbal::redis_v2::connection & main_conn = *sync_fetch_redis_conn();
+    auto redis_conn_handler = sync_fetch_redis_conn();
+	kerbal::redis_v2::connection & main_conn = *redis_conn_handler;
 	kerbal::redis_v2::list judge_queue(main_conn, "judge_queue");
 
 	while (loop) {

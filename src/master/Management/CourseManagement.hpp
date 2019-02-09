@@ -10,12 +10,10 @@
 
 #include "db_typedef.hpp"
 
-#ifndef MYSQLPP_MYSQL_HEADERS_BURIED
-#	define MYSQLPP_MYSQL_HEADERS_BURIED
-#endif
-
-#include <mysql++/connection.h>
-
+namespace mysqlpp
+{
+	class Connection;
+}
 
 class CourseManagement
 {

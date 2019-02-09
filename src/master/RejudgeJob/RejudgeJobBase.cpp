@@ -131,8 +131,8 @@ void RejudgeJobBase::clear_redis_info() noexcept try
 {
 	this->UpdateJobBase::clear_this_jobs_info_in_redis();
 
-	kerbal::redis_v2::connection & redis_conn = *sync_fetch_redis_conn();
-	kerbal::redis_v2::operation opt(redis_conn);
+    auto redis_conn_handler = sync_fetch_redis_conn();
+	kerbal::redis_v2::operation opt(*redis_conn_handler);
 
 	try {
 		boost::format judge_status_templ("judge_status:%d:%d");

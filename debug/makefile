@@ -12,7 +12,7 @@ slave:
 									compile_options="-std=c++11 -DTRACK_RESOURCE_FREE=false -DDEBUG -O2 -g3 -Wall -c -fmessage-length=0 -MMD -MP" \
 									linker=g++ \
 									linker_name="GCC C++ Linker" \
-									link_options="-lseccomp -lhiredis -lmysqlpp -pthread" \
+									link_options="-lseccomp -lhiredis -pthread" \
 									obj_folder=../../debug/obj \
 									slave_bin_name=../../debug/ts_judger_slave
 
@@ -25,7 +25,7 @@ master:
 									compile_options="-std=c++11 -DTRACK_RESOURCE_FREE=false -DDEBUG -O2 -g3 -Wall -c -fmessage-length=0 -MMD -MP" \
 									linker=g++ \
 									linker_name="GCC C++ Linker" \
-									link_options="-lhiredis -lmysqlpp -pthread" \
+									link_options="-lhiredis -lmysqlpp -lmysqlclient -pthread" \
 									obj_folder=../../debug/obj \
 									master_bin_name=../../debug/ts_judger_master
 

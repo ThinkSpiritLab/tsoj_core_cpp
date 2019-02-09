@@ -63,8 +63,8 @@ void register_self() noexcept try
 	using namespace std::chrono;
 	using namespace kerbal::compatibility::chrono_suffix;
 
-	auto redis_conn_handle = sync_fetch_redis_conn();
-	auto & regist_self_conn = *redis_conn_handle;
+	auto redis_conn_handler = sync_fetch_redis_conn();
+	auto & regist_self_conn = *redis_conn_handler;
 	LOG_INFO(0, 0, log_fp, "Regist_self thread get context.");
 	kerbal::redis_v2::operation opt(regist_self_conn);
 	kerbal::redis_v2::hash judge_server(regist_self_conn, "judge_server:" + judge_server_id);
@@ -187,8 +187,8 @@ void load_config(const char * config_file)
 
 void update_contest_scoreboard_handler()
 {
-	auto redis_conn_handle = sync_fetch_redis_conn();
-	auto & redis_conn = *redis_conn_handle;
+	auto redis_conn_handler = sync_fetch_redis_conn();
+	auto & redis_conn = *redis_conn_handler;
 
 	kerbal::redis_v2::list update_queue(redis_conn, "update_contest_scoreboard_queue");
 
@@ -315,7 +315,8 @@ void start_up_refresh()
 void listenning_loop()
 {
 	// 连接 redis 的 update_queue 队列，master 据此进行更新操作
-	kerbal::redis_v2::list update_queue(*sync_fetch_redis_conn(), "update_queue");
+	auto redis_conn_handler = sync_fetch_redis_conn();
+	kerbal::redis_v2::list update_queue(*redis_conn_handler, "update_queue");
 
 	std::deque<std::future<void> > future_group;
 
@@ -339,10 +340,6 @@ void listenning_loop()
 			EXCEPT_FATAL(0, 0, log_fp, "Fail to fetch job.", e);
 			queue_pop_exception = std::current_exception();
 			//DO NOT THROW
-		} catch (...) {
-			UNKNOWN_EXCEPT_FATAL(0, 0, log_fp, "Fail to fetch job.");
-			queue_pop_exception = std::current_exception();
-			//DO NOT THROW
 		}
 
 		try {
@@ -360,7 +357,8 @@ void listenning_loop()
 			// 避免了无效操作的消耗与可能导致的其他逻辑混乱
 			// 此外，unique_ptr 的特性决定了其不应该使用值传递的方式。
 			// 而使用 std::move 将其强制转换为右值引用，是为了使用移动构造函数来优化性能（吗？这个不确定）
-			job = make_update_job(jobType, s_id, *sync_fetch_redis_conn());
+			auto redis_conn_handler = sync_fetch_redis_conn();
+			job = make_update_job(jobType, s_id, *redis_conn_handler);
 		} catch (const std::exception & e) {
 			EXCEPT_FATAL(jobType, s_id, log_fp, "Job construct failed!", e);
 			continue;
@@ -371,19 +369,21 @@ void listenning_loop()
 
 		try {
 			// 执行本次 update job
-			future_group.push_back(std::async(std::launch::async, [j=std::move(job), jobType, s_id]() {
-				// 本次更新开始时间
-					PROFILE_HEAD
-					try {
-						j->handle();
-					} catch (const std::exception & e) {
-						EXCEPT_FATAL(jobType, s_id, log_fp, "Job handle failed!", e);
-						throw e;
-					}
-					// 本次更新结束时间
-					PROFILE_TAIL(jobType, s_id, log_fp, "Update finished");
-					LOG_INFO(jobType, s_id, log_fp, "Update finished");
-				}));
+			future_group.push_back(std::async(std::launch::async,
+                 [j=std::move(job), jobType, s_id]() {
+			        // 本次更新开始时间
+                    PROFILE_HEAD
+                    try {
+                        j->handle();
+                    } catch (const std::exception & e) {
+                        EXCEPT_FATAL(jobType, s_id, log_fp, "Job handle failed!", e);
+                        throw e;
+                    }
+                    // 本次更新结束时间
+                    PROFILE_TAIL(jobType, s_id, log_fp, "Update finished");
+                    LOG_INFO(jobType, s_id, log_fp, "Update finished");
+			    }
+			));
 		} catch (const std::exception & e) {
 			EXCEPT_FATAL(jobType, s_id, log_fp, "Job handle failed!", e);
 		} catch (...) {
@@ -398,7 +398,7 @@ void listenning_loop()
 			}
 		};
 
-		while (future_group.size() >= 20) {
+		while (future_group.size() >= 25) {
 			try {
 				future_group.front().get();
 				future_group.pop_front();

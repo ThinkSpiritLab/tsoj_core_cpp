@@ -1,23 +1,23 @@
 
 SRCS += \
 ./compare.cpp \
-./Config.cpp \
 ./ExecuteArgs.cpp \
-./JudgeJob.cpp \
+./ProtectedProcess \
+./SingleTestJudgeJob.cpp \
 ./slave.cpp
 
 OBJS += \
 $(obj_folder)/compare.o \
-$(obj_folder)/Config.o \
 $(obj_folder)/ExecuteArgs.o \
-$(obj_folder)/JudgeJob.o \
+$(obj_folder)/ProtectedProcess.o \
+$(obj_folder)/SingleTestJudgeJob.o \
 $(obj_folder)/slave.o
 
 DEPS += \
 $(obj_folder)/compare.d \
-$(obj_folder)/Config.d \
 $(obj_folder)/ExecuteArgs.d \
-$(obj_folder)/JudgeJob.d \
+$(obj_folder)/ProtectedProcess.d \
+$(obj_folder)/SingleTestJudgeJob.d \
 $(obj_folder)/slave.d
 
 include_path += \

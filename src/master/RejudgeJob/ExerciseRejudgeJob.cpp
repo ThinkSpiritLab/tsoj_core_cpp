@@ -54,7 +54,7 @@ void ExerciseRejudgeJob::update_user_problem(mysqlpp::Connection & mysql_conn)
 	try {
 		ExerciseManagement::update_user_problem(mysql_conn, u_id, p_id);
 	} catch (const std::exception & e) {
-		EXCEPT_FATAL(jobType, s_id, log_fp, "Update problem's submit and accept num failed!", e);
+		EXCEPT_FATAL(jobType, s_id, log_fp, "Update user problem failed!", e);
 		throw;
 	}
 }
@@ -66,7 +66,7 @@ void ExerciseRejudgeJob::update_user_problem_status(mysqlpp::Connection & mysql_
 	try {
 		ExerciseManagement::update_user_problem_status(mysql_conn, u_id, p_id);
 	} catch (const std::exception & e) {
-		EXCEPT_FATAL(jobType, s_id, log_fp, "Update problem's submit and accept num failed!", e);
+		EXCEPT_FATAL(jobType, s_id, log_fp, "Update user problem status failed failed!", e);
 		throw;
 	}
 }

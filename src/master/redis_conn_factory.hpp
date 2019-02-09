@@ -20,14 +20,10 @@ inline redis_conn_pool_type redis_conn_pool;
 inline void add_redis_conn()
 {
 	kerbal::redis_v2::connection * redis_conn = new kerbal::redis_v2::connection(redis_hostname, redis_port);
-	try {
-		if (!*redis_conn) {
-			throw std::runtime_error("failed connect");
-		}
-	} catch (...) {
-		delete redis_conn;
-		redis_conn = nullptr;
-		throw;
+	if (!*redis_conn) {
+	    delete redis_conn;
+	    redis_conn = nullptr;
+	    throw std::runtime_error("failed connect");
 	}
 	redis_conn_pool.add(std::move(redis_conn));
 	redis_conn = nullptr;
@@ -39,6 +35,7 @@ inline redis_conn_pool_type::auto_revert_handle sync_fetch_redis_conn()
 	redis_conn_pool_type::auto_revert_handle redis_conn_handle = redis_conn_pool.sync_fetch();
 	while (!*redis_conn_handle) {
 		redis_conn_handle.abandon();
+		std::cerr << "abandon" << std::endl;
 		add_redis_conn();
 		redis_conn_handle = redis_conn_pool.sync_fetch();
 	}

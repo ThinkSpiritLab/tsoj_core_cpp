@@ -27,7 +27,6 @@ extern std::ostream log_fp;
 
 std::pair<int, ojv4::s_id_type> JobBase::parseJobItem(const std::string & args)
 {
-
 	std::string job_item = args;
 	std::string::size_type cut_point = job_item.find(',');
 
@@ -99,7 +98,8 @@ kerbal::redis_v2::reply JobBase::get_source_code() const
 	kerbal::redis_v2::reply reply;
 	std::vector<std::string> argv = { "hget", "source_code:%d:%d"_fmt(jobType, s_id).str(), "source" };
 	try {
-		reply = sync_fetch_redis_conn()->argv_execute(argv.begin(), argv.end());
+        auto redis_conn_handler = sync_fetch_redis_conn();
+		reply = redis_conn_handler->argv_execute(argv.begin(), argv.end());
 	} catch (const std::exception & e) {
 		EXCEPT_FATAL(jobType, s_id, log_fp, "Get source code failed!", e);
 		throw;
@@ -147,7 +147,8 @@ void JobBase::commitJudgeStatusToRedis(JudgeStatus status) try
 {
 	// status为枚举类，在 redis 存储时用其对应的序号表示
 	std::vector<std::string> argv = { "hset", "judge_status:%d:%d"_fmt(jobType, s_id).str(), "status", std::to_string(int(status)) };
-	sync_fetch_redis_conn()->argv_execute(argv.begin(), argv.end());
+    auto redis_conn_handler = sync_fetch_redis_conn();
+    redis_conn_handler->argv_execute(argv.begin(), argv.end());
 }
 catch (const std::exception & e) {
 	EXCEPT_FATAL(jobType, s_id, log_fp, "Commit judge status failed.", e, ", judge status: ", status);

@@ -33,16 +33,18 @@ extern std::ofstream log_fp;
 std::unique_ptr<UpdateJobBase>
 make_update_job(int jobType, ojv4::s_id_type s_id, kerbal::redis_v2::connection & redis_conn)
 {
+    LOG_DEBUG(jobType, s_id, log_fp, BOOST_CURRENT_FUNCTION);
+
 	using return_type = std::unique_ptr<UpdateJobBase>;
 	using kerbal::data_struct::optional;
 	using kerbal::data_struct::nullopt;
 
-	boost::format key_name_tmpl("job_info:%d:%d");
+	thread_local static boost::format key_name_tmpl("job_info:%d:%d");
 	kerbal::redis_v2::hash h(redis_conn, (key_name_tmpl % jobType % s_id).str());
 
-	optional<int> is_rejudge(nullopt);
+	bool is_rejudge = false;
 	try {
-		is_rejudge = h.hget<optional<int>>("is_rejudge");
+		is_rejudge = static_cast<bool>(h.hget<optional<int>>("is_rejudge").value_or(0));
 	} catch (const std::exception & e) {
 		EXCEPT_FATAL(jobType, s_id, log_fp, "Get is_rejudge failed!", e);
 		throw;
@@ -60,6 +62,7 @@ make_update_job(int jobType, ojv4::s_id_type s_id, kerbal::redis_v2::connection 
 	 */
 	if (jobType == 0) {
 
+
 		optional<ojv4::c_id_type> c_id(nullopt);
 		try {
 			c_id = h.hget<optional<ojv4::c_id_type>>("cid");
@@ -73,20 +76,20 @@ make_update_job(int jobType, ojv4::s_id_type s_id, kerbal::redis_v2::connection 
 
 		if (c_id != nullopt && *c_id != 0_c_id) { // 取到的课程 id 不为空, 且明确非零情况下, 表明这是一个课程任务, 而不是练习任务
 
-			if (is_rejudge != nullopt && is_rejudge.ignored_get() == true) { // 取到的 is_rejudge 字段非空, 且明确为真的情况下, 表明这是一个重评任务
+			if (is_rejudge == true) { // 取到的 is_rejudge 字段非空, 且明确为真的情况下, 表明这是一个重评任务
 				return return_type(new CourseRejudgeJob(jobType, s_id, *c_id, redis_conn));
 			} else {
 				return return_type(new CourseUpdateJob(jobType, s_id, *c_id, redis_conn));
 			}
 		} else {
-			if (is_rejudge != nullopt && is_rejudge.ignored_get() == true) {
+			if (is_rejudge == true) {
 				return return_type(new ExerciseRejudgeJob(jobType, s_id, redis_conn));
 			} else {
 				return return_type(new ExerciseUpdateJob(jobType, s_id, redis_conn));
 			}
 		}
 	} else {
-		if (is_rejudge != nullopt && is_rejudge.ignored_get() == true) {
+		if (is_rejudge == true) {
 			return return_type(new ContestRejudgeJob(jobType, s_id, redis_conn));
 		} else {
 			return return_type(new ContestUpdateJob(jobType, s_id, redis_conn));
@@ -106,7 +109,7 @@ UpdateJobBase::UpdateJobBase(int jobType, ojv4::s_id_type s_id, kerbal::redis_v2
 
 	{
 		// 取 job 信息
-		boost::format key_name_tmpl("job_info:%d:%d");
+		thread_local static boost::format key_name_tmpl("job_info:%d:%d");
 		kerbal::redis_v2::hash h(redis_conn, (key_name_tmpl % jobType % s_id).str());
 		std::vector<optional<std::string>> job_info = h.hmget(
 				"uid",
@@ -118,7 +121,7 @@ UpdateJobBase::UpdateJobBase(int jobType, ojv4::s_id_type s_id, kerbal::redis_v2
 
 	{
 		// 取评测结果
-		boost::format judge_status_name_tmpl("judge_status:%d:%d");
+		thread_local static boost::format judge_status_name_tmpl("judge_status:%d:%d");
 		kerbal::redis_v2::hash h(redis_conn, (judge_status_name_tmpl % jobType % s_id).str());
 		std::vector<optional<std::string>> judge_status = h.hmget(
 				"result",
@@ -239,10 +242,6 @@ void UpdateJobBase::handle()
 			EXCEPT_FATAL(jobType, s_id, log_fp, "MySQL commit failed!", e);
 			commit_exception = std::current_exception();
 			//DO NOT THROW
-		} catch (...) {
-			UNKNOWN_EXCEPT_FATAL(jobType, s_id, log_fp, "MySQL commit failed!");
-			commit_exception = std::current_exception();
-			//DO NOT THROW
 		}
 	}
 
@@ -261,7 +260,7 @@ void UpdateJobBase::handle()
 	this->commitJudgeStatusToRedis(JudgeStatus::UPDATED);
 
 	// Step 8: 清除 redis 中过于久远的 solution 数据, 这些 redis 缓存过于久远以致 Web 不大可能访问的到
-	this->clear_previous_jobs_info_in_redis();
+	//this->clear_previous_jobs_info_in_redis();
 
 }
 
@@ -269,8 +268,8 @@ void UpdateJobBase::handle()
 
 kerbal::redis_v2::reply UpdateJobBase::get_compile_info() const
 {
-	kerbal::redis_v2::connection & redis_conn = *sync_fetch_redis_conn();
-	kerbal::redis_v2::reply reply = redis_conn.execute("get compile_info:%d:%d", this->jobType, this->s_id.to_literal());
+    auto redis_conn_handler = sync_fetch_redis_conn();
+	kerbal::redis_v2::reply reply = redis_conn_handler->execute("get compile_info:%d:%d", this->jobType, this->s_id.to_literal());
 
 	if (reply.type() != kerbal::redis_v2::reply_type::STRING) {
 		throw std::runtime_error("Wrong compile info type. Expected: STRING, actually get: " + reply_type_name(reply.type()));
@@ -286,20 +285,21 @@ void UpdateJobBase::clear_previous_jobs_info_in_redis() noexcept try
 		return;
 	}
 	int prev_s_id = this->s_id.to_literal() - REDIS_SOLUTION_MAX_NUM;
-	kerbal::redis_v2::connection & redis_conn = *sync_fetch_redis_conn();
+
+    auto redis_conn_handler = sync_fetch_redis_conn();
+	kerbal::redis_v2::connection & redis_conn = *redis_conn_handler;
 	boost::format judge_status_templ("judge_status:%d:%d");
 
-	JudgeStatus judge_status = JudgeStatus::UPDATED;
 	try {
+		JudgeStatus judge_status = JudgeStatus::UPDATED;
 		kerbal::redis_v2::hash h(redis_conn, (judge_status_templ % jobType % prev_s_id).str());
 		judge_status = (JudgeStatus) h.hget<int>("status");
+		if (judge_status != JudgeStatus::UPDATED) {
+			return;
+		}
 	} catch (const std::exception & e) {
 		EXCEPT_FATAL(jobType, s_id, log_fp, "Get judge status failed!", e);
 		return; //DO NOT THROW
-	}
-
-	if (judge_status != JudgeStatus::UPDATED) {
-		return;
 	}
 
 	kerbal::redis_v2::operation opt(redis_conn);
@@ -340,7 +340,8 @@ void UpdateJobBase::clear_this_jobs_info_in_redis() noexcept try
 {
 	using namespace kerbal::redis;
 
-	kerbal::redis_v2::connection & redis_conn = *sync_fetch_redis_conn();
+    auto redis_conn_handler = sync_fetch_redis_conn();
+	kerbal::redis_v2::connection & redis_conn = *redis_conn_handler;
 	kerbal::redis_v2::operation opt(redis_conn);
 	try {
 		boost::format source_code("source_code:%d:%d");
@@ -391,6 +392,4 @@ void UpdateJobBase::core_update_failed_table(const kerbal::redis::RedisReply & s
 //	}
 } catch(const std::exception & e) {
 	EXCEPT_FATAL(jobType, s_id, log_fp, "Update failed table failed!", e);
-} catch(...) {
-	UNKNOWN_EXCEPT_FATAL(jobType, s_id, log_fp, "Update failed table failed!");
 }

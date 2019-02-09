@@ -17,6 +17,7 @@
 #endif
 
 #include <mysql++/query.h>
+#include <mysql++/connection.h>
 
 using namespace std::string_literals;
 
@@ -340,14 +341,20 @@ void CourseManagement::update_user_problem(mysqlpp::Connection & conn, ojv4::c_i
 		}
 	}
 
-	mysqlpp::SimpleResult update_res;
 	if (previous_status == ojv4::u_p_status_enum::TODO) {
 		mysqlpp::Query insert = conn.query(
 				"insert into user_problem (u_id, p_id, status, c_id) "
 				"values (%0, %1, %2, %3)"
 		);
 		insert.parse();
-		update_res = insert.execute(u_id, p_id, int(new_status), c_id);
+        if (!insert.execute(u_id, p_id, int(new_status), c_id)) {
+            throw std::runtime_error("Insert user-problem failed!"s
+             		+ " c_id = " + std::to_string(c_id)
+                    + " u_id = " + std::to_string(u_id)
+                    + " p_id = " + std::to_string(p_id)
+                    + " MySQL errnum: " + std::to_string(conn.errnum())
+                    + " MySQL error: " + conn.error());
+        }
 	} else if (previous_status != new_status) {
 		mysqlpp::Query update = conn.query(
 				"update user_problem set "
@@ -355,16 +362,15 @@ void CourseManagement::update_user_problem(mysqlpp::Connection & conn, ojv4::c_i
 				"where u_id = %1 and p_id = %2 and c_id = %3"
 		);
 		update.parse();
-		update_res = update.execute(int(new_status), u_id, p_id, c_id);
-	}
-	if (!update_res) {
-		throw std::runtime_error("Update user-problem failed!"s
-				+ " c_id = " + std::to_string(c_id)
-				+ " u_id = " + std::to_string(u_id)
-				+ " p_id = " + std::to_string(p_id)
-				+ " MySQL errnum: " + std::to_string(conn.errnum())
-				+ " MySQL error: " + conn.error());
-	}
+        if (!update.execute(int(new_status), u_id, p_id, c_id)) {
+            throw std::runtime_error("Update user-problem failed!"s
+             		+ " c_id = " + std::to_string(c_id)
+             		+ " u_id = " + std::to_string(u_id)
+             		+ " p_id = " + std::to_string(p_id)
+             		+ " MySQL errnum: " + std::to_string(conn.errnum())
+             		+ " MySQL error: " + conn.error());
+        }
+    }
 }
 
 
