@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.10)
 project(Core)
 
-set(CMAKE_CXX_STANDARD 17)
 
-find_package(nlohmann_json 3.2.0 REQUIRED)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -Wall")
 
 include_directories(src/master)
 include_directories(src/master/Management)

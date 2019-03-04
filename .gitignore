@@ -2,10 +2,7 @@
 /release/
 /.idea/
 /.tracecompass/
-<<<<<<< HEAD
 /bin/
-=======
->>>>>>> refs/heads/rejudge_press_test
 /sync
-/cmake-build-debug/
 /cmake_test/
+/master_profile_eclipse/
