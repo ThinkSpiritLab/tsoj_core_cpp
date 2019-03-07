@@ -1,0 +1,3 @@
+[submodule "dependence/Kerbal"]
+	path = dependence/Kerbal
+	url = https://github.com/WentsingNee/Kerbal.git
