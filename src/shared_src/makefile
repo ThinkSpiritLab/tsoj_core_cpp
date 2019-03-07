@@ -1,36 +1,18 @@
-compiler := g++
-compiler_name := GCC C++ Compiler
-
-ifeq ($(configuration), release)
-	obj_folder := ../../release/obj
-	compile_options := -std=c++11 -O2 -Wall -c -fmessage-length=0 -MMD -MP
-else ifeq ($(configuration), debug)
-	obj_folder := ../../debug/obj
-	compile_options := -std=c++11 -DTRACK_RESOURCE_FREE=false -DDEBUG -O2 -g3 -Wall -c -fmessage-length=0 -MMD -MP
-else
-$(error undefined configuration)
-endif
 
 SRCS += \
 ./JobBase.cpp \
 ./load_helper.cpp \
-./logger.cpp \
-./Result.cpp \
-./united_resource.cpp
+./logger.cpp
 
 OBJS += \
 $(obj_folder)/JobBase.o \
 $(obj_folder)/load_helper.o \
-$(obj_folder)/logger.o \
-$(obj_folder)/Result.o \
-$(obj_folder)/united_resource.o
+$(obj_folder)/logger.o
 
 DEPS += \
 $(obj_folder)/JobBase.d \
 $(obj_folder)/load_helper.d \
-$(obj_folder)/logger.d \
-$(obj_folder)/Result.d \
-$(obj_folder)/united_resource.d
+$(obj_folder)/logger.d
 
 BLUE_TEXT_BEGIN := \033[1m\033[36m
 YELLOW_TEXT_BEGIN := \033[1m\033[33m

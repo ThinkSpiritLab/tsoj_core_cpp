@@ -6,6 +6,8 @@ const costream_ns::costream<std::cout> Log_level_traits<LogLevel::LEVEL_FATAL>::
 const costream_ns::costream<std::cout> Log_level_traits<LogLevel::LEVEL_INFO>::outstream(costream_ns::LAKE_BLUE);
 const costream_ns::costream<std::cout> Log_level_traits<LogLevel::LEVEL_WARNING>::outstream(costream_ns::LIGHT_YELLOW);
 const costream_ns::costream<std::cout> Log_level_traits<LogLevel::LEVEL_DEBUG>::outstream(costream_ns::LIGHT_PURPLE);
+const costream_ns::costream<std::cout> Log_level_traits<LogLevel::LEVEL_PROFILE>::outstream(costream_ns::LIGHT_GREEN);
+
 
 std::string get_ymd_hms_in_local_time_zone(time_t time) noexcept
 {

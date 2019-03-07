@@ -1,13 +1,13 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
-#include "cptr.hpp"
 #include <iostream>
 #include <sstream>
-
-#include <kerbal/utility/costream.hpp>
-
+#include <mutex>
 #include <boost/format.hpp>
+#include <kerbal/utility/costream.hpp>
+#include <kerbal/compatibility/chrono_suffix.hpp>
+#include "db_typedef.hpp"
 
 namespace costream_ns = kerbal::utility::costream;
 
@@ -19,7 +19,7 @@ extern costream_ns::costream<std::cerr> ccerr;
  */
 enum class LogLevel
 {
-	LEVEL_FATAL = 0, LEVEL_WARNING = 1, LEVEL_INFO = 2, LEVEL_DEBUG = 3
+	LEVEL_FATAL = 0, LEVEL_WARNING = 1, LEVEL_INFO = 2, LEVEL_DEBUG = 3, LEVEL_PROFILE = 4
 };
 
 /**
@@ -57,6 +57,13 @@ struct Log_level_traits<LogLevel::LEVEL_DEBUG>
 		static const costream_ns::costream<std::cout> outstream;
 };
 
+template <>
+struct Log_level_traits<LogLevel::LEVEL_PROFILE>
+{
+		static constexpr const char * str = "PROF";
+		static const costream_ns::costream<std::cout> outstream;
+};
+
 /**
  * @}
  */
@@ -73,7 +80,7 @@ template <typename Tp, typename ...Up>
 void multi_args_write(std::ostream & log_fp, Tp && arg0, Up&& ...args)
 {
 	log_fp << arg0;
-	multi_args_write(log_fp, args...);
+	multi_args_write(log_fp, std::forward<Up>(args)...);
 }
 
 namespace ts_judger
@@ -98,7 +105,7 @@ namespace ts_judger
 		template <typename Type>
 		Type && cptr_cast(Type && src) noexcept
 		{
-			return src;
+			return std::move(src);
 		}
 
 		template <size_t N>
@@ -121,6 +128,9 @@ namespace ts_judger
 
 				std::ostringstream buffer;
 
+				static std::mutex cout_mtx;
+				std::lock_guard<std::mutex> gard(cout_mtx);
+
 				multi_args_write(buffer, log::templ % datetime % (const char *) Log_level_traits<level>::str % type % job_id % source_filename % line, std::forward<T>(args)...);
 
 				Log_level_traits<level>::outstream << buffer.str() << std::endl;
@@ -128,6 +138,7 @@ namespace ts_judger
 
 				if (log_file.fail()) { //http://www.cplusplus.com/reference/ios/ios/fail/
 					std::cerr << "write error!" << std::endl;
+					log_file.clear();
 					return;
 				}
 			} catch (...) {
@@ -139,9 +150,27 @@ namespace ts_judger
 } /* namespace ts_judger */
 
 template <LogLevel level, typename ...T>
+void log_write(int type, ojv4::s_id_type job_id, const char source_filename[], int line, std::ostream & log_file, T&& ... args) noexcept
+{
+	ts_judger::log::__log_write<level>(type, job_id.to_literal(), source_filename, line, log_file, ts_judger::log::cptr_cast(std::forward<T>(args))...);
+}
+
+template <LogLevel level, typename ...T>
+void log_write(int type, ojv4::s_id_type job_id, const char source_filename[], int line, std::ofstream & log_file, T&& ... args) noexcept
+{
+	ts_judger::log::__log_write<level>(type, job_id.to_literal(), source_filename, line, (std::ostream&)(log_file), ts_judger::log::cptr_cast(std::forward<T>(args))...);
+}
+
+template <LogLevel level, typename ...T>
 void log_write(int type, int job_id, const char source_filename[], int line, std::ostream & log_file, T&& ... args) noexcept
 {
-	ts_judger::log::__log_write<level>(type, job_id, source_filename, line, log_file, ts_judger::log::cptr_cast(args)...);
+	ts_judger::log::__log_write<level>(type, job_id, source_filename, line, log_file, ts_judger::log::cptr_cast(std::forward<T>(args))...);
+}
+
+template <LogLevel level, typename ...T>
+void log_write(int type, int job_id, const char source_filename[], int line, std::ofstream & log_file, T&& ... args) noexcept
+{
+	ts_judger::log::__log_write<level>(type, job_id, source_filename, line, (std::ostream&)(log_file), ts_judger::log::cptr_cast(std::forward<T>(args))...);
 }
 
 #define UNKNOWN_EXCEPTION_WHAT (const char*)("unknown exception")
@@ -150,7 +179,8 @@ void log_write(int type, int job_id, const char source_filename[], int line, std
 #	undef LOG_DEBUG
 #endif
 #ifdef DEBUG
-#	define LOG_DEBUG(type, job_id, log_fp, x...)	log_write<LogLevel::LEVEL_DEBUG>(type, job_id, __FILE__, __LINE__, log_fp, ##x)
+#	define LOG_DEBUG(type, job_id, log_fp, x...) \
+	log_write<LogLevel::LEVEL_DEBUG>(type, job_id, __FILE__, __LINE__, log_fp, ##x)
 #else
 #	define LOG_DEBUG(type, job_id, log_fp, x...)
 #endif
@@ -158,40 +188,76 @@ void log_write(int type, int job_id, const char source_filename[], int line, std
 #ifdef LOG_INFO
 #	undef LOG_INFO
 #endif
-#define LOG_INFO(type, job_id, log_fp, x...)		log_write<LogLevel::LEVEL_INFO>(type, job_id, __FILE__, __LINE__, log_fp, ##x)
+#define LOG_INFO(type, job_id, log_fp, x...) \
+	log_write<LogLevel::LEVEL_INFO>(type, job_id, __FILE__, __LINE__, log_fp, ##x)
 
 #ifdef LOG_WARNING
 #	undef LOG_WARNING
 #endif
-#define LOG_WARNING(type, job_id, log_fp, x...)		log_write<LogLevel::LEVEL_WARNING>(type, job_id, __FILE__, __LINE__, log_fp, ##x)
+#define LOG_WARNING(type, job_id, log_fp, x...)	 \
+	log_write<LogLevel::LEVEL_WARNING>(type, job_id, __FILE__, __LINE__, log_fp, ##x)
 
 #ifdef LOG_FATAL
 #	undef LOG_FATAL
 #endif
-#define LOG_FATAL(type, job_id, log_fp, x...)		log_write<LogLevel::LEVEL_FATAL>(type, job_id, __FILE__, __LINE__, log_fp, ##x)
+#define LOG_FATAL(type, job_id, log_fp, x...) \
+	log_write<LogLevel::LEVEL_FATAL>(type, job_id, __FILE__, __LINE__, log_fp, ##x)
 
+#ifdef LOG_PROFILE
+#	undef LOG_PROFILE
+#	undef PROFILE_HEAD
+#	undef PROFILE_TAIL
+#endif
+#ifdef PROFILE
+#	define LOG_PROFILE(type, job_id, log_fp, args...) \
+		log_write<LogLevel::LEVEL_PROFILE>(type, job_id, __FILE__, __LINE__, log_fp, ##args)
+#	define PROFILE_HEAD \
+		using namespace kerbal::compatibility::chrono_suffix; \
+		auto __profile_start = std::chrono::system_clock::now();
+#	define PROFILE_TAIL(type, job_id, log_fp, args...) \
+		LOG_PROFILE(type, job_id, log_fp, BOOST_CURRENT_FUNCTION, ": consume: ", \
+		std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - __profile_start).count(), " ms ", ##args);
+
+#	define PROFILE_WARNING_TAIL(type, job_id, log_fp, consume_threshold, args...) \
+		auto __profile_ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - __profile_start); \
+		if (__profile_ms > consume_threshold) { \
+			PROFILE_TAIL(type, job_id, log_fp, ##args); \
+		}
+
+#else
+#	define LOG_PROFILE(type, job_id, log_fp, args...)
+#	define PROFILE_HEAD
+#	define PROFILE_TAIL(type, job_id, log_fp, args...)
+#	define PROFILE_WARNING_TAIL(type, job_id, log_fp, consume_threshold, args...)
+#endif
 
 #ifdef EXCEPT_WARNING
 #	undef EXCEPT_WARNING
 #endif
-#define EXCEPT_WARNING(type, job_id, log_fp, events, exception, x...)	LOG_WARNING(type, job_id, log_fp, events, \
-																		" Error information: ", exception.what(), "  Exception type: ", typeid(exception).name(), ##x)
+#define EXCEPT_WARNING(type, job_id, log_fp, events, exception, x...) \
+	LOG_WARNING(type, job_id, log_fp, events, \
+	" Error information: ", exception.what(), "  Exception type: ", typeid(exception).name(), ##x)
+
 #ifdef UNKNOWN_EXCEPT_WARNING
 #	undef UNKNOWN_EXCEPT_WARNING
 #endif
-#define UNKNOWN_EXCEPT_WARNING(type, job_id, log_fp, events, x...)	LOG_WARNING(type, job_id, log_fp, events, \
-																		" Error information: ", UNKNOWN_EXCEPTION_WHAT, ##x)
+#define UNKNOWN_EXCEPT_WARNING(type, job_id, log_fp, events, x...)	\
+	LOG_WARNING(type, job_id, log_fp, events, \
+	" Error information: ", UNKNOWN_EXCEPTION_WHAT, ##x)
 
 #ifdef EXCEPT_FATAL
 #	undef EXCEPT_FATAL
 #endif
-#define EXCEPT_FATAL(type, job_id, log_fp, events, exception, x...)	    LOG_FATAL(type, job_id, log_fp, events, \
-																		" Error information: ", exception.what(), "  Exception type: ", typeid(exception).name(), ##x)
+#define EXCEPT_FATAL(type, job_id, log_fp, events, exception, x...)	 \
+	LOG_FATAL(type, job_id, log_fp, events, \
+	" Error information: ", exception.what(), "  Exception type: ", typeid(exception).name(), ##x)
+
 #ifdef UNKNOWN_EXCEPT_FATAL
 #	undef UNKNOWN_EXCEPT_FATAL
 #endif
-#define UNKNOWN_EXCEPT_FATAL(type, job_id, log_fp, events, x...)	    LOG_FATAL(type, job_id, log_fp, events, \
-																		" Error information: ", UNKNOWN_EXCEPTION_WHAT, ##x)
+#define UNKNOWN_EXCEPT_FATAL(type, job_id, log_fp, events, x...) \
+	LOG_FATAL(type, job_id, log_fp, events, \
+	" Error information: ", UNKNOWN_EXCEPTION_WHAT, ##x)
 
 #endif //LOGGER_H
 

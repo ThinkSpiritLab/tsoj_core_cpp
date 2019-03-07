@@ -8,24 +8,33 @@
 #ifndef SRC_RESULT_HPP_
 #define SRC_RESULT_HPP_
 
-#include "united_resource.hpp"
-
-#include <kerbal/utility/storage.hpp>
-
+#include "db_typedef.hpp"
 #include <iostream>
 #include <chrono>
 
 struct SolutionDetails
 {
-		UnitedJudgeResult judge_result;
-		std::chrono::milliseconds cpu_time;
-		std::chrono::milliseconds real_time;
-		kerbal::utility::Byte memory;
-		int similarity_percentage;
+		ojv4::s_result_enum judge_result;
+		ojv4::s_time_in_milliseconds cpu_time;
+		ojv4::s_time_in_milliseconds real_time;
+		ojv4::s_mem_in_byte memory;
 
-		SolutionDetails();
+		SolutionDetails() :
+				judge_result(ojv4::s_result_enum::ACCEPTED),
+				cpu_time(0),
+				real_time(0),
+				memory(0)
+		{
+		}
 
-		friend std::ostream& operator<<(std::ostream& out, const SolutionDetails & src);
+		friend std::ostream& operator<<(std::ostream& out, const SolutionDetails & src)
+		{
+			return out << "result: " << src.judge_result
+						<< " cpu_time: " << src.cpu_time.count() << " ms"
+						<< " real_time: " << src.real_time.count() << " ms"
+						<< " memory: " << src.memory.count() << " Byte";
+		}
+
 };
 
 struct Result : public SolutionDetails
@@ -34,24 +43,37 @@ struct Result : public SolutionDetails
 		int signal;
 		int exit_code;
 
-		/** 代码查重的相似度 */
-		int similarity_percentage;
-
 		/**
-		 * @brief Result 构造函数，结果设定 为AC，资源用量、信号、退出代码、相似度置为 0
+		 * @brief Result 构造函数，结果设定为 AC，资源用量、信号、退出代码、相似度置为 0
 		 */
-		Result();
+		Result() :
+				SolutionDetails(),
+				error(RunnerError::SUCCESS),
+				signal(0), exit_code(0)
+		{
+		}
 	
 		/**
 		 * @brief 将本结构体的 RunnerError 置为 err， 并将评测结果标为 UnitedJudgeResult::SYSTEM_ERROR
 		 * @param err 表示 RunnerError 的类型
 		 */
-		void setErrorCode(RunnerError err);
+		void setErrorCode(RunnerError err)
+		{
+			this->error = err;
+			this->judge_result = UnitedJudgeResult::SYSTEM_ERROR;
+		}
 
 		/**
-		 * @brief 重载 << 运算符，
+		 * @brief 重载 << 运算符
 		 */
-		friend std::ostream& operator<<(std::ostream& out, const Result & src);
+		friend std::ostream& operator<<(std::ostream& out, const Result & src)
+		{
+			return out << static_cast<const SolutionDetails&>(src)
+						<< " error: " << src.error
+						<< " signal: " << src.signal
+						<< " exit_code: " << src.exit_code;
+		}
+
 };
 
 #endif /* SRC_RESULT_HPP_ */

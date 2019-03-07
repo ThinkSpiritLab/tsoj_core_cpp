@@ -1,4 +1,8 @@
 /debug/
 /release/
-/cmake-build-debug/
-/test_srcipt/
+/.idea/
+/.tracecompass/
+/bin/
+/sync
+/cmake_test/
+/master_profile_eclipse/

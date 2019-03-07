@@ -8,59 +8,50 @@
 #include "logger.hpp"
 #include "load_helper.hpp"
 #include "UpdateJobBase.hpp"
+#include "mkdir_p.hpp"
 
 #include <iostream>
 #include <fstream>
 #include <csignal>
 #include <thread>
-#include <kerbal/redis/redis_data_struct/list.hpp>
-#include <kerbal/redis/redis_data_struct/set.hpp>
+#include <future>
 #include <kerbal/system/system.hpp>
 #include <kerbal/compatibility/chrono_suffix.hpp>
+#include <kerbal/utility/static_block.hpp>
+#include <kerbal/redis_v2/all.hpp>
+#include <boost/lexical_cast.hpp>
 
-#include "UpdateContestScoreboard.hpp"
+#include "ContestManagement.hpp"
+#include "CourseManagement.hpp"
+#include "ExerciseManagement.hpp"
+
+#ifndef MYSQLPP_MYSQL_HEADERS_BURIED
+#	define MYSQLPP_MYSQL_HEADERS_BURIED
+#endif
+
+#include <mysql++/query.h>
+
+#include "mysql_conn_factory.hpp"
+#include "redis_conn_factory.hpp"
+
 
 using namespace kerbal::compatibility::chrono_suffix;
-using namespace std;
 
 std::ofstream log_fp;
 
 constexpr std::chrono::minutes EXPIRE_TIME = 2_min;
-constexpr int REDIS_SOLUTION_MAX_NUM = 600;
 
 namespace
 {
 	std::string host_name; ///< 本机主机名
-
 	std::string ip; ///< 本机 IP
-
 	std::string user_name; ///< 本机当前用户名
-
 	int listening_pid; ///< 本机监听进程号
-
 	std::string judge_server_id; ///< 评测服务器id，定义为 host_name:ip
-
 	bool loop = true; ///< 主工作循环
-
-	std::string updater_init_dir; ///< updater 的临时工作路径
-
 	std::string log_file_name; ///< 日志文件名
-
 	std::string updater_lock_file; ///< lock_file,用于保证一次只能有一个 updater 守护进程在运行
-
-	std::string mysql_hostname; ///< mysql 主机名
-
-	std::string mysql_username; ///< mysql 用户名
-
-	std::string mysql_passwd; ///< mysql 密码
-
-	std::string mysql_database; ///< mysql 端口号
-
-	int redis_port; ///< redis 端口号
-
-	std::string redis_hostname; ///< redis 主机名
 }
-
 
 /**
  * @brief 发送心跳进程
@@ -72,37 +63,36 @@ void register_self() noexcept try
 	using namespace std::chrono;
 	using namespace kerbal::compatibility::chrono_suffix;
 
-	kerbal::redis::RedisContext regist_self_conn(redis_hostname.c_str(), redis_port, 1500_ms);
-	if (!regist_self_conn) {
-		LOG_FATAL(0, 0, log_fp, "Regist_self context connect failed.");
-		return;
-	}
-	LOG_INFO(0, 0, log_fp, "Regist_self service get context.");
+	auto redis_conn_handler = sync_fetch_redis_conn();
+	auto & regist_self_conn = *redis_conn_handler;
+	LOG_INFO(0, 0, log_fp, "Regist_self thread get context.");
+	kerbal::redis_v2::operation opt(regist_self_conn);
+	kerbal::redis_v2::hash judge_server(regist_self_conn, "judge_server:" + judge_server_id);
+	kerbal::redis_v2::set online_judger(regist_self_conn, "online_judger");
 
-	static kerbal::redis::Operation opt(regist_self_conn);
-	while (true) {
+	while (loop) {
 		try {
 			const time_t now = time(NULL);
 			const std::string confirm_time = get_ymd_hms_in_local_time_zone(now);
-			opt.hmset("judge_server:" + judge_server_id,
-					  "host_name"_cptr, host_name,
-					  "ip"_cptr, ip,
-					  "user_name"_cptr, user_name,
-					  "listening_pid"_cptr, listening_pid,
-					  "last_confirm"_cptr, confirm_time);
-			opt.set("judge_server_confirm:" + judge_server_id, confirm_time);
-			opt.expire("judge_server_confirm:" + judge_server_id, 30_s);
-
-			static kerbal::redis::Set<std::string> s(regist_self_conn, "online_judger");
-			s.insert(judge_server_id);
-
+			judge_server.hmset(
+				  "host_name", host_name,
+				  "ip", ip,
+				  "user_name", user_name,
+				  "listening_pid", listening_pid,
+				  "last_confirm", confirm_time
+			);
+			opt.setex("judge_server_confirm:" + judge_server_id, 30_s, confirm_time);
+			online_judger.sadd(judge_server_id);
 			std::this_thread::sleep_for(10_s);
-		} catch (const kerbal::redis::RedisException & e) {
+		} catch (const std::exception & e) {
 			EXCEPT_FATAL(0, 0, log_fp, "Register self failed.", e);
 		}
 	}
+} catch (const std::exception & e) {
+	EXCEPT_FATAL(0, 0, log_fp, "Regist_self thread works failed.", e);
+	exit(2);
 } catch (...) {
-	LOG_FATAL(0, 0, log_fp, "Register self failed. Error information: ", UNKNOWN_EXCEPTION_WHAT);
+	UNKNOWN_EXCEPT_FATAL(0, 0, log_fp, "Regist_self thread works failed.");
 	exit(2);
 }
 
@@ -117,9 +107,7 @@ void regist_SIGTERM_handler(int signum) noexcept
 {
 	using namespace kerbal::compatibility::chrono_suffix;
 	if (signum == SIGTERM) {
-		kerbal::redis::RedisContext main_conn(redis_hostname.c_str(), redis_port, 1500_ms);
-		kerbal::redis::List<std::string> job_list(main_conn, "judge_queue");
-		job_list.push_back(JobBase::getExitJobItem());
+		loop = false;
 		LOG_WARNING(0, 0, log_fp,
 					"Master has received the SIGTERM signal and will exit soon after the jobs are all finished!");
 	}
@@ -129,14 +117,14 @@ void regist_SIGTERM_handler(int signum) noexcept
  * @brief 加载 master 工作的配置
  * 根据 updater.conf 文档，读取工作配置信息。loadConfig 的工作原理详见其文档。
  */
-void load_config()
+void load_config(const char * config_file)
 {
 	using namespace kerbal::utility::costream;
-	const auto & ccerr = costream<cerr>(LIGHT_RED);
+	const auto & ccerr = costream<std::cerr>(LIGHT_RED);
 
-	std::ifstream fp("/etc/ts_judger/updater.conf", std::ios::in); //BUG "re"
+	std::ifstream fp(config_file, std::ios::in); //BUG "re"
 	if (!fp) {
-		ccerr << "can't not open updater.conf" << endl;
+		ccerr << "can't not open updater.conf" << std::endl;
 		exit(0);
 	}
 
@@ -150,7 +138,6 @@ void load_config()
 		return src;
 	};
 
-	loadConfig.add_rules(updater_init_dir, "updater_init_dir", stringAssign);
 	loadConfig.add_rules(log_file_name, "log_file", stringAssign);
 	loadConfig.add_rules(updater_lock_file, "updater_lock_file", stringAssign);
 	loadConfig.add_rules(mysql_hostname, "mysql_hostname", stringAssign);
@@ -160,29 +147,31 @@ void load_config()
 	loadConfig.add_rules(redis_port, "redis_port", castToInt);
 	loadConfig.add_rules(redis_hostname, "redis_hostname", stringAssign);
 
-	string buf;
+	std::string buf;
 	while (getline(fp, buf)) {
-		string key, value;
+		std::string key, value;
 
 		std::tie(key, value) = parse_buf(buf);
 		if (key != "" && value != "") {
 			if (loadConfig.parse(key, value) == false) {
-				ccerr << "unexpected key name" << endl;
+				ccerr << "unexpected key name: "
+					  << key << " = " << value << std::endl;
+			} else {
+				std::cout << key << " = " << value << std::endl;
 			}
-			cout << key << " = " << value << endl;
 		}
 	}
 
 	fp.close();
 
 	if (log_file_name.empty()) {
-		ccerr << "empty log file name!" << endl;
+		ccerr << "empty log file name!" << std::endl;
 		exit(0);
 	}
 
 	log_fp.open(log_file_name, std::ios::app);
 	if (!log_fp) {
-		ccerr << "log file open failed" << endl;
+		ccerr << "log file open failed" << std::endl;
 		exit(0);
 	}
 
@@ -198,165 +187,165 @@ void load_config()
 
 void update_contest_scoreboard_handler()
 {
-	// 本次更新任务的 redis 连接
-	kerbal::redis::RedisContext redisConn(redis_hostname.c_str(), redis_port, 100_ms);
-	if (!redisConn) {
-		LOG_FATAL(0, 0, log_fp, "Redis connection connect failed!");
-		loop = false;
-		exit(0);
-	}
+	auto redis_conn_handler = sync_fetch_redis_conn();
+	auto & redis_conn = *redis_conn_handler;
 
-	kerbal::redis::List<int> update_queue(redisConn, "update_contest_scoreboard_queue");
+	kerbal::redis_v2::list update_queue(redis_conn, "update_contest_scoreboard_queue");
 
 	while (loop) {
-		int ct_id = 0;
+		ojv4::ct_id_type ct_id(0);
 
 		try {
-			ct_id = update_queue.block_pop_front(0_s);
+			ct_id = boost::lexical_cast<ojv4::ct_id_type>(update_queue.blpop(0_s));
 		} catch (const std::exception & e) {
-			EXCEPT_FATAL(ct_id, 0, log_fp, "Fail to fetch job.", e);
+			EXCEPT_FATAL(0, 0, log_fp, "Fail to fetch job.", e);
 			continue;
 		} catch (...) {
-			UNKNOWN_EXCEPT_FATAL(ct_id, 0, log_fp, "Fail to fetch job.");
+			UNKNOWN_EXCEPT_FATAL(0, 0, log_fp, "Fail to fetch job.");
 			continue;
 		}
 
 		try {
-			auto start = std::chrono::steady_clock::now();
-			std::unique_ptr<mysqlpp::Connection> mysqlConn(new mysqlpp::Connection(false));
-			mysqlConn->set_option(new mysqlpp::SetCharsetNameOption("utf8"));
-			if (!mysqlConn->connect(mysql_database.c_str(), mysql_hostname.c_str(), mysql_username.c_str(), mysql_passwd.c_str())) {
-				LOG_FATAL(ct_id, 0, log_fp, "Mysql connection connect failed!");
-				continue;
-			}
-			update_contest_scoreboard(ct_id, redisConn, std::move(mysqlConn));
-			auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start);
-			LOG_INFO(0, 0, log_fp, "Update contest scoreboard success, time consume: ", ms.count(), " ms, ct_id: ", ct_id);
+			auto mysql_conn_handle = sync_fetch_mysql_conn();
+			auto & mysql_conn = *mysql_conn_handle;
+			PROFILE_HEAD
+			ContestManagement::update_scoreboard(mysql_conn, redis_conn, ct_id);
+			PROFILE_TAIL(0, 0, log_fp, "Update contest scoreboard success");
 		} catch (const std::exception & e) {
-			EXCEPT_FATAL(ct_id, 0, log_fp, "Error occurred while updating scoreboard.", e);
+			EXCEPT_FATAL(0, 0, log_fp, "Error occurred while updating scoreboard.", e);
 			continue;
 		} catch (...) {
-			UNKNOWN_EXCEPT_FATAL(ct_id, 0, log_fp, "Error occurred while updating scoreboard.");
+			UNKNOWN_EXCEPT_FATAL(0, 0, log_fp, "Error occurred while updating scoreboard.");
 			continue;
 		}
 	}
 }
 
-/**
- * @brief master 端主程序循环
- * 加载配置信息；连接数据库；取待评测任务信息，交由子进程并评测；创建并分离发送心跳线程 // to be done
- * @throw UNKNOWN_EXCEPTION
- */
-int main() try
+
+int already_running(const char * lock_file)
 {
-	using namespace kerbal::utility::costream;
-	const auto & ccerr = costream<cerr>(LIGHT_RED);
+//	int fd = open(lock_file, O_RDWR | O_CREAT, LOCKMODE);
+//	if (fd < 0) {
+//		LOG_FATAL(0, 0, log_fp, "can't open [", lock_file, "], errnum: ", strerror(errno));
+//		exit(-1);
+//	}
+//
+//	flock fl {
+//		.l_type = F_WRLCK,
+//		.l_start = 0,
+//		.l_whence = SEEK_SET,
+//		.l_len = 0
+//	};
+//
+//	if (fcntl(fd, F_SETLK, &fl) < 0) {
+//		if (errno == EACCES || errno == EAGAIN) {
+//			close(fd);
+//			return 1;
+//		}
+//		LOG_FATAL(0, 0, log_fp, "can't lock [", lock_file, "], errnum: ", strerror(errno));
+//		exit(1);
+//	}
+//	if (ftruncate(fd, 0)) {
+//		LOG_WARNING(0, 0, log_fp, "ftruncate failed!");
+//	}
+//
+//	std::string buf = std::to_string(getpid());
+//	size_t len = buf.size() + 1;
+//	ssize_t res = write(fd, buf.data(), len);
+//	if (res != len) {
+//		LOG_WARNING(0, 0, log_fp, "write failed: ", lock_file);
+//	}
+	return 0;
+}
 
-	// 运行必须具有 root 权限
-	uid_t uid = getuid();
-	if (uid != 0) {
-		ccerr << "root required!" << endl;
-		exit(-1);
-	}
 
-	load_config(); // 提醒: 此函数运行结束以后才可以使用 log 系列宏, 否则 log_fp 没打开
-	LOG_INFO(0, 0, log_fp, "Configuration load finished!");
+void start_up_refresh()
+{
+	PROFILE_HEAD
 
-	// 连接 mysql
-	LOG_INFO(0, 0, log_fp, "Connecting main MYSQL connection...");
-	mysqlpp::Connection mainMysqlConn(false);
-	mainMysqlConn.set_option(new mysqlpp::SetCharsetNameOption("utf8"));
-	if(!mainMysqlConn.connect(mysql_database.c_str(), mysql_hostname.c_str(), mysql_username.c_str(), mysql_passwd.c_str()))
+	std::deque<std::thread> th_group;
+
+	th_group.push_back(std::thread([]() {
+		ExerciseManagement::refresh_all_users_submit_and_accept_num(*sync_fetch_mysql_conn());
+		LOG_INFO(0, 0, log_fp, "Refresh all users' submit and accept num in exercise");
+	}));
+
+	th_group.push_back(std::thread([]() {
+		ExerciseManagement::refresh_all_problems_submit_and_accept_num(*sync_fetch_mysql_conn());
+		LOG_INFO(0, 0, log_fp, "Refresh all problems' submit and accept num in exercise");
+	}));
+
+	mysqlpp::StoreQueryResult courses;
 	{
-		LOG_FATAL(0, 0, log_fp, "Main MYSQL connection connect failed!");
-		exit(-1);
-	}
-	LOG_INFO(0, 0, log_fp, "Main MYSQL connection connected!");
+		auto mysql_conn_handle = sync_fetch_mysql_conn();
+		mysqlpp::Connection & mysql_conn = *mysql_conn_handle;
+		mysqlpp::Query query = mysql_conn.query(
+				"select c_id from course where c_id not in(16, 17, 22, 23)"
+		);
 
-	// 连接 redis
-	LOG_INFO(0, 0, log_fp, "Connecting main REDIS connection...");
-	kerbal::redis::RedisContext mainRedisConn(redis_hostname.c_str(), redis_port, 100_ms);
-	if (!mainRedisConn) {
-		LOG_FATAL(0, 0, log_fp, "Main REDIS connection connect failed!");
-		exit(-1);
-	}
-	LOG_INFO(0, 0, log_fp, "Main REDIS connection connected!");
-
-	#ifdef DEBUG
-	if (chdir(updater_init_dir.c_str())) {
-		LOG_FATAL(0, 0, log_fp, "Error: ", RunnerError::CHDIR_ERROR);
-		exit(-1);
-	}
-	#endif //DEBUG
-
-	try {
-		// 创建并分离发送更新竞赛榜单线程
-		std::thread regist(register_self);
-		regist.detach();
-	} catch (const std::exception & e) {
-		EXCEPT_FATAL(0, 0, log_fp, "Register self service process fork failed.", e);
-		exit(-3);
+		courses = query.store();
+		if (query.errnum() != 0) {
+			MysqlEmptyResException e(query.errnum(), query.error());
+			EXCEPT_FATAL(0, 0, log_fp, "Query courses' information failed!", e);
+			throw e;
+		}
 	}
 
-	LOG_INFO(0, 0, log_fp, "updater starting ...");
-
-	try {
-		std::thread update_contest_scoreboard_thread(update_contest_scoreboard_handler);
-		update_contest_scoreboard_thread.detach();
-	} catch(const std::exception & e) {
-		EXCEPT_FATAL(0, 0, log_fp, "Register self service process fork failed.", e);
-		exit(-3);
+	for (const auto & row : courses) {
+		ojv4::c_id_type c_id = row["c_id"];
+		th_group.push_back(std::thread([c_id]() {
+			CourseManagement::refresh_all_problems_submit_and_accept_num_in_course(*sync_fetch_mysql_conn(), c_id);
+			LOG_INFO(0, 0, log_fp, "Refresh all users' submit and accept num in course: ", c_id);
+		}));
+		th_group.push_back(std::thread([c_id]() {
+			CourseManagement::refresh_all_users_submit_and_accept_num_in_course(*sync_fetch_mysql_conn(), c_id);
+			LOG_INFO(0, 0, log_fp, "Refresh all problems' submit and accept num in course: ", c_id);
+		}));
 	}
 
-	signal(SIGTERM, regist_SIGTERM_handler);
+	for (auto & t : th_group) {
+		t.join();
+	}
 
+	// 本次更新结束时间
+	PROFILE_TAIL(0, 0, log_fp, "Refresh finished");
+
+}
+
+void listenning_loop()
+{
 	// 连接 redis 的 update_queue 队列，master 据此进行更新操作
-	kerbal::redis::List<std::string> update_queue(mainRedisConn, "update_queue");
+	auto redis_conn_handler = sync_fetch_redis_conn();
+	kerbal::redis_v2::list update_queue(*redis_conn_handler, "update_queue");
+
+	std::deque<std::future<void> > future_group;
 
 	while (loop) {
 
-		std::string job_item = "-1,-1";
-		int jobType = -1;
-		int sid = -1;
+		int jobType(0);
+		ojv4::s_id_type s_id(0);
+
+		std::exception_ptr queue_pop_exception = nullptr;
+		std::exception_ptr job_parse_exception = nullptr;
 
 		/*
 		 * 当收到 SIGTERM 信号时，会在评测队列末端加一个特殊的评测任务用于标识停止测评。此处若检测到停止
 		 * 工作的信号，则结束工作loop
 		 * 若取得的是正常的评测任务则继续工作
 		 */
+		std::string job_item;
 		try {
-			job_item = update_queue.block_pop_front(0_s);
-			if (JobBase::isExitJob(job_item) == true) {
-				loop = false;
-				LOG_INFO(0, 0, log_fp, "Get exit job.");
-				continue;
-			}
-			std::tie(jobType, sid) = JobBase::parseJobItem(job_item);
-			LOG_DEBUG(jobType, sid, log_fp, "Master get update job: ", job_item);
+			job_item = update_queue.blpop(0_s);
 		} catch (const std::exception & e) {
-			EXCEPT_FATAL(0, 0, log_fp, "Fail to fetch job.", e, "job_item: ", job_item);
-			continue;
-		} catch (...) {
-			LOG_FATAL(0, 0, log_fp, "Fail to fetch job. Error info: ", "unknown exception", "job_item: ", job_item);
-			continue;
+			EXCEPT_FATAL(0, 0, log_fp, "Fail to fetch job.", e);
+			queue_pop_exception = std::current_exception();
+			//DO NOT THROW
 		}
 
-		// 本次更新开始时间
-		auto start(std::chrono::steady_clock::now());
-		LOG_DEBUG(jobType, sid, log_fp, "Update job start");
-
-		// 本次更新任务的 redis 连接
-		kerbal::redis::RedisContext redisConn(redis_hostname.c_str(), redis_port, 100_ms);
-		if (!redisConn) {
-			LOG_FATAL(jobType, sid, log_fp, "Redis connection connect failed!");
-			continue;
-		}
-
-		// 本次更新任务的 mysql 连接
-		std::unique_ptr <mysqlpp::Connection> mysqlConn(new mysqlpp::Connection(false));
-		mysqlConn->set_option(new mysqlpp::SetCharsetNameOption("utf8"));
-		if (!mysqlConn->connect(mysql_database.c_str(), mysql_hostname.c_str(), mysql_username.c_str(), mysql_passwd.c_str())) {
-			LOG_FATAL(jobType, sid, log_fp, "Mysql connection connect failed!");
+		try {
+			std::tie(jobType, s_id) = JobBase::parseJobItem(job_item);
+		} catch (const std::exception & e) {
+			EXCEPT_FATAL(0, 0, log_fp, "Fail to parse job item.", e, "job_item: ", job_item);
 			continue;
 		}
 
@@ -368,38 +357,150 @@ int main() try
 			// 避免了无效操作的消耗与可能导致的其他逻辑混乱
 			// 此外，unique_ptr 的特性决定了其不应该使用值传递的方式。
 			// 而使用 std::move 将其强制转换为右值引用，是为了使用移动构造函数来优化性能（吗？这个不确定）
-			job = make_update_job(jobType, sid, redisConn, std::move(mysqlConn));
+			auto redis_conn_handler = sync_fetch_redis_conn();
+			job = make_update_job(jobType, s_id, *redis_conn_handler);
 		} catch (const std::exception & e) {
-			EXCEPT_FATAL(jobType, sid, log_fp, "Job construct failed!", e);
+			EXCEPT_FATAL(jobType, s_id, log_fp, "Job construct failed!", e);
 			continue;
 		} catch (...) {
-			LOG_FATAL(jobType, sid, log_fp, "Job construct failed! Error information: ", UNKNOWN_EXCEPTION_WHAT);
+			UNKNOWN_EXCEPT_FATAL(jobType, s_id, log_fp, "Job construct failed!");
 			continue;
 		}
 
 		try {
 			// 执行本次 update job
-			job->handle();
+			future_group.push_back(std::async(std::launch::async,
+                 [j=std::move(job), jobType, s_id]() {
+			        // 本次更新开始时间
+                    PROFILE_HEAD
+                    try {
+                        j->handle();
+                    } catch (const std::exception & e) {
+                        EXCEPT_FATAL(jobType, s_id, log_fp, "Job handle failed!", e);
+                        throw e;
+                    }
+                    // 本次更新结束时间
+                    PROFILE_TAIL(jobType, s_id, log_fp, "Update finished");
+                    LOG_INFO(jobType, s_id, log_fp, "Update finished");
+			    }
+			));
 		} catch (const std::exception & e) {
-			EXCEPT_FATAL(jobType, sid, log_fp, "Job handle failed!", e);
-			continue;
+			EXCEPT_FATAL(jobType, s_id, log_fp, "Job handle failed!", e);
 		} catch (...) {
-			LOG_FATAL(jobType, sid, log_fp, "Job handle failed! Error information: ", UNKNOWN_EXCEPTION_WHAT);
-			continue;
+			UNKNOWN_EXCEPT_FATAL(jobType, s_id, log_fp, "Job handle failed!");
 		}
 
-		// 本次更新结束时间
-		auto end(std::chrono::steady_clock::now());
-		// 本次更新耗时
-		auto time_consume = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-		LOG_DEBUG(jobType, sid, log_fp, "Update consume: ", time_consume.count());
+		auto update_queue_is_empty = [&update_queue]() noexcept {
+			try {
+				return update_queue.llen() == 0;
+			} catch(...) {
+				return true;
+			}
+		};
+
+		while (future_group.size() >= 25) {
+			try {
+				future_group.front().get();
+				future_group.pop_front();
+			} catch (const std::exception & e) {
+				EXCEPT_FATAL(0, 0, log_fp, "Future get failed!", e);
+			}
+		}
+
+		while (update_queue_is_empty() && !future_group.empty()) {
+			try {
+				future_group.front().get();
+				future_group.pop_front();
+			} catch (const std::exception & e) {
+				EXCEPT_FATAL(0, 0, log_fp, "Future get failed!", e);
+			}
+		}
 	}
+	
+	while (!future_group.empty()) {
+		try {
+			future_group.front().get();
+			future_group.pop_front();
+		} catch (const std::exception & e) {
+			EXCEPT_FATAL(0, 0, log_fp, "Future get failed!", e);
+		}
+	}
+}
+
+/**
+ * @brief master 端主程序循环
+ * 加载配置信息；连接数据库；取待评测任务信息，交由子进程并评测；创建并分离发送心跳线程 // to be done
+ * @throw UNKNOWN_EXCEPTION
+ */
+int main(int argc, const char * argv[]) try
+{
+	using namespace kerbal::compatibility::chrono_suffix;
+
+	std::cout << std::boolalpha;
+
+	bool skip_root_check = false;
+
+	if (argc > 1 && argv[1] == std::string("--version")) {
+		std::cout << "version: " __DATE__ " " __TIME__ << std::endl;
+		exit(0);
+	}
+
+	if (argc > 1 && argv[1] == std::string("--skip_root_check")) {
+		skip_root_check = true;
+	}
+
+	using namespace kerbal::utility::costream;
+	const auto & ccerr = costream<std::cerr>(LIGHT_RED);
+
+	// 运行必须具有 root 权限
+	if (!skip_root_check && getuid() != 0) {
+		ccerr << "root required!" << std::endl;
+		exit(-1);
+	}
+
+	load_config("/etc/ts_judger/updater.conf"); // 提醒: 此函数运行结束以后才可以使用 log 系列宏, 否则 log_fp 没打开
+	LOG_INFO(0, 0, log_fp, "Configuration load finished!");
+
+	for (int i = 0; i < 10; ++i)
+		add_redis_conn();
+
+	for (int i = 0; i < 25; ++i)
+		add_mysql_conn();
+
+	start_up_refresh();
+
+	std::thread register_self_thread;
+	try {
+		// 创建并分离发送心跳线程
+		register_self_thread = std::thread(register_self);
+	} catch (const std::exception & e) {
+		EXCEPT_FATAL(0, 0, log_fp, "Register self service thread detach failed.", e);
+		exit(-1);
+	}
+
+	std::thread update_contest_scoreboard_thread;
+	try {
+		// 创建并分离更新竞赛榜单线程
+		update_contest_scoreboard_thread = std::thread(update_contest_scoreboard_handler);
+	} catch(const std::exception & e) {
+		EXCEPT_FATAL(0, 0, log_fp, "update contest scoreboard thread detach failed.", e);
+		exit(-1);
+	}
+
+	signal(SIGTERM, regist_SIGTERM_handler);
+
+	LOG_INFO(0, 0, log_fp, "updater starting...");
+	listenning_loop();
+
+	register_self_thread.join();
+	update_contest_scoreboard_thread.join();
+
 	return 0;
 } catch (const std::exception & e) {
 	EXCEPT_FATAL(0, 0, log_fp, "An uncaught exception caught by main.", e);
 	throw;
 } catch (...) {
-	LOG_FATAL(0, 0, log_fp, "An uncaught exception caught by main. Error information: ", UNKNOWN_EXCEPTION_WHAT);
+	UNKNOWN_EXCEPT_FATAL(0, 0, log_fp, "An uncaught exception caught by main.");
 	throw;
 }
 

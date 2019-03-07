@@ -18,7 +18,7 @@
 
 #include <kerbal/utility/noncopyable.hpp>
 
-class process : virtual kerbal::utility::noncopyable, kerbal::utility::nonassignable
+class process : kerbal::utility::noncopyable
 {
 	public:
 		typedef pid_t pid_type;
@@ -67,6 +67,16 @@ class process : virtual kerbal::utility::noncopyable, kerbal::utility::nonassign
 						break;
 				}
 			}
+		}
+
+		pid_type get_father_id() const noexcept
+		{
+			return this->father_id;
+		}
+
+		pid_type get_child_id() const noexcept
+		{
+			return this->child_id;
 		}
 
 		process(process && src) noexcept :
@@ -185,10 +195,6 @@ class process : virtual kerbal::utility::noncopyable, kerbal::utility::nonassign
 			return res;
 		}
 
-		pid_type get_child_id() const
-		{
-			return this->child_id;
-		}
 };
 
 #endif /* SRC_PROCESS_HPP_ */

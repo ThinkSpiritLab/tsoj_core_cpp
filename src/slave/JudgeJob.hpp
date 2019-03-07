@@ -37,7 +37,7 @@ class JudgeJob: public JobBase
 		 * @param redisConn Redis连接
 		 * @exception std::exception 等，表示获取 job 详细信息失败
 		 */
-		JudgeJob(int jobType, int sid, const kerbal::redis::RedisContext & conn);
+		JudgeJob(int jobType, ojv4::s_id_type s_id, const kerbal::redis::RedisContext & conn);
 
 		/**
 		 * @brief 本 Job 的处理函数。整个 job 的工作入口，包括编译执行判题等内容
@@ -100,7 +100,7 @@ class JudgeJob: public JobBase
 		/**
 		 * @brief 将评测结果提交到 redis 数据库。
 		 */		
-		void commitJudgeResultToRedis(const SolutionDetails & result);
+		void commitJudgeResultToRedis(const SolutionDetails & result, int similarity_percentage);
 
 		/**
 		 * @brief 将查重结果提交到 redis 数据库。
@@ -120,7 +120,7 @@ class JudgeJob: public JobBase
 		 * @exception 该函数保证不抛出任何异常
 		 * @note 该函数为静态成员函数。无论对象创建是否成功均可使用，保证了逻辑的通用性。
 		 */	
-		static bool insert_into_failed(const kerbal::redis::RedisContext & conn, int jobType, int sid) noexcept;
+		static bool insert_into_failed(const kerbal::redis::RedisContext & conn, int jobType, ojv4::s_id_type s_id) noexcept;
 };
 
 

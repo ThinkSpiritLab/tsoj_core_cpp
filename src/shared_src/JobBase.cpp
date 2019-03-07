@@ -8,6 +8,9 @@
 
 #include "JobBase.hpp"
 #include "logger.hpp"
+#include "mkdir_p.hpp"
+#include "boost_format_suffix.hpp"
+#include "redis_conn_factory.hpp"
 
 #include <fstream>
 #include <algorithm>
@@ -16,12 +19,13 @@
 #include <kerbal/redis/redis_type_cast.hpp>
 
 #include <boost/format.hpp>
+#include <boost/regex.hpp>
+#include <boost/lexical_cast.hpp>
 
-using namespace kerbal::redis;
 
 extern std::ostream log_fp;
 
-std::pair<int, int> JobBase::parseJobItem(const std::string & args)
+std::pair<int, ojv4::s_id_type> JobBase::parseJobItem(const std::string & args)
 {
 	std::string job_item = args;
 	std::string::size_type cut_point = job_item.find(',');
@@ -36,7 +40,7 @@ std::pair<int, int> JobBase::parseJobItem(const std::string & args)
 
 	try {
 		int job_type = std::stoi(job_item.c_str());
-		int job_id = std::stoi(job_item.c_str() + cut_point + 1);
+		ojv4::s_id_type job_id(std::stoi(job_item.c_str() + cut_point + 1));
 		return std::make_pair(job_type, job_id);
 	} catch (const std::invalid_argument & ) {
 		std::invalid_argument e("Invalid job_item arguments: " + job_item);
@@ -45,51 +49,64 @@ std::pair<int, int> JobBase::parseJobItem(const std::string & args)
 	}
 }
 
-JobBase::JobBase(int jobType, int sid, const kerbal::redis::RedisContext & redisConn) :
-		jobType(jobType), sid(sid), redisConn(redisConn)
+JobBase::JobBase(int jobType, ojv4::s_id_type s_id, kerbal::redis_v2::connection & redis_conn) :
+		jobType(jobType), s_id(s_id)
 {
-	using std::chrono::milliseconds;
-	using kerbal::utility::MB;
-	static boost::format key_name_tmpl("job_info:%d:%d");
-	const std::string job_info_key = (key_name_tmpl % jobType % sid).str();
-
-	kerbal::redis::Operation opt(redisConn);
-
 	try {
-		this->pid = opt.hget<int>(job_info_key, "pid");
-		this->lang = (Language) (opt.hget<int>(job_info_key, "lang"));
-		this->cases = opt.hget<int>(job_info_key, "cases");
-		this->timeLimit = milliseconds(opt.hget<int>(job_info_key, "time_limit"));
-		this->memoryLimit = MB(opt.hget<unsigned long long>(job_info_key, "memory_limit"));
-		this->similarity_threshold = opt.hget<int>(job_info_key, "sim_threshold");
-	} catch (const RedisNilException & e) {
-		EXCEPT_FATAL(jobType, sid, log_fp, "Job details lost.", e);
-		throw;
-	} catch (const RedisUnexpectedCaseException & e) {
-		EXCEPT_FATAL(jobType, sid, log_fp, "Redis returns an unexpected type.", e);
-		throw;
-	} catch (const RedisException & e) {
-		EXCEPT_FATAL(jobType, sid, log_fp, "Fail to fetch job details.", e);
-		throw;
+		using boost::lexical_cast;
+		using namespace kerbal::utility;
+		namespace optional_ns = kerbal::data_struct;
+		using namespace optional_ns;
+
+		kerbal::redis_v2::hash h(redis_conn, "job_info:%d:%d"_fmt(jobType, s_id).str());
+		std::vector<optional<std::string>> res = h.hmget(
+				"pid",
+				"lang",
+				"cases",
+				"time_limit",
+				"memory_limit",
+				"sim_threshold");
+
+		if (res[0].empty())
+			throw std::runtime_error("lack pid");
+		this->p_id = lexical_cast<ojv4::p_id_type>(res[0].ignored_get());
+
+		if (res[1].empty())
+			throw std::runtime_error("lack lang");
+		this->lang = (Language) (lexical_cast<int>(res[1].ignored_get()));
+
+		this->cases = res[2].empty() ? 1 : lexical_cast<int>(res[2].ignored_get());
+
+		ojv4::s_time_literal time_limit_literal = res[3].empty() ? 0 : lexical_cast<ojv4::s_time_literal>(res[3].ignored_get());
+		this->time_limit = ojv4::s_time_type<std::milli>(time_limit_literal);
+
+		ojv4::s_mem_literal mem_limit_literal = res[4].empty() ? 0 : lexical_cast<ojv4::s_mem_literal>(res[4].ignored_get());
+		this->memory_limit = ojv4::s_mem_type<kerbal::utility::mebi>(mem_limit_literal);
+
+		this->similarity_threshold = lexical_cast<ojv4::s_similarity_type>(res[5].empty() ? 0 : res[5].ignored_get());
+
 	} catch (const std::exception & e) {
-		EXCEPT_FATAL(jobType, sid, log_fp, "Fail to fetch job details.", e);
+		EXCEPT_FATAL(jobType, s_id, log_fp, "Fail to fetch job details.", e);
 		throw;
 	}
 }
 
-kerbal::redis::RedisReply JobBase::get_source_code() const
+kerbal::redis_v2::reply JobBase::get_source_code() const
 {
-	static RedisCommand get_src_code_templ("hget source_code:%d:%d source");
-	RedisReply reply;
+	using namespace kerbal::redis;
+
+	kerbal::redis_v2::reply reply;
+	std::vector<std::string> argv = { "hget", "source_code:%d:%d"_fmt(jobType, s_id).str(), "source" };
 	try {
-		reply = get_src_code_templ.execute(redisConn, this->jobType, this->sid);
+        auto redis_conn_handler = sync_fetch_redis_conn();
+		reply = redis_conn_handler->argv_execute(argv.begin(), argv.end());
 	} catch (const std::exception & e) {
-		EXCEPT_FATAL(jobType, sid, log_fp, "Get source code failed!", e);
+		EXCEPT_FATAL(jobType, s_id, log_fp, "Get source code failed!", e);
 		throw;
 	}
-	if (reply.replyType() != RedisReplyType::STRING) {
-		RedisUnexpectedCaseException e(reply.replyType());
-		EXCEPT_FATAL(jobType, sid, log_fp, "Get source code failed!", e);
+	if (reply.type() != kerbal::redis_v2::reply_type::STRING) {
+		kerbal::redis_v2::unexpected_case_exception e(reply.type(), argv.begin(), argv.end());
+		EXCEPT_FATAL(jobType, s_id, log_fp, "Get source code failed!", e);
 		throw e;
 	}
 	return reply;
@@ -97,44 +114,43 @@ kerbal::redis::RedisReply JobBase::get_source_code() const
 
 void JobBase::storeSourceCode(const std::string & parent_path_args, const std::string & file_name) const
 {
-	RedisReply reply = this->get_source_code();
+	using namespace kerbal::redis;
+
+	kerbal::redis_v2::reply reply = this->get_source_code();
 
 	std::string parent_path = parent_path_args;
+	while(!parent_path.empty() && std::isblank(parent_path.back())) {
+		parent_path.pop_back();
+	}
 	if (parent_path.size() == 0) {
 		parent_path = "./";
 	} else {
 		if (parent_path.back() != '/') {
 			parent_path += '/';
 		}
-		int make_parent_path_return_value = system(("mkdir -p " + parent_path).c_str());
-		if (-1 == make_parent_path_return_value) {
-			throw JobHandleException("make path failed");
-		}
-		if (!WIFEXITED(make_parent_path_return_value) || WEXITSTATUS(make_parent_path_return_value)) {
-			throw JobHandleException("make path failed, exit status: " + std::to_string(WEXITSTATUS(make_parent_path_return_value)));
-		}
+		mkdir_p(parent_path);
 	}
 
 	std::ofstream fout(parent_path + file_name + '.' + source_file_suffix(lang), std::ios::out);
 	if (!fout) {
-		LOG_FATAL(jobType, sid, log_fp, "Open source code file failed");
+		LOG_FATAL(jobType, s_id, log_fp, "Open source code file failed");
 		throw JobHandleException("Open source code file failed");
 	}
 	fout << reply->str;
 	if (fout.bad()) {
-		LOG_FATAL(jobType, sid, log_fp, "Store source code failed");
+		LOG_FATAL(jobType, s_id, log_fp, "Store source code failed");
 		throw JobHandleException("Store source code failed");
 	}
 }
 
 void JobBase::commitJudgeStatusToRedis(JudgeStatus status) try
 {
-	static RedisCommand cmd("hset judge_status:%d:%d status %d");
 	// status为枚举类，在 redis 存储时用其对应的序号表示
-	cmd.execute(redisConn, jobType, sid, (int) status);
-} catch (const std::exception & e) {
-	LOG_FATAL(jobType, sid, log_fp, "Commit judge status failed. ",
-			"Error information: ", e.what(), ", ",
-			"judge status: ", (int)status);
+	std::vector<std::string> argv = { "hset", "judge_status:%d:%d"_fmt(jobType, s_id).str(), "status", std::to_string(int(status)) };
+    auto redis_conn_handler = sync_fetch_redis_conn();
+    redis_conn_handler->argv_execute(argv.begin(), argv.end());
+}
+catch (const std::exception & e) {
+	EXCEPT_FATAL(jobType, s_id, log_fp, "Commit judge status failed.", e, ", judge status: ", status);
 	throw;
 }
