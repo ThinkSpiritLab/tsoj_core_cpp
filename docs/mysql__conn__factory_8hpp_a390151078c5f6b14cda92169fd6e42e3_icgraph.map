@@ -1,0 +1,6 @@
+<map id="sync_fetch_mysql_conn" name="sync_fetch_mysql_conn">
+<area shape="rect" id="node1" title=" " alt="" coords="335,42,497,69"/>
+<area shape="rect" id="node2" href="$master_8cpp.html#a7c08dccaaaa3b76e978c071f92615b87" title=" " alt="" coords="104,5,287,47"/>
+<area shape="rect" id="node4" href="$master_8cpp.html#a26091586d804dac5c3ce0c18eb6d91ab" title=" " alt="" coords="137,71,253,98"/>
+<area shape="rect" id="node3" href="$master_8cpp.html#ac0f2228420376f4db7e1274f2b41667c" title="master 端主程序循环 加载配置信息；连接数据库；取待评测任务信息，交由子进程并评测；创建并分离发送心跳线程 // to be done" alt="" coords="5,42,56,69"/>
+</map>

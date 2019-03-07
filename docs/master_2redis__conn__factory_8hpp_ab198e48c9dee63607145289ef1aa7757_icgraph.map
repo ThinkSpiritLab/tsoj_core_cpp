@@ -1,0 +1,12 @@
+<map id="sync_fetch_redis_conn" name="sync_fetch_redis_conn">
+<area shape="rect" id="node1" title=" " alt="" coords="653,123,809,149"/>
+<area shape="rect" id="node2" href="$master_8cpp.html#ab85b27ea72fdfbc8ddc41b1e3078385c" title="发送心跳进程 每隔一段时间，将本机信息提交到数据库中表示当前在线的评测机集合中，表明自身正常工作，可以处理评测任务。" alt="" coords="460,5,553,32"/>
+<area shape="rect" id="node4" href="$master_8cpp.html#a7c08dccaaaa3b76e978c071f92615b87" title=" " alt="" coords="415,57,598,98"/>
+<area shape="rect" id="node5" href="$master_8cpp.html#a4da8bf76425b9301a441b2009f39c1f1" title=" " alt="" coords="453,123,561,149"/>
+<area shape="rect" id="node6" href="$class_job_base.html#ae7e52177492489d1c1947f0efa0038f1" title="从 redis 中取得代码" alt="" coords="417,173,597,200"/>
+<area shape="rect" id="node9" href="$class_job_base.html#aa7da8e91cd0ffddf9b1cf70995d2134b" title="将当前评测状态提交到 redis 数据库。" alt="" coords="408,225,605,266"/>
+<area shape="rect" id="node3" href="$master_8cpp.html#ac0f2228420376f4db7e1274f2b41667c" title="master 端主程序循环 加载配置信息；连接数据库；取待评测任务信息，交由子进程并评测；创建并分离发送心跳线程 // to be done" alt="" coords="243,64,294,91"/>
+<area shape="rect" id="node7" href="$class_job_base.html#a84501360b84b0716aa82b93f6958cb78" title="从 redis 数据库获取本 Job 的代码并存储到工作空间中，用于编译运行。" alt="" coords="177,173,360,200"/>
+<area shape="rect" id="node8" href="$class_judge_job.html#a6fe58f9fcacc9ba6461e97f1a3ac76a3" title="本 Job 的处理函数。整个 job 的工作入口，包括编译执行判题等内容" alt="" coords="5,224,129,251"/>
+<area shape="rect" id="node10" href="$class_judge_job.html#a0d2e1e5cce842ef0daf71c95f98275f0" title="进入当前 job 的执行流程，并返回执行结果。" alt="" coords="205,275,333,301"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="JobBase::parseJobItem" name="JobBase::parseJobItem">
+<area shape="rect" id="node1" title="将待处理 Job 信息分解，提取出 job_type 与 job_id" alt="" coords="260,5,420,32"/>
+<area shape="rect" id="node2" href="$master_8cpp.html#a4da8bf76425b9301a441b2009f39c1f1" title=" " alt="" coords="104,5,212,32"/>
+<area shape="rect" id="node3" href="$master_8cpp.html#ac0f2228420376f4db7e1274f2b41667c" title="master 端主程序循环 加载配置信息；连接数据库；取待评测任务信息，交由子进程并评测；创建并分离发送心跳线程 // to be done" alt="" coords="5,5,56,32"/>
+</map>

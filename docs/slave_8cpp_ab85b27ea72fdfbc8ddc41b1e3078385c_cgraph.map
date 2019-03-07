@@ -1,0 +1,9 @@
+<map id="register_self" name="register_self">
+<area shape="rect" id="node1" title="发送心跳进程 每隔一段时间，将本机信息提交到数据库中表示当前在线的评测机集合中，表明自身正常工作，可以处理评测任务。" alt="" coords="5,115,99,142"/>
+<area shape="rect" id="node2" href="$master_2redis__conn__factory_8hpp.html#ab198e48c9dee63607145289ef1aa7757" title=" " alt="" coords="147,86,303,113"/>
+<area shape="rect" id="node7" href="$logger_8cpp.html#a69cdb1d10e14a871dde1c18f2b9fe560" title=" " alt="" coords="147,137,302,179"/>
+<area shape="rect" id="node3" href="$classsync__nonsingle__instance__pool.html#a737a17399fd4b8ac9894d0fa379caa41" title=" " alt="" coords="359,5,527,47"/>
+<area shape="rect" id="node4" href="$classsync__nonsingle__instance__pool_1_1____auto__revert__handle.html#a11a1bd0b4726a771bb3ef0b5a010f340" title=" " alt="" coords="351,71,536,127"/>
+<area shape="rect" id="node5" href="$master_2redis__conn__factory_8hpp.html#a2c9be7394111105ab04a9aeafebb3188" title=" " alt="" coords="387,151,500,178"/>
+<area shape="rect" id="node6" href="$classsync__nonsingle__instance__pool.html#a2aee96341e92381860e4366201cee988" title=" " alt="" coords="584,144,752,185"/>
+</map>

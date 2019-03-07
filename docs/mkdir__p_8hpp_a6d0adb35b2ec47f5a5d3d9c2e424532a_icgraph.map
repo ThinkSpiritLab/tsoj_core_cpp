@@ -1,0 +1,7 @@
+<map id="mkdir_p" name="mkdir_p">
+<area shape="rect" id="node1" title=" " alt="" coords="408,56,476,83"/>
+<area shape="rect" id="node2" href="$class_job_base.html#a84501360b84b0716aa82b93f6958cb78" title="从 redis 数据库获取本 Job 的代码并存储到工作空间中，用于编译运行。" alt="" coords="177,5,360,32"/>
+<area shape="rect" id="node4" href="$mkdir__p_8hpp.html#a910c9bded60b51bf2ba9ce164babfd68" title=" " alt="" coords="235,56,303,83"/>
+<area shape="rect" id="node5" href="$slave_8cpp.html#ac0f2228420376f4db7e1274f2b41667c" title="slave 端主程序循环 加载配置信息；连接 redis 数据库；取待评测任务信息，交由子进程并评测；创建并分离发送心跳线程" alt="" coords="243,107,294,133"/>
+<area shape="rect" id="node3" href="$class_judge_job.html#a6fe58f9fcacc9ba6461e97f1a3ac76a3" title="本 Job 的处理函数。整个 job 的工作入口，包括编译执行判题等内容" alt="" coords="5,5,129,32"/>
+</map>

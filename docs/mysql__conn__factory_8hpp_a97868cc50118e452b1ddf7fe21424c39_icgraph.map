@@ -1,0 +1,7 @@
+<map id="add_mysql_conn" name="add_mysql_conn">
+<area shape="rect" id="node1" title=" " alt="" coords="545,16,665,43"/>
+<area shape="rect" id="node2" href="$master_8cpp.html#ac0f2228420376f4db7e1274f2b41667c" title="master 端主程序循环 加载配置信息；连接数据库；取待评测任务信息，交由子进程并评测；创建并分离发送心跳线程 // to be done" alt="" coords="5,46,56,72"/>
+<area shape="rect" id="node3" href="$mysql__conn__factory_8hpp.html#a390151078c5f6b14cda92169fd6e42e3" title=" " alt="" coords="335,46,497,72"/>
+<area shape="rect" id="node4" href="$master_8cpp.html#a7c08dccaaaa3b76e978c071f92615b87" title=" " alt="" coords="104,38,287,80"/>
+<area shape="rect" id="node5" href="$master_8cpp.html#a26091586d804dac5c3ce0c18eb6d91ab" title=" " alt="" coords="137,104,253,131"/>
+</map>

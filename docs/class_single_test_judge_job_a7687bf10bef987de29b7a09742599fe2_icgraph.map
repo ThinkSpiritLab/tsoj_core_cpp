@@ -1,0 +1,4 @@
+<map id="SingleTestJudgeJob::clean_job_dir" name="SingleTestJudgeJob::clean_job_dir">
+<area shape="rect" id="node1" title="将当前路径切换出本 job 的临时工作路径并清理该工作区" alt="" coords="193,5,333,47"/>
+<area shape="rect" id="node2" href="$class_single_test_judge_job.html#a0831e87393505947e304373d91bafb5b" title=" " alt="" coords="5,5,145,47"/>
+</map>

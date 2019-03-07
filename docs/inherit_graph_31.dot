@@ -1,8 +1,0 @@
-digraph "类继承关系图"
-{
- // LATEX_PDF_SIZE
-  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
-  node [fontname="Helvetica",fontsize="10",shape=record];
-  rankdir="LR";
-  Node0 [label="Log_level_traits\< LogLevel\l::LEVEL_PROFILE \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$struct_log__level__traits_3_01_log_level_1_1_l_e_v_e_l___p_r_o_f_i_l_e_01_4.html",tooltip=" "];
-}
