@@ -16,7 +16,7 @@
 #include <kerbal/utility/noncopyable.hpp>
 
 template <typename InstanceType>
-class sync_instance_pool final : kerbal::utility::noncopyable, kerbal::utility::nonassignable
+class sync_instance_pool final : kerbal::utility::noncopyable
 {
 	private:
 		sync_instance_pool() = delete;
@@ -55,7 +55,7 @@ class sync_instance_pool final : kerbal::utility::noncopyable, kerbal::utility::
 
 
 	public:
-		class auto_revert_t : kerbal::utility::noncopyable, kerbal::utility::nonassignable
+		class auto_revert_t : kerbal::utility::noncopyable
 		{
 			private:
 				friend auto_revert_t sync_instance_pool::fetch();

@@ -18,7 +18,7 @@
 
 #include <kerbal/utility/noncopyable.hpp>
 
-class process : virtual kerbal::utility::noncopyable, kerbal::utility::nonassignable
+class process : kerbal::utility::noncopyable
 {
 	public:
 		typedef pid_t pid_type;

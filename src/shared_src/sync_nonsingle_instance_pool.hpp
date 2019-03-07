@@ -28,13 +28,13 @@ class resource_exhausted_exception : public std::runtime_error
 
 
 template <typename InstanceType, typename PoolContainer = std::deque<InstanceType*> >
-class sync_nonsingle_instance_pool : kerbal::utility::noncopyable, kerbal::utility::nonassignable
+class sync_nonsingle_instance_pool : kerbal::utility::noncopyable
 {
 	private:
 		PoolContainer instance_pool;
 		std::mutex pool_vis_mtx;
 
-		class __auto_revert_handle: kerbal::utility::noncopyable, kerbal::utility::nonassignable
+		class __auto_revert_handle: kerbal::utility::noncopyable
 		{
 			private:
 				InstanceType * ptr_to_instance;
