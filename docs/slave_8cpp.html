@@ -78,11 +78,14 @@ $(function() {
 <div class="textblock"><code>#include &quot;<a class="el" href="process_8hpp_source.html">process.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="logger_8hpp_source.html">logger.hpp</a>&quot;</code><br />
 <code>#include &quot;load_helper.hpp&quot;</code><br />
+<code>#include &quot;<a class="el" href="_judge_job_8hpp_source.html">JudgeJob.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="mkdir__p_8hpp_source.html">mkdir_p.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="_settings_8hpp_source.html">Settings.hpp</a>&quot;</code><br />
 <code>#include &lt;kerbal/redis/redis_context_pool.hpp&gt;</code><br />
 <code>#include &lt;kerbal/redis/operation.hpp&gt;</code><br />
 <code>#include &lt;kerbal/redis/redis_data_struct/list.hpp&gt;</code><br />
 <code>#include &lt;kerbal/redis/redis_data_struct/set.hpp&gt;</code><br />
-<code>#include &quot;<a class="el" href="_judge_job_8hpp_source.html">JudgeJob.hpp</a>&quot;</code><br />
+<code>#include &quot;redis_conn_factory.hpp&quot;</code><br />
 <code>#include &lt;kerbal/system/system.hpp&gt;</code><br />
 <code>#include &lt;kerbal/compatibility/chrono_suffix.hpp&gt;</code><br />
 <code>#include &lt;iostream&gt;</code><br />
@@ -91,6 +94,7 @@ $(function() {
 <code>#include &lt;chrono&gt;</code><br />
 <code>#include &lt;csignal&gt;</code><br />
 <code>#include &lt;thread&gt;</code><br />
+<code>#include &lt;future&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 slave.cpp 的引用(Include)关系图:</div>
 <div class="dyncontent">
@@ -138,71 +142,37 @@ slave.cpp 的引用(Include)关系图:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 函数</h2></td></tr>
-<tr class="memitem:a0ff1cbc90e06d23b925d2046ece0b71d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="slave_8cpp.html#a0ff1cbc90e06d23b925d2046ece0b71d">register_self</a> (RedisContext &amp;&amp;regist_self_conn) noexcept</td></tr>
-<tr class="memdesc:a0ff1cbc90e06d23b925d2046ece0b71d"><td class="mdescLeft">&#160;</td><td class="mdescRight">发送心跳进程 每隔一段时间，将本机信息提交到数据库中表示当前在线的评测机集合中，表明自身正常工作，可以处理评测任务。  <a href="#a0ff1cbc90e06d23b925d2046ece0b71d">更多...</a><br /></td></tr>
-<tr class="separator:a0ff1cbc90e06d23b925d2046ece0b71d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab85b27ea72fdfbc8ddc41b1e3078385c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="slave_8cpp.html#ab85b27ea72fdfbc8ddc41b1e3078385c">register_self</a> () noexcept</td></tr>
+<tr class="memdesc:ab85b27ea72fdfbc8ddc41b1e3078385c"><td class="mdescLeft">&#160;</td><td class="mdescRight">发送心跳进程 每隔一段时间，将本机信息提交到数据库中表示当前在线的评测机集合中，表明自身正常工作，可以处理评测任务。  <a href="#ab85b27ea72fdfbc8ddc41b1e3078385c">更多...</a><br /></td></tr>
+<tr class="separator:ab85b27ea72fdfbc8ddc41b1e3078385c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8cb7d2d303a160e9662c31d2e1625c77"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="slave_8cpp.html#a8cb7d2d303a160e9662c31d2e1625c77">regist_SIGTERM_handler</a> (int signum) noexcept</td></tr>
 <tr class="memdesc:a8cb7d2d303a160e9662c31d2e1625c77"><td class="mdescLeft">&#160;</td><td class="mdescRight">SIGTERM 信号的处理函数 当收到 SIGTERM 信号，在代评测队列末端加上 type = 0, id = -1 的任务，用于标识结束 slave 工作的意愿。之后在 loop 循环中会据此判断是否结束 slave 进程。  <a href="#a8cb7d2d303a160e9662c31d2e1625c77">更多...</a><br /></td></tr>
 <tr class="separator:a8cb7d2d303a160e9662c31d2e1625c77"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4441fe2b953c92f3c7b1dd1e527137de"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="slave_8cpp.html#a4441fe2b953c92f3c7b1dd1e527137de">load_config</a> ()</td></tr>
-<tr class="memdesc:a4441fe2b953c92f3c7b1dd1e527137de"><td class="mdescLeft">&#160;</td><td class="mdescRight">加载 slave 工作的配置 根据 judge_server.conf 文档，读取工作配置信息。loadConfig 的工作原理详见其文档。  <a href="#a4441fe2b953c92f3c7b1dd1e527137de">更多...</a><br /></td></tr>
-<tr class="separator:a4441fe2b953c92f3c7b1dd1e527137de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b8405bf54a17577dcb1ad54eec0ee2f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="slave_8cpp.html#a9b8405bf54a17577dcb1ad54eec0ee2f">load_config</a> (const char *config_file)</td></tr>
+<tr class="memdesc:a9b8405bf54a17577dcb1ad54eec0ee2f"><td class="mdescLeft">&#160;</td><td class="mdescRight">加载 slave 工作的配置 根据 judge_server.conf 文档，读取工作配置信息。loadConfig 的工作原理详见其文档。  <a href="#a9b8405bf54a17577dcb1ad54eec0ee2f">更多...</a><br /></td></tr>
+<tr class="separator:a9b8405bf54a17577dcb1ad54eec0ee2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4da8bf76425b9301a441b2009f39c1f1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="slave_8cpp.html#a4da8bf76425b9301a441b2009f39c1f1">listenning_loop</a> ()</td></tr>
+<tr class="separator:a4da8bf76425b9301a441b2009f39c1f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac0f2228420376f4db7e1274f2b41667c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="slave_8cpp.html#ac0f2228420376f4db7e1274f2b41667c">main</a> (int argc, const char *argv[])</td></tr>
 <tr class="memdesc:ac0f2228420376f4db7e1274f2b41667c"><td class="mdescLeft">&#160;</td><td class="mdescRight">slave 端主程序循环 加载配置信息；连接 redis 数据库；取待评测任务信息，交由子进程并评测；创建并分离发送心跳线程  <a href="#ac0f2228420376f4db7e1274f2b41667c">更多...</a><br /></td></tr>
 <tr class="separator:ac0f2228420376f4db7e1274f2b41667c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 变量</h2></td></tr>
-<tr class="memitem:afa3f91f7e17edddc988ae8c5f0ed0a66"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="slave_8cpp.html#afa3f91f7e17edddc988ae8c5f0ed0a66">host_name</a></td></tr>
-<tr class="separator:afa3f91f7e17edddc988ae8c5f0ed0a66"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a319b95015f17a3dc8b4b43a65c541571"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="slave_8cpp.html#a319b95015f17a3dc8b4b43a65c541571">ip</a></td></tr>
-<tr class="separator:a319b95015f17a3dc8b4b43a65c541571"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a417d56a5a46d3fdea535db9caacbcd33"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="slave_8cpp.html#a417d56a5a46d3fdea535db9caacbcd33">user_name</a></td></tr>
-<tr class="separator:a417d56a5a46d3fdea535db9caacbcd33"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a934a4ce92837c8e08f40e43c8e6b12e0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="slave_8cpp.html#a934a4ce92837c8e08f40e43c8e6b12e0">listening_pid</a></td></tr>
-<tr class="separator:a934a4ce92837c8e08f40e43c8e6b12e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a44de7e95d77768ce8c015841798a83f7"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="slave_8cpp.html#a44de7e95d77768ce8c015841798a83f7">judge_server_id</a></td></tr>
-<tr class="separator:a44de7e95d77768ce8c015841798a83f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaacc2762d4d3435e02e2078e374aab40"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="slave_8cpp.html#aaacc2762d4d3435e02e2078e374aab40">init_dir</a></td></tr>
-<tr class="separator:aaacc2762d4d3435e02e2078e374aab40"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a38ce6c0ae7dbbccbe4ecedc76af805dc"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="slave_8cpp.html#a38ce6c0ae7dbbccbe4ecedc76af805dc">input_dir</a></td></tr>
-<tr class="separator:a38ce6c0ae7dbbccbe4ecedc76af805dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af4af88ca1edcae980a88447dde403548"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="slave_8cpp.html#af4af88ca1edcae980a88447dde403548">log_file_name</a></td></tr>
-<tr class="separator:af4af88ca1edcae980a88447dde403548"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adcd82fb39f0a5da45948a65762fc3e99"><td class="memItemLeft" align="right" valign="top">std::ofstream&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="slave_8cpp.html#adcd82fb39f0a5da45948a65762fc3e99">log_fp</a></td></tr>
-<tr class="separator:adcd82fb39f0a5da45948a65762fc3e99"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afd9f4912565d7dd76d6160afd58e884d"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="slave_8cpp.html#afd9f4912565d7dd76d6160afd58e884d">lock_file</a></td></tr>
-<tr class="separator:afd9f4912565d7dd76d6160afd58e884d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8cbae7f89416681ffcc3e60f35120660"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="slave_8cpp.html#a8cbae7f89416681ffcc3e60f35120660">judger_uid</a></td></tr>
-<tr class="separator:a8cbae7f89416681ffcc3e60f35120660"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad91b604e76dcd929bc245f417cb2e28d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="slave_8cpp.html#ad91b604e76dcd929bc245f417cb2e28d">judger_gid</a></td></tr>
-<tr class="separator:ad91b604e76dcd929bc245f417cb2e28d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aade40e0dc1b36c16baddd2b33e739bba"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="slave_8cpp.html#aade40e0dc1b36c16baddd2b33e739bba">redis_port</a></td></tr>
-<tr class="separator:aade40e0dc1b36c16baddd2b33e739bba"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a39a95272b52f9cba3dc9434ea16324c4"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="slave_8cpp.html#a39a95272b52f9cba3dc9434ea16324c4">redis_hostname</a></td></tr>
-<tr class="separator:a39a95272b52f9cba3dc9434ea16324c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6a47b8b74b88bdec473b29ab49740c94"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="slave_8cpp.html#a6a47b8b74b88bdec473b29ab49740c94">max_redis_conn</a></td></tr>
-<tr class="separator:a6a47b8b74b88bdec473b29ab49740c94"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab33454ac6c4c48ba2eaf350882543ccd"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="slave_8cpp.html#ab33454ac6c4c48ba2eaf350882543ccd">java_policy_path</a></td></tr>
-<tr class="separator:ab33454ac6c4c48ba2eaf350882543ccd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acec5f85332f200ffb57b97314b8bb565"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="slave_8cpp.html#acec5f85332f200ffb57b97314b8bb565">java_time_bonus</a></td></tr>
-<tr class="separator:acec5f85332f200ffb57b97314b8bb565"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4509998e47ada99883d42b1233b45066"><td class="memItemLeft" align="right" valign="top">kerbal::utility::MB&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="slave_8cpp.html#a4509998e47ada99883d42b1233b45066">java_memory_bonus</a></td></tr>
-<tr class="separator:a4509998e47ada99883d42b1233b45066"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aede67b3eca54512dd59248c9e6f27949"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="slave_8cpp.html#aede67b3eca54512dd59248c9e6f27949">accepted_solutions_dir</a></td></tr>
 <tr class="separator:aede67b3eca54512dd59248c9e6f27949"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad2e9c8970e5239e2e4e3e5d2d45d37f5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="slave_8cpp.html#ad2e9c8970e5239e2e4e3e5d2d45d37f5">stored_ac_code_max_num</a></td></tr>
 <tr class="separator:ad2e9c8970e5239e2e4e3e5d2d45d37f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">函数说明</h2>
-<a id="a4441fe2b953c92f3c7b1dd1e527137de"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4441fe2b953c92f3c7b1dd1e527137de">&#9670;&nbsp;</a></span>load_config()</h2>
+<a id="a4da8bf76425b9301a441b2009f39c1f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4da8bf76425b9301a441b2009f39c1f1">&#9670;&nbsp;</a></span>listenning_loop()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void load_config </td>
+          <td class="memname">void listenning_loop </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -210,25 +180,55 @@ slave.cpp 的引用(Include)关系图:</div>
       </table>
 </div><div class="memdoc">
 
-<p>加载 slave 工作的配置 根据 judge_server.conf 文档，读取工作配置信息。loadConfig 的工作原理详见其文档。 </p>
-
-<p class="definition">在文件 <a class="el" href="slave_8cpp_source.html">slave.cpp</a> 第 <a class="el" href="slave_8cpp_source.html#l00147">147</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="slave_8cpp_source.html">slave.cpp</a> 第 <a class="el" href="slave_8cpp_source.html#l00193">193</a> 行定义.</p>
 <div class="dynheader">
 函数调用图:</div>
 <div class="dyncontent">
-<div class="center"><img src="slave_8cpp_a4441fe2b953c92f3c7b1dd1e527137de_cgraph.png" border="0" usemap="#slave_8cpp_a4441fe2b953c92f3c7b1dd1e527137de_cgraph" alt=""/></div>
-<map name="slave_8cpp_a4441fe2b953c92f3c7b1dd1e527137de_cgraph" id="slave_8cpp_a4441fe2b953c92f3c7b1dd1e527137de_cgraph">
-<area shape="rect" id="node1" title="加载 slave 工作的配置 根据 judge_server.conf 文档，读取工作配置信息。loadConfig 的工作原理详见其文档。" alt="" coords="5,5,93,32"/>
-<area shape="rect" id="node2" href="load__helper_8cpp.html#a7aa49aa215539e705fe48842be5bef03" title=" " alt="" coords="141,5,220,32"/>
+<div class="center"><img src="slave_8cpp_a4da8bf76425b9301a441b2009f39c1f1_cgraph.png" border="0" usemap="#slave_8cpp_a4da8bf76425b9301a441b2009f39c1f1_cgraph" alt=""/></div>
+<map name="slave_8cpp_a4da8bf76425b9301a441b2009f39c1f1_cgraph" id="slave_8cpp_a4da8bf76425b9301a441b2009f39c1f1_cgraph">
 </map>
 </div>
 <div class="dynheader">
 这是这个函数的调用关系图:</div>
 <div class="dyncontent">
-<div class="center"><img src="slave_8cpp_a4441fe2b953c92f3c7b1dd1e527137de_icgraph.png" border="0" usemap="#slave_8cpp_a4441fe2b953c92f3c7b1dd1e527137de_icgraph" alt=""/></div>
-<map name="slave_8cpp_a4441fe2b953c92f3c7b1dd1e527137de_icgraph" id="slave_8cpp_a4441fe2b953c92f3c7b1dd1e527137de_icgraph">
-<area shape="rect" id="node1" title="加载 slave 工作的配置 根据 judge_server.conf 文档，读取工作配置信息。loadConfig 的工作原理详见其文档。" alt="" coords="104,5,192,32"/>
-<area shape="rect" id="node2" href="slave_8cpp.html#ac0f2228420376f4db7e1274f2b41667c" title="slave 端主程序循环 加载配置信息；连接 redis 数据库；取待评测任务信息，交由子进程并评测；创建并分离发送心跳线程" alt="" coords="5,5,56,32"/>
+<div class="center"><img src="slave_8cpp_a4da8bf76425b9301a441b2009f39c1f1_icgraph.png" border="0" usemap="#slave_8cpp_a4da8bf76425b9301a441b2009f39c1f1_icgraph" alt=""/></div>
+<map name="slave_8cpp_a4da8bf76425b9301a441b2009f39c1f1_icgraph" id="slave_8cpp_a4da8bf76425b9301a441b2009f39c1f1_icgraph">
+</map>
+</div>
+
+</div>
+</div>
+<a id="a9b8405bf54a17577dcb1ad54eec0ee2f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b8405bf54a17577dcb1ad54eec0ee2f">&#9670;&nbsp;</a></span>load_config()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void load_config </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>config_file</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>加载 slave 工作的配置 根据 judge_server.conf 文档，读取工作配置信息。loadConfig 的工作原理详见其文档。 </p>
+
+<p class="definition">在文件 <a class="el" href="slave_8cpp_source.html">slave.cpp</a> 第 <a class="el" href="slave_8cpp_source.html#l00120">120</a> 行定义.</p>
+<div class="dynheader">
+函数调用图:</div>
+<div class="dyncontent">
+<div class="center"><img src="slave_8cpp_a9b8405bf54a17577dcb1ad54eec0ee2f_cgraph.png" border="0" usemap="#slave_8cpp_a9b8405bf54a17577dcb1ad54eec0ee2f_cgraph" alt=""/></div>
+<map name="slave_8cpp_a9b8405bf54a17577dcb1ad54eec0ee2f_cgraph" id="slave_8cpp_a9b8405bf54a17577dcb1ad54eec0ee2f_cgraph">
+</map>
+</div>
+<div class="dynheader">
+这是这个函数的调用关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="slave_8cpp_a9b8405bf54a17577dcb1ad54eec0ee2f_icgraph.png" border="0" usemap="#slave_8cpp_a9b8405bf54a17577dcb1ad54eec0ee2f_icgraph" alt=""/></div>
+<map name="slave_8cpp_a9b8405bf54a17577dcb1ad54eec0ee2f_icgraph" id="slave_8cpp_a9b8405bf54a17577dcb1ad54eec0ee2f_icgraph">
 </map>
 </div>
 
@@ -267,9 +267,8 @@ slave.cpp 的引用(Include)关系图:</div>
   </table>
   </dd>
 </dl>
-<p class="">创建并分离发送心跳线程 </p>
 
-<p class="definition">在文件 <a class="el" href="slave_8cpp_source.html">slave.cpp</a> 第 <a class="el" href="slave_8cpp_source.html#l00227">227</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="slave_8cpp_source.html">slave.cpp</a> 第 <a class="el" href="slave_8cpp_source.html#l00303">303</a> 行定义.</p>
 <div class="dynheader">
 函数调用图:</div>
 <div class="dyncontent">
@@ -329,16 +328,7 @@ slave.cpp 的引用(Include)关系图:</div>
   </dd>
 </dl>
 
-<p class="definition">在文件 <a class="el" href="slave_8cpp_source.html">slave.cpp</a> 第 <a class="el" href="slave_8cpp_source.html#l00131">131</a> 行定义.</p>
-<div class="dynheader">
-函数调用图:</div>
-<div class="dyncontent">
-<div class="center"><img src="slave_8cpp_a8cb7d2d303a160e9662c31d2e1625c77_cgraph.png" border="0" usemap="#slave_8cpp_a8cb7d2d303a160e9662c31d2e1625c77_cgraph" alt=""/></div>
-<map name="slave_8cpp_a8cb7d2d303a160e9662c31d2e1625c77_cgraph" id="slave_8cpp_a8cb7d2d303a160e9662c31d2e1625c77_cgraph">
-<area shape="rect" id="node1" title="SIGTERM 信号的处理函数 当收到 SIGTERM 信号，在代评测队列末端加上 type = 0, id = &#45;1 的任务，用于标识结束 slave 工作的意愿。之后在 loop 循环中会据此判断是..." alt="" coords="5,5,176,32"/>
-<area shape="rect" id="node2" href="class_job_base.html#a3d354b5691b71524e49514dfbcd41550" title="获取规定的停止工作标识" alt="" coords="224,5,393,32"/>
-</map>
-</div>
+<p class="definition">在文件 <a class="el" href="slave_8cpp_source.html">slave.cpp</a> 第 <a class="el" href="slave_8cpp_source.html#l00106">106</a> 行定义.</p>
 <div class="dynheader">
 这是这个函数的调用关系图:</div>
 <div class="dyncontent">
@@ -351,8 +341,8 @@ slave.cpp 的引用(Include)关系图:</div>
 
 </div>
 </div>
-<a id="a0ff1cbc90e06d23b925d2046ece0b71d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0ff1cbc90e06d23b925d2046ece0b71d">&#9670;&nbsp;</a></span>register_self()</h2>
+<a id="ab85b27ea72fdfbc8ddc41b1e3078385c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab85b27ea72fdfbc8ddc41b1e3078385c">&#9670;&nbsp;</a></span>register_self()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -363,8 +353,7 @@ slave.cpp 的引用(Include)关系图:</div>
         <tr>
           <td class="memname">void register_self </td>
           <td>(</td>
-          <td class="paramtype">RedisContext &amp;&amp;&#160;</td>
-          <td class="paramname"><em>regist_self_conn</em></td><td>)</td>
+          <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -383,23 +372,19 @@ slave.cpp 的引用(Include)关系图:</div>
   </dd>
 </dl>
 
-<p class="definition">在文件 <a class="el" href="slave_8cpp_source.html">slave.cpp</a> 第 <a class="el" href="slave_8cpp_source.html#l00092">92</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="slave_8cpp_source.html">slave.cpp</a> 第 <a class="el" href="slave_8cpp_source.html#l00061">61</a> 行定义.</p>
 <div class="dynheader">
 函数调用图:</div>
 <div class="dyncontent">
-<div class="center"><img src="slave_8cpp_a0ff1cbc90e06d23b925d2046ece0b71d_cgraph.png" border="0" usemap="#slave_8cpp_a0ff1cbc90e06d23b925d2046ece0b71d_cgraph" alt=""/></div>
-<map name="slave_8cpp_a0ff1cbc90e06d23b925d2046ece0b71d_cgraph" id="slave_8cpp_a0ff1cbc90e06d23b925d2046ece0b71d_cgraph">
-<area shape="rect" id="node1" title="发送心跳进程 每隔一段时间，将本机信息提交到数据库中表示当前在线的评测机集合中，表明自身正常工作，可以处理评测任务。" alt="" coords="5,13,99,39"/>
-<area shape="rect" id="node2" href="logger_8cpp.html#a69cdb1d10e14a871dde1c18f2b9fe560" title=" " alt="" coords="147,5,301,47"/>
+<div class="center"><img src="slave_8cpp_ab85b27ea72fdfbc8ddc41b1e3078385c_cgraph.png" border="0" usemap="#slave_8cpp_ab85b27ea72fdfbc8ddc41b1e3078385c_cgraph" alt=""/></div>
+<map name="slave_8cpp_ab85b27ea72fdfbc8ddc41b1e3078385c_cgraph" id="slave_8cpp_ab85b27ea72fdfbc8ddc41b1e3078385c_cgraph">
 </map>
 </div>
 <div class="dynheader">
 这是这个函数的调用关系图:</div>
 <div class="dyncontent">
-<div class="center"><img src="slave_8cpp_a0ff1cbc90e06d23b925d2046ece0b71d_icgraph.png" border="0" usemap="#slave_8cpp_a0ff1cbc90e06d23b925d2046ece0b71d_icgraph" alt=""/></div>
-<map name="slave_8cpp_a0ff1cbc90e06d23b925d2046ece0b71d_icgraph" id="slave_8cpp_a0ff1cbc90e06d23b925d2046ece0b71d_icgraph">
-<area shape="rect" id="node1" title="发送心跳进程 每隔一段时间，将本机信息提交到数据库中表示当前在线的评测机集合中，表明自身正常工作，可以处理评测任务。" alt="" coords="104,5,197,32"/>
-<area shape="rect" id="node2" href="slave_8cpp.html#ac0f2228420376f4db7e1274f2b41667c" title="slave 端主程序循环 加载配置信息；连接 redis 数据库；取待评测任务信息，交由子进程并评测；创建并分离发送心跳线程" alt="" coords="5,5,56,32"/>
+<div class="center"><img src="slave_8cpp_ab85b27ea72fdfbc8ddc41b1e3078385c_icgraph.png" border="0" usemap="#slave_8cpp_ab85b27ea72fdfbc8ddc41b1e3078385c_icgraph" alt=""/></div>
+<map name="slave_8cpp_ab85b27ea72fdfbc8ddc41b1e3078385c_icgraph" id="slave_8cpp_ab85b27ea72fdfbc8ddc41b1e3078385c_icgraph">
 </map>
 </div>
 
@@ -419,296 +404,7 @@ slave.cpp 的引用(Include)关系图:</div>
 </div><div class="memdoc">
 <p class="">已经 AC 代码保存路径，用于查重 </p>
 
-<p class="definition">在文件 <a class="el" href="slave_8cpp_source.html">slave.cpp</a> 第 <a class="el" href="slave_8cpp_source.html#l00069">69</a> 行定义.</p>
-
-</div>
-</div>
-<a id="afa3f91f7e17edddc988ae8c5f0ed0a66"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afa3f91f7e17edddc988ae8c5f0ed0a66">&#9670;&nbsp;</a></span>host_name</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::string host_name</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p class="">本机主机名 </p>
-
-<p class="definition">在文件 <a class="el" href="slave_8cpp_source.html">slave.cpp</a> 第 <a class="el" href="slave_8cpp_source.html#l00033">33</a> 行定义.</p>
-
-</div>
-</div>
-<a id="aaacc2762d4d3435e02e2078e374aab40"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aaacc2762d4d3435e02e2078e374aab40">&#9670;&nbsp;</a></span>init_dir</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::string init_dir</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p class="">程序的运行目录，用于存放临时文件等 </p>
-
-<p class="definition">在文件 <a class="el" href="slave_8cpp_source.html">slave.cpp</a> 第 <a class="el" href="slave_8cpp_source.html#l00043">43</a> 行定义.</p>
-
-</div>
-</div>
-<a id="a38ce6c0ae7dbbccbe4ecedc76af805dc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a38ce6c0ae7dbbccbe4ecedc76af805dc">&#9670;&nbsp;</a></span>input_dir</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::string input_dir</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p class="">测试数据和答案的存放目录 </p>
-
-<p class="definition">在文件 <a class="el" href="slave_8cpp_source.html">slave.cpp</a> 第 <a class="el" href="slave_8cpp_source.html#l00045">45</a> 行定义.</p>
-
-</div>
-</div>
-<a id="a319b95015f17a3dc8b4b43a65c541571"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a319b95015f17a3dc8b4b43a65c541571">&#9670;&nbsp;</a></span>ip</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::string ip</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p class="">本机 IP </p>
-
-<p class="definition">在文件 <a class="el" href="slave_8cpp_source.html">slave.cpp</a> 第 <a class="el" href="slave_8cpp_source.html#l00035">35</a> 行定义.</p>
-
-</div>
-</div>
-<a id="a4509998e47ada99883d42b1233b45066"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4509998e47ada99883d42b1233b45066">&#9670;&nbsp;</a></span>java_memory_bonus</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">kerbal::utility::MB java_memory_bonus</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p class="">java 额外运行空间值 </p>
-
-<p class="definition">在文件 <a class="el" href="slave_8cpp_source.html">slave.cpp</a> 第 <a class="el" href="slave_8cpp_source.html#l00067">67</a> 行定义.</p>
-
-</div>
-</div>
-<a id="ab33454ac6c4c48ba2eaf350882543ccd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab33454ac6c4c48ba2eaf350882543ccd">&#9670;&nbsp;</a></span>java_policy_path</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::string java_policy_path</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p class="">java 策略 </p>
-
-<p class="definition">在文件 <a class="el" href="slave_8cpp_source.html">slave.cpp</a> 第 <a class="el" href="slave_8cpp_source.html#l00063">63</a> 行定义.</p>
-
-</div>
-</div>
-<a id="acec5f85332f200ffb57b97314b8bb565"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acec5f85332f200ffb57b97314b8bb565">&#9670;&nbsp;</a></span>java_time_bonus</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int java_time_bonus</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p class="">java 额外运行时间值 </p>
-
-<p class="definition">在文件 <a class="el" href="slave_8cpp_source.html">slave.cpp</a> 第 <a class="el" href="slave_8cpp_source.html#l00065">65</a> 行定义.</p>
-
-</div>
-</div>
-<a id="a44de7e95d77768ce8c015841798a83f7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a44de7e95d77768ce8c015841798a83f7">&#9670;&nbsp;</a></span>judge_server_id</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::string judge_server_id</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p class="">评测服务器id，定义为 host_name:ip </p>
-
-<p class="definition">在文件 <a class="el" href="slave_8cpp_source.html">slave.cpp</a> 第 <a class="el" href="slave_8cpp_source.html#l00041">41</a> 行定义.</p>
-
-</div>
-</div>
-<a id="ad91b604e76dcd929bc245f417cb2e28d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad91b604e76dcd929bc245f417cb2e28d">&#9670;&nbsp;</a></span>judger_gid</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int judger_gid</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p class="">Linux 中运行评测进程的 group id。 默认为 1666 </p>
-
-<p class="definition">在文件 <a class="el" href="slave_8cpp_source.html">slave.cpp</a> 第 <a class="el" href="slave_8cpp_source.html#l00055">55</a> 行定义.</p>
-
-</div>
-</div>
-<a id="a8cbae7f89416681ffcc3e60f35120660"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8cbae7f89416681ffcc3e60f35120660">&#9670;&nbsp;</a></span>judger_uid</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int judger_uid</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p class="">Linux 中运行评测进程的 user id。 默认为 1666 </p>
-
-<p class="definition">在文件 <a class="el" href="slave_8cpp_source.html">slave.cpp</a> 第 <a class="el" href="slave_8cpp_source.html#l00053">53</a> 行定义.</p>
-
-</div>
-</div>
-<a id="a934a4ce92837c8e08f40e43c8e6b12e0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a934a4ce92837c8e08f40e43c8e6b12e0">&#9670;&nbsp;</a></span>listening_pid</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int listening_pid</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p class="">本机监听进程号 </p>
-
-<p class="definition">在文件 <a class="el" href="slave_8cpp_source.html">slave.cpp</a> 第 <a class="el" href="slave_8cpp_source.html#l00039">39</a> 行定义.</p>
-
-</div>
-</div>
-<a id="afd9f4912565d7dd76d6160afd58e884d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afd9f4912565d7dd76d6160afd58e884d">&#9670;&nbsp;</a></span>lock_file</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::string lock_file</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p class="">lock_file,用于保证一次只能有一个 judge_server 守护进程在运行 </p>
-
-<p class="definition">在文件 <a class="el" href="slave_8cpp_source.html">slave.cpp</a> 第 <a class="el" href="slave_8cpp_source.html#l00051">51</a> 行定义.</p>
-
-</div>
-</div>
-<a id="af4af88ca1edcae980a88447dde403548"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af4af88ca1edcae980a88447dde403548">&#9670;&nbsp;</a></span>log_file_name</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::string log_file_name</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p class="">日志文件名 </p>
-
-<p class="definition">在文件 <a class="el" href="slave_8cpp_source.html">slave.cpp</a> 第 <a class="el" href="slave_8cpp_source.html#l00047">47</a> 行定义.</p>
-
-</div>
-</div>
-<a id="adcd82fb39f0a5da45948a65762fc3e99"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adcd82fb39f0a5da45948a65762fc3e99">&#9670;&nbsp;</a></span>log_fp</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::ofstream log_fp</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p class="">日志文件的文件流 </p>
-
-<p class="definition">在文件 <a class="el" href="slave_8cpp_source.html">slave.cpp</a> 第 <a class="el" href="slave_8cpp_source.html#l00049">49</a> 行定义.</p>
-
-</div>
-</div>
-<a id="a6a47b8b74b88bdec473b29ab49740c94"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6a47b8b74b88bdec473b29ab49740c94">&#9670;&nbsp;</a></span>max_redis_conn</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int max_redis_conn</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p class="">redis 最大连接数 </p>
-
-<p class="definition">在文件 <a class="el" href="slave_8cpp_source.html">slave.cpp</a> 第 <a class="el" href="slave_8cpp_source.html#l00061">61</a> 行定义.</p>
-
-</div>
-</div>
-<a id="a39a95272b52f9cba3dc9434ea16324c4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a39a95272b52f9cba3dc9434ea16324c4">&#9670;&nbsp;</a></span>redis_hostname</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::string redis_hostname</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p class="">redis 主机名 </p>
-
-<p class="definition">在文件 <a class="el" href="slave_8cpp_source.html">slave.cpp</a> 第 <a class="el" href="slave_8cpp_source.html#l00059">59</a> 行定义.</p>
-
-</div>
-</div>
-<a id="aade40e0dc1b36c16baddd2b33e739bba"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aade40e0dc1b36c16baddd2b33e739bba">&#9670;&nbsp;</a></span>redis_port</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int redis_port</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p class="">redis 端口号 </p>
-
-<p class="definition">在文件 <a class="el" href="slave_8cpp_source.html">slave.cpp</a> 第 <a class="el" href="slave_8cpp_source.html#l00057">57</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="slave_8cpp_source.html">slave.cpp</a> 第 <a class="el" href="slave_8cpp_source.html#l00040">40</a> 行定义.</p>
 
 </div>
 </div>
@@ -725,24 +421,7 @@ slave.cpp 的引用(Include)关系图:</div>
 </div><div class="memdoc">
 <p class="">已经 AC 代码数量 </p>
 
-<p class="definition">在文件 <a class="el" href="slave_8cpp_source.html">slave.cpp</a> 第 <a class="el" href="slave_8cpp_source.html#l00071">71</a> 行定义.</p>
-
-</div>
-</div>
-<a id="a417d56a5a46d3fdea535db9caacbcd33"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a417d56a5a46d3fdea535db9caacbcd33">&#9670;&nbsp;</a></span>user_name</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::string user_name</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p class="">本机当前用户名 </p>
-
-<p class="definition">在文件 <a class="el" href="slave_8cpp_source.html">slave.cpp</a> 第 <a class="el" href="slave_8cpp_source.html#l00037">37</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="slave_8cpp_source.html">slave.cpp</a> 第 <a class="el" href="slave_8cpp_source.html#l00041">41</a> 行定义.</p>
 
 </div>
 </div>

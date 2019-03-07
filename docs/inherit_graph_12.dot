@@ -1,0 +1,10 @@
+digraph "类继承关系图"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node81 [label="exception",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled",tooltip=" "];
+  Node81 -> Node0 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node0 [label="JobHandleException",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_job_handle_exception.html",tooltip="自定义的 Job 异常，继承于 std::exception，专用于 Job 处理中的异常"];
+}

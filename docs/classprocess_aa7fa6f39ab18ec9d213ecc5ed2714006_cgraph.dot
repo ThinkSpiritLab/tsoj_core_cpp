@@ -1,0 +1,12 @@
+digraph "process::operator="
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node53 [label="process::operator=",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node53 -> Node54 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node54 [label="process::swap",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classprocess.html#a1e51393ba0759186bd627658d1cca81d",tooltip=" "];
+  Node53 -> Node55 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node55 [label="process::kill",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classprocess.html#a217a9f72c54fb962f5c56cf0934901e5",tooltip="Send signal SIG to the process."];
+}

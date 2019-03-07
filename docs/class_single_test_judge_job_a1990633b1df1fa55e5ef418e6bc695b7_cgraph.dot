@@ -1,0 +1,10 @@
+digraph "SingleTestJudgeJob::store_source_code_procedure"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node46 [label="SingleTestJudgeJob\l::store_source_code\l_procedure",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node46 -> Node47 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node47 [label="id_type_base::to_literal",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classid__type__base.html#ad2dca9dc5e11d46acf32e98dc8cd9c59",tooltip=" "];
+}

@@ -1,0 +1,14 @@
+digraph "/home/peter/git/Core/src" {
+  compound=true
+  node [ fontsize="10", fontname="Helvetica"];
+  edge [ labelfontsize="10", labelfontname="Helvetica"];
+  subgraph clusterdir_68267d1309a1af8e8297ef4c3efbcdba {
+    graph [ bgcolor="#eeeeff", pencolor="black", label="" URL="dir_68267d1309a1af8e8297ef4c3efbcdba.html"];
+    dir_68267d1309a1af8e8297ef4c3efbcdba [shape=plaintext label="src"];
+    dir_ae1a660fbe587eff2b475b14d217c1ef [shape=box label="master" color="black" fillcolor="white" style="filled" URL="dir_ae1a660fbe587eff2b475b14d217c1ef.html"];
+    dir_2d9465cb75be92c20e557f02b9c6607a [shape=box label="shared_src" color="black" fillcolor="white" style="filled" URL="dir_2d9465cb75be92c20e557f02b9c6607a.html"];
+    dir_80f0d4a0945c74dfa611dba2ec326a39 [shape=box label="slave" color="black" fillcolor="white" style="filled" URL="dir_80f0d4a0945c74dfa611dba2ec326a39.html"];
+  }
+  dir_ae1a660fbe587eff2b475b14d217c1ef->dir_2d9465cb75be92c20e557f02b9c6607a [headlabel="5", labeldistance=1.5 headhref="dir_000001_000002.html"];
+  dir_80f0d4a0945c74dfa611dba2ec326a39->dir_2d9465cb75be92c20e557f02b9c6607a [headlabel="17", labeldistance=1.5 headhref="dir_000003_000002.html"];
+}

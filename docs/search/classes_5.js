@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['mysqlemptyresexception',['MysqlEmptyResException',['../class_mysql_empty_res_exception.html',1,'']]]
+  ['format_5fhelper',['format_helper',['../structformat__helper.html',1,'']]]
 ];

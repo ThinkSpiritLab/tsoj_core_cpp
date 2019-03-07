@@ -1,26 +1,15 @@
 var searchData=
 [
-  ['uid',['uid',['../class_config.html#a1672607dd55d951394ab1967a4d30441',1,'Config::uid()'],['../class_update_job_base.html#aa4839531bda4ea300c2d92619e41f124',1,'UpdateJobBase::uid()']]],
-  ['united_5fresource_2ecpp',['united_resource.cpp',['../united__resource_8cpp.html',1,'']]],
+  ['u_5fid_5fliteral',['u_id_literal',['../structojv4.html#a1b7351c288ec398915a938c8fd93b44e',1,'ojv4']]],
+  ['u_5fid_5ftype',['u_id_type',['../structojv4_1_1u__id__type.html',1,'ojv4']]],
+  ['u_5fp_5fstatus_5fenum',['u_p_status_enum',['../structojv4.html#a976a647b735e759aec639ecb877fca68',1,'ojv4']]],
+  ['u_5fp_5fstatus_5ftype',['u_p_status_type',['../structojv4.html#aec39dbdf1c6deec0bcf5bf14c7c11c9d',1,'ojv4']]],
   ['united_5fresource_2ehpp',['united_resource.hpp',['../united__resource_8hpp.html',1,'']]],
   ['unitedjudgeresult',['UnitedJudgeResult',['../united__resource_8hpp.html#a4633701595b7c3914a34eee8ba1b505e',1,'united_resource.hpp']]],
   ['unknown_5fexcept_5ffatal',['UNKNOWN_EXCEPT_FATAL',['../logger_8hpp.html#a06c9c4b83209032f7ff4454cc24a0d32',1,'logger.hpp']]],
   ['unknown_5fexcept_5fwarning',['UNKNOWN_EXCEPT_WARNING',['../logger_8hpp.html#a9923e2b34256b3f54779aa9de597f0c8',1,'logger.hpp']]],
   ['unknown_5fexception_5fwhat',['UNKNOWN_EXCEPTION_WHAT',['../logger_8hpp.html#a059e15b1d4f7bfda5f230df53167b4c3',1,'logger.hpp']]],
-  ['unlimited',['UNLIMITED',['../class_config.html#a3eef324bfca632666b2091c04af212b0',1,'Config']]],
-  ['update_5fcompile_5finfo',['update_compile_info',['../class_contest_update_job.html#a3bca7b4472833a787048f42b098c4951',1,'ContestUpdateJob::update_compile_info()'],['../class_exercise_update_job_base.html#a1c3733a28199be61b8e6d1b926ac61b4',1,'ExerciseUpdateJobBase::update_compile_info()'],['../class_update_job_base.html#ab829aaf57d148eb434b26f2033783721',1,'UpdateJobBase::update_compile_info()']]],
-  ['update_5fproblem_5fsubmit_5fand_5faccept_5fnum_5fin_5fexercise',['update_problem_submit_and_accept_num_in_exercise',['../class_exercise_update_job_base.html#a3af17ba746dd7b0776f371618672619f',1,'ExerciseUpdateJobBase']]],
-  ['update_5fproblem_5fsubmit_5fand_5faccept_5fnum_5fin_5fthis_5fcourse',['update_problem_submit_and_accept_num_in_this_course',['../class_course_update_job.html#ab5b579787c5f425cd436c3a6e125c8e7',1,'CourseUpdateJob']]],
-  ['update_5fsolution',['update_solution',['../class_contest_update_job.html#adc7b7e7e00cdfffddaa2704b8328acfd',1,'ContestUpdateJob::update_solution()'],['../class_course_update_job.html#a292e721ec77f7f85ea613bb80c11fca3',1,'CourseUpdateJob::update_solution()'],['../class_exercise_update_job.html#a316c037e1c1d4da1d454a95648e5e2c3',1,'ExerciseUpdateJob::update_solution()'],['../class_exercise_update_job_base.html#aeffacc3e79890db8714821706e1d2a48',1,'ExerciseUpdateJobBase::update_solution()'],['../class_update_job_base.html#a4228d67e4883271b0904d3469dba1415',1,'UpdateJobBase::update_solution()']]],
-  ['update_5fsource_5fcode',['update_source_code',['../class_contest_update_job.html#a1a65be93b0afd4ef59d3359f610181f6',1,'ContestUpdateJob::update_source_code()'],['../class_exercise_update_job_base.html#ab96e1d910f096da10acc7f4811fca635',1,'ExerciseUpdateJobBase::update_source_code()'],['../class_update_job_base.html#a9fb74f04b478236af2a74b1e6cb4621a',1,'UpdateJobBase::update_source_code()']]],
-  ['update_5fuser_5fand_5fproblem',['update_user_and_problem',['../class_contest_update_job.html#ae319b437b9630517719da7f036cd61f5',1,'ContestUpdateJob::update_user_and_problem()'],['../class_course_update_job.html#acdb8cfc94cfe73b2092c1e18a06be0a8',1,'CourseUpdateJob::update_user_and_problem()'],['../class_exercise_update_job.html#a5d23fe341214e8c3adaf6bc80d7b11f6',1,'ExerciseUpdateJob::update_user_and_problem()'],['../class_exercise_update_job_base.html#a9405c9cf05a1de216d8dece91629af5c',1,'ExerciseUpdateJobBase::update_user_and_problem()'],['../class_update_job_base.html#a08f66810bc77bcf53cf97ac0ad200d86',1,'UpdateJobBase::update_user_and_problem()']]],
-  ['update_5fuser_5fproblem_5fstatus',['update_user_problem_status',['../class_contest_update_job.html#ac08c8b6cb897930559970dc021c35ccd',1,'ContestUpdateJob::update_user_problem_status()'],['../class_course_update_job.html#a234460a5300b20558518110f9236a55b',1,'CourseUpdateJob::update_user_problem_status()'],['../class_exercise_update_job.html#acbd8549fd852cb90924ea5f0ef1e654e',1,'ExerciseUpdateJob::update_user_problem_status()'],['../class_exercise_update_job_base.html#a768900d69fbffafac0227c64fd8f089e',1,'ExerciseUpdateJobBase::update_user_problem_status()'],['../class_update_job_base.html#a8d7444cd56ceaf7c206a58483c6cb075',1,'UpdateJobBase::update_user_problem_status()']]],
-  ['update_5fuser_5fsubmit_5fand_5faccept_5fnum_5fin_5fexercise',['update_user_submit_and_accept_num_in_exercise',['../class_exercise_update_job_base.html#ae915992f5df113724cec45542e2582c3',1,'ExerciseUpdateJobBase']]],
-  ['update_5fuser_5fsubmit_5fand_5faccept_5fnum_5fin_5fthis_5fcourse',['update_user_submit_and_accept_num_in_this_course',['../class_course_update_job.html#af6db4114d2322013941c5e42c95b36f5',1,'CourseUpdateJob']]],
+  ['update_5fcontest_5fscoreboard_5fhandler',['update_contest_scoreboard_handler',['../master_8cpp.html#a7c08dccaaaa3b76e978c071f92615b87',1,'master.cpp']]],
   ['updated',['UPDATED',['../united__resource_8hpp.html#a80b9d5506f136fd5cef4ccd153030f1aac5d66c61a88f1b214933a91fda1e13f5',1,'united_resource.hpp']]],
-  ['updatejobbase',['UpdateJobBase',['../class_update_job_base.html',1,'UpdateJobBase'],['../class_update_job_base.html#aaeee903bfb8a86a7ea32ede6507559da',1,'UpdateJobBase::UpdateJobBase()']]],
-  ['updatejobbase_2ecpp',['UpdateJobBase.cpp',['../_update_job_base_8cpp.html',1,'']]],
-  ['updatejobbase_2ehpp',['UpdateJobBase.hpp',['../_update_job_base_8hpp.html',1,'']]],
-  ['user_5fname',['user_name',['../global__shared__variable_8hpp.html#a417d56a5a46d3fdea535db9caacbcd33',1,'user_name():&#160;slave.cpp'],['../slave_8cpp.html#a417d56a5a46d3fdea535db9caacbcd33',1,'user_name():&#160;slave.cpp']]],
-  ['user_5fproblem_5fstatus',['user_problem_status',['../_update_job_base_8hpp.html#a43e6e31f40b2731ff3a1a6030b0b7cfd',1,'UpdateJobBase.hpp']]]
+  ['usersarecorder',['UserSARecorder',['../class_user_s_a_recorder.html',1,'UserSARecorder'],['../class_user_s_a_recorder.html#ac0ecc6c2d4dce2861b5dc245c2b25fb8',1,'UserSARecorder::UserSARecorder()']]]
 ];

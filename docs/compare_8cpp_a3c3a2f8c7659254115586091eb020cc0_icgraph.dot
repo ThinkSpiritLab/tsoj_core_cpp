@@ -1,0 +1,14 @@
+digraph "find_next_nonspace"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="RL";
+  Node6 [label="find_next_nonspace",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node6 -> Node7 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node7 [label="compare",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$compare_8hpp.html#a960c5c76653215ba60077e139ab6c000",tooltip="根据用户答案路径和标准答案路径，提取相应文件并进行比对。比对结果作为判题结果，并返回。"];
+  Node7 -> Node8 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node8 [label="JudgeJob::running",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_judge_job.html#a0d2e1e5cce842ef0daf71c95f98275f0",tooltip="进入当前 job 的执行流程，并返回执行结果。"];
+  Node8 -> Node9 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node9 [label="JudgeJob::handle",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_judge_job.html#a6fe58f9fcacc9ba6461e97f1a3ac76a3",tooltip="本 Job 的处理函数。整个 job 的工作入口，包括编译执行判题等内容"];
+}

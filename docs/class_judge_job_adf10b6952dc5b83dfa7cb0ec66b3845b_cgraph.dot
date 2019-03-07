@@ -1,0 +1,10 @@
+digraph "JudgeJob::push_back_failed_judge_job"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node68 [label="JudgeJob::push_back\l_failed_judge_job",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="将评测失败的评测详情插入数据库、将评测失败的 job_item 插入评测失败队列"];
+  Node68 -> Node69 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node69 [label="JudgeJob::insert_into\l_failed",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_judge_job.html#aa8f7e6cb490191f23eda063baa6cc22b",tooltip="将评测失败的评测详情插入数据库、将评测失败的 job_item 插入评测失败队列"];
+}

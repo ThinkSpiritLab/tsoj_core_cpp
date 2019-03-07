@@ -1,7 +1,4 @@
 var searchData=
 [
-  ['compileconfig',['CompileConfig',['../class_compile_config.html',1,'']]],
-  ['config',['Config',['../class_config.html',1,'']]],
-  ['contestupdatejob',['ContestUpdateJob',['../class_contest_update_job.html',1,'']]],
-  ['courseupdatejob',['CourseUpdateJob',['../class_course_update_job.html',1,'']]]
+  ['_5f_5fauto_5frevert_5fhandle',['__auto_revert_handle',['../classsync__nonsingle__instance__pool_1_1____auto__revert__handle.html',1,'sync_nonsingle_instance_pool']]]
 ];

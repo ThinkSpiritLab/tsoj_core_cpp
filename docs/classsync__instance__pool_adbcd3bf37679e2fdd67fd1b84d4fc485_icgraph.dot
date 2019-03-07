@@ -1,0 +1,18 @@
+digraph "sync_instance_pool::get_pool"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="RL";
+  Node22 [label="sync_instance_pool\l::get_pool",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node22 -> Node23 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node23 [label="sync_instance_pool\l::construct",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classsync__instance__pool.html#a47233d049f711dd34b1b51cd52e6e10e",tooltip=" "];
+  Node22 -> Node24 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node24 [label="sync_instance_pool\l::fetch",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classsync__instance__pool.html#a9aeb1427720c1577dd1d11f1a05b4480",tooltip=" "];
+  Node22 -> Node25 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node25 [label="sync_instance_pool\l::block_fetch",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classsync__instance__pool.html#a7751e9000fcb16ca0d59f9ff7592dfc2",tooltip=" "];
+  Node22 -> Node26 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node26 [label="sync_instance_pool\l::revert",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classsync__instance__pool.html#a9941269ba9507697c45f348f3f581dbe",tooltip=" "];
+  Node26 -> Node27 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node27 [label="sync_instance_pool\l::auto_revert_t::~auto\l_revert_t",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classsync__instance__pool_1_1auto__revert__t.html#ac679c475cd725b83d11d36c9b0e838a4",tooltip=" "];
+}

@@ -1,0 +1,50 @@
+digraph "main"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node15 [label="main",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="master 端主程序循环 加载配置信息；连接数据库；取待评测任务信息，交由子进程并评测；创建并分离发送心跳线程 // to be done"];
+  Node15 -> Node16 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node16 [label="load_config",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$master_8cpp.html#a9b8405bf54a17577dcb1ad54eec0ee2f",tooltip="加载 master 工作的配置 根据 updater.conf 文档，读取工作配置信息。loadConfig 的工作原理详见其文档。"];
+  Node16 -> Node17 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node17 [label="parse_buf",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$load__helper_8cpp.html#a7aa49aa215539e705fe48842be5bef03",tooltip=" "];
+  Node15 -> Node18 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node18 [label="add_redis_conn",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$master_2redis__conn__factory_8hpp.html#a2c9be7394111105ab04a9aeafebb3188",tooltip=" "];
+  Node18 -> Node19 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node19 [label="sync_nonsingle_instance\l_pool::add",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classsync__nonsingle__instance__pool.html#a2aee96341e92381860e4366201cee988",tooltip=" "];
+  Node15 -> Node20 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node20 [label="add_mysql_conn",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$mysql__conn__factory_8hpp.html#a97868cc50118e452b1ddf7fe21424c39",tooltip=" "];
+  Node20 -> Node19 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node15 -> Node21 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node21 [label="start_up_refresh",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$master_8cpp.html#a26091586d804dac5c3ce0c18eb6d91ab",tooltip=" "];
+  Node21 -> Node22 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node22 [label="sync_fetch_mysql_conn",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$mysql__conn__factory_8hpp.html#a390151078c5f6b14cda92169fd6e42e3",tooltip=" "];
+  Node22 -> Node23 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node23 [label="sync_nonsingle_instance\l_pool::sync_fetch",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classsync__nonsingle__instance__pool.html#a737a17399fd4b8ac9894d0fa379caa41",tooltip=" "];
+  Node22 -> Node24 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node24 [label="sync_nonsingle_instance\l_pool::__auto_revert_handle\l::abandon",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classsync__nonsingle__instance__pool_1_1____auto__revert__handle.html#a11a1bd0b4726a771bb3ef0b5a010f340",tooltip=" "];
+  Node22 -> Node20 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node15 -> Node25 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node25 [label="register_self",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$master_8cpp.html#ab85b27ea72fdfbc8ddc41b1e3078385c",tooltip="发送心跳进程 每隔一段时间，将本机信息提交到数据库中表示当前在线的评测机集合中，表明自身正常工作，可以处理评测任务。"];
+  Node25 -> Node26 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node26 [label="sync_fetch_redis_conn",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$master_2redis__conn__factory_8hpp.html#ab198e48c9dee63607145289ef1aa7757",tooltip=" "];
+  Node26 -> Node23 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node26 -> Node24 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node26 -> Node18 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node25 -> Node27 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node27 [label="get_ymd_hms_in_local\l_time_zone",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$logger_8cpp.html#a69cdb1d10e14a871dde1c18f2b9fe560",tooltip=" "];
+  Node15 -> Node28 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node28 [label="update_contest_scoreboard\l_handler",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$master_8cpp.html#a7c08dccaaaa3b76e978c071f92615b87",tooltip=" "];
+  Node28 -> Node26 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node28 -> Node29 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node29 [label="boost::lexical_cast",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$namespaceboost.html#a220f08a551e04abfc6190fd6bb616a66",tooltip=" "];
+  Node28 -> Node22 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node15 -> Node30 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node30 [label="regist_SIGTERM_handler",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$master_8cpp.html#a8cb7d2d303a160e9662c31d2e1625c77",tooltip="SIGTERM 信号的处理函数 当收到 SIGTERM 信号，在代评测队列末端加上 type = 0, id = -1 的任务，用于标识结束 master 工作的意愿。之后在 loop 循环中会据此判断..."];
+  Node15 -> Node31 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node31 [label="listenning_loop",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$master_8cpp.html#a4da8bf76425b9301a441b2009f39c1f1",tooltip=" "];
+  Node31 -> Node26 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node31 -> Node32 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node32 [label="JobBase::parseJobItem",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_job_base.html#a1edae5f91246304fa862722926d82701",tooltip="将待处理 Job 信息分解，提取出 job_type 与 job_id"];
+}

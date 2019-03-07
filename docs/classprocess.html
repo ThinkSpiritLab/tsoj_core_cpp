@@ -111,6 +111,10 @@ Public 成员函数</h2></td></tr>
 <tr class="separator:addb07b7e292e8de3e4d4ef068a0fb61b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4e91eeb6363e38d504268d2b06259b49"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classprocess.html#a4e91eeb6363e38d504268d2b06259b49">~process</a> () noexcept</td></tr>
 <tr class="separator:a4e91eeb6363e38d504268d2b06259b49"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a53507552d3b807fab09228688b5dbd4c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classprocess.html#a69c381eb325b023c46250df1e6313a72">pid_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classprocess.html#a53507552d3b807fab09228688b5dbd4c">get_father_id</a> () const noexcept</td></tr>
+<tr class="separator:a53507552d3b807fab09228688b5dbd4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad011798011aa37c0e8d660e356c18e27"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classprocess.html#a69c381eb325b023c46250df1e6313a72">pid_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classprocess.html#ad011798011aa37c0e8d660e356c18e27">get_child_id</a> () const noexcept</td></tr>
+<tr class="separator:ad011798011aa37c0e8d660e356c18e27"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7af8014ced3ecdb5492d5cf3c1d7da7e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classprocess.html#a7af8014ced3ecdb5492d5cf3c1d7da7e">process</a> (<a class="el" href="classprocess.html">process</a> &amp;&amp;src) noexcept</td></tr>
 <tr class="separator:a7af8014ced3ecdb5492d5cf3c1d7da7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1e51393ba0759186bd627658d1cca81d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classprocess.html#a1e51393ba0759186bd627658d1cca81d">swap</a> (<a class="el" href="classprocess.html">process</a> &amp;with) noexcept</td></tr>
@@ -328,7 +332,7 @@ template&lt;typename Callable , typename ... Args&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">在文件 <a class="el" href="process_8hpp_source.html">process.hpp</a> 第 <a class="el" href="process_8hpp_source.html#l00072">72</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="process_8hpp_source.html">process.hpp</a> 第 <a class="el" href="process_8hpp_source.html#l00082">82</a> 行定义.</p>
 
 </div>
 </div>
@@ -356,7 +360,7 @@ template&lt;typename Callable , typename ... Args&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">在文件 <a class="el" href="process_8hpp_source.html">process.hpp</a> 第 <a class="el" href="process_8hpp_source.html#l00163">163</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="process_8hpp_source.html">process.hpp</a> 第 <a class="el" href="process_8hpp_source.html#l00173">173</a> 行定义.</p>
 <div class="dynheader">
 这是这个函数的调用关系图:</div>
 <div class="dyncontent">
@@ -366,6 +370,60 @@ template&lt;typename Callable , typename ... Args&gt; </div>
 <area shape="rect" id="node2" href="slave_8cpp.html#ac0f2228420376f4db7e1274f2b41667c" title="slave 端主程序循环 加载配置信息；连接 redis 数据库；取待评测任务信息，交由子进程并评测；创建并分离发送心跳线程" alt="" coords="5,5,56,32"/>
 </map>
 </div>
+
+</div>
+</div>
+<a id="ad011798011aa37c0e8d660e356c18e27"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad011798011aa37c0e8d660e356c18e27">&#9670;&nbsp;</a></span>get_child_id()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classprocess.html#a69c381eb325b023c46250df1e6313a72">pid_type</a> process::get_child_id </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="process_8hpp_source.html">process.hpp</a> 第 <a class="el" href="process_8hpp_source.html#l00077">77</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a53507552d3b807fab09228688b5dbd4c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a53507552d3b807fab09228688b5dbd4c">&#9670;&nbsp;</a></span>get_father_id()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classprocess.html#a69c381eb325b023c46250df1e6313a72">pid_type</a> process::get_father_id </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="process_8hpp_source.html">process.hpp</a> 第 <a class="el" href="process_8hpp_source.html#l00072">72</a> 行定义.</p>
 
 </div>
 </div>
@@ -392,7 +450,7 @@ template&lt;typename Callable , typename ... Args&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">在文件 <a class="el" href="process_8hpp_source.html">process.hpp</a> 第 <a class="el" href="process_8hpp_source.html#l00116">116</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="process_8hpp_source.html">process.hpp</a> 第 <a class="el" href="process_8hpp_source.html#l00126">126</a> 行定义.</p>
 <div class="dynheader">
 这是这个函数的调用关系图:</div>
 <div class="dyncontent">
@@ -450,7 +508,7 @@ template&lt;typename Callable , typename ... Args&gt; </div>
 </dl>
 <dl class="section return"><dt>返回</dt><dd>If the WNOHANG bit is set in OPTIONS, and that child is not already dead, return (pid_t) 0. If successful, return PID and store the dead child's status in STAT_LOC. Return (pid_t) -1 for errors. If the WUNTRACED bit is set in OPTIONS, return status for stopped children; otherwise don't. </dd></dl>
 
-<p class="definition">在文件 <a class="el" href="process_8hpp_source.html">process.hpp</a> 第 <a class="el" href="process_8hpp_source.html#l00133">133</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="process_8hpp_source.html">process.hpp</a> 第 <a class="el" href="process_8hpp_source.html#l00143">143</a> 行定义.</p>
 
 </div>
 </div>
@@ -505,7 +563,7 @@ template&lt;typename Callable , typename ... Args&gt; </div>
 </dl>
 <dl class="section return"><dt>返回</dt><dd>For errors return (pid_type) (-1); otherwise return the process ID. </dd></dl>
 
-<p class="definition">在文件 <a class="el" href="process_8hpp_source.html">process.hpp</a> 第 <a class="el" href="process_8hpp_source.html#l00155">155</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="process_8hpp_source.html">process.hpp</a> 第 <a class="el" href="process_8hpp_source.html#l00165">165</a> 行定义.</p>
 
 </div>
 </div>
@@ -532,7 +590,7 @@ template&lt;typename Callable , typename ... Args&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">在文件 <a class="el" href="process_8hpp_source.html">process.hpp</a> 第 <a class="el" href="process_8hpp_source.html#l00111">111</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="process_8hpp_source.html">process.hpp</a> 第 <a class="el" href="process_8hpp_source.html#l00121">121</a> 行定义.</p>
 
 </div>
 </div>
@@ -569,7 +627,7 @@ template&lt;typename Callable , typename ... Args&gt; </div>
 </dl>
 <dl class="section return"><dt>返回</dt><dd>If success return 0, For errors, return other value. </dd></dl>
 
-<p class="definition">在文件 <a class="el" href="process_8hpp_source.html">process.hpp</a> 第 <a class="el" href="process_8hpp_source.html#l00173">173</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="process_8hpp_source.html">process.hpp</a> 第 <a class="el" href="process_8hpp_source.html#l00183">183</a> 行定义.</p>
 <div class="dynheader">
 这是这个函数的调用关系图:</div>
 <div class="dyncontent">
@@ -610,7 +668,7 @@ template&lt;typename Callable , typename ... Args&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">在文件 <a class="el" href="process_8hpp_source.html">process.hpp</a> 第 <a class="el" href="process_8hpp_source.html#l00084">84</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="process_8hpp_source.html">process.hpp</a> 第 <a class="el" href="process_8hpp_source.html#l00094">94</a> 行定义.</p>
 <div class="dynheader">
 函数调用图:</div>
 <div class="dyncontent">
@@ -648,7 +706,7 @@ template&lt;typename Callable , typename ... Args&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">在文件 <a class="el" href="process_8hpp_source.html">process.hpp</a> 第 <a class="el" href="process_8hpp_source.html#l00077">77</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="process_8hpp_source.html">process.hpp</a> 第 <a class="el" href="process_8hpp_source.html#l00087">87</a> 行定义.</p>
 <div class="dynheader">
 这是这个函数的调用关系图:</div>
 <div class="dyncontent">

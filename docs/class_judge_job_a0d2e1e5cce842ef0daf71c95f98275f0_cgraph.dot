@@ -1,0 +1,36 @@
+digraph "JudgeJob::running"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node71 [label="JudgeJob::running",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="进入当前 job 的执行流程，并返回执行结果。"];
+  Node71 -> Node72 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node72 [label="JobBase::commitJudgeStatus\lToRedis",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_job_base.html#aa7da8e91cd0ffddf9b1cf70995d2134b",tooltip="将当前评测状态提交到 redis 数据库。"];
+  Node72 -> Node73 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node73 [label="std::to_string",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$namespacestd.html#aee474c547aeb0d844616a7defb3846a9",tooltip=" "];
+  Node72 -> Node74 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node74 [label="sync_fetch_redis_conn",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$master_2redis__conn__factory_8hpp.html#ab198e48c9dee63607145289ef1aa7757",tooltip=" "];
+  Node74 -> Node75 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node75 [label="sync_nonsingle_instance\l_pool::sync_fetch",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classsync__nonsingle__instance__pool.html#a737a17399fd4b8ac9894d0fa379caa41",tooltip=" "];
+  Node74 -> Node76 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node76 [label="sync_nonsingle_instance\l_pool::__auto_revert_handle\l::abandon",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classsync__nonsingle__instance__pool_1_1____auto__revert__handle.html#a11a1bd0b4726a771bb3ef0b5a010f340",tooltip=" "];
+  Node74 -> Node77 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node77 [label="add_redis_conn",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$master_2redis__conn__factory_8hpp.html#a2c9be7394111105ab04a9aeafebb3188",tooltip=" "];
+  Node77 -> Node78 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node78 [label="sync_nonsingle_instance\l_pool::add",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classsync__nonsingle__instance__pool.html#a2aee96341e92381860e4366201cee988",tooltip=" "];
+  Node71 -> Node79 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node79 [label="JudgeJob::execute",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_judge_job.html#a1e12c6a1d33861f95a053186ac3d3eb9",tooltip="根据当前 config 配置的值，执行编译/运行程序。过程中会对必要的权限检查， 并且会启动一个线程来监控，防止运行超时。执行结束后返回执行结果。"];
+  Node79 -> Node80 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node80 [label="Result::setErrorCode",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$struct_result.html#a8201d7586458dd80f361ab8c6cd93524",tooltip="将本结构体的 RunnerError 置为 err， 并将评测结果标为 UnitedJudgeResult::SYSTEM_ERROR"];
+  Node79 -> Node81 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node81 [label="JudgeJob::child_process",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_judge_job.html#a45f3a298baec8013e313d506d5b764b5",tooltip="启动 编译/执行 的实际工作。限制了资源信息，重定向流之后，启动实际工作进程。"];
+  Node79 -> Node82 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node82 [label="process::kill",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classprocess.html#a217a9f72c54fb962f5c56cf0934901e5",tooltip="Send signal SIG to the process."];
+  Node79 -> Node83 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node83 [label="process::join",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classprocess.html#a2a3c8b98c92999ffe95abf1de7ee17d2",tooltip=" "];
+  Node71 -> Node84 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node84 [label="compare",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$compare_8cpp.html#a960c5c76653215ba60077e139ab6c000",tooltip="根据用户答案路径和标准答案路径，提取相应文件并进行比对。比对结果作为判题结果，并返回。"];
+  Node84 -> Node85 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node85 [label="find_next_nonspace",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$compare_8cpp.html#a3c3a2f8c7659254115586091eb020cc0",tooltip=" "];
+}

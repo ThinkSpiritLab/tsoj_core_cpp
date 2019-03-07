@@ -1,0 +1,10 @@
+digraph "SingleTestJudgeJob::failed_handle"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node19 [label="SingleTestJudgeJob\l::failed_handle",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node19 -> Node20 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node20 [label="SingleTestJudgeJob\l::commit_judge_result\l_to_redis",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_single_test_judge_job.html#a1164e58c5a31801605d50e8567d6013f",tooltip=" "];
+}

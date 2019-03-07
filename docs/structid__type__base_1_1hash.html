@@ -1,0 +1,174 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.8.15"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>TSOJ V4 Judge Core: id_type_base&lt; IntegerType, IDType &gt;::hash结构体 参考</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="mlabel.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="ThinkSpirit_logo_2018.png"/></td>
+  <td id="projectalign" style="padding-left: 0.5em;">
+   <div id="projectname">TSOJ V4 Judge Core
+   </div>
+   <div id="projectbrief">oj.thinkspirit.org</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- 制作者 Doxygen 1.8.15 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+var searchBox = new SearchBox("searchBox", "search",false,'搜索');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(function() {
+  initMenu('',true,false,'search.php','搜索');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="classid__type__base.html">id_type_base</a></li><li class="navelem"><a class="el" href="structid__type__base_1_1hash.html">hash</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-types">Public 类型</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="structid__type__base_1_1hash-members.html">所有成员列表</a>  </div>
+  <div class="headertitle">
+<div class="title">id_type_base&lt; IntegerType, IDType &gt;::hash结构体 参考</div>  </div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="db__typedef_8hpp_source.html">db_typedef.hpp</a>&gt;</code></p>
+<div class="dynheader">
+类 id_type_base&lt; IntegerType, IDType &gt;::hash 继承关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="structid__type__base_1_1hash__inherit__graph.png" border="0" usemap="#id__type__base_3_01_integer_type_00_01_i_d_type_01_4_1_1hash_inherit__map" alt="Inheritance graph"/></div>
+<map name="id__type__base_3_01_integer_type_00_01_i_d_type_01_4_1_1hash_inherit__map" id="id__type__base_3_01_integer_type_00_01_i_d_type_01_4_1_1hash_inherit__map">
+</map>
+<center><span class="legend">[<a href="graph_legend.html">图例</a>]</span></center></div>
+<div class="dynheader">
+id_type_base&lt; IntegerType, IDType &gt;::hash 的协作图:</div>
+<div class="dyncontent">
+<div class="center"><img src="structid__type__base_1_1hash__coll__graph.png" border="0" usemap="#id__type__base_3_01_integer_type_00_01_i_d_type_01_4_1_1hash_coll__map" alt="Collaboration graph"/></div>
+<map name="id__type__base_3_01_integer_type_00_01_i_d_type_01_4_1_1hash_coll__map" id="id__type__base_3_01_integer_type_00_01_i_d_type_01_4_1_1hash_coll__map">
+</map>
+<center><span class="legend">[<a href="graph_legend.html">图例</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
+Public 类型</h2></td></tr>
+<tr class="memitem:aa2654d9c06255235778db452770723d3"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structid__type__base_1_1hash.html#aa2654d9c06255235778db452770723d3">argument_type</a> = IDType</td></tr>
+<tr class="separator:aa2654d9c06255235778db452770723d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:aa142a3e4d10b6ba174fcc4ed25212b70"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structid__type__base_1_1hash.html#aa142a3e4d10b6ba174fcc4ed25212b70">operator()</a> (const <a class="el" href="structid__type__base_1_1hash.html#aa2654d9c06255235778db452770723d3">argument_type</a> &amp;<a class="el" href="classid__type__base.html#a61a123dcad305810777002bdd48a3348">val</a>) const</td></tr>
+<tr class="separator:aa142a3e4d10b6ba174fcc4ed25212b70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><h3>template&lt;typename IntegerType, typename IDType&gt;<br />
+struct id_type_base&lt; IntegerType, IDType &gt;::hash</h3>
+
+
+<p class="definition">在文件 <a class="el" href="db__typedef_8hpp_source.html">db_typedef.hpp</a> 第 <a class="el" href="db__typedef_8hpp_source.html#l00091">91</a> 行定义.</p>
+</div><h2 class="groupheader">成员类型定义说明</h2>
+<a id="aa2654d9c06255235778db452770723d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa2654d9c06255235778db452770723d3">&#9670;&nbsp;</a></span>argument_type</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename IntegerType, typename IDType&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classid__type__base.html">id_type_base</a>&lt; IntegerType, IDType &gt;::<a class="el" href="structid__type__base_1_1hash.html#aa2654d9c06255235778db452770723d3">hash::argument_type</a> =  IDType</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="db__typedef_8hpp_source.html">db_typedef.hpp</a> 第 <a class="el" href="db__typedef_8hpp_source.html#l00093">93</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="aa142a3e4d10b6ba174fcc4ed25212b70"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa142a3e4d10b6ba174fcc4ed25212b70">&#9670;&nbsp;</a></span>operator()()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename IntegerType, typename IDType&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto <a class="el" href="classid__type__base.html">id_type_base</a>&lt; IntegerType, IDType &gt;::hash::operator() </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structid__type__base_1_1hash.html#aa2654d9c06255235778db452770723d3">argument_type</a> &amp;&#160;</td>
+          <td class="paramname"><em>val</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="db__typedef_8hpp_source.html">db_typedef.hpp</a> 第 <a class="el" href="db__typedef_8hpp_source.html#l00095">95</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>/home/peter/git/Core/src/shared_src/<a class="el" href="db__typedef_8hpp_source.html">db_typedef.hpp</a></li>
+</ul>
+</div><!-- contents -->
+<footer>
+<hr> Powered by
+<a href="http://www.doxygen.nl/" target="_blank"> Doxygen </a>
+<br>
+Contributors:
+<a href=""> Shaohua Zhang,&nbsp; Zhiqiang Shi,&nbsp; Xi Chen,&nbsp; Kehan Huang,&nbsp; Binjie Zhang,&nbsp; Wentsing Nee </a>
+<br> Copyright © 2010-2018
+<a href="http://www.thinkspirit.org" target="_blank"> Think Spirit. </a> All rights reserved.
+</footer>

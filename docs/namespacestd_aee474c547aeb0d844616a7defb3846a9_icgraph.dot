@@ -1,0 +1,32 @@
+digraph "std::to_string"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="RL";
+  Node1 [label="std::to_string",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node1 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="JobBase::commitJudgeStatus\lToRedis",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_job_base.html#aa7da8e91cd0ffddf9b1cf70995d2134b",tooltip="将当前评测状态提交到 redis 数据库。"];
+  Node2 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="JudgeJob::handle",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_judge_job.html#a6fe58f9fcacc9ba6461e97f1a3ac76a3",tooltip="本 Job 的处理函数。整个 job 的工作入口，包括编译执行判题等内容"];
+  Node2 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="JudgeJob::running",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_judge_job.html#a0d2e1e5cce842ef0daf71c95f98275f0",tooltip="进入当前 job 的执行流程，并返回执行结果。"];
+  Node4 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node5 [label="mkdir_p",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$mkdir__p_8hpp.html#a6d0adb35b2ec47f5a5d3d9c2e424532a",tooltip=" "];
+  Node5 -> Node6 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node6 [label="JobBase::storeSourceCode",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_job_base.html#a84501360b84b0716aa82b93f6958cb78",tooltip="从 redis 数据库获取本 Job 的代码并存储到工作空间中，用于编译运行。"];
+  Node6 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node5 -> Node7 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node7 [label="mkdir_p",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$mkdir__p_8hpp.html#a910c9bded60b51bf2ba9ce164babfd68",tooltip=" "];
+  Node5 -> Node8 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node8 [label="main",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$slave_8cpp.html#ac0f2228420376f4db7e1274f2b41667c",tooltip="slave 端主程序循环 加载配置信息；连接 redis 数据库；取待评测任务信息，交由子进程并评测；创建并分离发送心跳线程"];
+  Node1 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1 -> Node9 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node9 [label="JudgeJob::calculate\l_similarity",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_judge_job.html#a1a9896ab3eaa3056757d2f7531193ea7",tooltip=" "];
+  Node9 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1 -> Node10 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node10 [label="SingleTestJudgeJob\l::running_procedure",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_single_test_judge_job.html#a64b6b0b2a7c275e7cf0fcc06b22e02f5",tooltip=" "];
+  Node10 -> Node11 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node11 [label="SingleTestJudgeJob\l::handle",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_single_test_judge_job.html#a0831e87393505947e304373d91bafb5b",tooltip=" "];
+}

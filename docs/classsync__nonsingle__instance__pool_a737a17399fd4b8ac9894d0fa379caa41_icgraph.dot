@@ -1,0 +1,38 @@
+digraph "sync_nonsingle_instance_pool::sync_fetch"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="RL";
+  Node34 [label="sync_nonsingle_instance\l_pool::sync_fetch",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node34 -> Node35 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node35 [label="sync_fetch_mysql_conn",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$mysql__conn__factory_8hpp.html#a390151078c5f6b14cda92169fd6e42e3",tooltip=" "];
+  Node35 -> Node36 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node36 [label="update_contest_scoreboard\l_handler",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$master_8cpp.html#a7c08dccaaaa3b76e978c071f92615b87",tooltip=" "];
+  Node36 -> Node37 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node37 [label="main",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$master_8cpp.html#ac0f2228420376f4db7e1274f2b41667c",tooltip="master 端主程序循环 加载配置信息；连接数据库；取待评测任务信息，交由子进程并评测；创建并分离发送心跳线程 // to be done"];
+  Node35 -> Node38 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node38 [label="start_up_refresh",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$master_8cpp.html#a26091586d804dac5c3ce0c18eb6d91ab",tooltip=" "];
+  Node38 -> Node37 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node34 -> Node39 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node39 [label="sync_fetch_redis_conn",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$master_2redis__conn__factory_8hpp.html#ab198e48c9dee63607145289ef1aa7757",tooltip=" "];
+  Node39 -> Node40 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node40 [label="register_self",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$master_8cpp.html#ab85b27ea72fdfbc8ddc41b1e3078385c",tooltip="发送心跳进程 每隔一段时间，将本机信息提交到数据库中表示当前在线的评测机集合中，表明自身正常工作，可以处理评测任务。"];
+  Node40 -> Node37 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node39 -> Node36 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node39 -> Node41 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node41 [label="listenning_loop",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$master_8cpp.html#a4da8bf76425b9301a441b2009f39c1f1",tooltip=" "];
+  Node41 -> Node37 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node39 -> Node42 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node42 [label="JobBase::get_source_code",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_job_base.html#ae7e52177492489d1c1947f0efa0038f1",tooltip="从 redis 中取得代码"];
+  Node42 -> Node43 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node43 [label="JobBase::storeSourceCode",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_job_base.html#a84501360b84b0716aa82b93f6958cb78",tooltip="从 redis 数据库获取本 Job 的代码并存储到工作空间中，用于编译运行。"];
+  Node43 -> Node44 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node44 [label="JudgeJob::handle",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_judge_job.html#a6fe58f9fcacc9ba6461e97f1a3ac76a3",tooltip="本 Job 的处理函数。整个 job 的工作入口，包括编译执行判题等内容"];
+  Node39 -> Node45 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node45 [label="JobBase::commitJudgeStatus\lToRedis",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_job_base.html#aa7da8e91cd0ffddf9b1cf70995d2134b",tooltip="将当前评测状态提交到 redis 数据库。"];
+  Node45 -> Node44 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node45 -> Node46 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node46 [label="JudgeJob::running",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_judge_job.html#a0d2e1e5cce842ef0daf71c95f98275f0",tooltip="进入当前 job 的执行流程，并返回执行结果。"];
+  Node46 -> Node44 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+}

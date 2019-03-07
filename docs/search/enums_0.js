@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['judgestatus',['JudgeStatus',['../united__resource_8hpp.html#a80b9d5506f136fd5cef4ccd153030f1a',1,'united_resource.hpp']]]
+  ['dupfiletype',['DupFileType',['../class_dup2_failed_excetion.html#a093e7b73b407853cf47a2fa140038c67',1,'Dup2FailedExcetion']]]
 ];

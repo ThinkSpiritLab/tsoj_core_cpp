@@ -1,0 +1,10 @@
+digraph "ts_judger::log::templ"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="RL";
+  Node15 [label="ts_judger::log::templ",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node15 -> Node16 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node16 [label="ts_judger::log::__log\l_write",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$namespacets__judger_1_1log.html#a2d71b62b95d69e9284546bad039bf93e",tooltip=" "];
+}

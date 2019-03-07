@@ -104,18 +104,18 @@ JobBase 的协作图:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public 成员函数</h2></td></tr>
-<tr class="memitem:a2ea51a36db0122575a48f13ce317c53e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a2ea51a36db0122575a48f13ce317c53e">JobBase</a> (int <a class="el" href="class_job_base.html#a895e989e70dde5842a9838c67e4e1e91">jobType</a>, int <a class="el" href="class_job_base.html#a1b5f881d50165db4ba63372469026c17">sid</a>, const kerbal::redis::RedisContext &amp;<a class="el" href="class_job_base.html#a985b11d128f3b38ddd6f7dea662519e2">redisConn</a>)</td></tr>
-<tr class="memdesc:a2ea51a36db0122575a48f13ce317c53e"><td class="mdescLeft">&#160;</td><td class="mdescRight">初始化 jobType, sid, redisConn  <a href="#a2ea51a36db0122575a48f13ce317c53e">更多...</a><br /></td></tr>
-<tr class="separator:a2ea51a36db0122575a48f13ce317c53e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97a30f7f67042a8008784c78e71cd428"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a97a30f7f67042a8008784c78e71cd428">JobBase</a> (int <a class="el" href="class_job_base.html#a895e989e70dde5842a9838c67e4e1e91">jobType</a>, <a class="el" href="structojv4_1_1s__id__type.html">ojv4::s_id_type</a> <a class="el" href="class_job_base.html#a6190dadf24ed0ee8be087c61c18f386d">s_id</a>, kerbal::redis_v2::connection &amp;redis_conn)</td></tr>
+<tr class="memdesc:a97a30f7f67042a8008784c78e71cd428"><td class="mdescLeft">&#160;</td><td class="mdescRight">初始化 jobType, s_id, redisConn  <a href="#a97a30f7f67042a8008784c78e71cd428">更多...</a><br /></td></tr>
+<tr class="separator:a97a30f7f67042a8008784c78e71cd428"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6de81c238cbe4fc667f952b3c5d56693"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a6de81c238cbe4fc667f952b3c5d56693">~JobBase</a> () noexcept=default</td></tr>
 <tr class="memdesc:a6de81c238cbe4fc667f952b3c5d56693"><td class="mdescLeft">&#160;</td><td class="mdescRight">析构函数使用默认析构函数  <a href="#a6de81c238cbe4fc667f952b3c5d56693">更多...</a><br /></td></tr>
 <tr class="separator:a6de81c238cbe4fc667f952b3c5d56693"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aea684b77a3d8e913b87d8f3deb18c8fe"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#aea684b77a3d8e913b87d8f3deb18c8fe">handle</a> ()=0</td></tr>
 <tr class="memdesc:aea684b77a3d8e913b87d8f3deb18c8fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">本 Job 的处理函数。在基类中定义为纯虚函数。  <a href="#aea684b77a3d8e913b87d8f3deb18c8fe">更多...</a><br /></td></tr>
 <tr class="separator:aea684b77a3d8e913b87d8f3deb18c8fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acba3c7755afaaaf0e522bc53eec10828"><td class="memItemLeft" align="right" valign="top">kerbal::redis::RedisReply&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#acba3c7755afaaaf0e522bc53eec10828">get_source_code</a> () const</td></tr>
-<tr class="memdesc:acba3c7755afaaaf0e522bc53eec10828"><td class="mdescLeft">&#160;</td><td class="mdescRight">从 redis 中取得代码  <a href="#acba3c7755afaaaf0e522bc53eec10828">更多...</a><br /></td></tr>
-<tr class="separator:acba3c7755afaaaf0e522bc53eec10828"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae7e52177492489d1c1947f0efa0038f1"><td class="memItemLeft" align="right" valign="top">kerbal::redis_v2::reply&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#ae7e52177492489d1c1947f0efa0038f1">get_source_code</a> () const</td></tr>
+<tr class="memdesc:ae7e52177492489d1c1947f0efa0038f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">从 redis 中取得代码  <a href="#ae7e52177492489d1c1947f0efa0038f1">更多...</a><br /></td></tr>
+<tr class="separator:ae7e52177492489d1c1947f0efa0038f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a84501360b84b0716aa82b93f6958cb78"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a84501360b84b0716aa82b93f6958cb78">storeSourceCode</a> (const std::string &amp;parent_path=&quot;./&quot;, const std::string &amp;file_name=&quot;Main&quot;) const</td></tr>
 <tr class="memdesc:a84501360b84b0716aa82b93f6958cb78"><td class="mdescLeft">&#160;</td><td class="mdescRight">从 redis 数据库获取本 Job 的代码并存储到工作空间中，用于编译运行。  <a href="#a84501360b84b0716aa82b93f6958cb78">更多...</a><br /></td></tr>
 <tr class="separator:a84501360b84b0716aa82b93f6958cb78"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -125,54 +125,45 @@ Public 成员函数</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 静态 Public 成员函数</h2></td></tr>
-<tr class="memitem:a45db2aacca3aa05d98aecaa560d54c8d"><td class="memItemLeft" align="right" valign="top">static std::pair&lt; int, int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a45db2aacca3aa05d98aecaa560d54c8d">parseJobItem</a> (const std::string &amp;jobItem)</td></tr>
-<tr class="memdesc:a45db2aacca3aa05d98aecaa560d54c8d"><td class="mdescLeft">&#160;</td><td class="mdescRight">将待处理 Job 信息分解，提取出 job_type 与 job_id  <a href="#a45db2aacca3aa05d98aecaa560d54c8d">更多...</a><br /></td></tr>
-<tr class="separator:a45db2aacca3aa05d98aecaa560d54c8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a694f006cab5c06d8939ee7550d3a04ac"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a694f006cab5c06d8939ee7550d3a04ac">isExitJob</a> (const std::string &amp;jobItem)</td></tr>
-<tr class="memdesc:a694f006cab5c06d8939ee7550d3a04ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">判断是否终止服务 loop  <a href="#a694f006cab5c06d8939ee7550d3a04ac">更多...</a><br /></td></tr>
-<tr class="separator:a694f006cab5c06d8939ee7550d3a04ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3d354b5691b71524e49514dfbcd41550"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a3d354b5691b71524e49514dfbcd41550">getExitJobItem</a> ()</td></tr>
-<tr class="memdesc:a3d354b5691b71524e49514dfbcd41550"><td class="mdescLeft">&#160;</td><td class="mdescRight">获取规定的停止工作标识  <a href="#a3d354b5691b71524e49514dfbcd41550">更多...</a><br /></td></tr>
-<tr class="separator:a3d354b5691b71524e49514dfbcd41550"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1edae5f91246304fa862722926d82701"><td class="memItemLeft" align="right" valign="top">static std::pair&lt; int, <a class="el" href="structojv4_1_1s__id__type.html">ojv4::s_id_type</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a1edae5f91246304fa862722926d82701">parseJobItem</a> (const std::string &amp;jobItem)</td></tr>
+<tr class="memdesc:a1edae5f91246304fa862722926d82701"><td class="mdescLeft">&#160;</td><td class="mdescRight">将待处理 Job 信息分解，提取出 job_type 与 job_id  <a href="#a1edae5f91246304fa862722926d82701">更多...</a><br /></td></tr>
+<tr class="separator:a1edae5f91246304fa862722926d82701"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public 属性</h2></td></tr>
 <tr class="memitem:a895e989e70dde5842a9838c67e4e1e91"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a895e989e70dde5842a9838c67e4e1e91">jobType</a></td></tr>
 <tr class="memdesc:a895e989e70dde5842a9838c67e4e1e91"><td class="mdescLeft">&#160;</td><td class="mdescRight">Job 类型，如：竞赛、课程等  <a href="#a895e989e70dde5842a9838c67e4e1e91">更多...</a><br /></td></tr>
 <tr class="separator:a895e989e70dde5842a9838c67e4e1e91"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1b5f881d50165db4ba63372469026c17"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a1b5f881d50165db4ba63372469026c17">sid</a></td></tr>
-<tr class="memdesc:a1b5f881d50165db4ba63372469026c17"><td class="mdescLeft">&#160;</td><td class="mdescRight">solution id  <a href="#a1b5f881d50165db4ba63372469026c17">更多...</a><br /></td></tr>
-<tr class="separator:a1b5f881d50165db4ba63372469026c17"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a985b11d128f3b38ddd6f7dea662519e2"><td class="memItemLeft" align="right" valign="top">kerbal::redis::RedisContext&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a985b11d128f3b38ddd6f7dea662519e2">redisConn</a></td></tr>
-<tr class="memdesc:a985b11d128f3b38ddd6f7dea662519e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">redis 连接  <a href="#a985b11d128f3b38ddd6f7dea662519e2">更多...</a><br /></td></tr>
-<tr class="separator:a985b11d128f3b38ddd6f7dea662519e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a281c54f87ea485dd646d19f0a8e7e986"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a281c54f87ea485dd646d19f0a8e7e986">pid</a></td></tr>
-<tr class="memdesc:a281c54f87ea485dd646d19f0a8e7e986"><td class="mdescLeft">&#160;</td><td class="mdescRight">problem id  <a href="#a281c54f87ea485dd646d19f0a8e7e986">更多...</a><br /></td></tr>
-<tr class="separator:a281c54f87ea485dd646d19f0a8e7e986"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6190dadf24ed0ee8be087c61c18f386d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structojv4_1_1s__id__type.html">ojv4::s_id_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a6190dadf24ed0ee8be087c61c18f386d">s_id</a></td></tr>
+<tr class="memdesc:a6190dadf24ed0ee8be087c61c18f386d"><td class="mdescLeft">&#160;</td><td class="mdescRight">solution id  <a href="#a6190dadf24ed0ee8be087c61c18f386d">更多...</a><br /></td></tr>
+<tr class="separator:a6190dadf24ed0ee8be087c61c18f386d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a567d9bf16966ee2b9ce2284dc795e8cc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structojv4_1_1p__id__type.html">ojv4::p_id_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a567d9bf16966ee2b9ce2284dc795e8cc">p_id</a></td></tr>
+<tr class="memdesc:a567d9bf16966ee2b9ce2284dc795e8cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">problem id  <a href="#a567d9bf16966ee2b9ce2284dc795e8cc">更多...</a><br /></td></tr>
+<tr class="separator:a567d9bf16966ee2b9ce2284dc795e8cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abbfedbd4ddcecdafadcd635c6e254885"><td class="memItemLeft" align="right" valign="top"><a class="el" href="united__resource_8hpp.html#a315ca917ad583797f709ea477dd28705">Language</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#abbfedbd4ddcecdafadcd635c6e254885">lang</a></td></tr>
 <tr class="memdesc:abbfedbd4ddcecdafadcd635c6e254885"><td class="mdescLeft">&#160;</td><td class="mdescRight">语言  <a href="#abbfedbd4ddcecdafadcd635c6e254885">更多...</a><br /></td></tr>
 <tr class="separator:abbfedbd4ddcecdafadcd635c6e254885"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a55a4b41269bb36db8cdf2577cdb05d6f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a55a4b41269bb36db8cdf2577cdb05d6f">cases</a></td></tr>
 <tr class="memdesc:a55a4b41269bb36db8cdf2577cdb05d6f"><td class="mdescLeft">&#160;</td><td class="mdescRight">测试用例数量  <a href="#a55a4b41269bb36db8cdf2577cdb05d6f">更多...</a><br /></td></tr>
 <tr class="separator:a55a4b41269bb36db8cdf2577cdb05d6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a28693bb0f592b592ac21c961b4733a49"><td class="memItemLeft" align="right" valign="top">std::chrono::milliseconds&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a28693bb0f592b592ac21c961b4733a49">timeLimit</a></td></tr>
-<tr class="memdesc:a28693bb0f592b592ac21c961b4733a49"><td class="mdescLeft">&#160;</td><td class="mdescRight">时间限制  <a href="#a28693bb0f592b592ac21c961b4733a49">更多...</a><br /></td></tr>
-<tr class="separator:a28693bb0f592b592ac21c961b4733a49"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3165f108ef68c479d89b2b04013c1150"><td class="memItemLeft" align="right" valign="top">kerbal::utility::MB&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a3165f108ef68c479d89b2b04013c1150">memoryLimit</a></td></tr>
-<tr class="memdesc:a3165f108ef68c479d89b2b04013c1150"><td class="mdescLeft">&#160;</td><td class="mdescRight">空间限制  <a href="#a3165f108ef68c479d89b2b04013c1150">更多...</a><br /></td></tr>
-<tr class="separator:a3165f108ef68c479d89b2b04013c1150"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a212de257a305128e8fb134958f8d54ab"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a212de257a305128e8fb134958f8d54ab">similarity_threshold</a></td></tr>
-<tr class="memdesc:a212de257a305128e8fb134958f8d54ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">重复率限制  <a href="#a212de257a305128e8fb134958f8d54ab">更多...</a><br /></td></tr>
-<tr class="separator:a212de257a305128e8fb134958f8d54ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71821ffbc752a8c0fc39dba9d24fbf7f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structojv4.html#a2958a2d1dae671acaef34a3a339f0f13">ojv4::s_time_in_milliseconds</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a71821ffbc752a8c0fc39dba9d24fbf7f">time_limit</a></td></tr>
+<tr class="memdesc:a71821ffbc752a8c0fc39dba9d24fbf7f"><td class="mdescLeft">&#160;</td><td class="mdescRight">时间限制  <a href="#a71821ffbc752a8c0fc39dba9d24fbf7f">更多...</a><br /></td></tr>
+<tr class="separator:a71821ffbc752a8c0fc39dba9d24fbf7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28f453eeba6b67fa4aeb62d575351b96"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structojv4.html#ac80be950becf8f8ef3c4ddccf65de322">ojv4::s_mem_in_MB</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#a28f453eeba6b67fa4aeb62d575351b96">memory_limit</a></td></tr>
+<tr class="memdesc:a28f453eeba6b67fa4aeb62d575351b96"><td class="mdescLeft">&#160;</td><td class="mdescRight">空间限制  <a href="#a28f453eeba6b67fa4aeb62d575351b96">更多...</a><br /></td></tr>
+<tr class="separator:a28f453eeba6b67fa4aeb62d575351b96"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac1ca6b17a4fa97107e8ffecf6d9bd3d9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structojv4.html#a8a173dd5d6305abc2772bebcd3e0eb0a">ojv4::s_similarity_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_job_base.html#ac1ca6b17a4fa97107e8ffecf6d9bd3d9">similarity_threshold</a></td></tr>
+<tr class="memdesc:ac1ca6b17a4fa97107e8ffecf6d9bd3d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">重复率限制  <a href="#ac1ca6b17a4fa97107e8ffecf6d9bd3d9">更多...</a><br /></td></tr>
+<tr class="separator:ac1ca6b17a4fa97107e8ffecf6d9bd3d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
 <div class="textblock"><p class=""><a class="el" href="class_judge_job.html" title="JobBase 的子类，用于实现提交代码的判题功能。">JudgeJob</a> 与 UpdateJob 的基类， 存有 Job的基本信息，并规定了所有 Job 必须遵循的函数接口。 </p>
 <dl class="section note"><dt>注解</dt><dd>本类没有具体意义，仅是所有 Job 的共有特征，因此为抽象类，不可实例化。 </dd></dl>
 
-<p class="definition">在文件 <a class="el" href="_job_base_8hpp_source.html">JobBase.hpp</a> 第 <a class="el" href="_job_base_8hpp_source.html#l00024">24</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="_job_base_8hpp_source.html">JobBase.hpp</a> 第 <a class="el" href="_job_base_8hpp_source.html#l00023">23</a> 行定义.</p>
 </div><h2 class="groupheader">构造及析构函数说明</h2>
-<a id="a2ea51a36db0122575a48f13ce317c53e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2ea51a36db0122575a48f13ce317c53e">&#9670;&nbsp;</a></span>JobBase()</h2>
+<a id="a97a30f7f67042a8008784c78e71cd428"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97a30f7f67042a8008784c78e71cd428">&#9670;&nbsp;</a></span>JobBase()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -186,14 +177,14 @@ Public 属性</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>sid</em>, </td>
+          <td class="paramtype"><a class="el" href="structojv4_1_1s__id__type.html">ojv4::s_id_type</a>&#160;</td>
+          <td class="paramname"><em>s_id</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const kerbal::redis::RedisContext &amp;&#160;</td>
-          <td class="paramname"><em>redisConn</em>&#160;</td>
+          <td class="paramtype">kerbal::redis_v2::connection &amp;&#160;</td>
+          <td class="paramname"><em>redis_conn</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -203,11 +194,11 @@ Public 属性</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>初始化 jobType, sid, redisConn </p>
+<p>初始化 jobType, s_id, redisConn </p>
 <dl class="params"><dt>参数</dt><dd>
   <table class="params">
     <tr><td class="paramname">jobType</td><td>Job 类型，如：竞赛、课程等 </td></tr>
-    <tr><td class="paramname">sid</td><td>student id </td></tr>
+    <tr><td class="paramname">s_id</td><td>student id </td></tr>
     <tr><td class="paramname">redisConn</td><td>Redis连接 </td></tr>
   </table>
   </dd>
@@ -219,7 +210,14 @@ Public 属性</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">在文件 <a class="el" href="_job_base_8cpp_source.html">JobBase.cpp</a> 第 <a class="el" href="_job_base_8cpp_source.html#l00048">48</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="_job_base_8cpp_source.html">JobBase.cpp</a> 第 <a class="el" href="_job_base_8cpp_source.html#l00052">52</a> 行定义.</p>
+<div class="dynheader">
+函数调用图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_job_base_a97a30f7f67042a8008784c78e71cd428_cgraph.png" border="0" usemap="#class_job_base_a97a30f7f67042a8008784c78e71cd428_cgraph" alt=""/></div>
+<map name="class_job_base_a97a30f7f67042a8008784c78e71cd428_cgraph" id="class_job_base_a97a30f7f67042a8008784c78e71cd428_cgraph">
+</map>
+</div>
 
 </div>
 </div>
@@ -275,7 +273,14 @@ Public 属性</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">在文件 <a class="el" href="_job_base_8cpp_source.html">JobBase.cpp</a> 第 <a class="el" href="_job_base_8cpp_source.html#l00130">130</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="_job_base_8cpp_source.html">JobBase.cpp</a> 第 <a class="el" href="_job_base_8cpp_source.html#l00146">146</a> 行定义.</p>
+<div class="dynheader">
+函数调用图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_job_base_aa7da8e91cd0ffddf9b1cf70995d2134b_cgraph.png" border="0" usemap="#class_job_base_aa7da8e91cd0ffddf9b1cf70995d2134b_cgraph" alt=""/></div>
+<map name="class_job_base_aa7da8e91cd0ffddf9b1cf70995d2134b_cgraph" id="class_job_base_aa7da8e91cd0ffddf9b1cf70995d2134b_cgraph">
+</map>
+</div>
 <div class="dynheader">
 这是这个函数的调用关系图:</div>
 <div class="dyncontent">
@@ -290,14 +295,14 @@ Public 属性</h2></td></tr>
 
 </div>
 </div>
-<a id="acba3c7755afaaaf0e522bc53eec10828"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acba3c7755afaaaf0e522bc53eec10828">&#9670;&nbsp;</a></span>get_source_code()</h2>
+<a id="ae7e52177492489d1c1947f0efa0038f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae7e52177492489d1c1947f0efa0038f1">&#9670;&nbsp;</a></span>get_source_code()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">kerbal::redis::RedisReply JobBase::get_source_code </td>
+          <td class="memname">kerbal::redis_v2::reply JobBase::get_source_code </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -306,7 +311,8 @@ Public 属性</h2></td></tr>
 </div><div class="memdoc">
 
 <p>从 redis 中取得代码 </p>
-<dl class="section return"><dt>返回</dt><dd>Redis 返回集. 注意! 返回集的类型只可能为字符串类型, 否则该方法会通过抛出异常报告错误 </dd></dl>
+<dl class="section return"><dt>返回</dt><dd>Redis 返回集. </dd></dl>
+<dl class="section warning"><dt>警告</dt><dd>注意! 返回集的类型只可能为字符串类型, 否则该方法会通过抛出异常报告错误 </dd></dl>
 <dl class="exception"><dt>异常</dt><dd>
   <table class="exception">
     <tr><td class="paramname">RedisUnexpectedCaseException</td><td>如果取得的结果不为字符串类型 (包括空类型), 则抛出此异常 </td></tr>
@@ -315,56 +321,19 @@ Public 属性</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">在文件 <a class="el" href="_job_base_8cpp_source.html">JobBase.cpp</a> 第 <a class="el" href="_job_base_8cpp_source.html#l00080">80</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="_job_base_8cpp_source.html">JobBase.cpp</a> 第 <a class="el" href="_job_base_8cpp_source.html#l00094">94</a> 行定义.</p>
 <div class="dynheader">
-这是这个函数的调用关系图:</div>
+函数调用图:</div>
 <div class="dyncontent">
-<div class="center"><img src="class_job_base_acba3c7755afaaaf0e522bc53eec10828_icgraph.png" border="0" usemap="#class_job_base_acba3c7755afaaaf0e522bc53eec10828_icgraph" alt=""/></div>
-<map name="class_job_base_acba3c7755afaaaf0e522bc53eec10828_icgraph" id="class_job_base_acba3c7755afaaaf0e522bc53eec10828_icgraph">
-<area shape="rect" id="node1" title="从 redis 中取得代码" alt="" coords="408,31,588,57"/>
-<area shape="rect" id="node2" href="class_update_job_base.html#a1f2173cec66f3453d4a87c91c2ac8e29" title="执行任务" alt="" coords="188,5,349,32"/>
-<area shape="rect" id="node3" href="class_job_base.html#a84501360b84b0716aa82b93f6958cb78" title="从 redis 数据库获取本 Job 的代码并存储到工作空间中，用于编译运行。" alt="" coords="177,56,360,83"/>
-<area shape="rect" id="node4" href="class_judge_job.html#a6fe58f9fcacc9ba6461e97f1a3ac76a3" title="本 Job 的处理函数。整个 job 的工作入口，包括编译执行判题等内容" alt="" coords="5,56,129,83"/>
+<div class="center"><img src="class_job_base_ae7e52177492489d1c1947f0efa0038f1_cgraph.png" border="0" usemap="#class_job_base_ae7e52177492489d1c1947f0efa0038f1_cgraph" alt=""/></div>
+<map name="class_job_base_ae7e52177492489d1c1947f0efa0038f1_cgraph" id="class_job_base_ae7e52177492489d1c1947f0efa0038f1_cgraph">
 </map>
 </div>
-
-</div>
-</div>
-<a id="a3d354b5691b71524e49514dfbcd41550"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3d354b5691b71524e49514dfbcd41550">&#9670;&nbsp;</a></span>getExitJobItem()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">static std::string JobBase::getExitJobItem </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>获取规定的停止工作标识 </p>
-<dl class="section return"><dt>返回</dt><dd>返回规定的停止工作标识，规定为："0,-1" </dd></dl>
-
-<p class="definition">在文件 <a class="el" href="_job_base_8hpp_source.html">JobBase.hpp</a> 第 <a class="el" href="_job_base_8hpp_source.html#l00077">77</a> 行定义.</p>
 <div class="dynheader">
 这是这个函数的调用关系图:</div>
 <div class="dyncontent">
-<div class="center"><img src="class_job_base_a3d354b5691b71524e49514dfbcd41550_icgraph.png" border="0" usemap="#class_job_base_a3d354b5691b71524e49514dfbcd41550_icgraph" alt=""/></div>
-<map name="class_job_base_a3d354b5691b71524e49514dfbcd41550_icgraph" id="class_job_base_a3d354b5691b71524e49514dfbcd41550_icgraph">
-<area shape="rect" id="node1" title="获取规定的停止工作标识" alt="" coords="323,5,492,32"/>
-<area shape="rect" id="node2" href="master_8cpp.html#a8cb7d2d303a160e9662c31d2e1625c77" title="SIGTERM 信号的处理函数 当收到 SIGTERM 信号，在代评测队列末端加上 type = 0, id = &#45;1 的任务，用于标识结束 master 工作的意愿。之后在 loop 循环中会据此判断..." alt="" coords="104,5,275,32"/>
-<area shape="rect" id="node3" href="master_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4" title="master 端主程序循环 加载配置信息；连接数据库；取待评测任务信息，交由子进程并评测；创建并分离发送心跳线程 // to be done" alt="" coords="5,5,56,32"/>
+<div class="center"><img src="class_job_base_ae7e52177492489d1c1947f0efa0038f1_icgraph.png" border="0" usemap="#class_job_base_ae7e52177492489d1c1947f0efa0038f1_icgraph" alt=""/></div>
+<map name="class_job_base_ae7e52177492489d1c1947f0efa0038f1_icgraph" id="class_job_base_ae7e52177492489d1c1947f0efa0038f1_icgraph">
 </map>
 </div>
 
@@ -396,12 +365,12 @@ Public 属性</h2></td></tr>
 <p>本 Job 的处理函数。在基类中定义为纯虚函数。 </p>
 <dl class="section warning"><dt>警告</dt><dd>本函数为纯虚函数，仅仅规定了接口。 </dd></dl>
 
-<p>在 <a class="el" href="class_update_job_base.html#a1f2173cec66f3453d4a87c91c2ac8e29">UpdateJobBase</a> , 以及 <a class="el" href="class_judge_job.html#a6fe58f9fcacc9ba6461e97f1a3ac76a3">JudgeJob</a> 内被实现.</p>
+<p>在 <a class="el" href="class_judge_job.html#a6fe58f9fcacc9ba6461e97f1a3ac76a3">JudgeJob</a> 内被实现.</p>
 
 </div>
 </div>
-<a id="a694f006cab5c06d8939ee7550d3a04ac"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a694f006cab5c06d8939ee7550d3a04ac">&#9670;&nbsp;</a></span>isExitJob()</h2>
+<a id="a1edae5f91246304fa862722926d82701"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1edae5f91246304fa862722926d82701">&#9670;&nbsp;</a></span>parseJobItem()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -410,53 +379,7 @@ Public 属性</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static bool JobBase::isExitJob </td>
-          <td>(</td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>jobItem</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>判断是否终止服务 loop </p>
-<dl class="params"><dt>参数</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">jobItem</td><td>"job_type,job_id" 格式的字符串 </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>返回</dt><dd>若是检测到停止工作标识，则返回 true ，否则返回 false </dd></dl>
-
-<p class="definition">在文件 <a class="el" href="_job_base_8hpp_source.html">JobBase.hpp</a> 第 <a class="el" href="_job_base_8hpp_source.html#l00068">68</a> 行定义.</p>
-<div class="dynheader">
-这是这个函数的调用关系图:</div>
-<div class="dyncontent">
-<div class="center"><img src="class_job_base_a694f006cab5c06d8939ee7550d3a04ac_icgraph.png" border="0" usemap="#class_job_base_a694f006cab5c06d8939ee7550d3a04ac_icgraph" alt=""/></div>
-<map name="class_job_base_a694f006cab5c06d8939ee7550d3a04ac_icgraph" id="class_job_base_a694f006cab5c06d8939ee7550d3a04ac_icgraph">
-<area shape="rect" id="node1" title="判断是否终止服务 loop" alt="" coords="104,5,239,32"/>
-<area shape="rect" id="node2" href="master_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4" title="master 端主程序循环 加载配置信息；连接数据库；取待评测任务信息，交由子进程并评测；创建并分离发送心跳线程 // to be done" alt="" coords="5,5,56,32"/>
-</map>
-</div>
-
-</div>
-</div>
-<a id="a45db2aacca3aa05d98aecaa560d54c8d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a45db2aacca3aa05d98aecaa560d54c8d">&#9670;&nbsp;</a></span>parseJobItem()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::pair&lt; int, int &gt; JobBase::parseJobItem </td>
+          <td class="memname">std::pair&lt; int, <a class="el" href="structojv4_1_1s__id__type.html">ojv4::s_id_type</a> &gt; JobBase::parseJobItem </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>jobItem</em></td><td>)</td>
@@ -485,14 +408,12 @@ Public 属性</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">在文件 <a class="el" href="_job_base_8cpp_source.html">JobBase.cpp</a> 第 <a class="el" href="_job_base_8cpp_source.html#l00024">24</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="_job_base_8cpp_source.html">JobBase.cpp</a> 第 <a class="el" href="_job_base_8cpp_source.html#l00028">28</a> 行定义.</p>
 <div class="dynheader">
 这是这个函数的调用关系图:</div>
 <div class="dyncontent">
-<div class="center"><img src="class_job_base_a45db2aacca3aa05d98aecaa560d54c8d_icgraph.png" border="0" usemap="#class_job_base_a45db2aacca3aa05d98aecaa560d54c8d_icgraph" alt=""/></div>
-<map name="class_job_base_a45db2aacca3aa05d98aecaa560d54c8d_icgraph" id="class_job_base_a45db2aacca3aa05d98aecaa560d54c8d_icgraph">
-<area shape="rect" id="node1" title="将待处理 Job 信息分解，提取出 job_type 与 job_id" alt="" coords="104,5,264,32"/>
-<area shape="rect" id="node2" href="master_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4" title="master 端主程序循环 加载配置信息；连接数据库；取待评测任务信息，交由子进程并评测；创建并分离发送心跳线程 // to be done" alt="" coords="5,5,56,32"/>
+<div class="center"><img src="class_job_base_a1edae5f91246304fa862722926d82701_icgraph.png" border="0" usemap="#class_job_base_a1edae5f91246304fa862722926d82701_icgraph" alt=""/></div>
+<map name="class_job_base_a1edae5f91246304fa862722926d82701_icgraph" id="class_job_base_a1edae5f91246304fa862722926d82701_icgraph">
 </map>
 </div>
 
@@ -525,7 +446,7 @@ Public 属性</h2></td></tr>
 </div><div class="memdoc">
 
 <p>从 redis 数据库获取本 Job 的代码并存储到工作空间中，用于编译运行。 </p>
-<dl class="section warning"><dt>警告</dt><dd>本函数为纯虚函数，但是有实现。实际上，其子类的部分相同信息可由此函数取得。这部分有：pid, lang, cases, timeLimit, memoryLimit </dd></dl>
+<dl class="section warning"><dt>警告</dt><dd>本函数为纯虚函数，但是有实现。实际上，其子类的部分相同信息可由此函数取得。这部分有：p_id, lang, cases, time_limit, memory_limit </dd></dl>
 <dl class="exception"><dt>异常</dt><dd>
   <table class="exception">
     <tr><td class="paramname"><a class="el" href="class_job_handle_exception.html" title="自定义的 Job 异常，继承于 std::exception，专用于 Job 处理中的异常">JobHandleException</a></td><td></td></tr>
@@ -533,7 +454,7 @@ Public 属性</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">在文件 <a class="el" href="_job_base_8cpp_source.html">JobBase.cpp</a> 第 <a class="el" href="_job_base_8cpp_source.html#l00098">98</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="_job_base_8cpp_source.html">JobBase.cpp</a> 第 <a class="el" href="_job_base_8cpp_source.html#l00115">115</a> 行定义.</p>
 <div class="dynheader">
 函数调用图:</div>
 <div class="dyncontent">
@@ -571,7 +492,7 @@ Public 属性</h2></td></tr>
 
 <p>测试用例数量 </p>
 
-<p class="definition">在文件 <a class="el" href="_job_base_8hpp_source.html">JobBase.hpp</a> 第 <a class="el" href="_job_base_8hpp_source.html#l00044">44</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="_job_base_8hpp_source.html">JobBase.hpp</a> 第 <a class="el" href="_job_base_8hpp_source.html#l00035">35</a> 行定义.</p>
 
 </div>
 </div>
@@ -589,7 +510,7 @@ Public 属性</h2></td></tr>
 
 <p>Job 类型，如：竞赛、课程等 </p>
 
-<p class="definition">在文件 <a class="el" href="_job_base_8hpp_source.html">JobBase.hpp</a> 第 <a class="el" href="_job_base_8hpp_source.html#l00028">28</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="_job_base_8hpp_source.html">JobBase.hpp</a> 第 <a class="el" href="_job_base_8hpp_source.html#l00026">26</a> 行定义.</p>
 
 </div>
 </div>
@@ -607,115 +528,97 @@ Public 属性</h2></td></tr>
 
 <p>语言 </p>
 
-<p class="definition">在文件 <a class="el" href="_job_base_8hpp_source.html">JobBase.hpp</a> 第 <a class="el" href="_job_base_8hpp_source.html#l00041">41</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="_job_base_8hpp_source.html">JobBase.hpp</a> 第 <a class="el" href="_job_base_8hpp_source.html#l00033">33</a> 行定义.</p>
 
 </div>
 </div>
-<a id="a3165f108ef68c479d89b2b04013c1150"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3165f108ef68c479d89b2b04013c1150">&#9670;&nbsp;</a></span>memoryLimit</h2>
+<a id="a28f453eeba6b67fa4aeb62d575351b96"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28f453eeba6b67fa4aeb62d575351b96">&#9670;&nbsp;</a></span>memory_limit</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">kerbal::utility::MB JobBase::memoryLimit</td>
+          <td class="memname"><a class="el" href="structojv4.html#ac80be950becf8f8ef3c4ddccf65de322">ojv4::s_mem_in_MB</a> JobBase::memory_limit</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>空间限制 </p>
 
-<p class="definition">在文件 <a class="el" href="_job_base_8hpp_source.html">JobBase.hpp</a> 第 <a class="el" href="_job_base_8hpp_source.html#l00050">50</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="_job_base_8hpp_source.html">JobBase.hpp</a> 第 <a class="el" href="_job_base_8hpp_source.html#l00039">39</a> 行定义.</p>
 
 </div>
 </div>
-<a id="a281c54f87ea485dd646d19f0a8e7e986"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a281c54f87ea485dd646d19f0a8e7e986">&#9670;&nbsp;</a></span>pid</h2>
+<a id="a567d9bf16966ee2b9ce2284dc795e8cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a567d9bf16966ee2b9ce2284dc795e8cc">&#9670;&nbsp;</a></span>p_id</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int JobBase::pid</td>
+          <td class="memname"><a class="el" href="structojv4_1_1p__id__type.html">ojv4::p_id_type</a> JobBase::p_id</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>problem id </p>
 
-<p class="definition">在文件 <a class="el" href="_job_base_8hpp_source.html">JobBase.hpp</a> 第 <a class="el" href="_job_base_8hpp_source.html#l00038">38</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="_job_base_8hpp_source.html">JobBase.hpp</a> 第 <a class="el" href="_job_base_8hpp_source.html#l00031">31</a> 行定义.</p>
 
 </div>
 </div>
-<a id="a985b11d128f3b38ddd6f7dea662519e2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a985b11d128f3b38ddd6f7dea662519e2">&#9670;&nbsp;</a></span>redisConn</h2>
+<a id="a6190dadf24ed0ee8be087c61c18f386d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6190dadf24ed0ee8be087c61c18f386d">&#9670;&nbsp;</a></span>s_id</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">kerbal::redis::RedisContext JobBase::redisConn</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>redis 连接 </p>
-
-<p class="definition">在文件 <a class="el" href="_job_base_8hpp_source.html">JobBase.hpp</a> 第 <a class="el" href="_job_base_8hpp_source.html#l00034">34</a> 行定义.</p>
-
-</div>
-</div>
-<a id="a1b5f881d50165db4ba63372469026c17"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1b5f881d50165db4ba63372469026c17">&#9670;&nbsp;</a></span>sid</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int JobBase::sid</td>
+          <td class="memname"><a class="el" href="structojv4_1_1s__id__type.html">ojv4::s_id_type</a> JobBase::s_id</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>solution id </p>
 
-<p class="definition">在文件 <a class="el" href="_job_base_8hpp_source.html">JobBase.hpp</a> 第 <a class="el" href="_job_base_8hpp_source.html#l00031">31</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="_job_base_8hpp_source.html">JobBase.hpp</a> 第 <a class="el" href="_job_base_8hpp_source.html#l00028">28</a> 行定义.</p>
 
 </div>
 </div>
-<a id="a212de257a305128e8fb134958f8d54ab"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a212de257a305128e8fb134958f8d54ab">&#9670;&nbsp;</a></span>similarity_threshold</h2>
+<a id="ac1ca6b17a4fa97107e8ffecf6d9bd3d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1ca6b17a4fa97107e8ffecf6d9bd3d9">&#9670;&nbsp;</a></span>similarity_threshold</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int JobBase::similarity_threshold</td>
+          <td class="memname"><a class="el" href="structojv4.html#a8a173dd5d6305abc2772bebcd3e0eb0a">ojv4::s_similarity_type</a> JobBase::similarity_threshold</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>重复率限制 </p>
 
-<p class="definition">在文件 <a class="el" href="_job_base_8hpp_source.html">JobBase.hpp</a> 第 <a class="el" href="_job_base_8hpp_source.html#l00053">53</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="_job_base_8hpp_source.html">JobBase.hpp</a> 第 <a class="el" href="_job_base_8hpp_source.html#l00041">41</a> 行定义.</p>
 
 </div>
 </div>
-<a id="a28693bb0f592b592ac21c961b4733a49"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a28693bb0f592b592ac21c961b4733a49">&#9670;&nbsp;</a></span>timeLimit</h2>
+<a id="a71821ffbc752a8c0fc39dba9d24fbf7f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71821ffbc752a8c0fc39dba9d24fbf7f">&#9670;&nbsp;</a></span>time_limit</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::chrono::milliseconds JobBase::timeLimit</td>
+          <td class="memname"><a class="el" href="structojv4.html#a2958a2d1dae671acaef34a3a339f0f13">ojv4::s_time_in_milliseconds</a> JobBase::time_limit</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>时间限制 </p>
 
-<p class="definition">在文件 <a class="el" href="_job_base_8hpp_source.html">JobBase.hpp</a> 第 <a class="el" href="_job_base_8hpp_source.html#l00047">47</a> 行定义.</p>
+<p class="definition">在文件 <a class="el" href="_job_base_8hpp_source.html">JobBase.hpp</a> 第 <a class="el" href="_job_base_8hpp_source.html#l00037">37</a> 行定义.</p>
 
 </div>
 </div>

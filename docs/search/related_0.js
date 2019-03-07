@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['make_5fupdate_5fjob',['make_update_job',['../class_contest_update_job.html#afe0e352881f68f46e538140550a558f3',1,'ContestUpdateJob::make_update_job()'],['../class_course_update_job.html#afe0e352881f68f46e538140550a558f3',1,'CourseUpdateJob::make_update_job()'],['../class_exercise_update_job.html#afe0e352881f68f46e538140550a558f3',1,'ExerciseUpdateJob::make_update_job()'],['../class_exercise_update_job_base.html#afe0e352881f68f46e538140550a558f3',1,'ExerciseUpdateJobBase::make_update_job()'],['../class_update_job_base.html#afe0e352881f68f46e538140550a558f3',1,'UpdateJobBase::make_update_job()']]]
+  ['load_5fconfig',['load_config',['../class_settings.html#a9b8405bf54a17577dcb1ad54eec0ee2f',1,'Settings::load_config()'],['../class_settings_1_1_judger_runtime_variable.html#a9b8405bf54a17577dcb1ad54eec0ee2f',1,'Settings::JudgerRuntimeVariable::load_config()'],['../class_settings_1_1_judge_settings.html#a9b8405bf54a17577dcb1ad54eec0ee2f',1,'Settings::JudgeSettings::load_config()'],['../class_settings_1_1_redis_settings.html#a9b8405bf54a17577dcb1ad54eec0ee2f',1,'Settings::RedisSettings::load_config()']]]
 ];

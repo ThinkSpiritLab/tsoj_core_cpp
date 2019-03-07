@@ -1,0 +1,376 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.8.15"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>TSOJ V4 Judge Core: /home/peter/git/Core/src/master/mysql_conn_factory.hpp 文件参考</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="mlabel.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="ThinkSpirit_logo_2018.png"/></td>
+  <td id="projectalign" style="padding-left: 0.5em;">
+   <div id="projectname">TSOJ V4 Judge Core
+   </div>
+   <div id="projectbrief">oj.thinkspirit.org</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- 制作者 Doxygen 1.8.15 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+var searchBox = new SearchBox("searchBox", "search",false,'搜索');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(function() {
+  initMenu('',true,false,'search.php','搜索');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ae1a660fbe587eff2b475b14d217c1ef.html">master</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#define-members">宏定义</a> &#124;
+<a href="#typedef-members">类型定义</a> &#124;
+<a href="#func-members">函数</a> &#124;
+<a href="#var-members">变量</a>  </div>
+  <div class="headertitle">
+<div class="title">mysql_conn_factory.hpp 文件参考</div>  </div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &lt;mysql++/connection.h&gt;</code><br />
+<code>#include &quot;<a class="el" href="sync__nonsingle__instance__pool_8hpp_source.html">sync_nonsingle_instance_pool.hpp</a>&quot;</code><br />
+</div><div class="textblock"><div class="dynheader">
+mysql_conn_factory.hpp 的引用(Include)关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="mysql__conn__factory_8hpp__incl.png" border="0" usemap="#_2home_2peter_2git_2_core_2src_2master_2mysql__conn__factory_8hpp" alt=""/></div>
+<map name="_2home_2peter_2git_2_core_2src_2master_2mysql__conn__factory_8hpp" id="_2home_2peter_2git_2_core_2src_2master_2mysql__conn__factory_8hpp">
+</map>
+</div>
+</div><div class="textblock"><div class="dynheader">
+此图展示该文件直接或间接的被哪些文件引用了:</div>
+<div class="dyncontent">
+<div class="center"><img src="mysql__conn__factory_8hpp__dep__incl.png" border="0" usemap="#_2home_2peter_2git_2_core_2src_2master_2mysql__conn__factory_8hppdep" alt=""/></div>
+<map name="_2home_2peter_2git_2_core_2src_2master_2mysql__conn__factory_8hppdep" id="_2home_2peter_2git_2_core_2src_2master_2mysql__conn__factory_8hppdep">
+</map>
+</div>
+</div>
+<p><a href="mysql__conn__factory_8hpp_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
+宏定义</h2></td></tr>
+<tr class="memitem:abeb0b90f9269828cc2352deefd03754a"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mysql__conn__factory_8hpp.html#abeb0b90f9269828cc2352deefd03754a">MYSQLPP_MYSQL_HEADERS_BURIED</a></td></tr>
+<tr class="separator:abeb0b90f9269828cc2352deefd03754a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
+类型定义</h2></td></tr>
+<tr class="memitem:a0c4aa5690054e2f79ac2984770dfbc13"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classsync__nonsingle__instance__pool.html">sync_nonsingle_instance_pool</a>&lt; mysqlpp::Connection &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mysql__conn__factory_8hpp.html#a0c4aa5690054e2f79ac2984770dfbc13">mysql_conn_pool_type</a></td></tr>
+<tr class="separator:a0c4aa5690054e2f79ac2984770dfbc13"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a97868cc50118e452b1ddf7fe21424c39"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mysql__conn__factory_8hpp.html#a97868cc50118e452b1ddf7fe21424c39">add_mysql_conn</a> ()</td></tr>
+<tr class="separator:a97868cc50118e452b1ddf7fe21424c39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a390151078c5f6b14cda92169fd6e42e3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classsync__nonsingle__instance__pool.html#acbecce1a19574002c898101a772da0ad">mysql_conn_pool_type::auto_revert_handle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mysql__conn__factory_8hpp.html#a390151078c5f6b14cda92169fd6e42e3">sync_fetch_mysql_conn</a> ()</td></tr>
+<tr class="separator:a390151078c5f6b14cda92169fd6e42e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
+变量</h2></td></tr>
+<tr class="memitem:afb7adde28e91da09edfc8e94c5309c33"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mysql__conn__factory_8hpp.html#afb7adde28e91da09edfc8e94c5309c33">mysql_database</a></td></tr>
+<tr class="separator:afb7adde28e91da09edfc8e94c5309c33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc478beee3b8ffe7b82fc7900a4997b9"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mysql__conn__factory_8hpp.html#acc478beee3b8ffe7b82fc7900a4997b9">mysql_hostname</a></td></tr>
+<tr class="separator:acc478beee3b8ffe7b82fc7900a4997b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08836299d339e802efb5f0b26743c99f"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mysql__conn__factory_8hpp.html#a08836299d339e802efb5f0b26743c99f">mysql_username</a></td></tr>
+<tr class="separator:a08836299d339e802efb5f0b26743c99f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad12b05ea6ebc80ba4e47eed70df69d1e"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mysql__conn__factory_8hpp.html#ad12b05ea6ebc80ba4e47eed70df69d1e">mysql_passwd</a></td></tr>
+<tr class="separator:ad12b05ea6ebc80ba4e47eed70df69d1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8aa6a51c0a89710e5afa23f21e593156"><td class="memItemLeft" align="right" valign="top"><a class="el" href="mysql__conn__factory_8hpp.html#a0c4aa5690054e2f79ac2984770dfbc13">mysql_conn_pool_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mysql__conn__factory_8hpp.html#a8aa6a51c0a89710e5afa23f21e593156">mysql_conn_pool</a></td></tr>
+<tr class="separator:a8aa6a51c0a89710e5afa23f21e593156"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">宏定义说明</h2>
+<a id="abeb0b90f9269828cc2352deefd03754a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abeb0b90f9269828cc2352deefd03754a">&#9670;&nbsp;</a></span>MYSQLPP_MYSQL_HEADERS_BURIED</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MYSQLPP_MYSQL_HEADERS_BURIED</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="mysql__conn__factory_8hpp_source.html">mysql_conn_factory.hpp</a> 第 <a class="el" href="mysql__conn__factory_8hpp_source.html#l00012">12</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类型定义说明</h2>
+<a id="a0c4aa5690054e2f79ac2984770dfbc13"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0c4aa5690054e2f79ac2984770dfbc13">&#9670;&nbsp;</a></span>mysql_conn_pool_type</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef <a class="el" href="classsync__nonsingle__instance__pool.html">sync_nonsingle_instance_pool</a>&lt;mysqlpp::Connection&gt; <a class="el" href="mysql__conn__factory_8hpp.html#a0c4aa5690054e2f79ac2984770dfbc13">mysql_conn_pool_type</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="mysql__conn__factory_8hpp_source.html">mysql_conn_factory.hpp</a> 第 <a class="el" href="mysql__conn__factory_8hpp_source.html#l00023">23</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">函数说明</h2>
+<a id="a97868cc50118e452b1ddf7fe21424c39"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97868cc50118e452b1ddf7fe21424c39">&#9670;&nbsp;</a></span>add_mysql_conn()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void add_mysql_conn </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="mysql__conn__factory_8hpp_source.html">mysql_conn_factory.hpp</a> 第 <a class="el" href="mysql__conn__factory_8hpp_source.html#l00026">26</a> 行定义.</p>
+<div class="dynheader">
+函数调用图:</div>
+<div class="dyncontent">
+<div class="center"><img src="mysql__conn__factory_8hpp_a97868cc50118e452b1ddf7fe21424c39_cgraph.png" border="0" usemap="#mysql__conn__factory_8hpp_a97868cc50118e452b1ddf7fe21424c39_cgraph" alt=""/></div>
+<map name="mysql__conn__factory_8hpp_a97868cc50118e452b1ddf7fe21424c39_cgraph" id="mysql__conn__factory_8hpp_a97868cc50118e452b1ddf7fe21424c39_cgraph">
+</map>
+</div>
+<div class="dynheader">
+这是这个函数的调用关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="mysql__conn__factory_8hpp_a97868cc50118e452b1ddf7fe21424c39_icgraph.png" border="0" usemap="#mysql__conn__factory_8hpp_a97868cc50118e452b1ddf7fe21424c39_icgraph" alt=""/></div>
+<map name="mysql__conn__factory_8hpp_a97868cc50118e452b1ddf7fe21424c39_icgraph" id="mysql__conn__factory_8hpp_a97868cc50118e452b1ddf7fe21424c39_icgraph">
+</map>
+</div>
+
+</div>
+</div>
+<a id="a390151078c5f6b14cda92169fd6e42e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a390151078c5f6b14cda92169fd6e42e3">&#9670;&nbsp;</a></span>sync_fetch_mysql_conn()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classsync__nonsingle__instance__pool.html#acbecce1a19574002c898101a772da0ad">mysql_conn_pool_type::auto_revert_handle</a> sync_fetch_mysql_conn </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="mysql__conn__factory_8hpp_source.html">mysql_conn_factory.hpp</a> 第 <a class="el" href="mysql__conn__factory_8hpp_source.html#l00043">43</a> 行定义.</p>
+<div class="dynheader">
+函数调用图:</div>
+<div class="dyncontent">
+<div class="center"><img src="mysql__conn__factory_8hpp_a390151078c5f6b14cda92169fd6e42e3_cgraph.png" border="0" usemap="#mysql__conn__factory_8hpp_a390151078c5f6b14cda92169fd6e42e3_cgraph" alt=""/></div>
+<map name="mysql__conn__factory_8hpp_a390151078c5f6b14cda92169fd6e42e3_cgraph" id="mysql__conn__factory_8hpp_a390151078c5f6b14cda92169fd6e42e3_cgraph">
+</map>
+</div>
+<div class="dynheader">
+这是这个函数的调用关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="mysql__conn__factory_8hpp_a390151078c5f6b14cda92169fd6e42e3_icgraph.png" border="0" usemap="#mysql__conn__factory_8hpp_a390151078c5f6b14cda92169fd6e42e3_icgraph" alt=""/></div>
+<map name="mysql__conn__factory_8hpp_a390151078c5f6b14cda92169fd6e42e3_icgraph" id="mysql__conn__factory_8hpp_a390151078c5f6b14cda92169fd6e42e3_icgraph">
+</map>
+</div>
+
+</div>
+</div>
+<h2 class="groupheader">变量说明</h2>
+<a id="a8aa6a51c0a89710e5afa23f21e593156"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8aa6a51c0a89710e5afa23f21e593156">&#9670;&nbsp;</a></span>mysql_conn_pool</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="mysql__conn__factory_8hpp.html#a0c4aa5690054e2f79ac2984770dfbc13">mysql_conn_pool_type</a> mysql_conn_pool</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="mysql__conn__factory_8hpp_source.html">mysql_conn_factory.hpp</a> 第 <a class="el" href="mysql__conn__factory_8hpp_source.html#l00024">24</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afb7adde28e91da09edfc8e94c5309c33"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb7adde28e91da09edfc8e94c5309c33">&#9670;&nbsp;</a></span>mysql_database</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string mysql_database</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="mysql__conn__factory_8hpp_source.html">mysql_conn_factory.hpp</a> 第 <a class="el" href="mysql__conn__factory_8hpp_source.html#l00018">18</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acc478beee3b8ffe7b82fc7900a4997b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc478beee3b8ffe7b82fc7900a4997b9">&#9670;&nbsp;</a></span>mysql_hostname</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string mysql_hostname</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="mysql__conn__factory_8hpp_source.html">mysql_conn_factory.hpp</a> 第 <a class="el" href="mysql__conn__factory_8hpp_source.html#l00019">19</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad12b05ea6ebc80ba4e47eed70df69d1e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad12b05ea6ebc80ba4e47eed70df69d1e">&#9670;&nbsp;</a></span>mysql_passwd</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string mysql_passwd</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="mysql__conn__factory_8hpp_source.html">mysql_conn_factory.hpp</a> 第 <a class="el" href="mysql__conn__factory_8hpp_source.html#l00021">21</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a08836299d339e802efb5f0b26743c99f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a08836299d339e802efb5f0b26743c99f">&#9670;&nbsp;</a></span>mysql_username</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string mysql_username</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="mysql__conn__factory_8hpp_source.html">mysql_conn_factory.hpp</a> 第 <a class="el" href="mysql__conn__factory_8hpp_source.html#l00020">20</a> 行定义.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+<footer>
+<hr> Powered by
+<a href="http://www.doxygen.nl/" target="_blank"> Doxygen </a>
+<br>
+Contributors:
+<a href=""> Shaohua Zhang,&nbsp; Zhiqiang Shi,&nbsp; Xi Chen,&nbsp; Kehan Huang,&nbsp; Binjie Zhang,&nbsp; Wentsing Nee </a>
+<br> Copyright © 2010-2018
+<a href="http://www.thinkspirit.org" target="_blank"> Think Spirit. </a> All rights reserved.
+</footer>

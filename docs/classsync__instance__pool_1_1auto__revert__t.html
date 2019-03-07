@@ -1,0 +1,412 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.8.15"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>TSOJ V4 Judge Core: sync_instance_pool&lt; InstanceType &gt;::auto_revert_t类 参考</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="mlabel.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="ThinkSpirit_logo_2018.png"/></td>
+  <td id="projectalign" style="padding-left: 0.5em;">
+   <div id="projectname">TSOJ V4 Judge Core
+   </div>
+   <div id="projectbrief">oj.thinkspirit.org</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- 制作者 Doxygen 1.8.15 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+var searchBox = new SearchBox("searchBox", "search",false,'搜索');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(function() {
+  initMenu('',true,false,'search.php','搜索');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="classsync__instance__pool.html">sync_instance_pool</a></li><li class="navelem"><a class="el" href="classsync__instance__pool_1_1auto__revert__t.html">auto_revert_t</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pri-methods">Private 成员函数</a> &#124;
+<a href="#pri-attribs">Private 属性</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classsync__instance__pool_1_1auto__revert__t-members.html">所有成员列表</a>  </div>
+  <div class="headertitle">
+<div class="title">sync_instance_pool&lt; InstanceType &gt;::auto_revert_t类 参考</div>  </div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="sync__instance__pool_8hpp_source.html">sync_instance_pool.hpp</a>&gt;</code></p>
+<div class="dynheader">
+类 sync_instance_pool&lt; InstanceType &gt;::auto_revert_t 继承关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="classsync__instance__pool_1_1auto__revert__t__inherit__graph.png" border="0" usemap="#sync__instance__pool_3_01_instance_type_01_4_1_1auto__revert__t_inherit__map" alt="Inheritance graph"/></div>
+<map name="sync__instance__pool_3_01_instance_type_01_4_1_1auto__revert__t_inherit__map" id="sync__instance__pool_3_01_instance_type_01_4_1_1auto__revert__t_inherit__map">
+</map>
+<center><span class="legend">[<a href="graph_legend.html">图例</a>]</span></center></div>
+<div class="dynheader">
+sync_instance_pool&lt; InstanceType &gt;::auto_revert_t 的协作图:</div>
+<div class="dyncontent">
+<div class="center"><img src="classsync__instance__pool_1_1auto__revert__t__coll__graph.png" border="0" usemap="#sync__instance__pool_3_01_instance_type_01_4_1_1auto__revert__t_coll__map" alt="Collaboration graph"/></div>
+<map name="sync__instance__pool_3_01_instance_type_01_4_1_1auto__revert__t_coll__map" id="sync__instance__pool_3_01_instance_type_01_4_1_1auto__revert__t_coll__map">
+</map>
+<center><span class="legend">[<a href="graph_legend.html">图例</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:aba65db39bd04741055e65c42ea649145"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsync__instance__pool_1_1auto__revert__t.html#aba65db39bd04741055e65c42ea649145">auto_revert_t</a> (<a class="el" href="classsync__instance__pool_1_1auto__revert__t.html">auto_revert_t</a> &amp;&amp;src)</td></tr>
+<tr class="separator:aba65db39bd04741055e65c42ea649145"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac679c475cd725b83d11d36c9b0e838a4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsync__instance__pool_1_1auto__revert__t.html#ac679c475cd725b83d11d36c9b0e838a4">~auto_revert_t</a> ()</td></tr>
+<tr class="separator:ac679c475cd725b83d11d36c9b0e838a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a649afd4eb67dd4ee0eab5cdc4d1efe99"><td class="memItemLeft" align="right" valign="top">InstanceType &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsync__instance__pool_1_1auto__revert__t.html#a649afd4eb67dd4ee0eab5cdc4d1efe99">operator*</a> () const</td></tr>
+<tr class="separator:a649afd4eb67dd4ee0eab5cdc4d1efe99"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aafb82790cee60230f46e15e7f4a695d8"><td class="memItemLeft" align="right" valign="top">InstanceType *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsync__instance__pool_1_1auto__revert__t.html#aafb82790cee60230f46e15e7f4a695d8">operator-&gt;</a> () const</td></tr>
+<tr class="separator:aafb82790cee60230f46e15e7f4a695d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
+Private 成员函数</h2></td></tr>
+<tr class="memitem:a84d86a2dfbaf8104bdee13efc4656d78"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsync__instance__pool_1_1auto__revert__t.html#a84d86a2dfbaf8104bdee13efc4656d78">auto_revert_t</a> (InstanceType *<a class="el" href="classsync__instance__pool_1_1auto__revert__t.html#a6f282050b5f545fd80ffd8e279d034cb">ptr_to_conn</a>)</td></tr>
+<tr class="separator:a84d86a2dfbaf8104bdee13efc4656d78"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
+Private 属性</h2></td></tr>
+<tr class="memitem:a6f282050b5f545fd80ffd8e279d034cb"><td class="memItemLeft" align="right" valign="top">InstanceType *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsync__instance__pool_1_1auto__revert__t.html#a6f282050b5f545fd80ffd8e279d034cb">ptr_to_conn</a></td></tr>
+<tr class="separator:a6f282050b5f545fd80ffd8e279d034cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:a5aa4585e2cee516157e376b54410266b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classsync__instance__pool_1_1auto__revert__t.html">auto_revert_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsync__instance__pool_1_1auto__revert__t.html#a5aa4585e2cee516157e376b54410266b">sync_instance_pool::fetch</a> ()</td></tr>
+<tr class="separator:a5aa4585e2cee516157e376b54410266b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3e587cda60e5560e30b9bf829752b57"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classsync__instance__pool_1_1auto__revert__t.html">auto_revert_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsync__instance__pool_1_1auto__revert__t.html#ae3e587cda60e5560e30b9bf829752b57">sync_instance_pool::block_fetch</a> ()</td></tr>
+<tr class="separator:ae3e587cda60e5560e30b9bf829752b57"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82c104b2a7e51c43edc8e5a6370b7215"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsync__instance__pool_1_1auto__revert__t.html#a82c104b2a7e51c43edc8e5a6370b7215">sync_instance_pool::revert</a> (<a class="el" href="classsync__instance__pool_1_1auto__revert__t.html">auto_revert_t</a> &amp;)</td></tr>
+<tr class="separator:a82c104b2a7e51c43edc8e5a6370b7215"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><h3>template&lt;typename InstanceType&gt;<br />
+class sync_instance_pool&lt; InstanceType &gt;::auto_revert_t</h3>
+
+
+<p class="definition">在文件 <a class="el" href="sync__instance__pool_8hpp_source.html">sync_instance_pool.hpp</a> 第 <a class="el" href="sync__instance__pool_8hpp_source.html#l00058">58</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a84d86a2dfbaf8104bdee13efc4656d78"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a84d86a2dfbaf8104bdee13efc4656d78">&#9670;&nbsp;</a></span>auto_revert_t() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename InstanceType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classsync__instance__pool.html">sync_instance_pool</a>&lt; InstanceType &gt;::auto_revert_t::auto_revert_t </td>
+          <td>(</td>
+          <td class="paramtype">InstanceType *&#160;</td>
+          <td class="paramname"><em>ptr_to_conn</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="sync__instance__pool_8hpp_source.html">sync_instance_pool.hpp</a> 第 <a class="el" href="sync__instance__pool_8hpp_source.html#l00067">67</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aba65db39bd04741055e65c42ea649145"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba65db39bd04741055e65c42ea649145">&#9670;&nbsp;</a></span>auto_revert_t() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename InstanceType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classsync__instance__pool.html">sync_instance_pool</a>&lt; InstanceType &gt;::auto_revert_t::auto_revert_t </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classsync__instance__pool_1_1auto__revert__t.html">auto_revert_t</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>src</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="sync__instance__pool_8hpp_source.html">sync_instance_pool.hpp</a> 第 <a class="el" href="sync__instance__pool_8hpp_source.html#l00073">73</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac679c475cd725b83d11d36c9b0e838a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac679c475cd725b83d11d36c9b0e838a4">&#9670;&nbsp;</a></span>~auto_revert_t()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename InstanceType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classsync__instance__pool.html">sync_instance_pool</a>&lt; InstanceType &gt;::auto_revert_t::~auto_revert_t </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="sync__instance__pool_8hpp_source.html">sync_instance_pool.hpp</a> 第 <a class="el" href="sync__instance__pool_8hpp_source.html#l00079">79</a> 行定义.</p>
+<div class="dynheader">
+函数调用图:</div>
+<div class="dyncontent">
+<div class="center"><img src="classsync__instance__pool_1_1auto__revert__t_ac679c475cd725b83d11d36c9b0e838a4_cgraph.png" border="0" usemap="#classsync__instance__pool_1_1auto__revert__t_ac679c475cd725b83d11d36c9b0e838a4_cgraph" alt=""/></div>
+<map name="classsync__instance__pool_1_1auto__revert__t_ac679c475cd725b83d11d36c9b0e838a4_cgraph" id="classsync__instance__pool_1_1auto__revert__t_ac679c475cd725b83d11d36c9b0e838a4_cgraph">
+</map>
+</div>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a649afd4eb67dd4ee0eab5cdc4d1efe99"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a649afd4eb67dd4ee0eab5cdc4d1efe99">&#9670;&nbsp;</a></span>operator*()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename InstanceType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">InstanceType&amp; <a class="el" href="classsync__instance__pool.html">sync_instance_pool</a>&lt; InstanceType &gt;::auto_revert_t::operator* </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="sync__instance__pool_8hpp_source.html">sync_instance_pool.hpp</a> 第 <a class="el" href="sync__instance__pool_8hpp_source.html#l00087">87</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aafb82790cee60230f46e15e7f4a695d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aafb82790cee60230f46e15e7f4a695d8">&#9670;&nbsp;</a></span>operator-&gt;()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename InstanceType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">InstanceType* <a class="el" href="classsync__instance__pool.html">sync_instance_pool</a>&lt; InstanceType &gt;::auto_revert_t::operator-&gt; </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="sync__instance__pool_8hpp_source.html">sync_instance_pool.hpp</a> 第 <a class="el" href="sync__instance__pool_8hpp_source.html#l00092">92</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="ae3e587cda60e5560e30b9bf829752b57"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae3e587cda60e5560e30b9bf829752b57">&#9670;&nbsp;</a></span>sync_instance_pool::block_fetch</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename InstanceType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classsync__instance__pool_1_1auto__revert__t.html">auto_revert_t</a> <a class="el" href="classsync__instance__pool.html#a7751e9000fcb16ca0d59f9ff7592dfc2">sync_instance_pool::block_fetch</a> </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5aa4585e2cee516157e376b54410266b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5aa4585e2cee516157e376b54410266b">&#9670;&nbsp;</a></span>sync_instance_pool::fetch</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename InstanceType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classsync__instance__pool_1_1auto__revert__t.html">auto_revert_t</a> <a class="el" href="classsync__instance__pool.html#a9aeb1427720c1577dd1d11f1a05b4480">sync_instance_pool::fetch</a> </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a82c104b2a7e51c43edc8e5a6370b7215"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82c104b2a7e51c43edc8e5a6370b7215">&#9670;&nbsp;</a></span>sync_instance_pool::revert</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename InstanceType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classsync__instance__pool.html#a9941269ba9507697c45f348f3f581dbe">sync_instance_pool::revert</a> </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classsync__instance__pool_1_1auto__revert__t.html">auto_revert_t</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a6f282050b5f545fd80ffd8e279d034cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f282050b5f545fd80ffd8e279d034cb">&#9670;&nbsp;</a></span>ptr_to_conn</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename InstanceType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">InstanceType* <a class="el" href="classsync__instance__pool.html">sync_instance_pool</a>&lt; InstanceType &gt;::auto_revert_t::ptr_to_conn</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="sync__instance__pool_8hpp_source.html">sync_instance_pool.hpp</a> 第 <a class="el" href="sync__instance__pool_8hpp_source.html#l00065">65</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>/home/peter/git/Core/src/shared_src/<a class="el" href="sync__instance__pool_8hpp_source.html">sync_instance_pool.hpp</a></li>
+</ul>
+</div><!-- contents -->
+<footer>
+<hr> Powered by
+<a href="http://www.doxygen.nl/" target="_blank"> Doxygen </a>
+<br>
+Contributors:
+<a href=""> Shaohua Zhang,&nbsp; Zhiqiang Shi,&nbsp; Xi Chen,&nbsp; Kehan Huang,&nbsp; Binjie Zhang,&nbsp; Wentsing Nee </a>
+<br> Copyright © 2010-2018
+<a href="http://www.thinkspirit.org" target="_blank"> Think Spirit. </a> All rights reserved.
+</footer>

@@ -1,0 +1,10 @@
+digraph "operator&lt;&lt;"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node12 [label="operator\<\<",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="重载 UnitedJudgeResult 类的 << 运算符，输出其对应含义的类型说明"];
+  Node12 -> Node13 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node13 [label="getJudgeResultName",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$united__resource_8hpp.html#a605507f7128810bb04f93a068208dafe",tooltip="根据传入的 UnitedJudgeResult，返回其对应含义的类型说明。"];
+}

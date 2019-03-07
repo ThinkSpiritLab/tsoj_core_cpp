@@ -1,0 +1,18 @@
+digraph "类继承关系图"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node28 [label="noncopyable",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled",tooltip=" "];
+  Node28 -> Node0 [dir="back",color="firebrick4",fontsize="10",style="solid",fontname="Helvetica"];
+  Node0 [label="process",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classprocess.html",tooltip=" "];
+  Node28 -> Node30 [dir="back",color="firebrick4",fontsize="10",style="solid",fontname="Helvetica"];
+  Node30 [label="sync_instance_pool\l\< InstanceType \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classsync__instance__pool.html",tooltip=" "];
+  Node28 -> Node31 [dir="back",color="firebrick4",fontsize="10",style="solid",fontname="Helvetica"];
+  Node31 [label="sync_instance_pool\l\< InstanceType \>::auto\l_revert_t",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classsync__instance__pool_1_1auto__revert__t.html",tooltip=" "];
+  Node28 -> Node32 [dir="back",color="firebrick4",fontsize="10",style="solid",fontname="Helvetica"];
+  Node32 [label="sync_nonsingle_instance\l_pool\< InstanceType, PoolContainer \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classsync__nonsingle__instance__pool.html",tooltip=" "];
+  Node28 -> Node33 [dir="back",color="firebrick4",fontsize="10",style="solid",fontname="Helvetica"];
+  Node33 [label="sync_nonsingle_instance\l_pool\< InstanceType, PoolContainer\l \>::__auto_revert_handle",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classsync__nonsingle__instance__pool_1_1____auto__revert__handle.html",tooltip=" "];
+}

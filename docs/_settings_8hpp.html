@@ -1,0 +1,187 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.8.15"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>TSOJ V4 Judge Core: /home/peter/git/Core/src/slave/Settings.hpp 文件参考</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="mlabel.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="ThinkSpirit_logo_2018.png"/></td>
+  <td id="projectalign" style="padding-left: 0.5em;">
+   <div id="projectname">TSOJ V4 Judge Core
+   </div>
+   <div id="projectbrief">oj.thinkspirit.org</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- 制作者 Doxygen 1.8.15 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+var searchBox = new SearchBox("searchBox", "search",false,'搜索');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(function() {
+  initMenu('',true,false,'search.php','搜索');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_80f0d4a0945c74dfa611dba2ec326a39.html">slave</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#define-members">宏定义</a> &#124;
+<a href="#var-members">变量</a>  </div>
+  <div class="headertitle">
+<div class="title">Settings.hpp 文件参考</div>  </div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;<a class="el" href="sync__nonsingle__instance__pool_8hpp_source.html">sync_nonsingle_instance_pool.hpp</a>&quot;</code><br />
+<code>#include &lt;fstream&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
+<code>#include &lt;kerbal/redis_v2/connection.hpp&gt;</code><br />
+<code>#include &lt;boost/filesystem.hpp&gt;</code><br />
+</div><div class="textblock"><div class="dynheader">
+Settings.hpp 的引用(Include)关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="_settings_8hpp__incl.png" border="0" usemap="#_2home_2peter_2git_2_core_2src_2slave_2_settings_8hpp" alt=""/></div>
+<map name="_2home_2peter_2git_2_core_2src_2slave_2_settings_8hpp" id="_2home_2peter_2git_2_core_2src_2slave_2_settings_8hpp">
+</map>
+</div>
+</div><div class="textblock"><div class="dynheader">
+此图展示该文件直接或间接的被哪些文件引用了:</div>
+<div class="dyncontent">
+<div class="center"><img src="_settings_8hpp__dep__incl.png" border="0" usemap="#_2home_2peter_2git_2_core_2src_2slave_2_settings_8hppdep" alt=""/></div>
+<map name="_2home_2peter_2git_2_core_2src_2slave_2_settings_8hppdep" id="_2home_2peter_2git_2_core_2src_2slave_2_settings_8hppdep">
+</map>
+</div>
+</div>
+<p><a href="_settings_8hpp_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_settings.html">Settings</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_settings_1_1_judger_runtime_variable.html">Settings::JudgerRuntimeVariable</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_settings_1_1_judge_settings.html">Settings::JudgeSettings</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_settings_1_1_redis_settings.html">Settings::RedisSettings</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
+宏定义</h2></td></tr>
+<tr class="memitem:a652f5fbeadeb2af7e316e68c296fb13e"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_settings_8hpp.html#a652f5fbeadeb2af7e316e68c296fb13e">DEF_PROTECTED_FIELD</a>(filed_type,  filed_name)</td></tr>
+<tr class="separator:a652f5fbeadeb2af7e316e68c296fb13e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
+变量</h2></td></tr>
+<tr class="memitem:a1d3fb259d686f32da9967eae362e2321"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classsync__nonsingle__instance__pool.html">sync_nonsingle_instance_pool</a>&lt; kerbal::redis_v2::connection &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_settings_8hpp.html#a1d3fb259d686f32da9967eae362e2321">redis_pool</a></td></tr>
+<tr class="separator:a1d3fb259d686f32da9967eae362e2321"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">宏定义说明</h2>
+<a id="a652f5fbeadeb2af7e316e68c296fb13e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a652f5fbeadeb2af7e316e68c296fb13e">&#9670;&nbsp;</a></span>DEF_PROTECTED_FIELD</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define DEF_PROTECTED_FIELD</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">filed_type, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">filed_name&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>值:</b><div class="fragment"><div class="line"><span class="keyword">protected</span>: \</div><div class="line">    static <span class="keyword">inline</span> filed_type filed_name##_v; \</div><div class="line">public: \</div><div class="line">    static <span class="keyword">const</span> filed_type &amp; filed_name() \</div><div class="line">    { \</div><div class="line">        return filed_name##_v; \</div><div class="line">    } \</div><div class="line">private:</div></div><!-- fragment -->
+<p class="definition">在文件 <a class="el" href="_settings_8hpp_source.html">Settings.hpp</a> 第 <a class="el" href="_settings_8hpp_source.html#l00019">19</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">变量说明</h2>
+<a id="a1d3fb259d686f32da9967eae362e2321"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d3fb259d686f32da9967eae362e2321">&#9670;&nbsp;</a></span>redis_pool</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classsync__nonsingle__instance__pool.html">sync_nonsingle_instance_pool</a>&lt;kerbal::redis_v2::connection&gt; redis_pool</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="_settings_8hpp_source.html">Settings.hpp</a> 第 <a class="el" href="_settings_8hpp_source.html#l00105">105</a> 行定义.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+<footer>
+<hr> Powered by
+<a href="http://www.doxygen.nl/" target="_blank"> Doxygen </a>
+<br>
+Contributors:
+<a href=""> Shaohua Zhang,&nbsp; Zhiqiang Shi,&nbsp; Xi Chen,&nbsp; Kehan Huang,&nbsp; Binjie Zhang,&nbsp; Wentsing Nee </a>
+<br> Copyright © 2010-2018
+<a href="http://www.thinkspirit.org" target="_blank"> Think Spirit. </a> All rights reserved.
+</footer>

@@ -1,0 +1,14 @@
+digraph "JudgeJob::insert_into_failed"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="RL";
+  Node64 [label="JudgeJob::insert_into\l_failed",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="将评测失败的评测详情插入数据库、将评测失败的 job_item 插入评测失败队列"];
+  Node64 -> Node65 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node65 [label="JudgeJob::push_back\l_failed_judge_job",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_judge_job.html#adf10b6952dc5b83dfa7cb0ec66b3845b",tooltip="将评测失败的评测详情插入数据库、将评测失败的 job_item 插入评测失败队列"];
+  Node64 -> Node66 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node66 [label="listenning_loop",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$slave_8cpp.html#a4da8bf76425b9301a441b2009f39c1f1",tooltip=" "];
+  Node66 -> Node67 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node67 [label="main",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$slave_8cpp.html#ac0f2228420376f4db7e1274f2b41667c",tooltip="slave 端主程序循环 加载配置信息；连接 redis 数据库；取待评测任务信息，交由子进程并评测；创建并分离发送心跳线程"];
+}

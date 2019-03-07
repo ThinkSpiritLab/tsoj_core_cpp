@@ -1,0 +1,10 @@
+digraph "register_self"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="RL";
+  Node43 [label="register_self",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="发送心跳进程 每隔一段时间，将本机信息提交到数据库中表示当前在线的评测机集合中，表明自身正常工作，可以处理评测任务。"];
+  Node43 -> Node44 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node44 [label="main",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$slave_8cpp.html#ac0f2228420376f4db7e1274f2b41667c",tooltip="slave 端主程序循环 加载配置信息；连接 redis 数据库；取待评测任务信息，交由子进程并评测；创建并分离发送心跳线程"];
+}

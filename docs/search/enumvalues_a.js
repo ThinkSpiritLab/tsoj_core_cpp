@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['none',['none',['../classprocess.html#ab507e4aea79713bd151f76913113bbdfa7ab0073a637442a1d579589a413ea815',1,'process::none()'],['../_config_8hpp.html#a14b6d2c5ee1288f01d167a3ba7ef4328a334c4a4c42fdb79d7ebc3e73b517e6f8',1,'none():&#160;Config.hpp']]]
+  ['output_5ffile',['OUTPUT_FILE',['../class_dup2_failed_excetion.html#a093e7b73b407853cf47a2fa140038c67a500f1ccd5da3bd832e5a6d5ebb25a41d',1,'Dup2FailedExcetion']]],
+  ['output_5flimit_5fexceeded',['OUTPUT_LIMIT_EXCEEDED',['../_protected_process_8hpp.html#acb63e8fce709928456616008d732bc21a1b805077ba82699a1cb6b1c401e59b11',1,'OUTPUT_LIMIT_EXCEEDED():&#160;ProtectedProcess.hpp'],['../united__resource_8hpp.html#a4633701595b7c3914a34eee8ba1b505ea1b805077ba82699a1cb6b1c401e59b11',1,'OUTPUT_LIMIT_EXCEEDED():&#160;united_resource.hpp']]]
 ];

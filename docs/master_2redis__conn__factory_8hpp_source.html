@@ -1,0 +1,96 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.8.15"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>TSOJ V4 Judge Core: /home/peter/git/Core/src/master/redis_conn_factory.hpp 源文件</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="mlabel.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="ThinkSpirit_logo_2018.png"/></td>
+  <td id="projectalign" style="padding-left: 0.5em;">
+   <div id="projectname">TSOJ V4 Judge Core
+   </div>
+   <div id="projectbrief">oj.thinkspirit.org</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- 制作者 Doxygen 1.8.15 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+var searchBox = new SearchBox("searchBox", "search",false,'搜索');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(function() {
+  initMenu('',true,false,'search.php','搜索');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ae1a660fbe587eff2b475b14d217c1ef.html">master</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle">
+<div class="title">redis_conn_factory.hpp</div>  </div>
+</div><!--header-->
+<div class="contents">
+<a href="master_2redis__conn__factory_8hpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">/*</span></div><div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment"> * REDIS_conn_factory.hpp</span></div><div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> *</span></div><div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> *  Created on: 2019年1月7日</span></div><div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> *      Author: peter</span></div><div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> */</span></div><div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;</div><div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#ifndef SRC_MASTER_REDIS_CONN_FACTORY_HPP_</span></div><div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#define SRC_MASTER_REDIS_CONN_FACTORY_HPP_</span></div><div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div><div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &lt;kerbal/redis_v2/connection.hpp&gt;</span></div><div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="sync__nonsingle__instance__pool_8hpp.html">sync_nonsingle_instance_pool.hpp</a>&quot;</span></div><div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;</div><div class="line"><a name="l00014"></a><span class="lineno"><a class="line" href="master_2redis__conn__factory_8hpp.html#aade40e0dc1b36c16baddd2b33e739bba">   14</a></span>&#160;<span class="keyword">inline</span> <span class="keywordtype">int</span> <a class="code" href="master_2redis__conn__factory_8hpp.html#aade40e0dc1b36c16baddd2b33e739bba">redis_port</a>; </div><div class="line"><a name="l00015"></a><span class="lineno"><a class="line" href="master_2redis__conn__factory_8hpp.html#a39a95272b52f9cba3dc9434ea16324c4">   15</a></span>&#160;<span class="keyword">inline</span> std::string <a class="code" href="master_2redis__conn__factory_8hpp.html#a39a95272b52f9cba3dc9434ea16324c4">redis_hostname</a>; </div><div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div><div class="line"><a name="l00017"></a><span class="lineno"><a class="line" href="master_2redis__conn__factory_8hpp.html#a1a98d973f73873041574ac6edc36869b">   17</a></span>&#160;<span class="keyword">typedef</span> <a class="code" href="classsync__nonsingle__instance__pool.html">sync_nonsingle_instance_pool&lt;kerbal::redis_v2::connection&gt;</a> <a class="code" href="master_2redis__conn__factory_8hpp.html#a1a98d973f73873041574ac6edc36869b">redis_conn_pool_type</a>;</div><div class="line"><a name="l00018"></a><span class="lineno"><a class="line" href="master_2redis__conn__factory_8hpp.html#af61e092447a4a6a2b9246a1134f63b62">   18</a></span>&#160;<span class="keyword">inline</span> <a class="code" href="classsync__nonsingle__instance__pool.html">redis_conn_pool_type</a> <a class="code" href="master_2redis__conn__factory_8hpp.html#af61e092447a4a6a2b9246a1134f63b62">redis_conn_pool</a>;</div><div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;</div><div class="line"><a name="l00020"></a><span class="lineno"><a class="line" href="master_2redis__conn__factory_8hpp.html#a2c9be7394111105ab04a9aeafebb3188">   20</a></span>&#160;<span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code" href="master_2redis__conn__factory_8hpp.html#a2c9be7394111105ab04a9aeafebb3188">add_redis_conn</a>()</div><div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;{</div><div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    kerbal::redis_v2::connection * redis_conn = <span class="keyword">new</span> kerbal::redis_v2::connection(<a class="code" href="master_2redis__conn__factory_8hpp.html#a39a95272b52f9cba3dc9434ea16324c4">redis_hostname</a>, <a class="code" href="master_2redis__conn__factory_8hpp.html#aade40e0dc1b36c16baddd2b33e739bba">redis_port</a>);</div><div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    <span class="keywordflow">if</span> (!*redis_conn) {</div><div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;        <span class="keyword">delete</span> redis_conn;</div><div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;        redis_conn = <span class="keyword">nullptr</span>;</div><div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;failed connect&quot;</span>);</div><div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    }</div><div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <a class="code" href="master_2redis__conn__factory_8hpp.html#af61e092447a4a6a2b9246a1134f63b62">redis_conn_pool</a>.<a class="code" href="classsync__nonsingle__instance__pool.html#a2aee96341e92381860e4366201cee988">add</a>(std::move(redis_conn));</div><div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    redis_conn = <span class="keyword">nullptr</span>;</div><div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;}</div><div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div><div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;</div><div class="line"><a name="l00033"></a><span class="lineno"><a class="line" href="master_2redis__conn__factory_8hpp.html#ab198e48c9dee63607145289ef1aa7757">   33</a></span>&#160;<span class="keyword">inline</span> <a class="code" href="classsync__nonsingle__instance__pool_1_1____auto__revert__handle.html">redis_conn_pool_type::auto_revert_handle</a> <a class="code" href="master_2redis__conn__factory_8hpp.html#ab198e48c9dee63607145289ef1aa7757">sync_fetch_redis_conn</a>()</div><div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;{</div><div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <a class="code" href="classsync__nonsingle__instance__pool_1_1____auto__revert__handle.html">redis_conn_pool_type::auto_revert_handle</a> redis_conn_handle = <a class="code" href="master_2redis__conn__factory_8hpp.html#af61e092447a4a6a2b9246a1134f63b62">redis_conn_pool</a>.<a class="code" href="classsync__nonsingle__instance__pool.html#a737a17399fd4b8ac9894d0fa379caa41">sync_fetch</a>();</div><div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <span class="keywordflow">while</span> (!*redis_conn_handle) {</div><div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;        redis_conn_handle.<a class="code" href="classsync__nonsingle__instance__pool_1_1____auto__revert__handle.html#a11a1bd0b4726a771bb3ef0b5a010f340">abandon</a>();</div><div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;        std::cerr &lt;&lt; <span class="stringliteral">&quot;abandon&quot;</span> &lt;&lt; std::endl;</div><div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;        <a class="code" href="master_2redis__conn__factory_8hpp.html#a2c9be7394111105ab04a9aeafebb3188">add_redis_conn</a>();</div><div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        redis_conn_handle = <a class="code" href="master_2redis__conn__factory_8hpp.html#af61e092447a4a6a2b9246a1134f63b62">redis_conn_pool</a>.<a class="code" href="classsync__nonsingle__instance__pool.html#a737a17399fd4b8ac9894d0fa379caa41">sync_fetch</a>();</div><div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    }</div><div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <span class="keywordflow">return</span> redis_conn_handle;</div><div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;}</div><div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;</div><div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div><div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div><div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* SRC_MASTER_REDIS_CONN_FACTORY_HPP_ */</span><span class="preprocessor"></span></div><div class="ttc" id="master_2redis__conn__factory_8hpp_html_a2c9be7394111105ab04a9aeafebb3188"><div class="ttname"><a href="master_2redis__conn__factory_8hpp.html#a2c9be7394111105ab04a9aeafebb3188">add_redis_conn</a></div><div class="ttdeci">void add_redis_conn()</div><div class="ttdef"><b>Definition:</b> <a href="master_2redis__conn__factory_8hpp_source.html#l00020">redis_conn_factory.hpp:20</a></div></div>
+<div class="ttc" id="classsync__nonsingle__instance__pool_1_1____auto__revert__handle_html"><div class="ttname"><a href="classsync__nonsingle__instance__pool_1_1____auto__revert__handle.html">sync_nonsingle_instance_pool::__auto_revert_handle</a></div><div class="ttdef"><b>Definition:</b> <a href="sync__nonsingle__instance__pool_8hpp_source.html#l00037">sync_nonsingle_instance_pool.hpp:37</a></div></div>
+<div class="ttc" id="master_2redis__conn__factory_8hpp_html_aade40e0dc1b36c16baddd2b33e739bba"><div class="ttname"><a href="master_2redis__conn__factory_8hpp.html#aade40e0dc1b36c16baddd2b33e739bba">redis_port</a></div><div class="ttdeci">int redis_port</div><div class="ttdoc">redis 端口号</div><div class="ttdef"><b>Definition:</b> <a href="master_2redis__conn__factory_8hpp_source.html#l00014">redis_conn_factory.hpp:14</a></div></div>
+<div class="ttc" id="master_2redis__conn__factory_8hpp_html_a1a98d973f73873041574ac6edc36869b"><div class="ttname"><a href="master_2redis__conn__factory_8hpp.html#a1a98d973f73873041574ac6edc36869b">redis_conn_pool_type</a></div><div class="ttdeci">sync_nonsingle_instance_pool&lt; kerbal::redis_v2::connection &gt; redis_conn_pool_type</div><div class="ttdef"><b>Definition:</b> <a href="master_2redis__conn__factory_8hpp_source.html#l00017">redis_conn_factory.hpp:17</a></div></div>
+<div class="ttc" id="master_2redis__conn__factory_8hpp_html_af61e092447a4a6a2b9246a1134f63b62"><div class="ttname"><a href="master_2redis__conn__factory_8hpp.html#af61e092447a4a6a2b9246a1134f63b62">redis_conn_pool</a></div><div class="ttdeci">redis_conn_pool_type redis_conn_pool</div><div class="ttdef"><b>Definition:</b> <a href="master_2redis__conn__factory_8hpp_source.html#l00018">redis_conn_factory.hpp:18</a></div></div>
+<div class="ttc" id="classsync__nonsingle__instance__pool_html"><div class="ttname"><a href="classsync__nonsingle__instance__pool.html">sync_nonsingle_instance_pool</a></div><div class="ttdef"><b>Definition:</b> <a href="sync__nonsingle__instance__pool_8hpp_source.html#l00031">sync_nonsingle_instance_pool.hpp:31</a></div></div>
+<div class="ttc" id="classsync__nonsingle__instance__pool_1_1____auto__revert__handle_html_a11a1bd0b4726a771bb3ef0b5a010f340"><div class="ttname"><a href="classsync__nonsingle__instance__pool_1_1____auto__revert__handle.html#a11a1bd0b4726a771bb3ef0b5a010f340">sync_nonsingle_instance_pool::__auto_revert_handle::abandon</a></div><div class="ttdeci">void abandon()</div><div class="ttdef"><b>Definition:</b> <a href="sync__nonsingle__instance__pool_8hpp_source.html#l00102">sync_nonsingle_instance_pool.hpp:102</a></div></div>
+<div class="ttc" id="sync__nonsingle__instance__pool_8hpp_html"><div class="ttname"><a href="sync__nonsingle__instance__pool_8hpp.html">sync_nonsingle_instance_pool.hpp</a></div></div>
+<div class="ttc" id="classsync__nonsingle__instance__pool_html_a2aee96341e92381860e4366201cee988"><div class="ttname"><a href="classsync__nonsingle__instance__pool.html#a2aee96341e92381860e4366201cee988">sync_nonsingle_instance_pool::add</a></div><div class="ttdeci">void add(InstanceType *p)</div><div class="ttdef"><b>Definition:</b> <a href="sync__nonsingle__instance__pool_8hpp_source.html#l00160">sync_nonsingle_instance_pool.hpp:160</a></div></div>
+<div class="ttc" id="master_2redis__conn__factory_8hpp_html_a39a95272b52f9cba3dc9434ea16324c4"><div class="ttname"><a href="master_2redis__conn__factory_8hpp.html#a39a95272b52f9cba3dc9434ea16324c4">redis_hostname</a></div><div class="ttdeci">std::string redis_hostname</div><div class="ttdoc">redis 主机名</div><div class="ttdef"><b>Definition:</b> <a href="master_2redis__conn__factory_8hpp_source.html#l00015">redis_conn_factory.hpp:15</a></div></div>
+<div class="ttc" id="classsync__nonsingle__instance__pool_html_a737a17399fd4b8ac9894d0fa379caa41"><div class="ttname"><a href="classsync__nonsingle__instance__pool.html#a737a17399fd4b8ac9894d0fa379caa41">sync_nonsingle_instance_pool::sync_fetch</a></div><div class="ttdeci">auto_revert_handle sync_fetch(std::chrono::milliseconds next_try_interval=std::chrono::milliseconds(5))</div><div class="ttdef"><b>Definition:</b> <a href="sync__nonsingle__instance__pool_8hpp_source.html#l00200">sync_nonsingle_instance_pool.hpp:200</a></div></div>
+<div class="ttc" id="master_2redis__conn__factory_8hpp_html_ab198e48c9dee63607145289ef1aa7757"><div class="ttname"><a href="master_2redis__conn__factory_8hpp.html#ab198e48c9dee63607145289ef1aa7757">sync_fetch_redis_conn</a></div><div class="ttdeci">redis_conn_pool_type::auto_revert_handle sync_fetch_redis_conn()</div><div class="ttdef"><b>Definition:</b> <a href="master_2redis__conn__factory_8hpp_source.html#l00033">redis_conn_factory.hpp:33</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+<footer>
+<hr> Powered by
+<a href="http://www.doxygen.nl/" target="_blank"> Doxygen </a>
+<br>
+Contributors:
+<a href=""> Shaohua Zhang,&nbsp; Zhiqiang Shi,&nbsp; Xi Chen,&nbsp; Kehan Huang,&nbsp; Binjie Zhang,&nbsp; Wentsing Nee </a>
+<br> Copyright © 2010-2018
+<a href="http://www.thinkspirit.org" target="_blank"> Think Spirit. </a> All rights reserved.
+</footer>

@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['handle',['handle',['../class_judge_job.html#a6fe58f9fcacc9ba6461e97f1a3ac76a3',1,'JudgeJob::handle()'],['../class_update_job_base.html#a1f2173cec66f3453d4a87c91c2ac8e29',1,'UpdateJobBase::handle()'],['../class_job_base.html#aea684b77a3d8e913b87d8f3deb18c8fe',1,'JobBase::handle()']]],
-  ['have_5faccepted',['have_accepted',['../class_judge_job.html#a9e9dcff9179f50957e14ed61d2376372',1,'JudgeJob']]],
-  ['host_5fname',['host_name',['../global__shared__variable_8hpp.html#afa3f91f7e17edddc988ae8c5f0ed0a66',1,'host_name():&#160;slave.cpp'],['../slave_8cpp.html#afa3f91f7e17edddc988ae8c5f0ed0a66',1,'host_name():&#160;slave.cpp']]]
+  ['handle',['handle',['../class_judge_job.html#a6fe58f9fcacc9ba6461e97f1a3ac76a3',1,'JudgeJob::handle()'],['../class_single_test_judge_job.html#a0831e87393505947e304373d91bafb5b',1,'SingleTestJudgeJob::handle()'],['../class_job_base.html#aea684b77a3d8e913b87d8f3deb18c8fe',1,'JobBase::handle()']]],
+  ['hash',['hash',['../structid__type__base_1_1hash.html',1,'id_type_base']]],
+  ['have_5faccepted',['have_accepted',['../class_judge_job.html#a623df7b4af05282e037d6feb33c28a62',1,'JudgeJob']]]
 ];

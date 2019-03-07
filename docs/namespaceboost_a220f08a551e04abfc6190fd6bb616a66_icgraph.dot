@@ -1,0 +1,14 @@
+digraph "boost::lexical_cast"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="RL";
+  Node1 [label="boost::lexical_cast",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node1 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="update_contest_scoreboard\l_handler",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$master_8cpp.html#a7c08dccaaaa3b76e978c071f92615b87",tooltip=" "];
+  Node2 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="main",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$master_8cpp.html#ac0f2228420376f4db7e1274f2b41667c",tooltip="master 端主程序循环 加载配置信息；连接数据库；取待评测任务信息，交由子进程并评测；创建并分离发送心跳线程 // to be done"];
+  Node1 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="JobBase::JobBase",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_job_base.html#a97a30f7f67042a8008784c78e71cd428",tooltip="初始化 jobType, s_id, redisConn"];
+}

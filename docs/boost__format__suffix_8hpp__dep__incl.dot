@@ -1,0 +1,15 @@
+digraph "/home/peter/git/Core/src/shared_src/boost_format_suffix.hpp"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node3 [label="/home/peter/git/Core\l/src/shared_src/boost\l_format_suffix.hpp",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node3 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="/home/peter/git/Core\l/src/slave/JudgeJob.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$_judge_job_8cpp.html",tooltip=" "];
+  Node3 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node5 [label="/home/peter/git/Core\l/src/slave/SingleTestJudgeJob.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$_single_test_judge_job_8hpp.html",tooltip=" "];
+  Node5 -> Node6 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node6 [label="/home/peter/git/Core\l/src/slave/SingleTestJudgeJob.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$_single_test_judge_job_8cpp.html",tooltip=" "];
+  Node3 -> Node7 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node7 [label="/home/peter/git/Core\l/src/shared_src/JobBase.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$_job_base_8cpp.html",tooltip=" "];
+}

@@ -1,0 +1,811 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.8.15"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>TSOJ V4 Judge Core: SingleTestJudgeJob类 参考</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="mlabel.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="ThinkSpirit_logo_2018.png"/></td>
+  <td id="projectalign" style="padding-left: 0.5em;">
+   <div id="projectname">TSOJ V4 Judge Core
+   </div>
+   <div id="projectbrief">oj.thinkspirit.org</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- 制作者 Doxygen 1.8.15 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+var searchBox = new SearchBox("searchBox", "search",false,'搜索');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(function() {
+  initMenu('',true,false,'search.php','搜索');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pri-types">Private 类型</a> &#124;
+<a href="#pri-methods">Private 成员函数</a> &#124;
+<a href="#pri-attribs">Private 属性</a> &#124;
+<a href="class_single_test_judge_job-members.html">所有成员列表</a>  </div>
+  <div class="headertitle">
+<div class="title">SingleTestJudgeJob类 参考</div>  </div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_single_test_judge_job_8hpp_source.html">SingleTestJudgeJob.hpp</a>&gt;</code></p>
+<div class="dynheader">
+类 SingleTestJudgeJob 继承关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_single_test_judge_job__inherit__graph.png" border="0" usemap="#_single_test_judge_job_inherit__map" alt="Inheritance graph"/></div>
+<map name="_single_test_judge_job_inherit__map" id="_single_test_judge_job_inherit__map">
+</map>
+<center><span class="legend">[<a href="graph_legend.html">图例</a>]</span></center></div>
+<div class="dynheader">
+SingleTestJudgeJob 的协作图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_single_test_judge_job__coll__graph.png" border="0" usemap="#_single_test_judge_job_coll__map" alt="Collaboration graph"/></div>
+<map name="_single_test_judge_job_coll__map" id="_single_test_judge_job_coll__map">
+</map>
+<center><span class="legend">[<a href="graph_legend.html">图例</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:aaa14b51aa886dd5e060496572a462b29"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_single_test_judge_job.html#aaa14b51aa886dd5e060496572a462b29">SingleTestJudgeJob</a> (int <a class="el" href="class_single_test_judge_job.html#acb2e68f1ba3c497532c8d6bce38ff61a">jobType</a>, <a class="el" href="structojv4_1_1s__id__type.html">ojv4::s_id_type</a> <a class="el" href="class_single_test_judge_job.html#a2f86703875b6151cc28d84de3f503596">s_id</a>, kerbal::redis_v2::connection &amp;redis_conn)</td></tr>
+<tr class="separator:aaa14b51aa886dd5e060496572a462b29"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98f78c72ab42163c7312400299ed88f8"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_single_test_judge_job.html#a98f78c72ab42163c7312400299ed88f8">description</a> () const override</td></tr>
+<tr class="separator:a98f78c72ab42163c7312400299ed88f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0831e87393505947e304373d91bafb5b"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_single_test_judge_job.html#a0831e87393505947e304373d91bafb5b">handle</a> () override</td></tr>
+<tr class="separator:a0831e87393505947e304373d91bafb5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-types"></a>
+Private 类型</h2></td></tr>
+<tr class="memitem:ad9c76c7fcaf4b2c7856206b50713fc4d"><td class="memTemplParams" colspan="2">template&lt;typename Type &gt; </td></tr>
+<tr class="memitem:ad9c76c7fcaf4b2c7856206b50713fc4d"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_single_test_judge_job.html#ad9c76c7fcaf4b2c7856206b50713fc4d">optional</a> = kerbal::data_struct::optional&lt; Type &gt;</td></tr>
+<tr class="separator:ad9c76c7fcaf4b2c7856206b50713fc4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
+Private 成员函数</h2></td></tr>
+<tr class="memitem:a1990633b1df1fa55e5ef418e6bc695b7"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_single_test_judge_job.html#a1990633b1df1fa55e5ef418e6bc695b7">store_source_code_procedure</a> ()</td></tr>
+<tr class="separator:a1990633b1df1fa55e5ef418e6bc695b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3539adaf54787d3db0efec900d746fb"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_single_test_judge_job.html#ae3539adaf54787d3db0efec900d746fb">compile_procedure</a> (<a class="el" href="united__resource_8hpp.html#a4633701595b7c3914a34eee8ba1b505e">UnitedJudgeResult</a> &amp;judge_result)</td></tr>
+<tr class="separator:ae3539adaf54787d3db0efec900d746fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a64b6b0b2a7c275e7cf0fcc06b22e02f5"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_single_test_judge_job.html#a64b6b0b2a7c275e7cf0fcc06b22e02f5">running_procedure</a> (<a class="el" href="united__resource_8hpp.html#a4633701595b7c3914a34eee8ba1b505e">UnitedJudgeResult</a> &amp;judge_result, <a class="el" href="class_protected_process_details.html">ProtectedProcessDetails</a> &amp;running_details)</td></tr>
+<tr class="separator:a64b6b0b2a7c275e7cf0fcc06b22e02f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a50a2a89ec00d539d21633980bd6fc97b"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_single_test_judge_job.html#a50a2a89ec00d539d21633980bd6fc97b">compare_procedure</a> (<a class="el" href="united__resource_8hpp.html#a4633701595b7c3914a34eee8ba1b505e">UnitedJudgeResult</a> &amp;judge_result)</td></tr>
+<tr class="separator:a50a2a89ec00d539d21633980bd6fc97b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1164e58c5a31801605d50e8567d6013f"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_single_test_judge_job.html#a1164e58c5a31801605d50e8567d6013f">commit_judge_result_to_redis</a> (kerbal::redis_v2::connection &amp;redis_conn, const <a class="el" href="united__resource_8hpp.html#a4633701595b7c3914a34eee8ba1b505e">UnitedJudgeResult</a> &amp;judge_result, const <a class="el" href="structojv4.html#a2958a2d1dae671acaef34a3a339f0f13">ojv4::s_time_in_milliseconds</a> &amp;cpu_time, const <a class="el" href="structojv4.html#a2958a2d1dae671acaef34a3a339f0f13">ojv4::s_time_in_milliseconds</a> &amp;real_time, const <a class="el" href="structojv4.html#a1772f7ff703102eb9ba69b109ad4a2f2">ojv4::s_mem_in_byte</a> &amp;memory, int similarity_percentage)</td></tr>
+<tr class="separator:a1164e58c5a31801605d50e8567d6013f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afcf448470064c5e4585f226a883bafe5"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_single_test_judge_job.html#afcf448470064c5e4585f226a883bafe5">failed_handle</a> (kerbal::redis_v2::connection &amp;redis_conn) noexcept</td></tr>
+<tr class="separator:afcf448470064c5e4585f226a883bafe5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7687bf10bef987de29b7a09742599fe2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_single_test_judge_job.html#a7687bf10bef987de29b7a09742599fe2">clean_job_dir</a> () noexcept</td></tr>
+<tr class="memdesc:a7687bf10bef987de29b7a09742599fe2"><td class="mdescLeft">&#160;</td><td class="mdescRight">将当前路径切换出本 job 的临时工作路径并清理该工作区  <a href="#a7687bf10bef987de29b7a09742599fe2">更多...</a><br /></td></tr>
+<tr class="separator:a7687bf10bef987de29b7a09742599fe2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
+Private 属性</h2></td></tr>
+<tr class="memitem:acb2e68f1ba3c497532c8d6bce38ff61a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_single_test_judge_job.html#acb2e68f1ba3c497532c8d6bce38ff61a">jobType</a></td></tr>
+<tr class="memdesc:acb2e68f1ba3c497532c8d6bce38ff61a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Job 类型，如：竞赛、课程等  <a href="#acb2e68f1ba3c497532c8d6bce38ff61a">更多...</a><br /></td></tr>
+<tr class="separator:acb2e68f1ba3c497532c8d6bce38ff61a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f86703875b6151cc28d84de3f503596"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structojv4_1_1s__id__type.html">ojv4::s_id_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_single_test_judge_job.html#a2f86703875b6151cc28d84de3f503596">s_id</a></td></tr>
+<tr class="memdesc:a2f86703875b6151cc28d84de3f503596"><td class="mdescLeft">&#160;</td><td class="mdescRight">solution id  <a href="#a2f86703875b6151cc28d84de3f503596">更多...</a><br /></td></tr>
+<tr class="separator:a2f86703875b6151cc28d84de3f503596"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a48a54bc42da38918db054b6cf78c3c35"><td class="memItemLeft" align="right" valign="top">const boost::filesystem::path&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_single_test_judge_job.html#a48a54bc42da38918db054b6cf78c3c35">working_dir</a></td></tr>
+<tr class="memdesc:a48a54bc42da38918db054b6cf78c3c35"><td class="mdescLeft">&#160;</td><td class="mdescRight">本 job 的工作路径  <a href="#a48a54bc42da38918db054b6cf78c3c35">更多...</a><br /></td></tr>
+<tr class="separator:a48a54bc42da38918db054b6cf78c3c35"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1cafe5b47c0b6679189c090a6860655d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structojv4_1_1p__id__type.html">ojv4::p_id_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_single_test_judge_job.html#a1cafe5b47c0b6679189c090a6860655d">p_id</a></td></tr>
+<tr class="memdesc:a1cafe5b47c0b6679189c090a6860655d"><td class="mdescLeft">&#160;</td><td class="mdescRight">problem id  <a href="#a1cafe5b47c0b6679189c090a6860655d">更多...</a><br /></td></tr>
+<tr class="separator:a1cafe5b47c0b6679189c090a6860655d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82b387e4c74b77cbede53c93d9cca1a9"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="class_language_strategy_interface.html">LanguageStrategyInterface</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_single_test_judge_job.html#a82b387e4c74b77cbede53c93d9cca1a9">languageStrategy</a></td></tr>
+<tr class="separator:a82b387e4c74b77cbede53c93d9cca1a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c8bc6b81925f3e9bbc2cf907af155fd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_single_test_judge_job.html#ad9c76c7fcaf4b2c7856206b50713fc4d">optional</a>&lt; <a class="el" href="structojv4.html#a2958a2d1dae671acaef34a3a339f0f13">ojv4::s_time_in_milliseconds</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_single_test_judge_job.html#a6c8bc6b81925f3e9bbc2cf907af155fd">time_limit</a></td></tr>
+<tr class="memdesc:a6c8bc6b81925f3e9bbc2cf907af155fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">时间限制  <a href="#a6c8bc6b81925f3e9bbc2cf907af155fd">更多...</a><br /></td></tr>
+<tr class="separator:a6c8bc6b81925f3e9bbc2cf907af155fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae72771ea48276e5db700891c7e4240bb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_single_test_judge_job.html#ad9c76c7fcaf4b2c7856206b50713fc4d">optional</a>&lt; <a class="el" href="structojv4.html#ac80be950becf8f8ef3c4ddccf65de322">ojv4::s_mem_in_MB</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_single_test_judge_job.html#ae72771ea48276e5db700891c7e4240bb">memory_limit</a></td></tr>
+<tr class="memdesc:ae72771ea48276e5db700891c7e4240bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">空间限制  <a href="#ae72771ea48276e5db700891c7e4240bb">更多...</a><br /></td></tr>
+<tr class="separator:ae72771ea48276e5db700891c7e4240bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02b63e273e10d5a3964ee426963d0949"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_single_test_judge_job.html#ad9c76c7fcaf4b2c7856206b50713fc4d">optional</a>&lt; <a class="el" href="structojv4.html#a8a173dd5d6305abc2772bebcd3e0eb0a">ojv4::s_similarity_type</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_single_test_judge_job.html#a02b63e273e10d5a3964ee426963d0949">similarity_threshold</a></td></tr>
+<tr class="memdesc:a02b63e273e10d5a3964ee426963d0949"><td class="mdescLeft">&#160;</td><td class="mdescRight">重复率限制  <a href="#a02b63e273e10d5a3964ee426963d0949">更多...</a><br /></td></tr>
+<tr class="separator:a02b63e273e10d5a3964ee426963d0949"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock">
+<p class="definition">在文件 <a class="el" href="_single_test_judge_job_8hpp_source.html">SingleTestJudgeJob.hpp</a> 第 <a class="el" href="_single_test_judge_job_8hpp_source.html#l00023">23</a> 行定义.</p>
+</div><h2 class="groupheader">成员类型定义说明</h2>
+<a id="ad9c76c7fcaf4b2c7856206b50713fc4d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9c76c7fcaf4b2c7856206b50713fc4d">&#9670;&nbsp;</a></span>optional</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Type &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="class_single_test_judge_job.html#ad9c76c7fcaf4b2c7856206b50713fc4d">SingleTestJudgeJob::optional</a> =  kerbal::data_struct::optional&lt;Type&gt;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="_single_test_judge_job_8hpp_source.html">SingleTestJudgeJob.hpp</a> 第 <a class="el" href="_single_test_judge_job_8hpp_source.html#l00026">26</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">构造及析构函数说明</h2>
+<a id="aaa14b51aa886dd5e060496572a462b29"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa14b51aa886dd5e060496572a462b29">&#9670;&nbsp;</a></span>SingleTestJudgeJob()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">SingleTestJudgeJob::SingleTestJudgeJob </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>jobType</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structojv4_1_1s__id__type.html">ojv4::s_id_type</a>&#160;</td>
+          <td class="paramname"><em>s_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">kerbal::redis_v2::connection &amp;&#160;</td>
+          <td class="paramname"><em>redis_conn</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="_single_test_judge_job_8cpp_source.html">SingleTestJudgeJob.cpp</a> 第 <a class="el" href="_single_test_judge_job_8cpp_source.html#l00019">19</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a7687bf10bef987de29b7a09742599fe2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7687bf10bef987de29b7a09742599fe2">&#9670;&nbsp;</a></span>clean_job_dir()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool SingleTestJudgeJob::clean_job_dir </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>将当前路径切换出本 job 的临时工作路径并清理该工作区 </p>
+<dl class="exception"><dt>异常</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">该函数保证不抛出任何异常</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="_single_test_judge_job_8cpp_source.html">SingleTestJudgeJob.cpp</a> 第 <a class="el" href="_single_test_judge_job_8cpp_source.html#l00201">201</a> 行定义.</p>
+<div class="dynheader">
+这是这个函数的调用关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_single_test_judge_job_a7687bf10bef987de29b7a09742599fe2_icgraph.png" border="0" usemap="#class_single_test_judge_job_a7687bf10bef987de29b7a09742599fe2_icgraph" alt=""/></div>
+<map name="class_single_test_judge_job_a7687bf10bef987de29b7a09742599fe2_icgraph" id="class_single_test_judge_job_a7687bf10bef987de29b7a09742599fe2_icgraph">
+</map>
+</div>
+
+</div>
+</div>
+<a id="a1164e58c5a31801605d50e8567d6013f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1164e58c5a31801605d50e8567d6013f">&#9670;&nbsp;</a></span>commit_judge_result_to_redis()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void SingleTestJudgeJob::commit_judge_result_to_redis </td>
+          <td>(</td>
+          <td class="paramtype">kerbal::redis_v2::connection &amp;&#160;</td>
+          <td class="paramname"><em>redis_conn</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="united__resource_8hpp.html#a4633701595b7c3914a34eee8ba1b505e">UnitedJudgeResult</a> &amp;&#160;</td>
+          <td class="paramname"><em>judge_result</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structojv4.html#a2958a2d1dae671acaef34a3a339f0f13">ojv4::s_time_in_milliseconds</a> &amp;&#160;</td>
+          <td class="paramname"><em>cpu_time</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structojv4.html#a2958a2d1dae671acaef34a3a339f0f13">ojv4::s_time_in_milliseconds</a> &amp;&#160;</td>
+          <td class="paramname"><em>real_time</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structojv4.html#a1772f7ff703102eb9ba69b109ad4a2f2">ojv4::s_mem_in_byte</a> &amp;&#160;</td>
+          <td class="paramname"><em>memory</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>similarity_percentage</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="_single_test_judge_job_8cpp_source.html">SingleTestJudgeJob.cpp</a> 第 <a class="el" href="_single_test_judge_job_8cpp_source.html#l00210">210</a> 行定义.</p>
+<div class="dynheader">
+这是这个函数的调用关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_single_test_judge_job_a1164e58c5a31801605d50e8567d6013f_icgraph.png" border="0" usemap="#class_single_test_judge_job_a1164e58c5a31801605d50e8567d6013f_icgraph" alt=""/></div>
+<map name="class_single_test_judge_job_a1164e58c5a31801605d50e8567d6013f_icgraph" id="class_single_test_judge_job_a1164e58c5a31801605d50e8567d6013f_icgraph">
+</map>
+</div>
+
+</div>
+</div>
+<a id="a50a2a89ec00d539d21633980bd6fc97b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a50a2a89ec00d539d21633980bd6fc97b">&#9670;&nbsp;</a></span>compare_procedure()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void SingleTestJudgeJob::compare_procedure </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="united__resource_8hpp.html#a4633701595b7c3914a34eee8ba1b505e">UnitedJudgeResult</a> &amp;&#160;</td>
+          <td class="paramname"><em>judge_result</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="_single_test_judge_job_8cpp_source.html">SingleTestJudgeJob.cpp</a> 第 <a class="el" href="_single_test_judge_job_8cpp_source.html#l00193">193</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae3539adaf54787d3db0efec900d746fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae3539adaf54787d3db0efec900d746fb">&#9670;&nbsp;</a></span>compile_procedure()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void SingleTestJudgeJob::compile_procedure </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="united__resource_8hpp.html#a4633701595b7c3914a34eee8ba1b505e">UnitedJudgeResult</a> &amp;&#160;</td>
+          <td class="paramname"><em>judge_result</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="_single_test_judge_job_8cpp_source.html">SingleTestJudgeJob.cpp</a> 第 <a class="el" href="_single_test_judge_job_8cpp_source.html#l00109">109</a> 行定义.</p>
+<div class="dynheader">
+函数调用图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_single_test_judge_job_ae3539adaf54787d3db0efec900d746fb_cgraph.png" border="0" usemap="#class_single_test_judge_job_ae3539adaf54787d3db0efec900d746fb_cgraph" alt=""/></div>
+<map name="class_single_test_judge_job_ae3539adaf54787d3db0efec900d746fb_cgraph" id="class_single_test_judge_job_ae3539adaf54787d3db0efec900d746fb_cgraph">
+</map>
+</div>
+<div class="dynheader">
+这是这个函数的调用关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_single_test_judge_job_ae3539adaf54787d3db0efec900d746fb_icgraph.png" border="0" usemap="#class_single_test_judge_job_ae3539adaf54787d3db0efec900d746fb_icgraph" alt=""/></div>
+<map name="class_single_test_judge_job_ae3539adaf54787d3db0efec900d746fb_icgraph" id="class_single_test_judge_job_ae3539adaf54787d3db0efec900d746fb_icgraph">
+</map>
+</div>
+
+</div>
+</div>
+<a id="a98f78c72ab42163c7312400299ed88f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98f78c72ab42163c7312400299ed88f8">&#9670;&nbsp;</a></span>description()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string SingleTestJudgeJob::description </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="_single_test_judge_job_8hpp_source.html">SingleTestJudgeJob.hpp</a> 第 <a class="el" href="_single_test_judge_job_8hpp_source.html#l00041">41</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afcf448470064c5e4585f226a883bafe5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afcf448470064c5e4585f226a883bafe5">&#9670;&nbsp;</a></span>failed_handle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool SingleTestJudgeJob::failed_handle </td>
+          <td>(</td>
+          <td class="paramtype">kerbal::redis_v2::connection &amp;&#160;</td>
+          <td class="paramname"><em>redis_conn</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">private</span><span class="mlabel">virtual</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="_single_test_judge_job_8hpp_source.html">SingleTestJudgeJob.hpp</a> 第 <a class="el" href="_single_test_judge_job_8hpp_source.html#l00064">64</a> 行定义.</p>
+<div class="dynheader">
+函数调用图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_single_test_judge_job_afcf448470064c5e4585f226a883bafe5_cgraph.png" border="0" usemap="#class_single_test_judge_job_afcf448470064c5e4585f226a883bafe5_cgraph" alt=""/></div>
+<map name="class_single_test_judge_job_afcf448470064c5e4585f226a883bafe5_cgraph" id="class_single_test_judge_job_afcf448470064c5e4585f226a883bafe5_cgraph">
+</map>
+</div>
+
+</div>
+</div>
+<a id="a0831e87393505947e304373d91bafb5b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0831e87393505947e304373d91bafb5b">&#9670;&nbsp;</a></span>handle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void SingleTestJudgeJob::handle </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="_single_test_judge_job_8cpp_source.html">SingleTestJudgeJob.cpp</a> 第 <a class="el" href="_single_test_judge_job_8cpp_source.html#l00060">60</a> 行定义.</p>
+<div class="dynheader">
+函数调用图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_single_test_judge_job_a0831e87393505947e304373d91bafb5b_cgraph.png" border="0" usemap="#class_single_test_judge_job_a0831e87393505947e304373d91bafb5b_cgraph" alt=""/></div>
+<map name="class_single_test_judge_job_a0831e87393505947e304373d91bafb5b_cgraph" id="class_single_test_judge_job_a0831e87393505947e304373d91bafb5b_cgraph">
+</map>
+</div>
+
+</div>
+</div>
+<a id="a64b6b0b2a7c275e7cf0fcc06b22e02f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a64b6b0b2a7c275e7cf0fcc06b22e02f5">&#9670;&nbsp;</a></span>running_procedure()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void SingleTestJudgeJob::running_procedure </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="united__resource_8hpp.html#a4633701595b7c3914a34eee8ba1b505e">UnitedJudgeResult</a> &amp;&#160;</td>
+          <td class="paramname"><em>judge_result</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="class_protected_process_details.html">ProtectedProcessDetails</a> &amp;&#160;</td>
+          <td class="paramname"><em>running_details</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="_single_test_judge_job_8cpp_source.html">SingleTestJudgeJob.cpp</a> 第 <a class="el" href="_single_test_judge_job_8cpp_source.html#l00147">147</a> 行定义.</p>
+<div class="dynheader">
+函数调用图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_single_test_judge_job_a64b6b0b2a7c275e7cf0fcc06b22e02f5_cgraph.png" border="0" usemap="#class_single_test_judge_job_a64b6b0b2a7c275e7cf0fcc06b22e02f5_cgraph" alt=""/></div>
+<map name="class_single_test_judge_job_a64b6b0b2a7c275e7cf0fcc06b22e02f5_cgraph" id="class_single_test_judge_job_a64b6b0b2a7c275e7cf0fcc06b22e02f5_cgraph">
+</map>
+</div>
+<div class="dynheader">
+这是这个函数的调用关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_single_test_judge_job_a64b6b0b2a7c275e7cf0fcc06b22e02f5_icgraph.png" border="0" usemap="#class_single_test_judge_job_a64b6b0b2a7c275e7cf0fcc06b22e02f5_icgraph" alt=""/></div>
+<map name="class_single_test_judge_job_a64b6b0b2a7c275e7cf0fcc06b22e02f5_icgraph" id="class_single_test_judge_job_a64b6b0b2a7c275e7cf0fcc06b22e02f5_icgraph">
+</map>
+</div>
+
+</div>
+</div>
+<a id="a1990633b1df1fa55e5ef418e6bc695b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1990633b1df1fa55e5ef418e6bc695b7">&#9670;&nbsp;</a></span>store_source_code_procedure()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void SingleTestJudgeJob::store_source_code_procedure </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="_single_test_judge_job_8cpp_source.html">SingleTestJudgeJob.cpp</a> 第 <a class="el" href="_single_test_judge_job_8cpp_source.html#l00087">87</a> 行定义.</p>
+<div class="dynheader">
+函数调用图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_single_test_judge_job_a1990633b1df1fa55e5ef418e6bc695b7_cgraph.png" border="0" usemap="#class_single_test_judge_job_a1990633b1df1fa55e5ef418e6bc695b7_cgraph" alt=""/></div>
+<map name="class_single_test_judge_job_a1990633b1df1fa55e5ef418e6bc695b7_cgraph" id="class_single_test_judge_job_a1990633b1df1fa55e5ef418e6bc695b7_cgraph">
+</map>
+</div>
+<div class="dynheader">
+这是这个函数的调用关系图:</div>
+<div class="dyncontent">
+<div class="center"><img src="class_single_test_judge_job_a1990633b1df1fa55e5ef418e6bc695b7_icgraph.png" border="0" usemap="#class_single_test_judge_job_a1990633b1df1fa55e5ef418e6bc695b7_icgraph" alt=""/></div>
+<map name="class_single_test_judge_job_a1990633b1df1fa55e5ef418e6bc695b7_icgraph" id="class_single_test_judge_job_a1990633b1df1fa55e5ef418e6bc695b7_icgraph">
+</map>
+</div>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="acb2e68f1ba3c497532c8d6bce38ff61a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb2e68f1ba3c497532c8d6bce38ff61a">&#9670;&nbsp;</a></span>jobType</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int SingleTestJudgeJob::jobType</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Job 类型，如：竞赛、课程等 </p>
+
+<p class="definition">在文件 <a class="el" href="_single_test_judge_job_8hpp_source.html">SingleTestJudgeJob.hpp</a> 第 <a class="el" href="_single_test_judge_job_8hpp_source.html#l00028">28</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a82b387e4c74b77cbede53c93d9cca1a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82b387e4c74b77cbede53c93d9cca1a9">&#9670;&nbsp;</a></span>languageStrategy</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;<a class="el" href="class_language_strategy_interface.html">LanguageStrategyInterface</a>&gt; SingleTestJudgeJob::languageStrategy</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="_single_test_judge_job_8hpp_source.html">SingleTestJudgeJob.hpp</a> 第 <a class="el" href="_single_test_judge_job_8hpp_source.html#l00032">32</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae72771ea48276e5db700891c7e4240bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae72771ea48276e5db700891c7e4240bb">&#9670;&nbsp;</a></span>memory_limit</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_single_test_judge_job.html#ad9c76c7fcaf4b2c7856206b50713fc4d">optional</a>&lt;<a class="el" href="structojv4.html#ac80be950becf8f8ef3c4ddccf65de322">ojv4::s_mem_in_MB</a>&gt; SingleTestJudgeJob::memory_limit</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>空间限制 </p>
+
+<p class="definition">在文件 <a class="el" href="_single_test_judge_job_8hpp_source.html">SingleTestJudgeJob.hpp</a> 第 <a class="el" href="_single_test_judge_job_8hpp_source.html#l00034">34</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1cafe5b47c0b6679189c090a6860655d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1cafe5b47c0b6679189c090a6860655d">&#9670;&nbsp;</a></span>p_id</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structojv4_1_1p__id__type.html">ojv4::p_id_type</a> SingleTestJudgeJob::p_id</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>problem id </p>
+
+<p class="definition">在文件 <a class="el" href="_single_test_judge_job_8hpp_source.html">SingleTestJudgeJob.hpp</a> 第 <a class="el" href="_single_test_judge_job_8hpp_source.html#l00031">31</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2f86703875b6151cc28d84de3f503596"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f86703875b6151cc28d84de3f503596">&#9670;&nbsp;</a></span>s_id</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structojv4_1_1s__id__type.html">ojv4::s_id_type</a> SingleTestJudgeJob::s_id</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>solution id </p>
+
+<p class="definition">在文件 <a class="el" href="_single_test_judge_job_8hpp_source.html">SingleTestJudgeJob.hpp</a> 第 <a class="el" href="_single_test_judge_job_8hpp_source.html#l00029">29</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a02b63e273e10d5a3964ee426963d0949"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a02b63e273e10d5a3964ee426963d0949">&#9670;&nbsp;</a></span>similarity_threshold</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_single_test_judge_job.html#ad9c76c7fcaf4b2c7856206b50713fc4d">optional</a>&lt;<a class="el" href="structojv4.html#a8a173dd5d6305abc2772bebcd3e0eb0a">ojv4::s_similarity_type</a>&gt; SingleTestJudgeJob::similarity_threshold</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>重复率限制 </p>
+
+<p class="definition">在文件 <a class="el" href="_single_test_judge_job_8hpp_source.html">SingleTestJudgeJob.hpp</a> 第 <a class="el" href="_single_test_judge_job_8hpp_source.html#l00035">35</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6c8bc6b81925f3e9bbc2cf907af155fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c8bc6b81925f3e9bbc2cf907af155fd">&#9670;&nbsp;</a></span>time_limit</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_single_test_judge_job.html#ad9c76c7fcaf4b2c7856206b50713fc4d">optional</a>&lt;<a class="el" href="structojv4.html#a2958a2d1dae671acaef34a3a339f0f13">ojv4::s_time_in_milliseconds</a>&gt; SingleTestJudgeJob::time_limit</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>时间限制 </p>
+
+<p class="definition">在文件 <a class="el" href="_single_test_judge_job_8hpp_source.html">SingleTestJudgeJob.hpp</a> 第 <a class="el" href="_single_test_judge_job_8hpp_source.html#l00033">33</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a48a54bc42da38918db054b6cf78c3c35"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a48a54bc42da38918db054b6cf78c3c35">&#9670;&nbsp;</a></span>working_dir</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const boost::filesystem::path SingleTestJudgeJob::working_dir</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>本 job 的工作路径 </p>
+
+<p class="definition">在文件 <a class="el" href="_single_test_judge_job_8hpp_source.html">SingleTestJudgeJob.hpp</a> 第 <a class="el" href="_single_test_judge_job_8hpp_source.html#l00030">30</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>/home/peter/git/Core/src/slave/<a class="el" href="_single_test_judge_job_8hpp_source.html">SingleTestJudgeJob.hpp</a></li>
+<li>/home/peter/git/Core/src/slave/<a class="el" href="_single_test_judge_job_8cpp_source.html">SingleTestJudgeJob.cpp</a></li>
+</ul>
+</div><!-- contents -->
+<footer>
+<hr> Powered by
+<a href="http://www.doxygen.nl/" target="_blank"> Doxygen </a>
+<br>
+Contributors:
+<a href=""> Shaohua Zhang,&nbsp; Zhiqiang Shi,&nbsp; Xi Chen,&nbsp; Kehan Huang,&nbsp; Binjie Zhang,&nbsp; Wentsing Nee </a>
+<br> Copyright © 2010-2018
+<a href="http://www.thinkspirit.org" target="_blank"> Think Spirit. </a> All rights reserved.
+</footer>
