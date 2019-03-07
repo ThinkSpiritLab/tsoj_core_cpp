@@ -1,7 +1,3 @@
-/debug/
-/release/
-/.idea/
-/.tracecompass/
 /bin/
 /sync
 /cmake_test/
