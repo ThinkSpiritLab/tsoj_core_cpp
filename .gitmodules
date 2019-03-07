@@ -1,3 +1,6 @@
-[submodule "Kerbal"]
-	path = Kerbal
-	url = https://git.coding.net/WentsingNee/Kerbal.git
+[submodule "dependence/Kerbal"]
+	path = dependence/Kerbal
+	url = https://github.com/WentsingNee/Kerbal.git
+[submodule "dependence/nlohmann_json"]
+	path = dependence/nlohmann_json
+	url = https://github.com/nlohmann/json.git
