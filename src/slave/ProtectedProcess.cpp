@@ -15,41 +15,25 @@
 #include <sys/resource.h>
 
 #include <kerbal/compatibility/chrono_suffix.hpp>
+#include <boost/scope_exit.hpp>
 
 extern std::ofstream log_fp;
 
 namespace
 {
-	/**
-	 * @brief 一个辅助类, 用于确保将打开的文件关闭
-	 */
-	struct file_guard
-	{
-			FILE* & file_p;
-
-			file_guard(FILE* & file_p) noexcept :
-					file_p(file_p)
-			{
-			}
-
-			~file_guard() noexcept
-			{
-				if (file_p == nullptr) {
-					return;
-				}
-				fclose(file_p);
-			}
-	};
-
 	void __dup(const ProtectedProcessConfig & config)
 	{
 		{
 			FILE * input_file = fopen(config.input_path.c_str(), "r");
-			file_guard input_file_guard(input_file);
 
 			if (input_file == nullptr) {
 				throw Dup2FailedExcetion(Dup2FailedExcetion::DupFileType::INPUT_FILE, config.input_path);
 			}
+
+			BOOST_SCOPE_EXIT_ALL(&input_file) {
+				::fclose(input_file);
+			};
+
 			// redirect file -> stdin
 			// On success, these system calls return the new descriptor.
 			// On error, -1 is returned, and errno is set appropriately.
@@ -60,11 +44,15 @@ namespace
 
 		{
 			FILE * output_file = fopen(config.output_path.c_str(), "w");
-			file_guard output_file_guard(output_file);
 
 			if (output_file == nullptr) {
 				throw Dup2FailedExcetion(Dup2FailedExcetion::DupFileType::OUTPUT_FILE, config.output_path);
 			}
+
+			BOOST_SCOPE_EXIT_ALL(&output_file) {
+				::fclose(output_file);
+			};
+
 			if (dup2(fileno(output_file), fileno(stdout)) == -1) {
 				throw Dup2FailedExcetion(Dup2FailedExcetion::DupFileType::OUTPUT_FILE, config.output_path);
 			}
@@ -72,11 +60,15 @@ namespace
 
 		{
 			FILE * error_file = fopen(config.error_path.c_str(), "w");
-			file_guard error_file_guard(error_file);
 
 			if (error_file == nullptr) {
 				throw Dup2FailedExcetion(Dup2FailedExcetion::DupFileType::ERROR_FILE, config.error_path);
 			}
+
+			BOOST_SCOPE_EXIT_ALL(&error_file) {
+				::fclose(error_file);
+			};
+
 			if (dup2(fileno(error_file), fileno(stderr)) == -1) {
 				throw Dup2FailedExcetion(Dup2FailedExcetion::DupFileType::ERROR_FILE, config.error_path);
 			}
@@ -161,25 +153,16 @@ protected_process(const ExecuteArgs & execute_args, const ProtectedProcessConfig
 	// 此处创建了一个运行子进程, 该进程内先加载保护策略, 然后使用 execve 函数用 execute_agrs 替换自身
 	try {
 		child_process = process([&execute_args, &config, &env]() noexcept {
-
-		std::vector<int> v(4000000);
-		std::cout << v[4] << std::endl;
+			try {
+				__set_rlimit(config);
+			} catch(const SetRlimitFailedException & e) {
+				raise(SIGUSR1);
+				return;
+			}
 
 			try {
-				try {
-					__set_rlimit(config);
-				} catch(const SetRlimitFailedException & e) {
-					raise(SIGUSR1);
-					return;
-				}
-
-				try {
-					__dup(config);
-				} catch(const Dup2FailedExcetion & e) {
-					raise(SIGUSR1);
-					return;
-				}
-			} catch(...) {
+				__dup(config);
+			} catch(const Dup2FailedExcetion & e) {
 				raise(SIGUSR1);
 				return;
 			}

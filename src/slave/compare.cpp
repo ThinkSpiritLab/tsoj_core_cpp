@@ -9,6 +9,7 @@
 
 #include <cstdio>
 #include <memory>
+#include <boost/scope_exit.hpp>
 
 void find_next_nonspace(int &c1, int &c2, FILE* & f1, FILE* & f2, UnitedJudgeResult & ret)
 {
@@ -45,35 +46,23 @@ void find_next_nonspace(int &c1, int &c2, FILE* & f1, FILE* & f2, UnitedJudgeRes
 
 UnitedJudgeResult compare(const char *file1, const char *file2)
 {
-	struct fclose_guard
-	{
-			FILE * & file;
-
-			fclose_guard(FILE * & file) noexcept :
-					file(file)
-			{
-			}
-
-			~fclose_guard() noexcept
-			{
-				if (file != nullptr)
-					fclose(file);
-			}
-	};
-
 	FILE* f1 = fopen(file1, "re");
 	if (f1 == nullptr) {
 		return UnitedJudgeResult::SYSTEM_ERROR;
 	}
 
-	fclose_guard f1_guard(f1);
+	BOOST_SCOPE_EXIT_ALL(&f1) {
+		::fclose(f1);
+	};
 
 	FILE* f2 = fopen(file2, "re");
 	if (f2 == nullptr) {
 		return UnitedJudgeResult::SYSTEM_ERROR;
 	}
 
-	fclose_guard f2_guard(f2);
+	BOOST_SCOPE_EXIT_ALL(&f2) {
+		::fclose(f2);
+	};
 
 	UnitedJudgeResult ret = UnitedJudgeResult::ACCEPTED;
 	int c1, c2;
