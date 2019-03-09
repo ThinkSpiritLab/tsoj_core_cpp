@@ -15,10 +15,6 @@
 
 #include "sync_nonsingle_instance_pool.hpp"
 
-inline std::string mysql_database;
-inline std::string mysql_hostname;
-inline std::string mysql_username;
-inline std::string mysql_passwd;
 
 typedef sync_nonsingle_instance_pool<mysqlpp::Connection> mysql_conn_pool_type;
 inline mysql_conn_pool_type mysql_conn_pool;
@@ -28,7 +24,13 @@ inline void add_mysql_conn()
 	mysqlpp::Connection * mysql_conn = new mysqlpp::Connection(false);
 	try {
 		mysql_conn->set_option(new mysqlpp::SetCharsetNameOption("utf8"));
-		if (!mysql_conn->connect(mysql_database.c_str(), mysql_hostname.c_str(), mysql_username.c_str(), mysql_passwd.c_str())) {
+		if (!mysql_conn->connect(
+				settings.get().mysql.database.c_str(),
+				settings.get().mysql.hostname.c_str(),
+				settings.get().mysql.username.c_str(),
+				settings.get().mysql.passward.c_str(),
+				settings.get().mysql.port
+			)) {
 			throw std::runtime_error("failed connect");
 		}
 	} catch (...) {

@@ -6,9 +6,9 @@
  */
 
 #include "logger.hpp"
-#include "load_helper.hpp"
 #include "UpdateJobBase.hpp"
 #include "mkdir_p.hpp"
+#include "master_settings.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -20,6 +20,7 @@
 #include <kerbal/utility/static_block.hpp>
 #include <kerbal/redis_v2/all.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/filesystem/path.hpp>
 #include <cmdline.h>
 
 #include "ContestManagement.hpp"
@@ -40,8 +41,6 @@ using namespace kerbal::compatibility::chrono_suffix;
 
 std::ofstream log_fp;
 
-constexpr std::chrono::minutes EXPIRE_TIME = 2_min;
-
 namespace
 {
 	std::string host_name; ///< 本机主机名
@@ -50,8 +49,6 @@ namespace
 	int listening_pid; ///< 本机监听进程号
 	std::string judge_server_id; ///< 评测服务器id，定义为 host_name:ip
 	bool loop = true; ///< 主工作循环
-	std::string log_file_name; ///< 日志文件名
-	std::string updater_lock_file; ///< lock_file,用于保证一次只能有一个 updater 守护进程在运行
 }
 
 /**
@@ -114,63 +111,21 @@ void regist_SIGTERM_handler(int signum) noexcept
 	}
 }
 
+
 /**
  * @brief 加载 master 工作的配置
  * 根据 updater.conf 文档，读取工作配置信息。loadConfig 的工作原理详见其文档。
  */
-void load_config(const char * config_file)
+void load_config(const boost::filesystem::path & config_file)
 {
 	using namespace kerbal::utility::costream;
 	const auto & ccerr = costream<std::cerr>(LIGHT_RED);
 
-	std::ifstream fp(config_file, std::ios::in); //BUG "re"
-	if (!fp) {
-		ccerr << "can't not open updater.conf" << std::endl;
-		exit(0);
-	}
+	extern Settings __settings;
 
-	LoadConfig<std::string, int> loadConfig;
+	__settings.parse(config_file);
 
-	auto castToInt = [](const std::string & src) {
-		return std::stoi(src);
-	};
-
-	auto stringAssign = [](const std::string & src) {
-		return src;
-	};
-
-	loadConfig.add_rules(log_file_name, "log_file", stringAssign);
-	loadConfig.add_rules(updater_lock_file, "updater_lock_file", stringAssign);
-	loadConfig.add_rules(mysql_hostname, "mysql_hostname", stringAssign);
-	loadConfig.add_rules(mysql_username, "mysql_username", stringAssign);
-	loadConfig.add_rules(mysql_passwd, "mysql_passwd", stringAssign);
-	loadConfig.add_rules(mysql_database, "mysql_database", stringAssign);
-	loadConfig.add_rules(redis_port, "redis_port", castToInt);
-	loadConfig.add_rules(redis_hostname, "redis_hostname", stringAssign);
-
-	std::string buf;
-	while (getline(fp, buf)) {
-		std::string key, value;
-
-		std::tie(key, value) = parse_buf(buf);
-		if (key != "" && value != "") {
-			if (loadConfig.parse(key, value) == false) {
-				ccerr << "unexpected key name: "
-					  << key << " = " << value << std::endl;
-			} else {
-				std::cout << key << " = " << value << std::endl;
-			}
-		}
-	}
-
-	fp.close();
-
-	if (log_file_name.empty()) {
-		ccerr << "empty log file name!" << std::endl;
-		exit(0);
-	}
-
-	log_fp.open(log_file_name, std::ios::app);
+	log_fp.open(settings.get().runtime.log_file_path.string(), std::ios::app);
 	if (!log_fp) {
 		ccerr << "log file open failed" << std::endl;
 		exit(0);
