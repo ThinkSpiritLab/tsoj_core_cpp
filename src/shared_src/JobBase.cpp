@@ -8,7 +8,6 @@
 
 #include "JobBase.hpp"
 #include "logger.hpp"
-#include "mkdir_p.hpp"
 #include "boost_format_suffix.hpp"
 #include "redis_conn_factory.hpp"
 
@@ -21,6 +20,7 @@
 #include <boost/format.hpp>
 #include <boost/regex.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/filesystem.hpp>
 
 
 extern std::ostream log_fp;
@@ -118,20 +118,10 @@ void JobBase::storeSourceCode(const std::string & parent_path_args, const std::s
 
 	kerbal::redis_v2::reply reply = this->get_source_code();
 
-	std::string parent_path = parent_path_args;
-	while(!parent_path.empty() && std::isblank(parent_path.back())) {
-		parent_path.pop_back();
-	}
-	if (parent_path.size() == 0) {
-		parent_path = "./";
-	} else {
-		if (parent_path.back() != '/') {
-			parent_path += '/';
-		}
-		mkdir_p(parent_path);
-	}
+	boost::filesystem::path parent_path = parent_path_args;
+	boost::filesystem::create_directories(parent_path);
 
-	std::ofstream fout(parent_path + file_name + '.' + source_file_suffix(lang), std::ios::out);
+	std::ofstream fout((parent_path / (file_name + '.' + source_file_suffix(lang))).string(), std::ios::out);
 	if (!fout) {
 		LOG_FATAL(jobType, s_id, log_fp, "Open source code file failed");
 		throw JobHandleException("Open source code file failed");

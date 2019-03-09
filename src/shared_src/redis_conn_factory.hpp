@@ -5,21 +5,18 @@
  *      Author: peter
  */
 
-#ifndef SRC_MASTER_REDIS_CONN_FACTORY_HPP_
-#define SRC_MASTER_REDIS_CONN_FACTORY_HPP_
+#ifndef SRC_SHARED_SRC_REDIS_CONN_FACTORY_HPP_
+#define SRC_SHARED_SRC_REDIS_CONN_FACTORY_HPP_
 
 #include <kerbal/redis_v2/connection.hpp>
 #include "sync_nonsingle_instance_pool.hpp"
 
-inline int redis_port; ///< redis 端口号
-inline std::string redis_hostname; ///< redis 主机名
-
 typedef sync_nonsingle_instance_pool<kerbal::redis_v2::connection> redis_conn_pool_type;
 inline redis_conn_pool_type redis_conn_pool;
 
-inline void add_redis_conn()
+inline void add_redis_conn(const std::string & hostname, int port)
 {
-	kerbal::redis_v2::connection * redis_conn = new kerbal::redis_v2::connection(redis_hostname, redis_port);
+	kerbal::redis_v2::connection * redis_conn = new kerbal::redis_v2::connection(hostname, port);
 	try {
 		if (!*redis_conn) {
 			throw std::runtime_error("failed connect");
@@ -39,7 +36,6 @@ inline redis_conn_pool_type::auto_revert_handle sync_fetch_redis_conn()
 	redis_conn_pool_type::auto_revert_handle redis_conn_handle = redis_conn_pool.sync_fetch();
 	while (!*redis_conn_handle) {
 		redis_conn_handle.abandon();
-		add_redis_conn();
 		redis_conn_handle = redis_conn_pool.sync_fetch();
 	}
 	return redis_conn_handle;
@@ -47,4 +43,4 @@ inline redis_conn_pool_type::auto_revert_handle sync_fetch_redis_conn()
 
 
 
-#endif /* SRC_MASTER_REDIS_CONN_FACTORY_HPP_ */
+#endif /* SRC_SHARED_SRC_REDIS_CONN_FACTORY_HPP_ */

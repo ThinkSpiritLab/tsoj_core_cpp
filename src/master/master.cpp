@@ -7,7 +7,6 @@
 
 #include "logger.hpp"
 #include "UpdateJobBase.hpp"
-#include "mkdir_p.hpp"
 #include "master_settings.hpp"
 
 #include <iostream>
@@ -17,7 +16,6 @@
 #include <future>
 #include <kerbal/system/system.hpp>
 #include <kerbal/compatibility/chrono_suffix.hpp>
-#include <kerbal/utility/static_block.hpp>
 #include <kerbal/redis_v2/all.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/filesystem/path.hpp>
@@ -422,7 +420,7 @@ int main(int argc, char * argv[]) try
 	LOG_INFO(0, 0, log_fp, "Configuration load finished!");
 
 	for (int i = 0; i < 10; ++i)
-		add_redis_conn();
+		add_redis_conn(settings.get().redis.hostname, settings.get().redis.port);
 
 	for (int i = 0; i < 25; ++i)
 		add_mysql_conn();

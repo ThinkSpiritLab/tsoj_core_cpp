@@ -16,7 +16,6 @@ include_directories(src/slave)
 
 set(SHARED_SRC
 			src/shared_src/JobBase.cpp
-			src/shared_src/load_helper.cpp
 			src/shared_src/logger.cpp
 )
 
@@ -43,6 +42,7 @@ target_link_libraries(ts_judge_master
 			hiredis
 			mysqlpp
 			mysqlclient
+			boost_filesystem
 			pthread
 )
 

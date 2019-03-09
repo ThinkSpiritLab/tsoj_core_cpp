@@ -7,10 +7,8 @@
 
 #include "process.hpp"
 #include "logger.hpp"
-#include "load_helper.hpp"
 #include "JudgeJob.hpp"
-#include "mkdir_p.hpp"
-#include "Settings.hpp"
+#include "slave_settings.hpp"
 
 #include <kerbal/redis/redis_context_pool.hpp>
 #include <kerbal/redis/operation.hpp>
@@ -19,7 +17,7 @@
 
 using namespace kerbal::redis;
 
-#include "redis_conn_factory.hpp"
+#include "shared_src/redis_conn_factory.hpp"
 
 #include <kerbal/system/system.hpp>
 #include <kerbal/compatibility/chrono_suffix.hpp>
@@ -32,13 +30,16 @@ using namespace kerbal::redis;
 #include <thread>
 #include <future>
 
+#include <cmdline.h>
+
+#include <boost/filesystem.hpp>
+
 using std::cout;
 using std::cerr;
 using std::endl;
 
 
-std::string accepted_solutions_dir; /**< 已经 AC 代码保存路径，用于查重 */
-int stored_ac_code_max_num; /**< 已经 AC 代码数量 */
+std::ofstream log_fp;
 
 /**
  * 匿名空间避免其他文件访问。
@@ -49,6 +50,11 @@ int stored_ac_code_max_num; /**< 已经 AC 代码数量 */
  */
 namespace
 {
+	std::string host_name; ///< 本机主机名
+	std::string ip; ///< 本机 IP
+	std::string user_name; ///< 本机当前用户名
+	int listening_pid; ///< 本机监听进程号
+	std::string judge_server_id; ///< 评测服务器id，定义为 host_name:ip
 	bool loop = true;
 	std::atomic<int> cur_running = 0;
 }
@@ -117,70 +123,18 @@ void regist_SIGTERM_handler(int signum) noexcept
  * @brief 加载 slave 工作的配置
  * 根据 judge_server.conf 文档，读取工作配置信息。loadConfig 的工作原理详见其文档。
  */
-void load_config(const char * config_file)
+void load_config(const boost::filesystem::path & config_file)
 {
 	using std::string;
 	using namespace kerbal::utility::costream;
 	const auto & ccerr = costream<cerr>(LIGHT_RED);
 
-	std::ifstream fp(config_file, std::ios::in); //BUG "re"
-	if (!fp) {
-		ccerr << "can't not open judge_server.conf" << endl;
-		exit(0);
-	}
+	extern Settings __settings;
 
-	LoadConfig<std::string, int, kerbal::utility::MB> loadConfig;
+	__settings.parse(config_file);
 
-	auto int_assign = [](const std::string & src) {
-		return std::stoi(src);
-	};
-
-	auto string_assign = [](const std::string & src) {
-		return src;
-	};
-
-	auto MB_assign = [](const std::string & src) {
-		return kerbal::utility::MB{stoull(src)};
-	};
-
-	std::string log_file_name;
-	loadConfig.add_rules(log_file_name, "log_file", string_assign);
-	loadConfig.add_rules(Settings::lock_file, "lock_file", string_assign);
-
-	loadConfig.add_rules(Settings::JudgeSettings::init_dir_v, "init_dir", string_assign);
-	loadConfig.add_rules(Settings::JudgeSettings::input_dir_v, "input_dir", string_assign);
-	loadConfig.add_rules(Settings::JudgeSettings::judger_uid_v, "judger_uid", int_assign);
-	loadConfig.add_rules(Settings::JudgeSettings::judger_gid_v, "judger_gid", int_assign);
-	loadConfig.add_rules(Settings::JudgeSettings::java_policy_path_v, "java_policy_path", string_assign);
-	loadConfig.add_rules(Settings::JudgeSettings::java_time_bonus_v, "java_time_bonus", int_assign);
-	loadConfig.add_rules(Settings::JudgeSettings::java_memory_bonus_v, "java_memory_bonus", MB_assign);
-	loadConfig.add_rules(Settings::JudgeSettings::max_running_v, "max_running", int_assign);
-//	loadConfig.add_rules(accepted_solutions_dir, "accepted_solutions_dir", string_assign);
-//	loadConfig.add_rules(stored_ac_code_max_num, "stored_ac_code_max_num", int_assign);
-
-	loadConfig.add_rules(Settings::RedisSettings::redis_hostname_v, "redis_hostname", string_assign);
-	loadConfig.add_rules(Settings::RedisSettings::redis_port_v, "redis_port", int_assign);
-
-	std::string buf;
-	while (getline(fp, buf)) {
-		std::string key, value;
-		std::tie(key, value) = parse_buf(buf);
-		if (key != "" && value != "") {
-			continue;
-		}
-		if (loadConfig.parse(key, value) == false) {
-			ccerr << "unexpected key name" << endl;
-		}
-		cout << key << " = " << value << endl;
-	}
-
-	if (log_file_name.empty()) {
-		ccerr << "empty log file name!" << endl;
-		exit(0);
-	}
-
-	Settings::log_fp.open(log_file_name, std::ios::app);
-	if (!Settings::log_fp) {
+	log_fp.open(settings.get().runtime.log_file_path.string(), std::ios::app);
+	if (!log_fp) {
 		ccerr << "log file open failed!" << endl;
 		exit(0);
 	}
@@ -192,7 +146,7 @@ void load_config(const char * config_file)
 
 void listenning_loop()
 {
-    auto redis_conn_handler = sync_fetch_redis_conn();
+	auto redis_conn_handler = sync_fetch_redis_conn();
 	kerbal::redis_v2::connection & main_conn = *redis_conn_handler;
 	kerbal::redis_v2::list judge_queue(main_conn, "judge_queue");
 
@@ -300,38 +254,47 @@ void listenning_loop()
  * 加载配置信息；连接 redis 数据库；取待评测任务信息，交由子进程并评测；创建并分离发送心跳线程
  * @throw UNKNOWN_EXCEPTION
  */
-int main(int argc, const char * argv[]) try
+int main(int argc, char * argv[]) try
 {
 	using namespace kerbal::compatibility::chrono_suffix;
 
-	if (argc > 1 && argv[1] == std::string("--version")) {
-		cout << "version: " __DATE__ " " __TIME__ << endl;
-		exit(0);
+	cmdline::parser parser;
+	parser.add<std::string>("conf", 'c', "Specify configure description file path.", false, "/etc/ts_judger/slave_conf.json");
+	parser.add<std::string>("log", 'l', "Specify log file path.", false, "");
+	parser.add("skip_root_check", '\0', "Skip root user check while initialzing.");
+	parser.add("version", 'v', "Display the version information.");
+
+	parser.parse_check(argc, argv);
+
+	if (parser.exist("version")) {
+		std::cout << "Compiled at: " __DATE__ " " __TIME__ << std::endl;
+		return 0;
 	}
 
 	using namespace kerbal::utility::costream;
-	const auto & ccerr = costream<cerr>(LIGHT_RED);
+	const auto & ccerr = costream<std::cerr>(LIGHT_RED);
+	const auto & cwarn = costream<std::cerr>(YELLOW);
 
-	// 运行必须具有 root 权限
-	uid_t uid = getuid();
-	if (uid != 0) {
-		ccerr << "root required!" << endl;
+	if (parser.exist("skip_root_check")) {
+		cwarn << "root check skipped!" << std::endl;
+	} else if (getuid() != 0) {
+		ccerr << "root required!" << std::endl;
 		exit(-1);
 	}
 
-	cout << std::boolalpha;
-	load_config("/etc/ts_judger/judge_server.conf"); // 提醒: 此函数运行结束以后才可以使用 log 系列宏, 否则 log_fp 没打开
+	std::string conf = parser.get<std::string>("conf");
+	load_config(conf.c_str()); // 提醒: 此函数运行结束以后才可以使用 log 系列宏, 否则 log_fp 没打开
 	LOG_INFO(0, 0, log_fp, "Configuration load finished!");
 
 	try {
-		mkdir_p(init_dir);
+		boost::filesystem::create_directories(settings.get().judge.workspace_dir);
 	} catch (const std::exception & e) {
-		EXCEPT_FATAL(0, 0, log_fp, "Make init dir failed.", e);
+		EXCEPT_FATAL(0, 0, log_fp, "Make workspace dir failed.", e);
 		exit(0);
 	}
 
-	for (int i = 0; i < 4; ++i)
-		add_redis_conn();
+	for (int i = 0; i < 6; ++i)
+		add_redis_conn(settings.get().redis.hostname, settings.get().redis.port);
 
 	std::thread register_self_thread;
 	try {

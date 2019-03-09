@@ -14,6 +14,7 @@
 #include <mysql++/connection.h>
 
 #include "sync_nonsingle_instance_pool.hpp"
+#include "master_settings.hpp"
 
 
 typedef sync_nonsingle_instance_pool<mysqlpp::Connection> mysql_conn_pool_type;
