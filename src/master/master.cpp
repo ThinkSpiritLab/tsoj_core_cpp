@@ -20,6 +20,7 @@
 #include <kerbal/utility/static_block.hpp>
 #include <kerbal/redis_v2/all.hpp>
 #include <boost/lexical_cast.hpp>
+#include <cmdline.h>
 
 #include "ContestManagement.hpp"
 #include "CourseManagement.hpp"
@@ -369,21 +370,19 @@ void listenning_loop()
 
 		try {
 			// 执行本次 update job
-			future_group.push_back(std::async(std::launch::async,
-                 [j=std::move(job), jobType, s_id]() {
-			        // 本次更新开始时间
-                    PROFILE_HEAD
-                    try {
-                        j->handle();
-                    } catch (const std::exception & e) {
-                        EXCEPT_FATAL(jobType, s_id, log_fp, "Job handle failed!", e);
-                        throw e;
-                    }
-                    // 本次更新结束时间
-                    PROFILE_TAIL(jobType, s_id, log_fp, "Update finished");
-                    LOG_INFO(jobType, s_id, log_fp, "Update finished");
-			    }
-			));
+			future_group.push_back(std::async(std::launch::async, [j=std::move(job), jobType, s_id]() {
+				// 本次更新开始时间
+					PROFILE_HEAD
+					try {
+						j->handle();
+					} catch (const std::exception & e) {
+						EXCEPT_FATAL(jobType, s_id, log_fp, "Job handle failed!", e);
+						throw e;
+					}
+					// 本次更新结束时间
+					PROFILE_TAIL(jobType, s_id, log_fp, "Update finished");
+					LOG_INFO(jobType, s_id, log_fp, "Update finished");
+				}));
 		} catch (const std::exception & e) {
 			EXCEPT_FATAL(jobType, s_id, log_fp, "Job handle failed!", e);
 		} catch (...) {
@@ -432,33 +431,39 @@ void listenning_loop()
  * 加载配置信息；连接数据库；取待评测任务信息，交由子进程并评测；创建并分离发送心跳线程 // to be done
  * @throw UNKNOWN_EXCEPTION
  */
-int main(int argc, const char * argv[]) try
+int main(int argc, char * argv[]) try
 {
 	using namespace kerbal::compatibility::chrono_suffix;
 
 	std::cout << std::boolalpha;
 
-	bool skip_root_check = false;
+	cmdline::parser parser;
+	parser.add<std::string>("conf", 'c', "Specify configure description file path.", false, "/etc/ts_judger/updater.conf");
+	parser.add<std::string>("log", 'l', "Specify log file path.", false, "");
+	parser.add("skip_root_check", '\0', "Skip root user check while initialzing.");
+	parser.add("skip_startup_refresh", '\0', "Skip startup refresh while initialzing.");
+	parser.add("version", 'v', "Display the version information.");
 
-	if (argc > 1 && argv[1] == std::string("--version")) {
-		std::cout << "version: " __DATE__ " " __TIME__ << std::endl;
-		exit(0);
-	}
+	parser.parse_check(argc, argv);
 
-	if (argc > 1 && argv[1] == std::string("--skip_root_check")) {
-		skip_root_check = true;
+	if (parser.exist("version")) {
+		std::cout << "Compiled at: " __DATE__ " " __TIME__ << std::endl;
+		return 0;
 	}
 
 	using namespace kerbal::utility::costream;
 	const auto & ccerr = costream<std::cerr>(LIGHT_RED);
+	const auto & cwarn = costream<std::cerr>(YELLOW);
 
-	// 运行必须具有 root 权限
-	if (!skip_root_check && getuid() != 0) {
+	if (parser.exist("skip_root_check")) {
+		cwarn << "root check skipped!" << std::endl;
+	} else if (getuid() != 0) {
 		ccerr << "root required!" << std::endl;
 		exit(-1);
 	}
 
-	load_config("/etc/ts_judger/updater.conf"); // 提醒: 此函数运行结束以后才可以使用 log 系列宏, 否则 log_fp 没打开
+	std::string conf = parser.get<std::string>("conf");
+	load_config(conf.c_str()); // 提醒: 此函数运行结束以后才可以使用 log 系列宏, 否则 log_fp 没打开
 	LOG_INFO(0, 0, log_fp, "Configuration load finished!");
 
 	for (int i = 0; i < 10; ++i)
@@ -467,7 +472,9 @@ int main(int argc, const char * argv[]) try
 	for (int i = 0; i < 25; ++i)
 		add_mysql_conn();
 
-	start_up_refresh();
+	if (!parser.exist("skip_startup_refresh")) {
+		start_up_refresh();
+	}
 
 	std::thread register_self_thread;
 	try {
