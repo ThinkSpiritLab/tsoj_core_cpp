@@ -52,7 +52,7 @@ SingleTestJudgeJob::SingleTestJudgeJob(int jobType, ojv4::s_id_type s_id, kerbal
 		this->memory_limit = ojv4::s_mem_in_MB(memory_limit.value());
 		this->similarity_threshold = similarity_threshold.value();
 
-	} catch(const std::bad_optional_access & e) {
+	} catch (const std::bad_optional_access & e) {
 		throw;
 	}
 }
@@ -154,7 +154,7 @@ void SingleTestJudgeJob::running_procedure(UnitedJudgeResult & judge_result, Pro
 	using namespace kerbal::utility;
 	using namespace std::string_literals;
 
-	boost::filesystem::path input_file = Settings::JudgeSettings::input_dir() / to_string(p_id) / "in.1";
+	boost::filesystem::path input_file = settings.get().judge.input_dir / std::to_string(p_id) / "in.1";
 	ProtectedProcessConfig running_config(input_file, this->working_dir / "user.out", "/dev/null");
 	running_config.set_max_cpu_time(this->time_limit);
 	running_config.set_max_real_time(this->time_limit.value_or(15_s) + 1_s);
@@ -166,8 +166,6 @@ void SingleTestJudgeJob::running_procedure(UnitedJudgeResult & judge_result, Pro
 
 	switch (running_details.running_result()) {
 		case ProtectedProcessResult::ACCEPTED:
-			judge_result = UnitedJudgeResult::WRONG_ANSWER;
-//			judge_result = compare();
 			break;
 		case ProtectedProcessResult::REAL_TIME_LIMIT_EXCEEDED:
 			judge_result = UnitedJudgeResult::REAL_TIME_LIMIT_EXCEEDED;
