@@ -25,20 +25,14 @@ class JobBase
 	public:
 		int jobType; ///< Job 类型，如：竞赛、课程等
 
-		ojv4::s_id_type s_id; ///< solution id
+		oj::s_id_type s_id; ///< solution id
 
 	public:
-		ojv4::p_id_type p_id; ///< problem id
+		oj::p_id_type p_id; ///< problem id
 
 		Language lang; ///< 语言
 
 		int cases; ///< 测试用例数量
-
-		ojv4::s_time_in_milliseconds time_limit; ///< 时间限制
-
-		ojv4::s_mem_in_MB memory_limit; ///< 空间限制
-
-		ojv4::s_similarity_type similarity_threshold; ///< 重复率限制
 
 		/**
 		 * @brief 将待处理 Job 信息分解，提取出 job_type 与 job_id
@@ -46,7 +40,7 @@ class JobBase
 		 * @return <job_type, job_id>
 		 * @exception std::invalid_argument
 		 */
-		static std::pair<int, ojv4::s_id_type> parseJobItem(const std::string & jobItem);
+		static std::pair<int, oj::s_id_type> parseJobItem(const std::string & jobItem);
 
 		/**
 		 * @brief 初始化 jobType, s_id, redisConn
@@ -55,7 +49,7 @@ class JobBase
 		 * @param redisConn Redis连接
 		 * @exception 该构造函数保证不抛出任何异常
 		 */
-		JobBase(int jobType, ojv4::s_id_type s_id, kerbal::redis_v2::connection & redis_conn);
+		JobBase(int jobType, oj::s_id_type s_id, kerbal::redis_v2::connection & redis_conn);
 
 		/**
 		 * @brief 析构函数使用默认析构函数

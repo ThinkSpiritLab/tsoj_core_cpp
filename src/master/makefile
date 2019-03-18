@@ -2,18 +2,18 @@
 include_path_options += \
 -I"./" \
 -I"../shared_src/" \
--I"./Management/" \
--I"./RejudgeJob/" \
--I"./UpdateJob/"
+-I"./Contest/" \
+-I"./Course/" \
+-I"./Exercise/" \
+-I"./Management/"
 
--include ./Management/subdir.mk
--include ./RejudgeJob/subdir.mk
--include ./UpdateJob/subdir.mk
+-include ./Contest/subdir.mk
+-include ./Course/subdir.mk
+-include ./Exercise/subdir.mk
 -include ./subdir.mk
 
 SHARED_OBJS += \
 $(obj_folder)/JobBase.o \
-$(obj_folder)/load_helper.o \
 $(obj_folder)/logger.o
 
 BLUE_TEXT_BEGIN := \033[1m\033[36m

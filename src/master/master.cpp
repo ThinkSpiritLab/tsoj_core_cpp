@@ -6,7 +6,7 @@
  */
 
 #include "logger.hpp"
-#include "UpdateJobBase.hpp"
+#include "UpdateJobInterface.hpp"
 #include "master_settings.hpp"
 
 #include <iostream>
@@ -71,11 +71,11 @@ void register_self() noexcept try
 			const time_t now = time(NULL);
 			const std::string confirm_time = get_ymd_hms_in_local_time_zone(now);
 			judge_server.hmset(
-				  "host_name", host_name,
-				  "ip", ip,
-				  "user_name", user_name,
-				  "listening_pid", listening_pid,
-				  "last_confirm", confirm_time
+					"host_name", host_name,
+					"ip", ip,
+					"user_name", user_name,
+					"listening_pid", listening_pid,
+					"last_confirm", confirm_time
 			);
 			opt.setex("judge_server_confirm:" + judge_server_id, 30_s, confirm_time);
 			online_judger.sadd(judge_server_id);
@@ -147,10 +147,10 @@ void update_contest_scoreboard_handler()
 	kerbal::redis_v2::list update_queue(redis_conn, "update_contest_scoreboard_queue");
 
 	while (loop) {
-		ojv4::ct_id_type ct_id(0);
+		oj::ct_id_type ct_id(0);
 
 		try {
-			ct_id = boost::lexical_cast<ojv4::ct_id_type>(update_queue.blpop(0_s));
+			ct_id = boost::lexical_cast<oj::ct_id_type>(update_queue.blpop(0_s));
 		} catch (const std::exception & e) {
 			EXCEPT_FATAL(0, 0, log_fp, "Fail to fetch job.", e);
 			continue;
@@ -175,44 +175,6 @@ void update_contest_scoreboard_handler()
 	}
 }
 
-
-int already_running(const char * lock_file)
-{
-//	int fd = open(lock_file, O_RDWR | O_CREAT, LOCKMODE);
-//	if (fd < 0) {
-//		LOG_FATAL(0, 0, log_fp, "can't open [", lock_file, "], errnum: ", strerror(errno));
-//		exit(-1);
-//	}
-//
-//	flock fl {
-//		.l_type = F_WRLCK,
-//		.l_start = 0,
-//		.l_whence = SEEK_SET,
-//		.l_len = 0
-//	};
-//
-//	if (fcntl(fd, F_SETLK, &fl) < 0) {
-//		if (errno == EACCES || errno == EAGAIN) {
-//			close(fd);
-//			return 1;
-//		}
-//		LOG_FATAL(0, 0, log_fp, "can't lock [", lock_file, "], errnum: ", strerror(errno));
-//		exit(1);
-//	}
-//	if (ftruncate(fd, 0)) {
-//		LOG_WARNING(0, 0, log_fp, "ftruncate failed!");
-//	}
-//
-//	std::string buf = std::to_string(getpid());
-//	size_t len = buf.size() + 1;
-//	ssize_t res = write(fd, buf.data(), len);
-//	if (res != len) {
-//		LOG_WARNING(0, 0, log_fp, "write failed: ", lock_file);
-//	}
-	return 0;
-}
-
-
 void start_up_refresh()
 {
 	PROFILE_HEAD
@@ -220,12 +182,12 @@ void start_up_refresh()
 	std::deque<std::thread> th_group;
 
 	th_group.push_back(std::thread([]() {
-		ExerciseManagement::refresh_all_users_submit_and_accept_num(*sync_fetch_mysql_conn());
+		ExerciseManagement::refresh_all_users_sa_num(*sync_fetch_mysql_conn());
 		LOG_INFO(0, 0, log_fp, "Refresh all users' submit and accept num in exercise");
 	}));
 
 	th_group.push_back(std::thread([]() {
-		ExerciseManagement::refresh_all_problems_submit_and_accept_num(*sync_fetch_mysql_conn());
+		ExerciseManagement::refresh_all_problems_sa_num(*sync_fetch_mysql_conn());
 		LOG_INFO(0, 0, log_fp, "Refresh all problems' submit and accept num in exercise");
 	}));
 
@@ -246,13 +208,13 @@ void start_up_refresh()
 	}
 
 	for (const auto & row : courses) {
-		ojv4::c_id_type c_id = row["c_id"];
+		oj::c_id_type c_id = row["c_id"];
 		th_group.push_back(std::thread([c_id]() {
-			CourseManagement::refresh_all_problems_submit_and_accept_num_in_course(*sync_fetch_mysql_conn(), c_id);
+			CourseManagement::refresh_all_problems_sa_num_in_course(*sync_fetch_mysql_conn(), c_id);
 			LOG_INFO(0, 0, log_fp, "Refresh all users' submit and accept num in course: ", c_id);
 		}));
 		th_group.push_back(std::thread([c_id]() {
-			CourseManagement::refresh_all_users_submit_and_accept_num_in_course(*sync_fetch_mysql_conn(), c_id);
+			CourseManagement::refresh_all_users_sa_num_in_course(*sync_fetch_mysql_conn(), c_id);
 			LOG_INFO(0, 0, log_fp, "Refresh all problems' submit and accept num in course: ", c_id);
 		}));
 	}
@@ -277,7 +239,7 @@ void listenning_loop()
 	while (loop) {
 
 		int jobType(0);
-		ojv4::s_id_type s_id(0);
+		oj::s_id_type s_id(0);
 
 		std::exception_ptr queue_pop_exception = nullptr;
 		std::exception_ptr job_parse_exception = nullptr;
@@ -303,9 +265,9 @@ void listenning_loop()
 			continue;
 		}
 
-		std::unique_ptr <UpdateJobBase> job = nullptr;
+		std::unique_ptr <ConcreteUpdateJob> job = nullptr;
 		try {
-			// 根据 jobType 与 sid 获取 UpdateJobBase 通用类型的 update job 信息
+			// 根据 jobType 与 sid 获取 UpdateJobInterface 通用类型的 update job 信息
 			// 信息从 redis 数据库读入，并且将一个 mysql 数据库的连接控制权转移至实例化的 job 当中
 			// 在实例化之前就建立好 mysql 连接再转移给它，避免了进入更新操作内部之后才发现无法连接 mysql 数据库
 			// 避免了无效操作的消耗与可能导致的其他逻辑混乱
@@ -380,9 +342,8 @@ void listenning_loop()
 }
 
 /**
- * @brief master 端主程序循环
- * 加载配置信息；连接数据库；取待评测任务信息，交由子进程并评测；创建并分离发送心跳线程 // to be done
- * @throw UNKNOWN_EXCEPTION
+ * @brief master 端主程序
+ * @detail 加载配置信息；连接数据库；取待评测任务信息，交由子进程并评测；创建并分离发送心跳线程 // to be done
  */
 int main(int argc, char * argv[]) try
 {

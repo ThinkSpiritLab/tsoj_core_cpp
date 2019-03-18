@@ -14,13 +14,13 @@
 
 struct SolutionDetails
 {
-		ojv4::s_result_enum judge_result;
-		ojv4::s_time_in_milliseconds cpu_time;
-		ojv4::s_time_in_milliseconds real_time;
-		ojv4::s_mem_in_byte memory;
+		oj::s_result_enum judge_result;
+		oj::s_time_in_milliseconds cpu_time;
+		oj::s_time_in_milliseconds real_time;
+		oj::s_mem_in_byte memory;
 
 		SolutionDetails() :
-				judge_result(ojv4::s_result_enum::ACCEPTED),
+				judge_result(oj::s_result_enum::ACCEPTED),
 				cpu_time(0),
 				real_time(0),
 				memory(0)

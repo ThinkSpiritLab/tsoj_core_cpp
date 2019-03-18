@@ -196,38 +196,6 @@ struct ojv4
 
 namespace kerbal
 {
-	namespace redis
-	{
-		template <typename T>
-		struct redis_type_traits;
-
-		template<>
-		struct redis_type_traits<ojv4::u_id_type> : public redis_type_traits<typename ojv4::u_id_type::integer_type>
-		{
-		};
-
-		template<>
-		struct redis_type_traits<ojv4::p_id_type> : public redis_type_traits<typename ojv4::p_id_type::integer_type>
-		{
-		};
-
-		template<>
-		struct redis_type_traits<ojv4::c_id_type> : public redis_type_traits<typename ojv4::c_id_type::integer_type>
-		{
-		};
-
-		template<>
-		struct redis_type_traits<ojv4::ct_id_type> : public redis_type_traits<typename ojv4::ct_id_type::integer_type>
-		{
-		};
-
-		template<>
-		struct redis_type_traits<ojv4::s_id_type> : public redis_type_traits<typename ojv4::s_id_type::integer_type>
-		{
-		};
-
-	}
-
 	namespace redis_v2
 	{
 		template <typename IDType>
@@ -265,19 +233,21 @@ namespace kerbal
 		struct is_redis_execute_allow_type<ojv4::s_id_type> : public is_redis_execute_allow_type<typename ojv4::s_id_type::integer_type>
 		{
 		};
-
 	}
-
 }
 
-constexpr ojv4::c_id_type operator""_c_id(unsigned long long src)
+struct oj: public ojv4
 {
-	return ojv4::c_id_type(src);
+};
+
+constexpr oj::c_id_type operator""_c_id(unsigned long long src)
+{
+	return oj::c_id_type(src);
 }
 
-constexpr ojv4::ct_id_type operator""_ct_id(unsigned long long src)
+constexpr oj::ct_id_type operator""_ct_id(unsigned long long src)
 {
-	return ojv4::ct_id_type(src);
+	return oj::ct_id_type(src);
 }
 
 #endif /* SRC_SHARED_SRC_DB_TYPEDEF_HPP_ */

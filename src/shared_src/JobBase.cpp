@@ -25,7 +25,7 @@
 
 extern std::ostream log_fp;
 
-std::pair<int, ojv4::s_id_type> JobBase::parseJobItem(const std::string & args)
+std::pair<int, oj::s_id_type> JobBase::parseJobItem(const std::string & args)
 {
 	std::string job_item = args;
 	std::string::size_type cut_point = job_item.find(',');
@@ -40,7 +40,7 @@ std::pair<int, ojv4::s_id_type> JobBase::parseJobItem(const std::string & args)
 
 	try {
 		int job_type = std::stoi(job_item.c_str());
-		ojv4::s_id_type job_id(std::stoi(job_item.c_str() + cut_point + 1));
+		oj::s_id_type job_id(std::stoi(job_item.c_str() + cut_point + 1));
 		return std::make_pair(job_type, job_id);
 	} catch (const std::invalid_argument & ) {
 		std::invalid_argument e("Invalid job_item arguments: " + job_item);
@@ -49,7 +49,7 @@ std::pair<int, ojv4::s_id_type> JobBase::parseJobItem(const std::string & args)
 	}
 }
 
-JobBase::JobBase(int jobType, ojv4::s_id_type s_id, kerbal::redis_v2::connection & redis_conn) :
+JobBase::JobBase(int jobType, oj::s_id_type s_id, kerbal::redis_v2::connection & redis_conn) :
 		jobType(jobType), s_id(s_id)
 {
 	try {
@@ -62,28 +62,17 @@ JobBase::JobBase(int jobType, ojv4::s_id_type s_id, kerbal::redis_v2::connection
 		std::vector<optional<std::string>> res = h.hmget(
 				"pid",
 				"lang",
-				"cases",
-				"time_limit",
-				"memory_limit",
-				"sim_threshold");
+				"cases");
 
 		if (res[0].empty())
 			throw std::runtime_error("lack pid");
-		this->p_id = lexical_cast<ojv4::p_id_type>(res[0].ignored_get());
+		this->p_id = lexical_cast<oj::p_id_type>(res[0].ignored_get());
 
 		if (res[1].empty())
 			throw std::runtime_error("lack lang");
 		this->lang = (Language) (lexical_cast<int>(res[1].ignored_get()));
 
 		this->cases = res[2].empty() ? 1 : lexical_cast<int>(res[2].ignored_get());
-
-		ojv4::s_time_literal time_limit_literal = res[3].empty() ? 0 : lexical_cast<ojv4::s_time_literal>(res[3].ignored_get());
-		this->time_limit = ojv4::s_time_type<std::milli>(time_limit_literal);
-
-		ojv4::s_mem_literal mem_limit_literal = res[4].empty() ? 0 : lexical_cast<ojv4::s_mem_literal>(res[4].ignored_get());
-		this->memory_limit = ojv4::s_mem_type<kerbal::utility::mebi>(mem_limit_literal);
-
-		this->similarity_threshold = lexical_cast<ojv4::s_similarity_type>(res[5].empty() ? 0 : res[5].ignored_get());
 
 	} catch (const std::exception & e) {
 		EXCEPT_FATAL(jobType, s_id, log_fp, "Fail to fetch job details.", e);
@@ -98,7 +87,7 @@ kerbal::redis_v2::reply JobBase::get_source_code() const
 	kerbal::redis_v2::reply reply;
 	std::vector<std::string> argv = { "hget", "source_code:%d:%d"_fmt(jobType, s_id).str(), "source" };
 	try {
-        auto redis_conn_handler = sync_fetch_redis_conn();
+		auto redis_conn_handler = sync_fetch_redis_conn();
 		reply = redis_conn_handler->argv_execute(argv.begin(), argv.end());
 	} catch (const std::exception & e) {
 		EXCEPT_FATAL(jobType, s_id, log_fp, "Get source code failed!", e);

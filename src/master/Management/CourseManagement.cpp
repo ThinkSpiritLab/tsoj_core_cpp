@@ -21,10 +21,10 @@
 
 using namespace std::string_literals;
 
-void CourseManagement::refresh_all_users_submit_and_accept_num_in_course(mysqlpp::Connection & mysql_conn, ojv4::c_id_type c_id)
+void CourseManagement::refresh_all_users_sa_num_in_course(mysqlpp::Connection & mysql_conn, oj::c_id_type c_id)
 {
 	// 以下课程/考试的成绩较为敏感, 其中用户的提交数通过数不应当再刷新. 故使用硬编码的方式予以保护
-	constexpr static ojv4::c_id_type protected_course[] = {
+	constexpr static oj::c_id_type protected_course[] = {
 		16_c_id, // 2017级程序设计实验/实训
 		17_c_id, // 2018研究生复试
 		22_c_id, // 2017级程序设计实验/实训期末考试
@@ -39,7 +39,7 @@ void CourseManagement::refresh_all_users_submit_and_accept_num_in_course(mysqlpp
 		return;
 	}
 
-	std::unordered_map<ojv4::u_id_type, UserSARecorder, ojv4::u_id_type::hash> m;
+	std::unordered_map<oj::u_id_type, UserSARecorder, oj::u_id_type::hash> m;
 	{
 		mysqlpp::Query query = mysql_conn.query(
 				"select u_id, p_id, s_result from solution "
@@ -60,9 +60,9 @@ void CourseManagement::refresh_all_users_submit_and_accept_num_in_course(mysqlpp
 					+ " MySQL error: " + mysql_conn.error());
 		}
 		while (::MYSQL_ROW row = solutions.fetch_raw_row()) {
-			auto u_id(boost::lexical_cast<ojv4::u_id_type>(row[0]));
-			auto p_id(boost::lexical_cast<ojv4::p_id_type>(row[1]));
-			auto s_result(ojv4::s_result_enum(boost::lexical_cast<int>(row[2])));
+			auto u_id(boost::lexical_cast<oj::u_id_type>(row[0]));
+			auto p_id(boost::lexical_cast<oj::p_id_type>(row[1]));
+			auto s_result(oj::s_result_enum(boost::lexical_cast<int>(row[2])));
 			m[u_id].add_solution(p_id, s_result);
 		}
 	}
@@ -111,9 +111,9 @@ void CourseManagement::refresh_all_users_submit_and_accept_num_in_course(mysqlpp
 	trans.commit();
 }
 
-void CourseManagement::refresh_all_problems_submit_and_accept_num_in_course(mysqlpp::Connection & mysql_conn, ojv4::c_id_type c_id)
+void CourseManagement::refresh_all_problems_sa_num_in_course(mysqlpp::Connection & mysql_conn, oj::c_id_type c_id)
 {
-	std::unordered_map<ojv4::p_id_type, ProblemSARecorder, ojv4::p_id_type::hash> m;
+	std::unordered_map<oj::p_id_type, ProblemSARecorder, oj::p_id_type::hash> m;
 	{
 		mysqlpp::Query query = mysql_conn.query(
 				"select u_id, p_id, s_result from solution "
@@ -133,9 +133,9 @@ void CourseManagement::refresh_all_problems_submit_and_accept_num_in_course(mysq
 		}
 
 		while (::MYSQL_ROW row = solutions.fetch_raw_row()) {
-			auto u_id(boost::lexical_cast<ojv4::u_id_type>(row[0]));
-			auto p_id(boost::lexical_cast<ojv4::p_id_type>(row[1]));
-			auto s_result(ojv4::s_result_enum(boost::lexical_cast<int>(row[2])));
+			auto u_id(boost::lexical_cast<oj::u_id_type>(row[0]));
+			auto p_id(boost::lexical_cast<oj::p_id_type>(row[1]));
+			auto s_result(oj::s_result_enum(boost::lexical_cast<int>(row[2])));
 			m[p_id].add_solution(u_id, s_result);
 		}
 	}
@@ -175,7 +175,7 @@ void CourseManagement::refresh_all_problems_submit_and_accept_num_in_course(mysq
 	trans.commit();
 }
 
-void CourseManagement::update_user_s_submit_and_accept_num(mysqlpp::Connection & conn, ojv4::c_id_type c_id, ojv4::u_id_type u_id)
+void CourseManagement::update_user_s_sa_num(mysqlpp::Connection & conn, oj::c_id_type c_id, oj::u_id_type u_id)
 {
 	UserSARecorder u_info;
 	{
@@ -200,8 +200,8 @@ void CourseManagement::update_user_s_submit_and_accept_num(mysqlpp::Connection &
 		}
 
 		while (::MYSQL_ROW row = solutions.fetch_raw_row()) {
-			auto p_id(boost::lexical_cast<ojv4::p_id_type>(row[0]));
-			auto s_result(ojv4::s_result_enum(boost::lexical_cast<int>(row[1])));
+			auto p_id(boost::lexical_cast<oj::p_id_type>(row[0]));
+			auto s_result(oj::s_result_enum(boost::lexical_cast<int>(row[1])));
 			u_info.add_solution(p_id, s_result);
 		}
 	}
@@ -227,7 +227,7 @@ void CourseManagement::update_user_s_submit_and_accept_num(mysqlpp::Connection &
 	}
 }
 
-void CourseManagement::update_problem_s_submit_and_accept_num(mysqlpp::Connection & conn, ojv4::c_id_type c_id, ojv4::p_id_type p_id)
+void CourseManagement::update_problem_s_sa_num(mysqlpp::Connection & conn, oj::c_id_type c_id, oj::p_id_type p_id)
 {
 	ProblemSARecorder p_info;
 	{
@@ -251,8 +251,8 @@ void CourseManagement::update_problem_s_submit_and_accept_num(mysqlpp::Connectio
 		}
 
 		while (::MYSQL_ROW row = solutions.fetch_raw_row()) {
-			auto u_id(boost::lexical_cast<ojv4::u_id_type>(row[0]));
-			auto s_result(ojv4::s_result_enum(boost::lexical_cast<int>(row[1])));
+			auto u_id(boost::lexical_cast<oj::u_id_type>(row[0]));
+			auto s_result(oj::s_result_enum(boost::lexical_cast<int>(row[1])));
 			p_info.add_solution(u_id, s_result);
 		}
 	}
@@ -271,10 +271,10 @@ void CourseManagement::update_problem_s_submit_and_accept_num(mysqlpp::Connectio
 	}
 }
 
-ojv4::u_p_status_enum query_course_user_s_problem_status_from_solution(mysqlpp::Connection & conn, ojv4::c_id_type c_id, ojv4::u_id_type u_id, ojv4::p_id_type p_id)
+oj::u_p_status_enum query_course_user_s_problem_status_from_solution(mysqlpp::Connection & conn, oj::c_id_type c_id, oj::u_id_type u_id, oj::p_id_type p_id)
 {
-	constexpr ojv4::s_result_in_db_type ACCEPTED = ojv4::s_result_in_db_type(ojv4::s_result_enum::ACCEPTED);
-	constexpr ojv4::s_result_in_db_type SYSTEM_ERROR = ojv4::s_result_in_db_type(ojv4::s_result_enum::SYSTEM_ERROR);
+	constexpr oj::s_result_in_db_type ACCEPTED = oj::s_result_in_db_type(oj::s_result_enum::ACCEPTED);
+	constexpr oj::s_result_in_db_type SYSTEM_ERROR = oj::s_result_in_db_type(oj::s_result_enum::SYSTEM_ERROR);
 
 	mysqlpp::Query query_status = conn.query(
 			"select ("
@@ -288,21 +288,17 @@ ojv4::u_p_status_enum query_course_user_s_problem_status_from_solution(mysqlpp::
 	mysqlpp::StoreQueryResult res = query_status.store(u_id, p_id, ACCEPTED, SYSTEM_ERROR, c_id);
 
 	if (bool(res[0]["has_accepted"]) == true) {
-		return ojv4::u_p_status_enum::ACCEPTED;
+		return oj::u_p_status_enum::ACCEPTED;
 	} else if (bool(res[0]["has_submit"]) == true) {
-		return ojv4::u_p_status_enum::ATTEMPTED;
+		return oj::u_p_status_enum::ATTEMPTED;
 	} else {
-		return ojv4::u_p_status_enum::TODO;
+		return oj::u_p_status_enum::TODO;
 	}
 }
 
-void CourseManagement::update_user_problem_status(mysqlpp::Connection & conn, ojv4::c_id_type c_id, ojv4::u_id_type u_id, ojv4::p_id_type p_id)
+void CourseManagement::update_user_problem(mysqlpp::Connection & conn, oj::c_id_type c_id, oj::u_id_type u_id, oj::p_id_type p_id)
 {
-}
-
-void CourseManagement::update_user_problem(mysqlpp::Connection & conn, ojv4::c_id_type c_id, ojv4::u_id_type u_id, ojv4::p_id_type p_id)
-{
-	ojv4::u_p_status_enum new_status = ojv4::u_p_status_enum::TODO;
+	oj::u_p_status_enum new_status = oj::u_p_status_enum::TODO;
 
 	try {
 		new_status = query_course_user_s_problem_status_from_solution(conn, c_id, u_id, p_id);
@@ -314,11 +310,11 @@ void CourseManagement::update_user_problem(mysqlpp::Connection & conn, ojv4::c_i
 				+ " details: " + e.what());
 	}
 
-	if (new_status == ojv4::u_p_status_enum::TODO) {
+	if (new_status == oj::u_p_status_enum::TODO) {
 		return;
 	}
 
-	ojv4::u_p_status_enum previous_status = ojv4::u_p_status_enum::TODO;
+	oj::u_p_status_enum previous_status = oj::u_p_status_enum::TODO;
 	{
 		mysqlpp::Query query = conn.query(
 				"select status from user_problem "
@@ -335,26 +331,26 @@ void CourseManagement::update_user_problem(mysqlpp::Connection & conn, ojv4::c_i
 					+ " MySQL error: " + conn.error());
 		}
 		if (res.empty()) {
-			previous_status = ojv4::u_p_status_enum::TODO;
+			previous_status = oj::u_p_status_enum::TODO;
 		} else {
-			previous_status = ojv4::u_p_status_enum(int(res[0]["status"]));
+			previous_status = oj::u_p_status_enum(int(res[0]["status"]));
 		}
 	}
 
-	if (previous_status == ojv4::u_p_status_enum::TODO) {
+	if (previous_status == oj::u_p_status_enum::TODO) {
 		mysqlpp::Query insert = conn.query(
 				"insert into user_problem (u_id, p_id, status, c_id) "
 				"values (%0, %1, %2, %3)"
 		);
 		insert.parse();
-        if (!insert.execute(u_id, p_id, int(new_status), c_id)) {
-            throw std::runtime_error("Insert user-problem failed!"s
-             		+ " c_id = " + std::to_string(c_id)
-                    + " u_id = " + std::to_string(u_id)
-                    + " p_id = " + std::to_string(p_id)
-                    + " MySQL errnum: " + std::to_string(conn.errnum())
-                    + " MySQL error: " + conn.error());
-        }
+		if (!insert.execute(u_id, p_id, int(new_status), c_id)) {
+			throw std::runtime_error("Insert user-problem failed!"s
+					+ " c_id = " + std::to_string(c_id)
+					+ " u_id = " + std::to_string(u_id)
+					+ " p_id = " + std::to_string(p_id)
+					+ " MySQL errnum: " + std::to_string(conn.errnum())
+					+ " MySQL error: " + conn.error());
+		}
 	} else if (previous_status != new_status) {
 		mysqlpp::Query update = conn.query(
 				"update user_problem set "
@@ -362,15 +358,15 @@ void CourseManagement::update_user_problem(mysqlpp::Connection & conn, ojv4::c_i
 				"where u_id = %1 and p_id = %2 and c_id = %3"
 		);
 		update.parse();
-        if (!update.execute(int(new_status), u_id, p_id, c_id)) {
-            throw std::runtime_error("Update user-problem failed!"s
-             		+ " c_id = " + std::to_string(c_id)
-             		+ " u_id = " + std::to_string(u_id)
-             		+ " p_id = " + std::to_string(p_id)
-             		+ " MySQL errnum: " + std::to_string(conn.errnum())
-             		+ " MySQL error: " + conn.error());
-        }
-    }
+		if (!update.execute(int(new_status), u_id, p_id, c_id)) {
+			throw std::runtime_error("Update user-problem failed!"s
+					+ " c_id = " + std::to_string(c_id)
+					+ " u_id = " + std::to_string(u_id)
+					+ " p_id = " + std::to_string(p_id)
+					+ " MySQL errnum: " + std::to_string(conn.errnum())
+					+ " MySQL error: " + conn.error());
+		}
+	}
 }
 
 

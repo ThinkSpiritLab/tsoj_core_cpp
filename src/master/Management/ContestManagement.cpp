@@ -21,11 +21,13 @@
 #include <mysql++/query.h>
 #include <mysql++/connection.h>
 
+#include <kerbal/redis_v2/connection.hpp>
+
 using namespace std::string_literals;
 
-void ContestManagement::refresh_all_problems_submit_and_accept_num_in_contest(mysqlpp::Connection & mysql_conn, ojv4::ct_id_type ct_id)
+void ContestManagement::refresh_all_problems_sa_num_in_contest(mysqlpp::Connection & mysql_conn, oj::ct_id_type ct_id)
 {
-	std::unordered_map<ojv4::p_id_type, ProblemSARecorder, ojv4::p_id_type::hash> m;
+	std::unordered_map<oj::p_id_type, ProblemSARecorder, oj::p_id_type::hash> m;
 	{
 		mysqlpp::Query query = mysql_conn.query(
 				"select s_id, u_id, p_id, s_result from contest_solution%0 "
@@ -44,9 +46,9 @@ void ContestManagement::refresh_all_problems_submit_and_accept_num_in_contest(my
 		}
 
 		while (::MYSQL_ROW row = solutions.fetch_raw_row()) {
-			auto u_id(boost::lexical_cast<ojv4::u_id_type>(row[0]));
-			auto p_id(boost::lexical_cast<ojv4::p_id_type>(row[1]));
-			auto s_result(ojv4::s_result_enum(boost::lexical_cast<int>(row[2])));
+			auto u_id(boost::lexical_cast<oj::u_id_type>(row[0]));
+			auto p_id(boost::lexical_cast<oj::p_id_type>(row[1]));
+			auto s_result(oj::s_result_enum(boost::lexical_cast<int>(row[2])));
 			m[p_id].add_solution(u_id, s_result);
 		}
 	}
@@ -86,7 +88,7 @@ void ContestManagement::refresh_all_problems_submit_and_accept_num_in_contest(my
 }
 
 
-void ContestManagement::update_problem_s_submit_and_accept_num(mysqlpp::Connection & mysql_conn, ojv4::ct_id_type ct_id, ojv4::p_id_type p_id)
+void ContestManagement::update_problem_s_sa_num(mysqlpp::Connection & mysql_conn, oj::ct_id_type ct_id, oj::p_id_type p_id)
 {
 	ProblemSARecorder p_info;
 	{
@@ -107,8 +109,8 @@ void ContestManagement::update_problem_s_submit_and_accept_num(mysqlpp::Connecti
 		}
 
 		while (::MYSQL_ROW row = solutions.fetch_raw_row()) {
-			auto u_id(boost::lexical_cast<ojv4::u_id_type>(row[0]));
-			auto s_result(ojv4::s_result_enum(boost::lexical_cast<int>(row[1])));
+			auto u_id(boost::lexical_cast<oj::u_id_type>(row[0]));
+			auto s_result(oj::s_result_enum(boost::lexical_cast<int>(row[1])));
 			p_info.add_solution(u_id, s_result);
 		}
 	}
@@ -128,15 +130,11 @@ void ContestManagement::update_problem_s_submit_and_accept_num(mysqlpp::Connecti
 	}
 }
 
-void ContestManagement::update_user_problem_status(mysqlpp::Connection & mysql_conn, ojv4::ct_id_type ct_id, ojv4::u_id_type u_id, ojv4::p_id_type p_id)
-{
-}
-
-void ContestManagement::update_user_problem(mysqlpp::Connection & mysql_conn, ojv4::ct_id_type ct_id, ojv4::u_id_type u_id, ojv4::p_id_type p_id)
+void ContestManagement::update_user_problem(mysqlpp::Connection & mysql_conn, oj::ct_id_type ct_id, oj::u_id_type u_id, oj::p_id_type p_id)
 {
 	//WARNING: 'is_first_ac' field has been marked as deprecated
-	using s_result_in_db_type = ojv4::s_result_in_db_type;
-	using s_result_enum_type = ojv4::s_result_enum;
+	using s_result_in_db_type = oj::s_result_in_db_type;
+	using s_result_enum_type = oj::s_result_enum;
 
 	bool is_ac = false;
 	mysqlpp::Null<mysqlpp::DateTime> ac_time;
@@ -244,17 +242,17 @@ struct u_p_status
 		{
 		}
 
-		void add_solution(ojv4::s_result_enum s_result,
+		void add_solution(oj::s_result_enum s_result,
 				std::chrono::system_clock::time_point post_time,
 				std::chrono::system_clock::time_point ct_starttime)
 		{
-			if (s_result == ojv4::s_result_enum::SYSTEM_ERROR) {
+			if (s_result == oj::s_result_enum::SYSTEM_ERROR) {
 				return;
 			}
 			switch (status) {
 				case never_try:
 				case error: { // 封榜前没 A
-					if (s_result == ojv4::s_result_enum::ACCEPTED) {
+					if (s_result == oj::s_result_enum::ACCEPTED) {
 						status = accept;
 						ac_time_consume = std::chrono::duration_cast<std::chrono::seconds>(post_time - ct_starttime);
 					} else {
@@ -271,14 +269,14 @@ struct u_p_status
 			}
 		}
 
-		void add_solution_with_lock(ojv4::s_result_enum s_result,
+		void add_solution_with_lock(oj::s_result_enum s_result,
 				std::chrono::system_clock::time_point post_time,
 				std::chrono::system_clock::time_point current_time,
 				std::chrono::system_clock::time_point ct_starttime,
 				std::chrono::system_clock::time_point ct_lockranktime,
 				std::chrono::system_clock::time_point ct_endtime)
 		{
-			if (s_result == ojv4::s_result_enum::SYSTEM_ERROR) {
+			if (s_result == oj::s_result_enum::SYSTEM_ERROR) {
 				return;
 			}
 			switch (status) {
@@ -294,7 +292,7 @@ struct u_p_status
 					if (is_submit_during_scoreboard_closed == true) { // 如果是在封榜时间段提交的, 无论对不对, 都做模糊处理, 即通过数始终 + 1
 						status = pending;
 					} else {
-						if (s_result == ojv4::s_result_enum::ACCEPTED) {
+						if (s_result == oj::s_result_enum::ACCEPTED) {
 							status = accept;
 							ac_time_consume = std::chrono::duration_cast<std::chrono::seconds>(post_time - ct_starttime);
 						} else {
@@ -319,20 +317,20 @@ typedef char logic_p_id_type;
 class scoreboard_row
 {
 	public:
-		const ojv4::u_id_type u_id;
+		const oj::u_id_type u_id;
 		const std::string u_name;
 		const std::string u_realname;
 
 		std::map<logic_p_id_type, u_p_status> solutions;
 
-		scoreboard_row(ojv4::u_id_type u_id,
+		scoreboard_row(oj::u_id_type u_id,
 				const std::string & u_name,
 				const std::string & u_realname) :
 					u_id(u_id), u_name(u_name), u_realname(u_realname), solutions()
 		{
 		}
 
-		scoreboard_row(ojv4::u_id_type u_id,
+		scoreboard_row(oj::u_id_type u_id,
 				std::string && u_name,
 				std::string && u_realname) :
 					u_id(u_id), u_name(u_name), u_realname(u_realname), solutions()
@@ -372,7 +370,7 @@ class scoreboard_row
 
 };
 
-void ContestManagement::update_scoreboard(mysqlpp::Connection & mysql_conn, kerbal::redis_v2::connection & redis_conn, ojv4::ct_id_type ct_id)
+void ContestManagement::update_scoreboard(mysqlpp::Connection & mysql_conn, kerbal::redis_v2::connection & redis_conn, oj::ct_id_type ct_id)
 {
 	std::chrono::system_clock::time_point ct_starttime;
 	std::chrono::system_clock::time_point ct_endtime;
@@ -431,7 +429,7 @@ void ContestManagement::update_scoreboard(mysqlpp::Connection & mysql_conn, kerb
 		}
 		scoreboard.reserve(100);
 		while (::MYSQL_ROW user = users.fetch_raw_row()) {
-			auto u_id(boost::lexical_cast<ojv4::u_id_type>(user[0]));
+			auto u_id(boost::lexical_cast<oj::u_id_type>(user[0]));
 			const char * u_name = user[1];
 			const char * u_realname = user[2];
 			scoreboard.push_back(new scoreboard_row(u_id, u_name, u_realname));
@@ -453,7 +451,7 @@ void ContestManagement::update_scoreboard(mysqlpp::Connection & mysql_conn, kerb
 					+ " MySQL error: " + query.error());
 		}
 		while (::MYSQL_ROW solution = solutions.fetch_raw_row()) {
-			auto u_id(boost::lexical_cast<ojv4::u_id_type>(solution[0]));
+			auto u_id(boost::lexical_cast<oj::u_id_type>(solution[0]));
 			if (solution[1] == nullptr) {
 				continue; // 过滤掉已删除，造成 p_logic 取出为 NULL 的题
 			}
@@ -461,7 +459,7 @@ void ContestManagement::update_scoreboard(mysqlpp::Connection & mysql_conn, kerb
 			if (('A' <= p_logic && p_logic <= 'Z') == false) {
 				continue;
 			}
-			auto s_result(ojv4::s_result_enum(boost::lexical_cast<int>(solution[2])));
+			auto s_result(oj::s_result_enum(boost::lexical_cast<int>(solution[2])));
 			const char* s_posttime_s = solution[3];
 			auto s_posttime = std::chrono::system_clock::from_time_t(time_t(
 							mysqlpp::DateTime(s_posttime_s)));
@@ -564,7 +562,7 @@ void ContestManagement::update_scoreboard(mysqlpp::Connection & mysql_conn, kerb
 #include <rapidjson/ostreamwrapper.h>
 #include <rapidjson/writer.h>
 
-void ContestManagement::update_scoreboard2(mysqlpp::Connection & mysql_conn, kerbal::redis_v2::connection & redis_conn, ojv4::ct_id_type ct_id)
+void ContestManagement::update_scoreboard2(mysqlpp::Connection & mysql_conn, kerbal::redis_v2::connection & redis_conn, oj::ct_id_type ct_id)
 {
 	std::chrono::system_clock::time_point ct_starttime;
 	std::chrono::system_clock::time_point ct_endtime;
@@ -623,7 +621,7 @@ void ContestManagement::update_scoreboard2(mysqlpp::Connection & mysql_conn, ker
 		}
 		scoreboard.reserve(100);
 		while (::MYSQL_ROW user = users.fetch_raw_row()) {
-			auto u_id(boost::lexical_cast<ojv4::u_id_type>(user[0]));
+			auto u_id(boost::lexical_cast<oj::u_id_type>(user[0]));
 			const char * u_name = user[1];
 			const char * u_realname = user[2];
 			scoreboard.push_back(new scoreboard_row(u_id, u_name, u_realname));
@@ -645,7 +643,7 @@ void ContestManagement::update_scoreboard2(mysqlpp::Connection & mysql_conn, ker
 					+ " MySQL error: " + query.error());
 		}
 		while (::MYSQL_ROW solution = solutions.fetch_raw_row()) {
-			auto u_id(boost::lexical_cast<ojv4::u_id_type>(solution[0]));
+			auto u_id(boost::lexical_cast<oj::u_id_type>(solution[0]));
 			if (solution[1] == nullptr) {
 				continue; // 过滤掉已删除，造成 p_logic 取出为 NULL 的题
 			}
@@ -653,7 +651,7 @@ void ContestManagement::update_scoreboard2(mysqlpp::Connection & mysql_conn, ker
 			if (('A' <= p_logic && p_logic <= 'Z') == false) {
 				continue;
 			}
-			auto s_result(ojv4::s_result_enum(boost::lexical_cast<int>(solution[2])));
+			auto s_result(oj::s_result_enum(boost::lexical_cast<int>(solution[2])));
 			const char* s_posttime_s = solution[3];
 			auto s_posttime = std::chrono::system_clock::from_time_t(time_t(
 						mysqlpp::DateTime(s_posttime_s)));
@@ -765,7 +763,7 @@ void ContestManagement::update_scoreboard2(mysqlpp::Connection & mysql_conn, ker
 
 #include <nlohmann/json.hpp>
 
-void ContestManagement::update_scoreboard3(mysqlpp::Connection & mysql_conn, kerbal::redis_v2::connection & redis_conn, ojv4::ct_id_type ct_id)
+void ContestManagement::update_scoreboard3(mysqlpp::Connection & mysql_conn, kerbal::redis_v2::connection & redis_conn, oj::ct_id_type ct_id)
 {
 	std::chrono::system_clock::time_point ct_starttime;
 	std::chrono::system_clock::time_point ct_endtime;
@@ -824,14 +822,14 @@ void ContestManagement::update_scoreboard3(mysqlpp::Connection & mysql_conn, ker
 		}
 		scoreboard.reserve(100);
 		while (::MYSQL_ROW user = users.fetch_raw_row()) {
-			auto u_id(boost::lexical_cast<ojv4::u_id_type>(user[0]));
+			auto u_id(boost::lexical_cast<oj::u_id_type>(user[0]));
 			const char * u_name = user[1];
 			const char * u_realname = user[2];
 			scoreboard.push_back(new scoreboard_row(u_id, u_name, u_realname));
 		}
 	}
 
-    {
+	{
 		mysqlpp::Query query = mysql_conn.query(
 				"select u_id, (select p_logic from contest_problem where ct_id = %0 and contest_problem.p_id = so.p_id) as p_logic, s_result, s_posttime "
 				"from contest_solution%1 as so "
@@ -846,7 +844,7 @@ void ContestManagement::update_scoreboard3(mysqlpp::Connection & mysql_conn, ker
 					+ " MySQL error: " + query.error());
 		}
 		while (::MYSQL_ROW solution = solutions.fetch_raw_row()) {
-			auto u_id(boost::lexical_cast<ojv4::u_id_type>(solution[0]));
+			auto u_id(boost::lexical_cast<oj::u_id_type>(solution[0]));
 			if (solution[1] == nullptr) {
 				continue; // 过滤掉已删除，造成 p_logic 取出为 NULL 的题
 			}
@@ -854,7 +852,7 @@ void ContestManagement::update_scoreboard3(mysqlpp::Connection & mysql_conn, ker
 			if (('A' <= p_logic && p_logic <= 'Z') == false) {
 				continue;
 			}
-			auto s_result(ojv4::s_result_enum(boost::lexical_cast<int>(solution[2])));
+			auto s_result(oj::s_result_enum(boost::lexical_cast<int>(solution[2])));
 			const char* s_posttime_s = solution[3];
 			auto s_posttime = std::chrono::system_clock::from_time_t(time_t(mysqlpp::DateTime(s_posttime_s)));
 
@@ -939,6 +937,187 @@ void ContestManagement::update_scoreboard3(mysqlpp::Connection & mysql_conn, ker
 	}
 
 	redis_conn.execute("set contest_scoreboard:%d %s", ct_id.to_literal(), json.dump());
+}
+
+
+void ContestManagement::update_scoreboard4(mysqlpp::Connection & mysql_conn, kerbal::redis_v2::connection & redis_conn, oj::ct_id_type ct_id)
+{
+	std::chrono::system_clock::time_point ct_starttime;
+	std::chrono::system_clock::time_point ct_endtime;
+	std::chrono::system_clock::time_point ct_lockranktime;
+	std::chrono::seconds ct_timeplus(1200);
+	int problem_count = 0;
+	{
+		mysqlpp::Query query = mysql_conn.query(
+				"select ct_starttime, ct_endtime, ct_timeplus, ct_lockrankbefore, "
+				"(select count(p_id) from contest_problem where contest_problem.ct_id = contest.ct_id) as problem_count "
+				"from contest "
+				"where ct_id = %0"
+		);
+		query.parse();
+		mysqlpp::StoreQueryResult res = query.store(ct_id);
+		if (query.errnum() != 0) {
+			throw std::runtime_error("Query contest details failed!"s
+					+ " ct_id = " + std::to_string(ct_id)
+					+ " MySQL errnum: " + std::to_string(query.errnum())
+					+ " MySQL error: " + query.error());
+		}
+
+		if (res.empty()) {
+			return; // 不存在的竞赛
+		}
+
+		const mysqlpp::Row & ct_info = res[0];
+		ct_starttime = std::chrono::system_clock::from_time_t(time_t(mysqlpp::DateTime(ct_info["ct_starttime"])));
+		ct_endtime = std::chrono::system_clock::from_time_t(time_t(mysqlpp::DateTime(ct_info["ct_endtime"])));
+		if (ct_info["ct_timeplus"] != mysqlpp::null) {
+			ct_timeplus = std::chrono::seconds(int(ct_info["ct_timeplus"]));
+		}
+		std::chrono::seconds ct_lockrankbefore(3600);
+		if (ct_info["ct_lockrankbefore"] != mysqlpp::null) {
+			ct_lockrankbefore = std::chrono::seconds(int(ct_info["ct_lockrankbefore"]));
+		}
+		ct_lockranktime = ct_endtime - ct_lockrankbefore;
+		problem_count = ct_info["problem_count"];
+	}
+
+	std::chrono::system_clock::time_point current_time = std::chrono::system_clock::now();
+
+//	std::unordered_map<oj::u_id_type, std::pair<std::string, std::string>> contest_users; // 名单 <u_id, <u_name, u_realname> >
+//	{
+//		mysqlpp::Query query = mysql_conn.query(
+//				"select u_id, u_name, u_realname from ctuser "
+//				"where ct_id = %0"
+//		);
+//		query.parse();
+//		mysqlpp::UseQueryResult users = query.use(ct_id);
+//		if (!users) {
+//			throw std::runtime_error("Query contest uses' information failed!"s
+//					+ " ct_id = " + std::to_string(ct_id)
+//					+ " MySQL errnum: " + std::to_string(query.errnum())
+//					+ " MySQL error: " + query.error());
+//		}
+//		contest_users.reserve(100);
+//		while (::MYSQL_ROW user = users.fetch_raw_row()) {
+//			auto u_id(boost::lexical_cast<oj::u_id_type>(user[0]));
+//			const char * u_name = user[1];
+//			const char * u_realname = user[2];
+//			contest_users.insert({u_id, {u_name, u_realname}});
+//		}
+//	}
+//
+//	enum class user_problem_status
+//	{
+//		never_try = 0,
+//		error,
+//		accept,
+//		pending,
+//	};
+//
+//	std::unordered_map<oj::u_id_type, std::unordered_map<logic_p_id_type, std::pair<user_problem_status, std::chrono::seconds>>> solutions_record; // <u_id, <p_id, <status, cost_time>>>
+//	{
+//		mysqlpp::Query query = mysql_conn.query(
+//				"select u_id, (select p_logic from contest_problem where ct_id = %0 and contest_problem.p_id = so.p_id) as p_logic, s_result, s_posttime "
+//				"from contest_solution%1 as so "
+//				"order by s_id"
+//		);
+//		query.parse();
+//		mysqlpp::UseQueryResult solutions = query.use(ct_id, ct_id);
+//		if (!solutions) {
+//			throw std::runtime_error("Query contest solutions failed!"s
+//					+ " ct_id = " + std::to_string(ct_id)
+//					+ " MySQL errnum: " + std::to_string(query.errnum())
+//					+ " MySQL error: " + query.error());
+//		}
+//		while (::MYSQL_ROW solution = solutions.fetch_raw_row()) {
+//			auto u_id(boost::lexical_cast<oj::u_id_type>(solution[0]));
+//			if (solution[1] == nullptr) {
+//				continue; // 过滤掉已删除，造成 p_logic 取出为 NULL 的题
+//			}
+//			logic_p_id_type p_logic = solution[1][0];
+//			if (('A' <= p_logic && p_logic <= 'Z') == false) {
+//				continue;
+//			}
+//			auto s_result(oj::s_result_enum(boost::lexical_cast<int>(solution[2])));
+//			const char* s_posttime_s = solution[3];
+//			auto s_posttime = std::chrono::system_clock::from_time_t(time_t(mysqlpp::DateTime(s_posttime_s)));
+//
+//			auto & u_id_index = solutions_record[u_id];
+//			auto [p_logic_iterator, insert_happen] = u_id_index.insert(p_logic, user_problem_status::never_try);
+//			auto & [status, cost_time] = *p_logic_iterator;
+//			if (insert_happen) {
+//				cost_time = 0s;
+//			} else {
+//
+//			}
+//		}
+//	}
+//
+//
+//	std::vector<std::tuple<oj::u_id_type, int, int, std::chrono::seconds>> list_sort_by_time; // <u_id, ac_num, tried_times, total_time>
+//	{
+//		for (const auto & [u_id, user_solutions] : solutions) {
+//			for (const auto & [p_logic, u_p_info] : user_solutions) {
+//
+//			}
+//		}
+//		std::sort(list_sort_by_time.begin(), list_sort_by_time.end(), [](const auto & a, const auto & b){
+//			const auto & [a_u_id, a_ac_num, a_tried_times, a_total_time] = a;
+//			const auto & [b_u_id, b_ac_num, b_tried_times, b_total_time] = b;
+//			if (a_ac_num != b_ac_num) { // 当通过数不同时, 通过题数多者优先
+//				return a_ac_num > b_ac_num;
+//			}
+//			if (a_ac_num != 0) { // 当两者通过数相等且均不为 0 时, 用时少者优先
+//				return a_total_time < b_total_time;
+//			}
+//			// 当两者通过数均为 0 时, 根据尝试次数排名
+//			// 尝试次数相同, 按 u_id 排
+//			if (a_tried_times == b_tried_times) {
+//				return a_u_id.to_literal() < b_u_id.to_literal();
+//			}
+//			if (a_tried_times == 0) {
+//				return false;
+//			}
+//			if (b_tried_times == 0) {
+//				return true;
+//			}
+//			return a_tried_times < b_tried_times;
+//		});
+//	}
+//
+//
+//
+//	int rank = 1;
+//
+//	nlohmann::json json;
+//	json.push_back(problem_count);
+//	for (const auto & row : scoreboard) {
+//		nlohmann::json jsonRow = { rank++, row.u_id.to_literal(), row.u_name.c_str(), row.u_realname.c_str() };
+//
+//		const auto & solutions = row.solutions;
+//		for (const auto & p_u_p_status : solutions) {
+//			logic_p_id_type p_logic = p_u_p_status.first;
+//			const auto & u_p_status = p_u_p_status.second;
+//			switch (u_p_status.status) {
+//				case u_p_status::never_try:
+//				case u_p_status::error: {
+//					jsonRow.push_back( { p_logic - 'A', 1, u_p_status.tried_times });
+//					break;
+//				}
+//				case u_p_status::accept: {
+//					jsonRow.push_back( { p_logic - 'A', 0, u_p_status.tried_times, u_p_status.ac_time_consume.count() });
+//					break;
+//				}
+//				case u_p_status::pending: {
+//					jsonRow.push_back( { p_logic - 'A', 2, u_p_status.tried_times });
+//					break;
+//				}
+//			}
+//		}
+//		json.push_back(jsonRow);
+//	}
+//
+//	redis_conn.execute("set contest_scoreboard:%d %s", ct_id.to_literal(), json.dump());
 }
 
 

@@ -21,9 +21,9 @@
 
 using namespace std::string_literals;
 
-void ExerciseManagement::refresh_all_users_submit_and_accept_num(mysqlpp::Connection & mysql_conn)
+void ExerciseManagement::refresh_all_users_sa_num(mysqlpp::Connection & mysql_conn)
 {
-	std::unordered_map<ojv4::u_id_type, UserSARecorder, ojv4::u_id_type::hash> m;
+	std::unordered_map<oj::u_id_type, UserSARecorder, oj::u_id_type::hash> m;
 	{
 		mysqlpp::Query query = mysql_conn.query(
 				"select u_id, p_id, s_result from solution "
@@ -54,9 +54,9 @@ void ExerciseManagement::refresh_all_users_submit_and_accept_num(mysqlpp::Connec
 			 * 不使用 C 语言风格的 atox 系列函数的理由是: atox 没有异常机制, 如若传进去的字符串非法就可能有隐患
 			 * 尽管 boost::lexical_cast 的效率略低于 atox, 但在满足安全原则的前提下低不了多少
 			 */
-			auto u_id(boost::lexical_cast<ojv4::u_id_type>(row[0]));
-			auto p_id(boost::lexical_cast<ojv4::p_id_type>(row[1]));
-			auto s_result(ojv4::s_result_enum(boost::lexical_cast<int>(row[2])));
+			auto u_id(boost::lexical_cast<oj::u_id_type>(row[0]));
+			auto p_id(boost::lexical_cast<oj::p_id_type>(row[1]));
+			auto s_result(oj::s_result_enum(boost::lexical_cast<int>(row[2])));
 			m[u_id].add_solution(p_id, s_result);
 		}
 	}
@@ -87,9 +87,9 @@ void ExerciseManagement::refresh_all_users_submit_and_accept_num(mysqlpp::Connec
 	trans.commit();
 }
 
-void ExerciseManagement::refresh_all_problems_submit_and_accept_num(mysqlpp::Connection & mysql_conn)
+void ExerciseManagement::refresh_all_problems_sa_num(mysqlpp::Connection & mysql_conn)
 {
-	std::unordered_map<ojv4::p_id_type, ProblemSARecorder, ojv4::p_id_type::hash> m;
+	std::unordered_map<oj::p_id_type, ProblemSARecorder, oj::p_id_type::hash> m;
 	{
 		mysqlpp::Query query = mysql_conn.query(
 				"select u_id, p_id, s_result from solution "
@@ -105,9 +105,9 @@ void ExerciseManagement::refresh_all_problems_submit_and_accept_num(mysqlpp::Con
 		}
 
 		while (::MYSQL_ROW row = solutions.fetch_raw_row()) {
-			auto u_id(boost::lexical_cast<ojv4::u_id_type>(row[0]));
-			auto p_id(boost::lexical_cast<ojv4::p_id_type>(row[1]));
-			auto s_result(ojv4::s_result_enum(boost::lexical_cast<int>(row[2])));
+			auto u_id(boost::lexical_cast<oj::u_id_type>(row[0]));
+			auto p_id(boost::lexical_cast<oj::p_id_type>(row[1]));
+			auto s_result(oj::s_result_enum(boost::lexical_cast<int>(row[2])));
 			m[p_id].add_solution(u_id, s_result);
 		}
 	}
@@ -141,24 +141,24 @@ void ExerciseManagement::refresh_all_user_problem(mysqlpp::Connection & mysql_co
 {
 	struct pair_hash
 	{
-			size_t operator()(const std::pair<ojv4::u_id_type, ojv4::p_id_type> & p) const
+			size_t operator()(const std::pair<oj::u_id_type, oj::p_id_type> & p) const
 			{
-//				return id_type_hash<ojv4::u_id_type>()(p.first) ^ id_type_hash<ojv4::p_id_type>()(p.second);
+//				return id_type_hash<oj::u_id_type>()(p.first) ^ id_type_hash<oj::p_id_type>()(p.second);
 
-				size_t hash = ojv4::u_id_type::hash()(p.first);
-				hash = hash * 48271UL + ojv4::p_id_type::hash()(p.second);
+				size_t hash = oj::u_id_type::hash()(p.first);
+				hash = hash * 48271UL + oj::p_id_type::hash()(p.second);
 				return hash;
 			}
 	};
 
 	struct tuple_hash
 	{
-			size_t operator()(const std::tuple<ojv4::u_id_type, ojv4::p_id_type, ojv4::c_id_type> & p) const
+			size_t operator()(const std::tuple<oj::u_id_type, oj::p_id_type, oj::c_id_type> & p) const
 			{
 //				return
-//				 id_type_hash<ojv4::u_id_type>()(std::get<0>(p)) +
-//				 id_type_hash<ojv4::p_id_type>()(std::get<1>(p)) +
-//				 id_type_hash<ojv4::c_id_type>()(std::get<2>(p));
+//				 id_type_hash<oj::u_id_type>()(std::get<0>(p)) +
+//				 id_type_hash<oj::p_id_type>()(std::get<1>(p)) +
+//				 id_type_hash<oj::c_id_type>()(std::get<2>(p));
 
 				/*
 				 * 一个适用于 pair, tuple 的低冲突概率哈希策略的灵感来源:
@@ -180,15 +180,15 @@ void ExerciseManagement::refresh_all_user_problem(mysqlpp::Connection & mysql_co
 				 * 最后, 笔者用优化过的哈希策略使用同样的数据进行测试, 发现竟一次冲突也没有发生!
 				 * 同时, 两个 map 的计算时间也由 700 ms 降低到了 600 ms
 				 */
-				size_t hash = ojv4::u_id_type::hash()(std::get<0>(p));
-				hash = hash * 48271UL + ojv4::p_id_type::hash()(std::get<1>(p));
-				hash = hash * 48271UL + ojv4::c_id_type::hash()(std::get<2>(p));
+				size_t hash = oj::u_id_type::hash()(std::get<0>(p));
+				hash = hash * 48271UL + oj::p_id_type::hash()(std::get<1>(p));
+				hash = hash * 48271UL + oj::c_id_type::hash()(std::get<2>(p));
 				return hash;
 			}
 	};
 
-	std::unordered_map<std::pair<ojv4::u_id_type, ojv4::p_id_type>, ojv4::u_p_status_enum, pair_hash> u_p_status;
-	std::unordered_map<std::tuple<ojv4::u_id_type, ojv4::p_id_type, ojv4::c_id_type>, ojv4::u_p_status_enum, tuple_hash> u_p_status_of_course;
+	std::unordered_map<std::pair<oj::u_id_type, oj::p_id_type>, oj::u_p_status_enum, pair_hash> u_p_status;
+	std::unordered_map<std::tuple<oj::u_id_type, oj::p_id_type, oj::c_id_type>, oj::u_p_status_enum, tuple_hash> u_p_status_of_course;
 	{
 		mysqlpp::Query query = mysql_conn.query(
 				"select u_id, p_id, ( "
@@ -218,25 +218,25 @@ void ExerciseManagement::refresh_all_user_problem(mysqlpp::Connection & mysql_co
 		}
 
 		while (::MYSQL_ROW row = solutions.fetch_raw_row()) {
-			auto u_id(boost::lexical_cast<ojv4::u_id_type>(row[0]));
-			auto p_id(boost::lexical_cast<ojv4::p_id_type>(row[1]));
-			auto s_result(ojv4::s_result_enum(boost::lexical_cast<int>(row[3])));
+			auto u_id(boost::lexical_cast<oj::u_id_type>(row[0]));
+			auto p_id(boost::lexical_cast<oj::p_id_type>(row[1]));
+			auto s_result(oj::s_result_enum(boost::lexical_cast<int>(row[3])));
 			switch (s_result) {
-				case ojv4::s_result_enum::ACCEPTED:
-					u_p_status[ { u_id, p_id }] = ojv4::u_p_status_enum::ACCEPTED;
+				case oj::s_result_enum::ACCEPTED:
+					u_p_status[ { u_id, p_id }] = oj::u_p_status_enum::ACCEPTED;
 					if (row[2] != nullptr) {
-						auto c_id(boost::lexical_cast<ojv4::c_id_type>(row[2]));
-						u_p_status_of_course[ { u_id, p_id, c_id }] = ojv4::u_p_status_enum::ACCEPTED;
+						auto c_id(boost::lexical_cast<oj::c_id_type>(row[2]));
+						u_p_status_of_course[ { u_id, p_id, c_id }] = oj::u_p_status_enum::ACCEPTED;
 					}
 					break;
-				case ojv4::s_result_enum::SYSTEM_ERROR:
+				case oj::s_result_enum::SYSTEM_ERROR:
 					break;
 				default:
 					//inserts if the key does not exist, does nothing if the key exists
-					u_p_status.insert( { { u_id, p_id }, ojv4::u_p_status_enum::ATTEMPTED });
+					u_p_status.insert( { { u_id, p_id }, oj::u_p_status_enum::ATTEMPTED });
 					if (row[2] != nullptr) {
-						auto c_id(boost::lexical_cast<ojv4::c_id_type>(row[2]));
-						u_p_status_of_course.insert( { { u_id, p_id, c_id }, ojv4::u_p_status_enum::ATTEMPTED });
+						auto c_id(boost::lexical_cast<oj::c_id_type>(row[2]));
+						u_p_status_of_course.insert( { { u_id, p_id, c_id }, oj::u_p_status_enum::ATTEMPTED });
 					}
 			}
 		}
@@ -306,7 +306,7 @@ void ExerciseManagement::refresh_all_user_problem(mysqlpp::Connection & mysql_co
 }
 
 
-void ExerciseManagement::update_user_s_submit_and_accept_num(mysqlpp::Connection & conn, ojv4::u_id_type u_id)
+void ExerciseManagement::update_user_s_sa_num(mysqlpp::Connection & conn, oj::u_id_type u_id)
 {
 	UserSARecorder u_info;
 	{
@@ -326,8 +326,8 @@ void ExerciseManagement::update_user_s_submit_and_accept_num(mysqlpp::Connection
 		}
 
 		while (::MYSQL_ROW row = solutions.fetch_raw_row()) {
-			auto p_id(boost::lexical_cast<ojv4::p_id_type>(row[0]));
-			auto s_result(ojv4::s_result_enum(boost::lexical_cast<int>(row[1])));
+			auto p_id(boost::lexical_cast<oj::p_id_type>(row[0]));
+			auto s_result(oj::s_result_enum(boost::lexical_cast<int>(row[1])));
 			u_info.add_solution(p_id, s_result);
 		}
 	}
@@ -345,7 +345,7 @@ void ExerciseManagement::update_user_s_submit_and_accept_num(mysqlpp::Connection
 	}
 }
 
-void ExerciseManagement::update_problem_s_submit_and_accept_num(mysqlpp::Connection & conn, ojv4::p_id_type p_id)
+void ExerciseManagement::update_problem_s_sa_num(mysqlpp::Connection & conn, oj::p_id_type p_id)
 {
 	ProblemSARecorder p_info;
 	{
@@ -365,8 +365,8 @@ void ExerciseManagement::update_problem_s_submit_and_accept_num(mysqlpp::Connect
 		}
 
 		while (::MYSQL_ROW row = solutions.fetch_raw_row()) {
-			auto u_id(boost::lexical_cast<ojv4::u_id_type>(row[0]));
-			auto s_result(ojv4::s_result_enum(boost::lexical_cast<int>(row[1])));
+			auto u_id(boost::lexical_cast<oj::u_id_type>(row[0]));
+			auto s_result(oj::s_result_enum(boost::lexical_cast<int>(row[1])));
 			p_info.add_solution(u_id, s_result);
 		}
 	}
@@ -384,10 +384,10 @@ void ExerciseManagement::update_problem_s_submit_and_accept_num(mysqlpp::Connect
 	}
 }
 
-ojv4::u_p_status_enum query_user_s_problem_status_from_solution(mysqlpp::Connection & conn, ojv4::u_id_type u_id, ojv4::p_id_type p_id)
+oj::u_p_status_enum query_user_s_problem_status_from_solution(mysqlpp::Connection & conn, oj::u_id_type u_id, oj::p_id_type p_id)
 {
-	constexpr ojv4::s_result_in_db_type ACCEPTED = ojv4::s_result_in_db_type(ojv4::s_result_enum::ACCEPTED);
-	constexpr ojv4::s_result_in_db_type SYSTEM_ERROR = ojv4::s_result_in_db_type(ojv4::s_result_enum::SYSTEM_ERROR);
+	constexpr oj::s_result_in_db_type ACCEPTED = oj::s_result_in_db_type(oj::s_result_enum::ACCEPTED);
+	constexpr oj::s_result_in_db_type SYSTEM_ERROR = oj::s_result_in_db_type(oj::s_result_enum::SYSTEM_ERROR);
 
 	mysqlpp::Query query_status = conn.query(
 			"select ("
@@ -401,21 +401,17 @@ ojv4::u_p_status_enum query_user_s_problem_status_from_solution(mysqlpp::Connect
 	mysqlpp::StoreQueryResult res = query_status.store(u_id, p_id, ACCEPTED, SYSTEM_ERROR);
 
 	if (bool(res[0]["has_accepted"]) == true) {
-		return ojv4::u_p_status_enum::ACCEPTED;
+		return oj::u_p_status_enum::ACCEPTED;
 	} else if (bool(res[0]["has_submit"]) == true) {
-		return ojv4::u_p_status_enum::ATTEMPTED;
+		return oj::u_p_status_enum::ATTEMPTED;
 	} else {
-		return ojv4::u_p_status_enum::TODO;
+		return oj::u_p_status_enum::TODO;
 	}
 }
 
-void ExerciseManagement::update_user_problem_status(mysqlpp::Connection & conn, ojv4::u_id_type u_id, ojv4::p_id_type p_id)
+void ExerciseManagement::update_user_problem(mysqlpp::Connection & conn, oj::u_id_type u_id, oj::p_id_type p_id)
 {
-}
-
-void ExerciseManagement::update_user_problem(mysqlpp::Connection & conn, ojv4::u_id_type u_id, ojv4::p_id_type p_id)
-{
-	ojv4::u_p_status_enum new_status = ojv4::u_p_status_enum::ATTEMPTED;
+	oj::u_p_status_enum new_status = oj::u_p_status_enum::ATTEMPTED;
 
 	try {
 		new_status = query_user_s_problem_status_from_solution(conn, u_id, p_id);
@@ -426,11 +422,11 @@ void ExerciseManagement::update_user_problem(mysqlpp::Connection & conn, ojv4::u
 				+ " details: " + e.what());
 	}
 
-	if (new_status == ojv4::u_p_status_enum::TODO) {
+	if (new_status == oj::u_p_status_enum::TODO) {
 		return;
 	}
 
-	ojv4::u_p_status_enum previous_status = ojv4::u_p_status_enum::TODO;
+	oj::u_p_status_enum previous_status = oj::u_p_status_enum::TODO;
 	{
 		mysqlpp::Query query = conn.query(
 				"select status from user_problem "
@@ -446,25 +442,25 @@ void ExerciseManagement::update_user_problem(mysqlpp::Connection & conn, ojv4::u
 					+ " MySQL error: " + conn.error());
 		}
 		if (res.empty()) {
-			previous_status = ojv4::u_p_status_enum::TODO;
+			previous_status = oj::u_p_status_enum::TODO;
 		} else {
-			previous_status = ojv4::u_p_status_enum(int(res[0]["status"]));
+			previous_status = oj::u_p_status_enum(int(res[0]["status"]));
 		}
 	}
 
-	if (previous_status == ojv4::u_p_status_enum::TODO) {
+	if (previous_status == oj::u_p_status_enum::TODO) {
 		mysqlpp::Query insert = conn.query(
 				"insert into user_problem (u_id, p_id, status, c_id) "
 				"values (%0, %1, %2, null)"
 		);
 		insert.parse();
-        if (!insert.execute(u_id, p_id, int(new_status))) {
-            throw std::runtime_error("Insert user-problem failed!"s
-            		+ " u_id = " + std::to_string(u_id)
-            		+ " p_id = " + std::to_string(p_id)
-             		+ " MySQL errnum: " + std::to_string(conn.errnum())
-             		+ " MySQL error: " + conn.error());
-        }
+		if (!insert.execute(u_id, p_id, int(new_status))) {
+			throw std::runtime_error("Insert user-problem failed!"s
+					+ " u_id = " + std::to_string(u_id)
+					+ " p_id = " + std::to_string(p_id)
+					+ " MySQL errnum: " + std::to_string(conn.errnum())
+					+ " MySQL error: " + conn.error());
+		}
 	} else if (previous_status != new_status) {
 		mysqlpp::Query update = conn.query(
 				"update user_problem set "
@@ -472,13 +468,13 @@ void ExerciseManagement::update_user_problem(mysqlpp::Connection & conn, ojv4::u
 				"where u_id = %1 and p_id = %2 and c_id is null"
 		);
 		update.parse();
-        if (!update.execute(int(new_status), u_id, p_id)) {
-            throw std::runtime_error("Update user-problem failed!"s
-             		+ " u_id = " + std::to_string(u_id)
-             		+ " p_id = " + std::to_string(p_id)
-             		+ " MySQL errnum: " + std::to_string(conn.errnum())
-             		+ " MySQL error: " + conn.error());
-        }
+		if (!update.execute(int(new_status), u_id, p_id)) {
+			throw std::runtime_error("Update user-problem failed!"s
+					+ " u_id = " + std::to_string(u_id)
+					+ " p_id = " + std::to_string(p_id)
+					+ " MySQL errnum: " + std::to_string(conn.errnum())
+					+ " MySQL error: " + conn.error());
+		}
 	}
 
 }
