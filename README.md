@@ -1,8 +1,8 @@
 
-[![Platform](https://img.shields.io/badge/platform-linux-blue.svg)]()
-[![Language](https://img.shields.io/badge/language-C%2B%2B17-blue.svg)]()
-[![Documentation](https://img.shields.io/badge/docs-doxygen-blue.svg)](https://wentsingnee.github.io/tsoj_core_cpp)
-[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)]()
+[![Platform](https://img.shields.io/badge/Platform-linux-blue.svg)]()
+[![Language](https://img.shields.io/badge/Language-C%2B%2B17-blue.svg)]()
+[![Documentation](https://img.shields.io/badge/Docs-doxygen-blue.svg)](https://wentsingnee.github.io/tsoj_core_cpp)
+[![GitHub license](https://img.shields.io/badge/License-MIT-blue.svg)]()
 
 #### 项目描述:
 TSOJ v4 C++ 版评测内核.
@@ -16,10 +16,13 @@ TSOJ v4 C++ 版评测内核.
 * C 语言版评测内核不方便做多线程异步 update. C++ 版内核现已支持多线程异步处理 update 业务, 使得 update 效率提高了 60 倍以上.
 
 #### 语言及编译器要求:
-[![Language](https://img.shields.io/badge/language-C%2B%2B17-blue.svg)]() 编译器需支持 C++17 及以上标准.
-[![Build Cmake Test](https://img.shields.io/badge/build-cmake%20%28still%20on%20test%29-orange.svg)]() 正在实验性支持通过 cmake 产生 Makefile 文件.
-[![Build GCC](https://img.shields.io/badge/build-gcc%208.2%20pass-green.svg)]() gcc-8.2.0 下通过编译.
-[![Build Clang](https://img.shields.io/badge/build-clang%206.0%20pass-green.svg)]() clang++-6.0 下通过编译.
+[![Language](https://img.shields.io/badge/Language-C%2B%2B17-blue.svg)]() 编译器需支持 C++17 及以上标准.
+
+[![Build Cmake Test](https://img.shields.io/badge/Build%20tools-cmake%20%28still%20on%20test%29-orange.svg)]() 正在实验性支持通过 cmake 产生 Makefile 文件.
+
+[![Build GCC](https://img.shields.io/badge/Build%20tools-gcc%208.2%20pass-green.svg)]() gcc-8.2.0 下通过编译.
+
+[![Build Clang](https://img.shields.io/badge/Build%20tools-clang%206.0%20pass-green.svg)]() clang++-6.0 下通过编译.
 
 #### 编译时依赖:
 * **共用**

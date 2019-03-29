@@ -1,18 +1,11 @@
 
 SRCS += \
 ./JobBase.cpp \
-./load_helper.cpp \
 ./logger.cpp
 
 OBJS += \
 $(obj_folder)/JobBase.o \
-$(obj_folder)/load_helper.o \
 $(obj_folder)/logger.o
-
-DEPS += \
-$(obj_folder)/JobBase.d \
-$(obj_folder)/load_helper.d \
-$(obj_folder)/logger.d
 
 BLUE_TEXT_BEGIN := \033[1m\033[36m
 YELLOW_TEXT_BEGIN := \033[1m\033[33m

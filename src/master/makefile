@@ -10,6 +10,7 @@ include_path_options += \
 -include ./Contest/subdir.mk
 -include ./Course/subdir.mk
 -include ./Exercise/subdir.mk
+-include ./Management/subdir.mk
 -include ./subdir.mk
 
 SHARED_OBJS += \
